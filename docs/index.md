@@ -7,7 +7,7 @@ You can access this documentation in several ways:
 
 - Visit [`https://recsys.app`](https://recsys.app).
 - Run `make docs-serve` and open [`http://localhost:8001`](http://localhost:8001).
-- Browse the files in the repository under [`/docs`](docs/).
+- Browse the files in the repository under [`/docs`](/docs).
 
 ## What is the suite?
 

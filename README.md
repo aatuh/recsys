@@ -9,13 +9,13 @@ This repository contains a complete, production-oriented recommendation system s
 
 ## Documentation
 
-All the hosted documentation lives under [`/docs`](docs/), rendered with MkDocs using [`mkdocs.yml`](mkdocs.yml).
+All the hosted documentation lives under [`/docs`](/docs), rendered with MkDocs using [`mkdocs.yml`](mkdocs.yml).
 
 You can access this documentation in several ways:
 
 - Visit [`https://recsys.app`](https://recsys.app).
 - Run `make docs-serve` and open [`http://localhost:8001`](http://localhost:8001).
-- Browse the files in the repository under [`/docs`](docs/).
+- Browse the files in the repository under [`/docs`](/docs).
 
 Start here:
 
