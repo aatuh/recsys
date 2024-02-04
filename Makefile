@@ -1,4 +1,4 @@
-.PHONY: help codegen dev down build test fmt lint health reuse mdlint mkdocs-serve
+.PHONY: help codegen dev down build test fmt lint health reuse mdlint codespell mkdocs-serve
 
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 COMMIT ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo none)
@@ -10,7 +10,6 @@ export DATE
 API_SVC ?= 1
 API_SVC_PATH ?= ../api-svc
 export API_SVC
-
 COMPOSE_FILES := -f docker-compose.yml
 
 COMPOSE_ANSI ?= auto
@@ -31,45 +30,53 @@ down: ## Clean up containers and volumes
 
 cycle: ## Cycle the containers down and up
 	@echo "♻️ Cycling development environment..."
-	@$(MAKE) down
-	@$(MAKE) dev
+	$(MAKE) down
+	$(MAKE) dev
 
 logs: ## View the logs of the service
 	@$(DOCKER_COMPOSE) $(COMPOSE_FILES) logs -f
 
 codegen: ## Generate code
 	@echo "🔄 Generating code..."
-	cd api && make codegen
+	cd api && $(MAKE) codegen
 
 build: ## Build all Docker Compose services
 	@echo "🔨 Building all services..."
-	@$(MAKE) down
+	$(MAKE) down
 	@$(DOCKER_COMPOSE) $(COMPOSE_FILES) build
 
 test: ## Run tests
 	@echo "🧪 Running tests..."
-	cd api && make test
-	cd recsys-eval && make test
-	cd recsys-pipelines && make test
-	cd recsys-algo && make test
+	cd api && $(MAKE) test
+	cd recsys-eval && $(MAKE) test
+	cd recsys-pipelines && $(MAKE) test
+	cd recsys-algo && $(MAKE) test
 
 fmt: ## Format code
 	@echo "🎨 Formatting code..."
-	cd api && make fmt
-	cd recsys-eval && make fmt
-	cd recsys-pipelines && make fmt
-	cd recsys-algo && make fmt
+	cd api && $(MAKE) fmt
+	cd recsys-eval && $(MAKE) fmt
+	cd recsys-pipelines && $(MAKE) fmt
+	cd recsys-algo && $(MAKE) fmt
 
 lint: ## Lint code
 	@echo "🔍 Linting code..."
-	cd api && make lint
-	cd recsys-eval && make lint
-	cd recsys-pipelines && make lint
-	cd recsys-algo && make lint
+	cd api && $(MAKE) lint
+	cd recsys-eval && $(MAKE) lint
+	cd recsys-pipelines && $(MAKE) lint
+	cd recsys-algo && $(MAKE) lint
 
 mdlint: ## Lint Markdown files
 	@echo "🧾 Linting Markdown..."
-	npx --yes markdownlint-cli2
+	npx --yes markdownlint-cli2@0.20.0
+
+codespell: ## Spell check docs (codespell)
+	@if [ ! -x .venv/bin/codespell ]; then \
+		echo "Installing codespell into .venv..."; \
+		python -m venv .venv; \
+		. .venv/bin/activate && python -m pip install --disable-pip-version-check codespell; \
+	fi
+	@. .venv/bin/activate && .venv/bin/codespell --config .codespellrc.ini docs mkdocs.yml README.md AGENTS.md
 
 reuse: ## Run REUSE lint (license compliance)
 	@echo "🔎 Running REUSE lint..."
@@ -87,27 +94,29 @@ reuse: ## Run REUSE lint (license compliance)
 
 health: ## Check service healthiness
 	@echo "🏥 Checking service healthiness..."
-	cd api && make health
+	cd api && $(MAKE) health
 
 finalize: ## Thorough validity check and generation
 	@echo "✅ Finalizing code..."
-	make fmt
-	make lint
-	make test
-	make codegen
-	make mdlint
-	make docs-check
+	$(MAKE) fmt
+	$(MAKE) lint
+	$(MAKE) test
+	$(MAKE) codegen
+	$(MAKE) mdlint
+	$(MAKE) docs-check
 
 .PHONY: docs-serve docs-build docs-check
 
 docs-serve: ## Serve MkDocs site locally
-	make mdlint
-	make docs-check
+	$(MAKE) mdlint
+	$(MAKE) docs-check
 	@echo "📚 Serving MkDocs at http://localhost:8001 ..."
 	@command -v mkdocs >/dev/null 2>&1 || { \
-		echo "Installing mkdocs into .venv..."; \
-		python -m venv .venv; \
-		. .venv/bin/activate && python -m pip install --upgrade pip mkdocs mkdocs-swagger-ui-tag mkdocs-material pymdown-extensions; \
+		if [ ! -x .venv/bin/mkdocs ]; then \
+			echo "Installing mkdocs into .venv..."; \
+			python -m venv .venv; \
+			. .venv/bin/activate && python -m pip install --disable-pip-version-check mkdocs mkdocs-swagger-ui-tag mkdocs-material pymdown-extensions; \
+		fi; \
 	}
 	@. .venv/bin/activate 2>/dev/null || true; \
 	if command -v mkdocs >/dev/null 2>&1; then \
@@ -119,18 +128,21 @@ docs-serve: ## Serve MkDocs site locally
 
 docs-build: ## Build MkDocs site (strict)
 	@command -v mkdocs >/dev/null 2>&1 || { \
-		echo "Installing mkdocs into .venv..."; \
-		python -m venv .venv; \
-		. .venv/bin/activate && python -m pip install --upgrade pip mkdocs mkdocs-swagger-ui-tag mkdocs-material pymdown-extensions; \
+		if [ ! -x .venv/bin/mkdocs ]; then \
+			echo "Installing mkdocs into .venv..."; \
+			python -m venv .venv; \
+			. .venv/bin/activate && python -m pip install --disable-pip-version-check mkdocs mkdocs-swagger-ui-tag mkdocs-material pymdown-extensions; \
+		fi; \
 	}
 	@. .venv/bin/activate 2>/dev/null || true; \
 	if command -v mkdocs >/dev/null 2>&1; then \
-		mkdocs build --strict -f mkdocs.yml -d site; \
+		mkdocs build --strict -f mkdocs.yml -d .site; \
 	else \
-		. .venv/bin/activate && .venv/bin/mkdocs build --strict -f mkdocs.yml -d site; \
+		. .venv/bin/activate && .venv/bin/mkdocs build --strict -f mkdocs.yml -d .site; \
 	fi
 
 
 docs-check: ## Check docs internal links + strict MkDocs build
 	@python3 scripts/docs_linkcheck.py
-	@$(MAKE) docs-build
+	$(MAKE) codespell
+	$(MAKE) docs-build

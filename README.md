@@ -14,6 +14,7 @@ All the hosted documentation lives under [`/docs`](/docs), rendered with MkDocs 
 You can access this documentation in several ways:
 
 - Visit [`https://recsys.app`](https://recsys.app).
+- Visit [`https://github.com/aatuh/recsys`](https://github.com/aatuh/recsys).
 - Run `make docs-serve` and open [`http://localhost:8001`](http://localhost:8001).
 - Browse the files in the repository under [`/docs`](/docs).
 
@@ -28,6 +29,13 @@ Module docs in MkDocs:
 - recsys-algo: [`docs/recsys-algo/index.md`](docs/recsys-algo/index.md)
 - recsys-pipelines: [`docs/recsys-pipelines/docs/index.md`](docs/recsys-pipelines/docs/index.md)
 - recsys-eval: [`docs/recsys-eval/docs/index.md`](docs/recsys-eval/docs/index.md)
+
+## Docs versioning
+
+- Tags `recsys-suite/vX.Y.Z` publish `/X.Y.Z/` and update `/latest/`.
+- Default branch publishes `/dev/`.
+- The site root (`/`) serves the contents of `/latest/` (falls back to `/dev/` before the first tag; no URL change).
+- GitHub Pages source is **GitHub Actions** (Settings → Pages).
 
 ## Licensing
 

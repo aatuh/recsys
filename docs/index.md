@@ -6,8 +6,15 @@ into an application, and operate it safely.
 You can access this documentation in several ways:
 
 - Visit [`https://recsys.app`](https://recsys.app).
+- Visit [`https://github.com/aatuh/recsys`](https://github.com/aatuh/recsys).
 - Run `make docs-serve` and open [`http://localhost:8001`](http://localhost:8001).
 - Browse the files in the repository under [`/docs`](/docs).
+
+Browse the source repository on GitHub: [`github.com/aatuh/recsys`](https://github.com/aatuh/recsys).
+
+## Need guided help?
+
+- RecSys Copilot for docs/tech/business Q&A: [`chatgpt.com/g/.../recsys-copilot`](https://chatgpt.com/g/g-68c82a5c7704819185d0ff929b6fff11-recsys-copilot).
 
 ## What is the suite?
 
@@ -17,6 +24,10 @@ The suite is four modules that form an end-to-end recommendation system loop:
 - **recsys-algo**: deterministic ranking logic (candidate merge, scoring, constraints, rules, diversity).
 - **recsys-pipelines**: offline/stream processing that turns events into versioned artifacts the service consumes.
 - **recsys-eval**: offline regression + online experiment analysis that decides what to ship.
+
+If you're evaluating this as a product (rather than integrating it right now), start with:
+
+- Stakeholder overview: [`start-here/what-is-recsys.md`](start-here/what-is-recsys.md)
 
 ## Where to start
 
@@ -30,10 +41,10 @@ The suite is four modules that form an end-to-end recommendation system loop:
 
 - REST API: [`reference/api/openapi.yaml`](reference/api/openapi.yaml)
 - Admin API: [`reference/api/admin.md`](reference/api/admin.md)
-- Contracts: [`reference/data-contracts/`](reference/data-contracts/)
-- Config: [`reference/config/`](reference/config/)
-- CLI: [`reference/cli/`](reference/cli/)
-- Database: [`reference/database/`](reference/database/)
+- Contracts: [`reference/data-contracts/index.md`](reference/data-contracts/index.md)
+- Config: [`reference/config/index.md`](reference/config/index.md)
+- CLI: [`reference/cli/index.md`](reference/cli/index.md)
+- Database: [`reference/database/index.md`](reference/database/index.md)
 
 Note:
 
@@ -49,10 +60,8 @@ Note:
 
 ## Development
 
-- Use the repo-level Go workspace: `go work sync` from `recsys/`.
-- Each module is versioned/released independently; tags are module-prefixed
-
-  (e.g., `recsys-eval/v0.2.0`). Run tests per module (e.g., `cd recsys-eval && go test ./...`).
+- Run tests per module (e.g., `cd recsys-eval && go test ./...`).
+- Each module is versioned/released independently; tags are module-prefixed (e.g., `recsys-eval/v0.2.0`).
 
 ## Operations
 

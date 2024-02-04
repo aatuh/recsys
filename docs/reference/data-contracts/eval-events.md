@@ -6,9 +6,9 @@ required fields, validation fails even if `recsys-eval run` produced a report.
 
 Schema sources (repo):
 
-- `recsys/recsys-eval/schemas/exposure.v1.json`
-- `recsys/recsys-eval/schemas/outcome.v1.json`
-- `recsys/recsys-eval/schemas/assignment.v1.json`
+- `recsys-eval/schemas/exposure.v1.json`
+- `recsys-eval/schemas/outcome.v1.json`
+- `recsys-eval/schemas/assignment.v1.json`
 
 ## exposure.v1 (required fields)
 

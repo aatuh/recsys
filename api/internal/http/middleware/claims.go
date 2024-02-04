@@ -66,9 +66,14 @@ func (m *ClaimsMiddleware) Handler(next http.Handler) http.Handler {
 		}
 
 		ctx := auth.WithInfo(r.Context(), info)
+		scope, _ := authorization.ScopeFromContext(ctx)
+		if info.TenantID != "" && scope.TenantID == "" {
+			scope.TenantID = info.TenantID
+		}
 		if info.UserID != "" {
-			scope, _ := authorization.ScopeFromContext(ctx)
 			scope.UserID = info.UserID
+		}
+		if scope.TenantID != "" || scope.UserID != "" {
 			ctx = authorization.WithScope(ctx, scope)
 		}
 		next.ServeHTTP(w, r.WithContext(ctx))

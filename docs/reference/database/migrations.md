@@ -15,14 +15,14 @@
 Before upgrading from N‑1 to N, run:
 
 ```bash
-cd recsys/api
+cd api
 go run ./cmd/migrate preflight
 ```
 
 Docker/compose shortcut:
 
 ```bash
-cd recsys/api
+cd api
 make migrate-preflight
 ```
 

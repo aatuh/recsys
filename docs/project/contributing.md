@@ -34,6 +34,10 @@ To keep things simple, we may ask contributors to:
 3. Run tests and linters
 4. Open a pull request
 
+Notes for local tests:
+
+- API integration tests start the service with `api/.env.test` via `RECSYS_API_ENV_FILE`. Override if needed.
+
 ## Commit sign-off (DCO)
 
 We use the Developer Certificate of Origin (DCO) sign-off on commits.

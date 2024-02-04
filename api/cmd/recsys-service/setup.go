@@ -16,7 +16,7 @@ func setupDocsHandler(cfg config.Config, log ports.Logger) *docs.Handler {
 		return nil
 	}
 	return docs.NewHandler(docs.NewWithConfig(ports.DocsConfig{
-		Title:       "Recsys Service API",
+		Title:       "RecSys Service API",
 		Description: "Recommendation service API",
 		Version:     "1.0.0",
 		Paths:       ports.DefaultDocsPaths(),

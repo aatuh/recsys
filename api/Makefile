@@ -39,16 +39,32 @@ codegen: ## Generate OpenAPI artifacts from the canonical spec
 	@go run ./cmd/openapi-sync -input $(OPENAPI_SOURCE) -out-dir $(OPENAPI_OUT)
 
 migrate-up: ## Apply migrations
-	@$(DOCKER_COMPOSE) exec api sh -c "go run ./cmd/migrate -dir \$$MIGRATIONS_DIR up"
+	@$(DOCKER_COMPOSE) exec api sh -c 'dir_arg=""; \
+		if [ -n "$$MIGRATIONS_DIR" ] && [ "$$MIGRATIONS_DIR" != "-" ]; then \
+			dir_arg="-dir $$MIGRATIONS_DIR"; \
+		fi; \
+		GOTMPDIR=/app/tmp TMPDIR=/app/tmp go run ./cmd/migrate $$dir_arg up'
 
 migrate-down: ## Rollback migrations
-	@$(DOCKER_COMPOSE) exec api sh -c "go run ./cmd/migrate -dir \$$MIGRATIONS_DIR --allow-down down"
+	@$(DOCKER_COMPOSE) exec api sh -c 'dir_arg=""; \
+		if [ -n "$$MIGRATIONS_DIR" ] && [ "$$MIGRATIONS_DIR" != "-" ]; then \
+			dir_arg="-dir $$MIGRATIONS_DIR"; \
+		fi; \
+		GOTMPDIR=/app/tmp TMPDIR=/app/tmp go run ./cmd/migrate $$dir_arg --allow-down down'
 
 migrate-status: ## Show status of the migrations
-	@$(DOCKER_COMPOSE) exec api sh -c "go run ./cmd/migrate -dir \$$MIGRATIONS_DIR status"
+	@$(DOCKER_COMPOSE) exec api sh -c 'dir_arg=""; \
+		if [ -n "$$MIGRATIONS_DIR" ] && [ "$$MIGRATIONS_DIR" != "-" ]; then \
+			dir_arg="-dir $$MIGRATIONS_DIR"; \
+		fi; \
+		GOTMPDIR=/app/tmp TMPDIR=/app/tmp go run ./cmd/migrate $$dir_arg status'
 
 migrate-preflight: ## Run migration preflight checks
-	@$(DOCKER_COMPOSE) exec api sh -c "go run ./cmd/migrate -dir \$$MIGRATIONS_DIR preflight"
+	@$(DOCKER_COMPOSE) exec api sh -c 'dir_arg=""; \
+		if [ -n "$$MIGRATIONS_DIR" ] && [ "$$MIGRATIONS_DIR" != "-" ]; then \
+			dir_arg="-dir $$MIGRATIONS_DIR"; \
+		fi; \
+		GOTMPDIR=/app/tmp TMPDIR=/app/tmp go run ./cmd/migrate $$dir_arg preflight'
 
 tidy: ## Tidy go modules
 	@$(DOCKER_COMPOSE) exec api go mod tidy
@@ -69,7 +85,7 @@ CACHE_ENABLED ?= false
 
 test: ## Run tests
 	@echo "🧪 Running tests. Pattern: '$(TEST_PATTERN)'  Flags: '$(FLAGS)'  Pkg: '$(PKG)' Fast: ${FAST}"
-	@$(DOCKER_COMPOSE) up -d db api
+	@RECSYS_API_ENV_FILE=./api/.env.test $(DOCKER_COMPOSE) up -d db api
 	@$(DOCKER_COMPOSE) run --no-deps --rm \
 		-e TEST_PATTERN='$(TEST_PATTERN)' \
 		-e FLAGS='$(FLAGS)' \
@@ -83,7 +99,7 @@ test: ## Run tests
 
 test-cached: ## Run tests with caching enabled
 	@echo "🧪 Running cached tests. Pattern: '$(TEST_PATTERN)'  Flags: '$(FLAGS)'  Pkg: '$(PKG)' Fast: ${FAST} Cache TTL: '$(CACHE_TTL)'"
-	@$(DOCKER_COMPOSE) up -d db api
+	@RECSYS_API_ENV_FILE=./api/.env.test $(DOCKER_COMPOSE) up -d db api
 	@$(DOCKER_COMPOSE) run --no-deps --rm \
 		-e TEST_PATTERN='$(TEST_PATTERN)' \
 		-e FLAGS='$(FLAGS)' \

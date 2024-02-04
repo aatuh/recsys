@@ -3,13 +3,19 @@
     // Nudge layout-dependent widgets
     window.dispatchEvent(new Event("resize"));
 
-    // Optional: if your Swagger iframe still ends up tiny,
-    // force a sane minimum height:
-    document.querySelectorAll("iframe").forEach((el) => {
-      const src = (el.getAttribute("src") || "").toLowerCase();
-      if (src.includes("swagger") || src.includes("openapi")) {
-        el.style.width = "100%";
-        el.style.minHeight = "75vh";
+    document.querySelectorAll("iframe.swagger-ui-iframe").forEach((el) => {
+      el.style.display = "block";
+      el.style.width = "100%";
+      el.style.minHeight = "75vh";
+      el.style.border = "0";
+
+      const id = el.getAttribute("id");
+      if (!id) return;
+      if (typeof window.update_swagger_ui_iframe_height !== "function") return;
+      try {
+        window.update_swagger_ui_iframe_height(id);
+      } catch {
+        // ignore
       }
     });
   }

@@ -89,6 +89,7 @@ type Item struct {
 	Score   float64
 	Reasons []string
 	Explain *ItemExplain
+	PinRank int
 }
 
 // ItemExplain provides optional explain metadata.

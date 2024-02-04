@@ -27,7 +27,7 @@ services:
       - COMMIT=${COMMIT:-none}
       - DATE=${DATE:-unknown}
     env_file:
-      - ./api/.env
+      - ${RECSYS_API_ENV_FILE:-./api/.env}
     ports:
       - "${API_PORT:-8000}:8000"
     read_only: true

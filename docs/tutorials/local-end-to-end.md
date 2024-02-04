@@ -1,77 +1,378 @@
-# Tutorial: local end-to-end (pipelines -> service -> eval)
+# Tutorial: local end-to-end (service → logging → eval)
 
-Goal: run a tiny dataset through pipelines, serve recommendations, and generate
-an evaluation report.
+Goal: serve non-empty recommendations locally, emit an eval-compatible exposure log, and generate a `recsys-eval`
+report.
 
-Prereqs:
+This tutorial uses **DB-only mode** (fastest way to prove the loop locally). Artifact/manifest mode with pipelines is
+linked at the end.
 
-- Docker + docker compose
+## Prereqs
+
+- Docker + Docker Compose
 - curl
 - POSIX shell
+- Go toolchain (to build `recsys-eval`)
 
-## 1. Start local dependencies
+## Expected outcome
 
-Bring up Postgres and recsys-service. Ensure migrations are applied.
+- `POST /v1/recommend` returns a non-empty list for tenant `demo` and surface `home`
+- A local exposure log file exists (eval schema)
+- `recsys-eval run` produces a Markdown report
 
-## 2. Load demo tenant + config + rules
+## 1) Start Postgres + recsys-service
 
-Create:
-
-- tenant: demo
-- config and rules (versioned, current pointer updated)
-
-See: `reference/api/examples/admin-config.http`
-See also: `reference/api/admin.md` (auth + bootstrap details, tenant insert SQL)
-
-## 3. Load a tiny dataset
-
-Use `tutorials/datasets/tiny/`:
-
-- catalog.csv
-- exposures.jsonl
-- interactions.jsonl
-
-In production, pipelines ingest raw events. For this tutorial you can import the
-files into your canonical store.
-
-## 4. Run pipelines to publish artifacts
-
-### Local artifact bootstrap (MinIO)
-
-If you want artifact/manifest mode locally, use the bundled MinIO in
-`docker-compose` and publish manifests to the default bucket:
-
-- Bucket: `recsys-artifacts`
-- Manifest path: `registry/current/{tenant}/{surface}/manifest.json`
-- Example URI: `s3://recsys-artifacts/registry/current/demo/home/manifest.json`
-
-Service env (local):
+From repo root:
 
 ```bash
-RECSYS_ARTIFACT_MODE_ENABLED=true
-RECSYS_ARTIFACT_MANIFEST_TEMPLATE=s3://recsys-artifacts/registry/current/{tenant}/{surface}/manifest.json
-RECSYS_ARTIFACT_S3_ENDPOINT=minio:9000
-RECSYS_ARTIFACT_S3_ACCESS_KEY=minioadmin
-RECSYS_ARTIFACT_S3_SECRET_KEY=minioadmin
-RECSYS_ARTIFACT_S3_REGION=us-east-1
-RECSYS_ARTIFACT_S3_USE_SSL=false
+test -f api/.env || cp api/.env.example api/.env
+make dev
 ```
 
-Run the minimum pipelines jobs to produce non-empty recs (e.g. popularity +
-manifest), then verify the manifest is present at the expected MinIO path.
+Apply database migrations (idempotent):
 
-See: `how-to/operate-pipelines.md`
+```bash
+(cd api && make migrate-up)
+```
 
-## 5. Call the API
+Verify:
 
-- POST /v1/recommend
-- POST /v1/similar (optional)
-- POST /v1/recommend/validate (lint requests)
+```bash
+curl -fsS http://localhost:8000/healthz >/dev/null
+```
 
-See: `reference/api/examples/`
+## 2) Configure local dev for a runnable tutorial
 
-## 6. Run evaluation
+This tutorial uses dev headers for auth and disables admin RBAC roles so you can call admin endpoints without JWT
+claims.
 
-Run offline regression and (optionally) experiment analysis.
+Edit `api/.env` and set:
 
-See: [`how-to/run-eval-and-ship.md`](../how-to/run-eval-and-ship.md)
+```bash
+# DB-only mode (no artifact manifest)
+RECSYS_ARTIFACT_MODE_ENABLED=false
+
+# Make requests deterministic
+RECSYS_ALGO_MODE=popularity
+
+# Enable rules so you can prove control-plane wiring (pin/exclude) works
+RECSYS_ALGO_RULES_ENABLED=true
+
+# Enable eval-compatible exposure logs
+EXPOSURE_LOG_ENABLED=true
+EXPOSURE_LOG_FORMAT=eval_v1
+EXPOSURE_LOG_PATH=/app/tmp/exposures.eval.jsonl
+
+# Local dev: disable admin RBAC roles (dev headers don’t carry roles)
+AUTH_VIEWER_ROLE=
+AUTH_OPERATOR_ROLE=
+AUTH_ADMIN_ROLE=
+```
+
+Restart the service:
+
+```bash
+docker compose up -d --force-recreate api
+```
+
+## 3) Bootstrap a demo tenant (Postgres)
+
+Insert a tenant row:
+
+```bash
+docker exec -i recsys-db psql -U recsys-db -d recsys-db <<'SQL'
+insert into tenants (external_id, name)
+values ('demo', 'Demo Tenant')
+on conflict (external_id) do nothing;
+SQL
+```
+
+## 4) Create minimal tenant config and rules (admin API)
+
+Create a small config document:
+
+```bash
+cat > /tmp/demo_config.json <<'JSON'
+{
+  "weights": { "pop": 1.0, "cooc": 0.0, "emb": 0.0 },
+  "flags": { "enable_rules": true },
+  "limits": { "max_k": 50, "max_exclude_ids": 200 }
+}
+JSON
+```
+
+Upsert config:
+
+```bash
+curl -fsS -X PUT http://localhost:8000/v1/admin/tenants/demo/config \
+  -H 'Content-Type: application/json' \
+  -H 'X-Dev-User-Id: dev-user-1' \
+  -H 'X-Dev-Org-Id: demo' \
+  -H 'X-Org-Id: demo' \
+  -d @/tmp/demo_config.json
+```
+
+Create a small rules document (pin `item_3` to prove control works):
+
+```bash
+cat > /tmp/demo_rules.json <<'JSON'
+[
+  {
+    "action": "pin",
+    "target_type": "item",
+    "item_ids": ["item_3"],
+    "surface": "home",
+    "priority": 10
+  }
+]
+JSON
+```
+
+Upsert rules:
+
+```bash
+curl -fsS -X PUT http://localhost:8000/v1/admin/tenants/demo/rules \
+  -H 'Content-Type: application/json' \
+  -H 'X-Dev-User-Id: dev-user-1' \
+  -H 'X-Dev-Org-Id: demo' \
+  -H 'X-Org-Id: demo' \
+  -d @/tmp/demo_rules.json
+```
+
+## 5) Seed minimal DB-only signals (tags + popularity)
+
+Seed `item_tags` and `item_popularity_daily` for surface `home`:
+
+```bash
+docker exec -i recsys-db psql -U recsys-db -d recsys-db <<'SQL'
+with t as (
+  select id as tenant_id
+    from tenants
+   where external_id = 'demo'
+)
+insert into item_tags (tenant_id, namespace, item_id, tags, price, created_at)
+select tenant_id, 'home', 'item_1', array['brand:nike','category:shoes'], 99.90, now() from t
+union all
+select tenant_id, 'home', 'item_2', array['brand:nike','category:shoes'], 79.00, now() from t
+union all
+select tenant_id, 'home', 'item_3', array['brand:acme','category:socks'], 12.00, now() from t
+on conflict (tenant_id, namespace, item_id)
+do update set tags = excluded.tags,
+              price = excluded.price,
+              created_at = excluded.created_at;
+
+with t as (
+  select id as tenant_id
+    from tenants
+   where external_id = 'demo'
+)
+insert into item_popularity_daily (tenant_id, namespace, item_id, day, score)
+select tenant_id, 'home', 'item_1', current_date, 10 from t
+union all
+select tenant_id, 'home', 'item_2', current_date, 7 from t
+union all
+select tenant_id, 'home', 'item_3', current_date, 3 from t
+on conflict (tenant_id, namespace, item_id, day)
+do update set score = excluded.score;
+SQL
+```
+
+## 6) Call `/v1/recommend` and verify non-empty output
+
+Send a request with deterministic `request_id`:
+
+```bash
+curl -fsS http://localhost:8000/v1/recommend \
+  -H 'Content-Type: application/json' \
+  -H 'X-Request-Id: req-1' \
+  -H 'X-Dev-User-Id: dev-user-1' \
+  -H 'X-Dev-Org-Id: demo' \
+  -H 'X-Org-Id: demo' \
+  -d '{"surface":"home","k":5,"user":{"user_id":"u_1","session_id":"s_1"}}'
+```
+
+You should see `items` with `item_id` values like `item_1`, `item_2`, `item_3`.
+
+Because you pinned `item_3`, it should appear first in the list.
+
+Example response shape:
+
+```json
+{
+  "items": [{ "item_id": "item_3", "rank": 1, "score": 0.12 }],
+  "meta": {
+    "tenant_id": "demo",
+    "surface": "home",
+    "config_version": "W/\"...\"",
+    "rules_version": "W/\"...\"",
+    "request_id": "req-1"
+  },
+  "warnings": []
+}
+```
+
+If you get an empty list, check:
+
+- you inserted rows into `item_popularity_daily` for `namespace='home'`
+- you are calling the API with `surface=home`
+
+## 7) Extract the exposure log and create a tiny outcome log
+
+Copy the exposure file out of the container:
+
+```bash
+docker cp recsys-svc:/app/tmp/exposures.eval.jsonl /tmp/exposures.jsonl
+```
+
+Extract the hashed `user_id` from the exposure file (this is what `recsys-service` logs for eval format):
+
+```bash
+EXPOSURE_USER_ID="$(python3 -c 'import json; print(json.loads(open(\"/tmp/exposures.jsonl\").readline())[\"user_id\"])')"
+```
+
+Create a minimal outcome log that joins by `request_id` (and matches the exposure `user_id`):
+
+```bash
+OUTCOME_TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+cat > /tmp/outcomes.jsonl <<JSONL
+{"request_id":"req-1","user_id":"${EXPOSURE_USER_ID}","item_id":"item_3","event_type":"click","ts":"${OUTCOME_TS}"}
+JSONL
+```
+
+## 8) Run `recsys-eval` on the logs
+
+Create a dataset config:
+
+```bash
+cat > /tmp/dataset.yaml <<'YAML'
+exposures:
+  type: jsonl
+  path: /tmp/exposures.jsonl
+outcomes:
+  type: jsonl
+  path: /tmp/outcomes.jsonl
+YAML
+```
+
+Create a minimal offline config (slice keys match the service `eval_v1` context keys):
+
+```bash
+cat > /tmp/eval.yaml <<'YAML'
+mode: offline
+offline:
+  metrics:
+    - name: hitrate
+      k: 5
+    - name: precision
+      k: 5
+  slice_keys: ["tenant_id", "surface"]
+  gates: []
+scale:
+  mode: memory
+YAML
+```
+
+Build + run:
+
+```bash
+(cd recsys-eval && make build)
+
+recsys-eval/bin/recsys-eval validate --schema exposure.v1 --input /tmp/exposures.jsonl
+recsys-eval/bin/recsys-eval validate --schema outcome.v1 --input /tmp/outcomes.jsonl
+
+recsys-eval/bin/recsys-eval run \
+  --mode offline \
+  --dataset /tmp/dataset.yaml \
+  --config /tmp/eval.yaml \
+  --output /tmp/recsys_eval_report.md \
+  --output-format markdown
+```
+
+Inspect the report:
+
+```bash
+sed -n '1,80p' /tmp/recsys_eval_report.md
+```
+
+You should see an “Offline Metrics” table with values like:
+
+```text
+| hitrate@5 | 1.000000 |
+| precision@5 | 0.333333 |
+```
+
+## 9) (Optional) Run pipelines once (produces a manifest)
+
+This step proves `recsys-pipelines` can produce artifacts and a manifest from events.
+
+Ensure MinIO is up:
+
+```bash
+curl -fsS http://localhost:9000/minio/health/ready >/dev/null
+```
+
+Build + run one day from the tiny pipelines dataset:
+
+```bash
+(cd recsys-pipelines && make build)
+
+(cd recsys-pipelines && ./bin/recsys-pipelines run \
+  --config configs/env/local.json \
+  --tenant demo \
+  --surface home \
+  --start 2026-01-01 \
+  --end 2026-01-01)
+```
+
+Verify the local manifest exists:
+
+```bash
+cat recsys-pipelines/.out/registry/current/demo/home/manifest.json
+```
+
+Verify artifacts exist in MinIO (paths are under the `recsys/` prefix by default):
+
+```bash
+docker compose run --rm --entrypoint sh minio-init -c \
+  'mc alias set local http://minio:9000 minioadmin minioadmin >/dev/null && \
+   mc ls local/recsys-artifacts/recsys/demo/home/ | head'
+```
+
+## Appendix: success criteria and troubleshooting
+
+### Success criteria (quick checks)
+
+- Service is healthy: `curl -fsS http://localhost:8000/readyz >/dev/null`
+- Tenant exists:
+
+  ```bash
+  docker exec -i recsys-db psql -U recsys-db -d recsys-db -c \"select external_id from tenants;\"
+  ```
+
+- Config and rules exist:
+
+  ```bash
+  curl -fsS http://localhost:8000/v1/admin/tenants/demo/config \\
+    -H 'X-Dev-User-Id: dev-user-1' -H 'X-Dev-Org-Id: demo' -H 'X-Org-Id: demo'
+  curl -fsS http://localhost:8000/v1/admin/tenants/demo/rules \\
+    -H 'X-Dev-User-Id: dev-user-1' -H 'X-Dev-Org-Id: demo' -H 'X-Org-Id: demo'
+  ```
+
+- Exposure log exists: `test -s /tmp/exposures.jsonl`
+- Eval report exists: `test -s /tmp/recsys_eval_report.md`
+
+### Common failures
+
+- `401/403` from admin or recommend endpoints
+  - Check you set `AUTH_*_ROLE=` empty in `api/.env` and recreated the `api` container.
+  - Ensure you send both `X-Dev-Org-Id` and `X-Org-Id` headers.
+- Empty recommendations
+  - Check `item_popularity_daily` has rows for `namespace='home'` and for `day=current_date`.
+- Pipelines cannot connect to MinIO
+  - Ensure `curl -fsS http://localhost:9000/minio/health/ready` succeeds.
+
+## Next: pipelines + artifact/manifest mode (production-like)
+
+- Production-like suite tutorial: [`tutorials/production-like-run.md`](production-like-run.md)
+- Pipelines local quickstart: [`recsys-pipelines/docs/tutorials/local-quickstart.md`](../recsys-pipelines/docs/tutorials/local-quickstart.md)
+- How to operate pipelines: [`how-to/operate-pipelines.md`](../how-to/operate-pipelines.md)
+- Background: [`explanation/data-modes.md`](../explanation/data-modes.md)

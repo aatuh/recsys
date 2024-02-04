@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  title: Recsys Service API
+  title: RecSys Service API
   description: Recommendation service API
   version: "1.0.0"
 servers:
@@ -297,6 +297,13 @@ components:
         instance: { type: string }
         request_id: { type: string }
       required: [type, title, status]
+      example:
+        type: about:blank
+        title: validation failed
+        status: 422
+        detail: surface is required
+        code: VALIDATION_FAILED
+        request_id: a2e38779dfbe/nmiLt982Mq-000004
     LicenseStatusResponse:
       type: object
       properties:
@@ -310,6 +317,14 @@ components:
           type: object
           additionalProperties: { type: integer }
       required: [status, commercial]
+      example:
+        status: valid
+        commercial: false
+        expires_at: "2026-12-31T23:59:59Z"
+        customer: Example Customer
+        entitlements:
+          tenants: 10
+          prod_deployments: 2
     Anchors:
       type: object
       properties:
@@ -437,6 +452,11 @@ components:
         weights: { $ref: "#/components/schemas/Weights" }
         options: { $ref: "#/components/schemas/Options" }
         experiment: { $ref: "#/components/schemas/Experiment" }
+      example:
+        surface: home
+        k: 20
+        user:
+          user_id: u_1
     SimilarRequest:
       type: object
       properties:
@@ -446,6 +466,10 @@ components:
         k: { type: integer }
         constraints: { $ref: "#/components/schemas/Constraints" }
         options: { $ref: "#/components/schemas/Options" }
+      example:
+        surface: pdp
+        item_id: item_1
+        k: 20
     NormalizedRecommendRequest:
       type: object
       properties:
@@ -470,6 +494,23 @@ components:
         warnings:
           type: array
           items: { $ref: "#/components/schemas/Warning" }
+      example:
+        items:
+          - item_id: item_1
+            rank: 1
+            score: 0.12
+          - item_id: item_2
+            rank: 2
+            score: 0.08
+        meta:
+          tenant_id: demo
+          surface: home
+          segment: default
+          algo_version: recsys-algo@local
+          config_version: 'W/"config-etag"'
+          rules_version: 'W/"rules-etag"'
+          request_id: req-1
+        warnings: []
     ValidateResponse:
       type: object
       properties:
@@ -478,18 +519,47 @@ components:
           type: array
           items: { $ref: "#/components/schemas/Warning" }
         meta: { $ref: "#/components/schemas/ResponseMeta" }
+      example:
+        normalized_request:
+          surface: home
+          segment: default
+          k: 20
+          user:
+            user_id: u_1
+        warnings: []
+        meta:
+          tenant_id: demo
+          surface: home
+          segment: default
+          request_id: req-1
     TenantConfigResponse:
       type: object
       properties:
         tenant_id: { type: string }
         config_version: { type: string }
-        config: { type: object, additionalProperties: true }
+        config: { $ref: "#/components/schemas/AdminConfigPayload" }
+      example:
+        tenant_id: demo
+        config_version: 'W/"config-etag"'
+        config:
+          weights:
+            pop: 0.7
+            cooc: 0.3
     TenantRulesResponse:
       type: object
       properties:
         tenant_id: { type: string }
         rules_version: { type: string }
-        rules: { type: object, additionalProperties: true }
+        rules: { $ref: "#/components/schemas/AdminRulesPayload" }
+      example:
+        tenant_id: demo
+        rules_version: 'W/"rules-etag"'
+        rules:
+          - action: pin
+            target_type: item
+            item_ids: ["item_1"]
+            surface: home
+            priority: 10
     CacheInvalidateRequest:
       type: object
       properties:
@@ -497,6 +567,9 @@ components:
           type: array
           items: { type: string }
         surface: { type: string }
+      example:
+        targets: ["config", "rules"]
+        surface: home
     CacheInvalidateResponse:
       type: object
       properties:
@@ -509,6 +582,14 @@ components:
         invalidated:
           type: object
           additionalProperties: { type: integer }
+      example:
+        tenant_id: demo
+        targets: ["config", "rules"]
+        surface: home
+        status: ok
+        invalidated:
+          config: 1
+          rules: 1
     AuditLogEntry:
       type: object
       properties:
@@ -535,13 +616,35 @@ components:
           items: { $ref: "#/components/schemas/AuditLogEntry" }
         next_before: { type: string, format: date-time }
         next_before_id: { type: integer, format: int64 }
+      example:
+        tenant_id: demo
+        entries:
+          - id: 123
+            occurred_at: "2026-02-05T10:00:00Z"
+            tenant_id: demo
+            actor_sub: user:demo-admin
+            actor_type: user
+            action: config.update
+            entity_type: tenant_config
+            entity_id: demo
+            request_id: req-1
     AdminConfigPayload:
       type: object
       additionalProperties: true
       description: Tenant config payload (free-form). See reference/api/admin.md.
+      example:
+        weights:
+          pop: 0.7
+          cooc: 0.3
     AdminRulesPayload:
       oneOf:
         - type: array
           items: { type: object }
         - type: object
       description: Tenant rules payload. Accepts array or object envelope.
+      example:
+        - action: pin
+          target_type: item
+          item_ids: ["item_1", "item_2"]
+          surface: home
+          priority: 10

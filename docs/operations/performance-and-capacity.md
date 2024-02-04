@@ -3,6 +3,17 @@
 This guide describes how to run reproducible load tests against recsys-service
 and capture sizing data for production planning.
 
+## Who this is for
+
+- Lead developers and SREs sizing `recsys-service` for production
+- Engineers running load tests before enabling new signals or data modes
+
+## What you will get
+
+- A runnable load-test harness
+- The parameters that matter for repeatability
+- A table format for recording sizing data over time
+
 ## 1) Preflight checklist
 
 - Postgres is seeded with a tenant, config, and signal data.
@@ -70,3 +81,8 @@ Re-run the load test after:
 - algorithm changes
 - cache or artifact mode changes
 - infrastructure changes
+
+## Read next
+
+- Production readiness checklist: [`operations/production-readiness-checklist.md`](production-readiness-checklist.md)
+- Backpressure and limits: [`reference/config/recsys-service.md`](../reference/config/recsys-service.md)

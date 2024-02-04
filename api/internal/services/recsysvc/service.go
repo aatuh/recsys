@@ -236,6 +236,18 @@ func applyDeterministicOrdering(items []Item) {
 		return
 	}
 	sort.SliceStable(items, func(i, j int) bool {
+		if items[i].PinRank > 0 || items[j].PinRank > 0 {
+			if items[i].PinRank == 0 {
+				return false
+			}
+			if items[j].PinRank == 0 {
+				return true
+			}
+			if items[i].PinRank != items[j].PinRank {
+				return items[i].PinRank < items[j].PinRank
+			}
+			return items[i].ItemID < items[j].ItemID
+		}
 		if items[i].Score == items[j].Score {
 			return items[i].ItemID < items[j].ItemID
 		}

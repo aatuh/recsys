@@ -338,6 +338,7 @@ func (e *AlgoEngine) applyPinnedOverrides(req RecommendRequest, items []Item, tr
 	pinned := make([]Item, 0, len(trace.RulePinned))
 	pinnedSet := make(map[string]struct{}, len(trace.RulePinned))
 	injected := 0
+	pinOrder := 0
 	for _, pin := range trace.RulePinned {
 		id := strings.TrimSpace(pin.ItemID)
 		if id == "" {
@@ -348,13 +349,17 @@ func (e *AlgoEngine) applyPinnedOverrides(req RecommendRequest, items []Item, tr
 		}
 		pinnedSet[id] = struct{}{}
 		if item, ok := itemByID[id]; ok {
+			pinOrder++
+			item.PinRank = pinOrder
 			pinned = append(pinned, item)
 			continue
 		}
 		injected++
+		pinOrder++
 		pinned = append(pinned, Item{
-			ItemID: id,
-			Score:  pin.Score,
+			ItemID:  id,
+			Score:   pin.Score,
+			PinRank: pinOrder,
 		})
 	}
 	if len(pinned) == 0 {

@@ -6,6 +6,9 @@ This project supports **self-serve adoption**. We keep support lightweight and m
 
 - GitHub Issues for bugs and feature requests
 - Discussions for questions
+- RecSys Copilot (Custom GPT) for docs Q&A: [`chatgpt.com/g/.../recsys-copilot`](https://chatgpt.com/g/g-68c82a5c7704819185d0ff929b6fff11-recsys-copilot)
+
+Do not paste secrets or customer data into external tools.
 
 We do not guarantee response times for free support.
 

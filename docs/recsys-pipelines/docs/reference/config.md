@@ -31,7 +31,7 @@ Top-level fields:
     "use_ssl": false
   }
 }
-```json
+```
 
 ## db
 
@@ -41,7 +41,7 @@ Top-level fields:
   "auto_create_tenant": true,
   "statement_timeout_s": 5
 }
-```json
+```
 
 ## limits
 

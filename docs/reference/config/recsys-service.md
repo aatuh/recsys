@@ -1,6 +1,6 @@
 # recsys-service configuration
 
-Canonical env var list: `recsys/api/.env.example`.
+Canonical env var list: `api/.env.example`.
 
 - db.dsn: Postgres DSN
 - auth.required: enable auth on protected routes

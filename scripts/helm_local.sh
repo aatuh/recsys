@@ -12,9 +12,15 @@ VALUES_FILE="${CHART_DIR}/values.local.yaml"
 NAMESPACE="${NAMESPACE:-recsys}"
 RELEASE="${RELEASE:-recsys}"
 IMAGE_REPO="${IMAGE_REPO:-recsys-svc}"
-IMAGE_TAG="${IMAGE_TAG:-local}"
-DOCKERFILE="${DOCKERFILE:-${ROOT}/api/Dockerfile}"
-CONTEXT_DIR="${CONTEXT_DIR:-${ROOT}/api}"
+if [ -z "${IMAGE_TAG:-}" ]; then
+  if git -C "${ROOT}" rev-parse --short HEAD >/dev/null 2>&1; then
+    IMAGE_TAG="local-$(git -C "${ROOT}" rev-parse --short HEAD)"
+  else
+    IMAGE_TAG="local-$(date +%Y%m%d%H%M%S)"
+  fi
+fi
+DOCKERFILE="${DOCKERFILE:-${ROOT}/api/Dockerfile.helm}"
+CONTEXT_DIR="${CONTEXT_DIR:-${ROOT}}"
 
 usage() {
   echo "Usage: $(basename "$0") [--kind|--minikube] [--dev]" >&2
@@ -47,6 +53,7 @@ case "${mode}" in
     ;;
   --dev)
     DOCKERFILE="${ROOT}/api/Dockerfile.dev"
+    CONTEXT_DIR="${ROOT}/api"
     CLUSTER_MODE="$(pick_cluster)"
     ;;
   "")
@@ -87,6 +94,7 @@ helm upgrade --install "${RELEASE}" "${CHART_DIR}" \
   --set api.image.tag="${IMAGE_TAG}" \
   --set api.image.pullPolicy=IfNotPresent
 
+kubectl rollout restart "deploy/${RELEASE}-api" -n "${NAMESPACE}" >/dev/null
 kubectl rollout status "deploy/${RELEASE}-api" -n "${NAMESPACE}"
 
 echo "API service is up. Port-forward with:"

@@ -1,11 +1,11 @@
-# Order Form (Template) — Recsys Commercial License
+# Order Form (Template) — RecSys Commercial License
 
 **Order Form ID:** `OF-YYYY-NNN`  
 **Effective Date:** `YYYY-MM-DD`  
 **Vendor:** `VENDOR_LEGAL_NAME` ("Vendor")  
 **Customer:** `CUSTOMER_LEGAL_NAME` ("Customer")
 
-This Order Form is governed by and incorporates the **Commercial License Agreement (Recsys) v`version`**
+This Order Form is governed by and incorporates the **Commercial License Agreement (RecSys) v`version`**
 ("Agreement"). Capitalized terms not defined here have the meaning given in the Agreement.
 
 ---
@@ -14,7 +14,7 @@ This Order Form is governed by and incorporates the **Commercial License Agreeme
 
 ### 1.1 Product
 
-- Product: **Recsys Commercial License**
+- Product: **RecSys Commercial License**
 - Plan: ☐ Starter ☐ Growth ☐ Enterprise (custom)
 
 ### 1.2 Term

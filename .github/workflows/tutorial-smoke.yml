@@ -1,0 +1,44 @@
+name: tutorial-smoke
+
+on:
+  pull_request:
+    paths:
+      - "docs/tutorials/**"
+      - "api/**"
+      - "recsys-eval/**"
+      - "docker-compose.yml"
+      - "Makefile"
+      - "scripts/tutorial_smoke_test.sh"
+      - ".github/workflows/tutorial-smoke.yml"
+  push:
+    branches: [master]
+    paths:
+      - "docs/tutorials/**"
+      - "api/**"
+      - "recsys-eval/**"
+      - "docker-compose.yml"
+      - "Makefile"
+      - "scripts/tutorial_smoke_test.sh"
+      - ".github/workflows/tutorial-smoke.yml"
+  schedule:
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  local-end-to-end:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: recsys-eval/go.mod
+          cache: true
+
+      - name: Run tutorial smoke test
+        run: bash scripts/tutorial_smoke_test.sh

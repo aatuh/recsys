@@ -25,7 +25,7 @@ rollback, but the **service must be configured to read artifacts**.
 Enable artifact mode:
 
 - `RECSYS_ARTIFACT_MODE_ENABLED=true`
-- `RECSYS_ARTIFACT_MANIFEST_TEMPLATE` (e.g. `s3://recsys/registry/current/{tenant}/{surface}/manifest.json`
+- `RECSYS_ARTIFACT_MANIFEST_TEMPLATE` (e.g. `s3://recsys/registry/current/{tenant}/{surface}/manifest.json`,
 
   or `file:///data/registry/current/{tenant}/{surface}/manifest.json`)
 

@@ -57,6 +57,9 @@ func TestApplyPinnedOverridesInjectsMissing(t *testing.T) {
 	if got[0].ItemID != "item_1" || got[1].ItemID != "item_2" || got[2].ItemID != "item_3" {
 		t.Fatalf("unexpected pinned order: %#v", got)
 	}
+	if got[0].PinRank != 1 || got[1].PinRank != 2 || got[2].PinRank != 0 {
+		t.Fatalf("unexpected pin ranks: %#v", got)
+	}
 	if len(warnings) != 1 {
 		t.Fatalf("expected 1 warning, got %d", len(warnings))
 	}

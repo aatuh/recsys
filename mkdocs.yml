@@ -1,8 +1,9 @@
 site_name: RecSys
 repo_url: https://github.com/aatuh/recsys
+site_url: https://recsys.app
 
 docs_dir: docs
-site_dir: site
+site_dir: .site
 use_directory_urls: true  # /pricing/ instead of /pricing.html
 
 theme:
@@ -13,6 +14,10 @@ theme:
     - navigation.top
     - search.suggest
     - content.code.copy
+
+extra:
+  version:
+    provider: mike
 
 plugins:
   - search
@@ -46,7 +51,19 @@ extra_javascript:
 
 nav:
   - Home: index.md
-  - Start here: start-here/index.md
+  - What's new: whats-new/index.md
+  - Start here:
+      - Start here (overview): start-here/index.md
+      - Docs map: start-here/docs-map.md
+      - Stakeholder overview: start-here/what-is-recsys.md
+      - Stakeholder FAQ: start-here/faq.md
+      - Pilot plan (4–6 weeks): start-here/pilot-plan.md
+      - Responsibilities (RACI): start-here/responsibilities.md
+      - Customer onboarding checklist: start-here/customer-onboarding-checklist.md
+      - Security, privacy, compliance: start-here/security-privacy-compliance.md
+      - Suite context diagram: start-here/diagrams/suite-context.md
+      - Repo layout and module paths: start-here/repo-layout.md
+      - Known limitations: start-here/known-limitations.md
 
   - Licensing & Pricing:
       - Licensing: licensing/index.md
@@ -57,35 +74,39 @@ nav:
       - Order Form: licensing/order_form.md
 
   - RecSys:
-      - Start here:
-          - Start here (overview): start-here/index.md
-          - Suite context diagram: start-here/diagrams/suite-context.md
-          - Local end-to-end: tutorials/local-end-to-end.md
-          - Deploy with Helm: how-to/deploy-helm.md
-          - Run eval and ship: how-to/run-eval-and-ship.md
-          - Integrate service: how-to/integrate-recsys-service.md
-          - Operate pipelines: how-to/operate-pipelines.md
-
       - Explanation:
           - Suite architecture: explanation/suite-architecture.md
           - Candidate vs ranking: explanation/candidate-vs-ranking.md
+          - Cold start strategies: explanation/cold-start-strategies.md
+          - Experimentation model: explanation/experimentation-model.md
           - Data modes: explanation/data-modes.md
+          - Artifacts & manifest lifecycle: explanation/artifacts-and-manifest-lifecycle.md
+          - Pipelines operational invariants: explanation/pipelines-operational-invariants.md
           - Exposure logging & attribution: explanation/exposure-logging-and-attribution.md
           - Surface namespaces: explanation/surface-namespaces.md
 
       - Tutorials:
           - Local end-to-end: tutorials/local-end-to-end.md
+          - Minimal pilot (DB-only): tutorials/minimal-pilot-db-only.md
+          - Production-like run: tutorials/production-like-run.md
           - Tiny dataset (README): tutorials/datasets/tiny/README.md
 
       - How-to:
           - Deploy with Helm: how-to/deploy-helm.md
           - Integrate service: how-to/integrate-recsys-service.md
+          - Integration cookbooks:
+              - Overview: how-to/integration-cookbooks/index.md
+              - Webshop: how-to/integration-cookbooks/webshop.md
+              - Content feed: how-to/integration-cookbooks/content-feed.md
+              - Event bus: how-to/integration-cookbooks/event-bus.md
           - Operate pipelines: how-to/operate-pipelines.md
           - Run eval and ship: how-to/run-eval-and-ship.md
 
       - Reference:
           - API:
               - API Reference: reference/api/api-reference.md
+              - Examples: reference/api/examples.md
+              - Errors & troubleshooting: reference/api/errors.md
               - Admin & bootstrap: reference/api/admin.md
           - CLI:
               - Overview: reference/cli/index.md
@@ -99,6 +120,7 @@ nav:
           - Data contracts:
               - Overview: reference/data-contracts/index.md
               - Eval events: reference/data-contracts/eval-events.md
+              - Event join logic: reference/data-contracts/join-logic.md
               - Field catalog: reference/data-contracts/field-catalog.md
           - Database:
               - Overview: reference/database/index.md
@@ -108,8 +130,11 @@ nav:
 
       - Operations:
           - Performance & capacity: operations/performance-and-capacity.md
+          - Production readiness checklist: operations/production-readiness-checklist.md
           - Runbooks:
               - Empty recs: operations/runbooks/empty-recs.md
+              - Stale manifest: operations/runbooks/stale-manifest.md
+              - Database migration issues: operations/runbooks/db-migration-issues.md
               - Rollback config rules: operations/runbooks/rollback-config-rules.md
               - Service not ready: operations/runbooks/service-not-ready.md
 
@@ -143,6 +168,7 @@ nav:
       - Index: recsys-pipelines/docs/index.md
       - RecSys Pipelines Overview: recsys-pipelines/overview.md
       - Start here: recsys-pipelines/docs/start-here.md
+      - Glossary: recsys-pipelines/docs/glossary.md
       - Learning paths:
           - Engineer: recsys-pipelines/docs/learning-paths/engineer.md
           - Data engineer: recsys-pipelines/docs/learning-paths/data-engineer.md
@@ -152,7 +178,9 @@ nav:
           - Local quickstart: recsys-pipelines/docs/tutorials/local-quickstart.md
           - Job-per-container mode: recsys-pipelines/docs/tutorials/job-mode.md
       - How-to:
+          - Run incremental: recsys-pipelines/docs/how-to/run-incremental.md
           - Run a backfill: recsys-pipelines/docs/how-to/run-backfill.md
+          - Schedule pipelines: recsys-pipelines/docs/how-to/schedule-pipelines.md
           - Debug failures: recsys-pipelines/docs/how-to/debug-failures.md
           - Roll back the manifest: recsys-pipelines/docs/how-to/rollback-manifest.md
           - Add artifact type: recsys-pipelines/docs/how-to/add-artifact-type.md
@@ -189,6 +217,8 @@ nav:
   - Project:
       - Index: project/index.md
       - Docs style guide: project/docs-style.md
+      - Docs versioning: project/docs-versioning.md
+      - Docs per release: project/docs-per-release.md
       - Glossary: project/glossary.md
       - Code of Conduct: project/code_of_conduct.md
       - Contributing: project/contributing.md

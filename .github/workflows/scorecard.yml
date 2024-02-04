@@ -8,13 +8,15 @@ on:
     branches: [master]
 
 permissions:
-  security-events: write
-  id-token: write
   contents: read
 
 jobs:
   analysis:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5

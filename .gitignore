@@ -7,8 +7,7 @@
 !**/.golangci.yml
 !.reuse/
 !.markdownlint-cli2.jsonc
+!.codespellrc.ini
 
 **/tmp/
 **/bin/
-
-site/
