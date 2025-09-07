@@ -1,0 +1,13 @@
+# Air watches and builds inside the api/ folder
+root = "."
+tmp_dir = "tmp"
+
+[build]
+cmd = "go build -o ./tmp/server ./cmd/api"
+bin = "tmp/server"
+include_ext = ["go"]
+exclude_dir = ["tmp","vendor","docs"]
+delay = 1000
+
+[log]
+time = true

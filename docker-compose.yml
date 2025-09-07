@@ -1,0 +1,71 @@
+services:
+  db:
+    image: postgres:16-alpine
+    ports: ["${POSTGRES_PORT:-5432}:5432"]
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-recsys}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-recsys}
+      POSTGRES_DB: ${POSTGRES_DB:-recsys}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-recsys} -d ${POSTGRES_DB:-recsys}",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    volumes: ["db_data:/var/lib/postgresql/data"]
+
+  api:
+    container_name: recsys-api
+    build:
+      context: ./api
+      dockerfile: ./Dockerfile.dev
+    depends_on:
+      db: { condition: service_healthy }
+    env_file:
+      - ./api/.env
+    environment:
+      - API_PORT=${API_PORT}
+    ports: ["${API_PORT}:8000"]
+    volumes:
+      - ./api:/app
+      - air_cache:/go/pkg/mod
+
+  atlas:
+    image: arigaio/atlas:latest
+    depends_on:
+      db: { condition: service_healthy }
+    env_file:
+      - ./api/.env
+    working_dir: /src/api
+    volumes: [".:/src"]
+    command: migrate apply --env dev
+
+  adminer:
+    image: adminer:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+
+  proxy:
+    build: ./proxy
+    env_file: .env
+    volumes:
+      - mkcert_ca:/root/.local/share/mkcert
+      - caddy_certs:/certs
+    ports:
+      - "443:443"
+      - "80:80"
+    depends_on:
+      - api
+
+volumes:
+  db_data:
+  air_cache:
+  mkcert_ca:
+  caddy_certs:

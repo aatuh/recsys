@@ -1,0 +1,15 @@
+# Build artifacts
+tmp
+bin
+dist
+vendor
+node_modules
+swagger
+*.log
+*.swp
+*.swo
+*.tmp
+.idea
+.vscode
+.git
+.DS_Store
