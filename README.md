@@ -17,7 +17,7 @@ users, items, and events. The service returns top-K recommendations and
   push items up.
 - **"People who engaged with X also like Y"** using co-visitation.
 - **"Show me items like this"** using semantic similarity (embeddings).
-- **Gentle personalization** (optional) from a user’s recent tags.
+- **Light personalization** (optional) from a user’s recent tags.
 - **Diversity & caps** (optional) to avoid showing too many items from
   one brand/category.
 - **Blended scoring** decides how high each candidate should rank, and the
@@ -445,7 +445,7 @@ weights intuitive and the blend stable. Channels with no signal produce
 - Raise **beta** if you want more "also viewed/bought together."
 - Raise **gamma** for cold start and meaning-based tilt.
 - `MMR_LAMBDA=0.6` is a reasonable diversity starting point.
-- Keep personalization gentle: `PROFILE_BOOST` around `0.1–0.3`.
+- Keep light personalization gentle: `PROFILE_BOOST` around `0.1–0.3`.
 - Caps (`BRAND_CAP`, `CATEGORY_CAP`) enforce catalog variety.
 
 ---
