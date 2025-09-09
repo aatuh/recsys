@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: dev down logs swag migrate-apply migrate-status tidy test
+.PHONY: dev down logs swag migrate-apply migrate-status migrate-clean tidy test
 
 help:
 	@echo "Usage: make <target>"
@@ -12,6 +12,7 @@ help:
 	@echo "  migrate-diff    - Generate the migration files"
 	@echo "  migrate-apply   - Apply the migration files"
 	@echo "  migrate-status  - Show the status of the migrations"
+	@echo "  migrate-clean   - Clean database and remove Atlas revision tables"
 	@echo "  tidy            - Tidy the go modules"
 	@echo "  test            - Run the tests"
 
@@ -42,6 +43,10 @@ migrate-apply:
 migrate-status:
 	docker compose run --rm atlas \
 	  migrate status --env dev
+
+migrate-clean:
+	docker compose exec db psql -U recsys -d recsys -c "DROP TABLE IF EXISTS atlas_schema_revisions CASCADE;"
+	docker compose exec db psql -U recsys -d recsys -c "DROP SCHEMA IF EXISTS atlas CASCADE;"
 
 tidy:
 	docker compose exec api go mod tidy

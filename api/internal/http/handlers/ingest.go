@@ -12,9 +12,27 @@ import (
 	"github.com/google/uuid"
 )
 
+// Keep in sync with store.EmbeddingDims.
+const embeddingDims = 384
+
 type Handler struct {
-	Store      *store.Store
-	DefaultOrg uuid.UUID
+	Store                *store.Store
+	DefaultOrg           uuid.UUID
+	HalfLifeDays         float64
+	PopularityWindowDays float64
+	CoVisWindowDays      float64
+	PopularityFanout     int
+	MMRLambda            float64
+	BrandCap             int
+	CategoryCap          int
+	RuleExcludePurchased bool
+	PurchasedWindowDays  float64
+	ProfileWindowDays    float64 // lookback for building profile; <=0 disables windowing
+	ProfileBoost         float64 // multiplier in [0, +inf). 0 disables personalization
+	ProfileTopNTags      int     // limit of profile tags considered
+	BlendAlpha           float64
+	BlendBeta            float64
+	BlendGamma           float64
 }
 
 // ItemsUpsert godoc
@@ -39,12 +57,35 @@ func (h *Handler) ItemsUpsert(w http.ResponseWriter, r *http.Request) {
 			orgID = id
 		}
 	}
+
 	batch := make([]store.ItemUpsert, 0, len(req.Items))
 	for _, it := range req.Items {
+		// Validate embedding length if provided.
+		var emb *[]float64
+		if len(it.Embedding) > 0 {
+			if len(it.Embedding) != embeddingDims {
+				common.BadRequest(
+					w, r,
+					"embedding_dim_mismatch",
+					"embedding length must be 384",
+					map[string]any{"got": len(it.Embedding)},
+				)
+				return
+			}
+			tmp := make([]float64, len(it.Embedding))
+			copy(tmp, it.Embedding)
+			emb = &tmp
+		}
 		batch = append(batch, store.ItemUpsert{
-			ItemID: it.ItemID, Available: it.Available, Price: it.Price, Tags: it.Tags, Props: it.Props,
+			ItemID:    it.ItemID,
+			Available: it.Available,
+			Price:     it.Price,
+			Tags:      it.Tags,
+			Props:     it.Props,
+			Embedding: emb,
 		})
 	}
+
 	if err := h.Store.UpsertItems(r.Context(), orgID, req.Namespace, batch); err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)
 		return
@@ -121,8 +162,7 @@ func (h *Handler) EventsBatch(w http.ResponseWriter, r *http.Request) {
 			t = pt
 		}
 		batch = append(batch, store.EventInsert{
-			UserID: e.UserID, ItemID: e.ItemID, Type: e.Type, Value: e.Value, TS: t, Meta: e.Meta,
-		})
+			UserID: e.UserID, ItemID: e.ItemID, Type: e.Type, Value: e.Value, TS: t, Meta: e.Meta, SourceEventID: e.SourceEventID})
 	}
 	if err := h.Store.InsertEvents(r.Context(), orgID, req.Namespace, batch); err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)

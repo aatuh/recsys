@@ -1,3 +1,4 @@
 # Dotfiles
 **/.*
 !.gitignore
+!.env.example

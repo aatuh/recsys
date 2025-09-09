@@ -25,7 +25,7 @@ import (
 
 // @title        Recsys API
 // @version      0.0.1
-// @description  Domain-agnostic recommendation service (backend boilerplate).
+// @description  Domain-agnostic recommendation service.
 // @BasePath     /
 
 // @host         localhost:8000
@@ -61,7 +61,6 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID, middleware.RealIP)
-
 	r.Use(httpmiddleware.RequestLogger(logger))
 	r.Use(httpmiddleware.JSONRecovererWithLogger(logger))
 	r.Use(httpmiddleware.ErrorLogger(logger))
@@ -87,12 +86,36 @@ func main() {
 	})
 
 	// v1 endpoints
-	hs := &handlers.Handler{Store: store.New(pool), DefaultOrg: cfg.DefaultOrgID}
+	st := store.New(pool)
+	if err := st.EnsureEventTypeDefaults(ctx); err != nil {
+		logger.Fatal("failed to ensure event type defaults", zap.Error(err))
+	}
+	hs := &handlers.Handler{
+		Store:                st,
+		DefaultOrg:           cfg.DefaultOrgID,
+		HalfLifeDays:         cfg.HalfLifeDays,
+		PopularityWindowDays: cfg.PopularityWindowDays,
+		CoVisWindowDays:      cfg.CoVisWindowDays,
+		PopularityFanout:     cfg.PopularityFanout,
+		MMRLambda:            cfg.MMRLambda,
+		BrandCap:             cfg.BrandCap,
+		CategoryCap:          cfg.CategoryCap,
+		RuleExcludePurchased: cfg.RuleExcludePurchased,
+		PurchasedWindowDays:  cfg.PurchasedWindowDays,
+		ProfileWindowDays:    cfg.ProfileWindowDays,
+		ProfileBoost:         cfg.ProfileBoost,
+		ProfileTopNTags:      cfg.ProfileTopNTags,
+		BlendAlpha:           cfg.BlendAlpha,
+		BlendBeta:            cfg.BlendBeta,
+		BlendGamma:           cfg.BlendGamma,
+	}
 	r.Post("/v1/items:upsert", hs.ItemsUpsert)
 	r.Post("/v1/users:upsert", hs.UsersUpsert)
 	r.Post("/v1/events:batch", hs.EventsBatch)
 	r.Post("/v1/recommendations", hs.Recommend)
 	r.Get("/v1/items/{item_id}/similar", hs.ItemSimilar)
+	r.Post("/v1/event-types:upsert", hs.EventTypesUpsert)
+	r.Get("/v1/event-types", hs.EventTypesList)
 
 	srv := &http.Server{
 		Addr:              ":" + serverCfg.Port,

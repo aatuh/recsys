@@ -1,7 +1,6 @@
 tmp/
 bin/
 dist/
-swagger/
 *.log
 
 .env

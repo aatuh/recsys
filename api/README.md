@@ -1,34 +1,36 @@
-# Recsys Backend (Dev Boilerplate)
+# README
 
-Go API + Postgres (Docker Compose) with hot reloading via Air, and Atlas migrations.
+An HTTP API for ingesting activity and asking for recommendations.
 
-## Quickstart
+## What it does
 
-```bash
-cp .env.example .env
-make dev
-# in another shell:
-make migrate-apply
-# open http://localhost:8000/health  -> {"status":"ok"}
-# optional (generate Swagger UI):
-make swag
-# open http://localhost:8000/swagger/index.html
-```
+- **Ingest** items, users, events using **opaque IDs** (you keep the mapping).
+- **Recommend** top‑K items using **time‑decayed popularity** (v1).
+- **Similar items** via **co‑visitation**.
+- **Per‑tenant config** for event types, weights, and optional per‑type
+  half‑life.
 
-## Commands
+## Endpoints (core)
 
-- `make dev` — start Postgres and API with hot reload.
-- `make migrate-apply` — apply SQL migrations using Atlas.
-- `make swag` — generate Swagger docs from annotations.
-- `make down` — stop and remove containers and volumes.
+- `POST /v1/items:upsert` - batch create/update items
+- `POST /v1/users:upsert` - batch create/update users
+- `POST /v1/events:batch` - batch user→item events
+- `POST /v1/recommendations` - top‑K by popularity (v1)
+- `GET  /v1/items/{item_id}/similar?namespace=…&k=…` - co‑vis neighbors
+- `POST /v1/event-types:upsert` / `GET /v1/event-types` - tenant overrides
 
-## Endpoints (stubs)
+Open **Swagger** at **`/docs`** to inspect schemas and try requests.
 
-- `GET /health` — liveness check.
-- `POST /v1/items:upsert`
-- `POST /v1/users:upsert`
-- `POST /v1/events:batch`
-- `POST /v1/recommendations`
-- `GET  /v1/items/{item_id}/similar`
+## How it works (ranking v1)
 
-Auth, RLS, and full ranking come later.
+- **Popularity**: sum of (`event_weight` × half‑life decay × optional `value`)
+  per item.
+  - Weights & (optional) per‑type half‑life come from tenant overrides, falling
+    back to global defaults.
+- **Co‑visitation**: count recent co‑occurring items by the same users.
+
+## Development
+
+- See the **Makefile** in the repo root for dev/test/migration commands
+  (e.g., `make dev`, `make test`).  
+- Hot reload in dev; Swagger is generated from annotations.

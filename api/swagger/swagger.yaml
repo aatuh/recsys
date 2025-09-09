@@ -1,0 +1,401 @@
+basePath: /
+definitions:
+  common.APIError:
+    properties:
+      correlation_id:
+        type: string
+      details:
+        additionalProperties: {}
+        type: object
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+  types.Ack:
+    properties:
+      status:
+        type: string
+    type: object
+  types.Event:
+    properties:
+      item_id:
+        example: i_123
+        type: string
+      meta: {}
+      source_event_id:
+        type: string
+      ts:
+        example: "2025-09-07T12:34:56Z"
+        type: string
+      type:
+        description: 0=view,1=click,2=add,3=purchase,4=custom
+        example: 0
+        type: integer
+      user_id:
+        example: u_123
+        type: string
+      value:
+        example: 1
+        type: number
+    type: object
+  types.EventTypeConfig:
+    properties:
+      half_life_days:
+        type: number
+      is_active:
+        type: boolean
+      name:
+        type: string
+      type:
+        type: integer
+      weight:
+        type: number
+    type: object
+  types.EventTypeConfigUpsertRequest:
+    properties:
+      namespace:
+        type: string
+      types:
+        items:
+          $ref: '#/definitions/types.EventTypeConfig'
+        type: array
+    type: object
+  types.EventTypeConfigUpsertResponse:
+    properties:
+      half_life_days:
+        type: number
+      is_active:
+        type: boolean
+      name:
+        type: string
+      source:
+        description: '"tenant" or "default"'
+        type: string
+      type:
+        type: integer
+      weight:
+        type: number
+    type: object
+  types.EventsBatchRequest:
+    properties:
+      events:
+        items:
+          $ref: '#/definitions/types.Event'
+        type: array
+      namespace:
+        example: default
+        type: string
+    type: object
+  types.Item:
+    properties:
+      available:
+        example: true
+        type: boolean
+      embedding:
+        items:
+          type: number
+        type: array
+      item_id:
+        example: i_123
+        type: string
+      price:
+        example: 19.9
+        type: number
+      props: {}
+      tags:
+        items:
+          type: string
+        type: array
+    type: object
+  types.ItemsUpsertRequest:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/types.Item'
+        type: array
+      namespace:
+        example: default
+        type: string
+    type: object
+  types.RecommendBlend:
+    properties:
+      als:
+        example: 0
+        type: number
+      cooc:
+        example: 0.7
+        type: number
+      pop:
+        example: 0.3
+        type: number
+    type: object
+  types.RecommendConstraints:
+    properties:
+      created_after:
+        description: Optional ISO8601 timestamp; only consider events on/after this
+          instant.
+        example: "2025-06-01T00:00:00Z"
+        type: string
+      exclude_item_ids:
+        description: Exclude these item IDs from results.
+        items:
+          type: string
+        type: array
+      include_tags_any:
+        description: Match if item.tags overlaps these (any). Empty/omitted = no tag
+          filter.
+        items:
+          type: string
+        type: array
+      price_between:
+        description: 'Optional price bounds: [min, max]. Either end may be omitted.'
+        items:
+          type: number
+        type: array
+    type: object
+  types.RecommendRequest:
+    properties:
+      blend:
+        $ref: '#/definitions/types.RecommendBlend'
+      constraints:
+        $ref: '#/definitions/types.RecommendConstraints'
+      include_reasons:
+        example: true
+        type: boolean
+      k:
+        example: 20
+        type: integer
+      namespace:
+        example: default
+        type: string
+      user_id:
+        example: u_123
+        type: string
+    type: object
+  types.RecommendResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/types.ScoredItem'
+        type: array
+      model_version:
+        example: pop_2025-09-07_01
+        type: string
+    type: object
+  types.ScoredItem:
+    properties:
+      item_id:
+        example: i_101
+        type: string
+      reasons:
+        items:
+          type: string
+        type: array
+      score:
+        example: 0.87
+        type: number
+    type: object
+  types.User:
+    properties:
+      traits: {}
+      user_id:
+        example: u_123
+        type: string
+    type: object
+  types.UsersUpsertRequest:
+    properties:
+      namespace:
+        example: default
+        type: string
+      users:
+        items:
+          $ref: '#/definitions/types.User'
+        type: array
+    type: object
+host: localhost:8000
+info:
+  contact: {}
+  description: Domain-agnostic recommendation service.
+  title: Recsys API
+  version: 0.0.1
+paths:
+  /v1/event-types:
+    get:
+      parameters:
+      - description: Namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.EventTypeConfigUpsertResponse'
+            type: array
+      summary: List effective event-type config
+      tags:
+      - config
+  /v1/event-types:upsert:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Event types
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.EventTypeConfigUpsertRequest'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/types.Ack'
+      summary: Upsert tenant event-type config
+      tags:
+      - config
+  /v1/events:batch:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Events batch
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.EventsBatchRequest'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/types.Ack'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.APIError'
+      summary: Ingest events (batch)
+      tags:
+      - ingestion
+  /v1/items/{item_id}/similar:
+    get:
+      parameters:
+      - description: Item ID
+        in: path
+        name: item_id
+        required: true
+        type: string
+      - default: default
+        description: Namespace
+        in: query
+        name: namespace
+        type: string
+      - default: 20
+        description: Top-K
+        in: query
+        name: k
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.ScoredItem'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.APIError'
+      summary: Get similar items
+      tags:
+      - ranking
+  /v1/items:upsert:
+    post:
+      consumes:
+      - application/json
+      description: Create or update items by opaque IDs.
+      parameters:
+      - description: Items upsert
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.ItemsUpsertRequest'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/types.Ack'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.APIError'
+      summary: Upsert items (batch)
+      tags:
+      - ingestion
+  /v1/recommendations:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Recommend request
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.RecommendRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.RecommendResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.APIError'
+      summary: Get recommendations for a user
+      tags:
+      - ranking
+  /v1/users:upsert:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Users upsert
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.UsersUpsertRequest'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/types.Ack'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.APIError'
+      summary: Upsert users (batch)
+      tags:
+      - ingestion
+schemes:
+- https
+swagger: "2.0"

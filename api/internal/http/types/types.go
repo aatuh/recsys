@@ -5,11 +5,12 @@ type Ack struct {
 }
 
 type Item struct {
-	ItemID    string   `json:"item_id" example:"i_123"`
-	Available bool     `json:"available" example:"true"`
-	Price     *float64 `json:"price,omitempty" example:"19.90"`
-	Tags      []string `json:"tags,omitempty"`
-	Props     any      `json:"props,omitempty"`
+	ItemID    string    `json:"item_id" example:"i_123"`
+	Available bool      `json:"available" example:"true"`
+	Price     *float64  `json:"price,omitempty" example:"19.90"`
+	Tags      []string  `json:"tags,omitempty"`
+	Props     any       `json:"props,omitempty"`
+	Embedding []float64 `json:"embedding,omitempty"`
 }
 
 type User struct {
@@ -17,13 +18,16 @@ type User struct {
 	Traits any    `json:"traits,omitempty"`
 }
 
+// Optional idempotency key from the client. If set, duplicates are ignored.
+// Must be unique per (org_id, namespace, source_event_id).
 type Event struct {
-	UserID string  `json:"user_id" example:"u_123"`
-	ItemID string  `json:"item_id" example:"i_123"`
-	Type   int16   `json:"type" example:"0"` // 0=view,1=click,2=add,3=purchase,4=custom
-	Value  float64 `json:"value" example:"1"`
-	TS     string  `json:"ts" example:"2025-09-07T12:34:56Z"`
-	Meta   any     `json:"meta,omitempty"`
+	UserID        string  `json:"user_id" example:"u_123"`
+	ItemID        string  `json:"item_id" example:"i_123"`
+	Type          int16   `json:"type" example:"0"` // 0=view,1=click,2=add,3=purchase,4=custom
+	Value         float64 `json:"value" example:"1"`
+	TS            string  `json:"ts,omitempty" example:"2025-09-07T12:34:56Z"`
+	Meta          any     `json:"meta,omitempty"`
+	SourceEventID *string `json:"source_event_id,omitempty"`
 }
 
 type ItemsUpsertRequest struct {
@@ -42,10 +46,14 @@ type EventsBatchRequest struct {
 }
 
 type RecommendConstraints struct {
-	IncludeTagsAny  []string  `json:"include_tags_any,omitempty"`
-	ExcludeItemIDs  []string  `json:"exclude_item_ids,omitempty"`
-	PriceBetween    []float64 `json:"price_between,omitempty"`
-	CreatedAfterISO string    `json:"created_after,omitempty" example:"2025-06-01T00:00:00Z"`
+	// Match if item.tags overlaps these (any). Empty/omitted = no tag filter.
+	IncludeTagsAny []string `json:"include_tags_any,omitempty"`
+	// Exclude these item IDs from results.
+	ExcludeItemIDs []string `json:"exclude_item_ids,omitempty"`
+	// Optional price bounds: [min, max]. Either end may be omitted.
+	PriceBetween []float64 `json:"price_between,omitempty"`
+	// Optional ISO8601 timestamp; only consider events on/after this instant.
+	CreatedAfterISO string `json:"created_after,omitempty" example:"2025-06-01T00:00:00Z"`
 }
 
 type RecommendBlend struct {
@@ -72,4 +80,26 @@ type ScoredItem struct {
 type RecommendResponse struct {
 	ModelVersion string       `json:"model_version" example:"pop_2025-09-07_01"`
 	Items        []ScoredItem `json:"items"`
+}
+
+type EventTypeConfig struct {
+	Type         int16    `json:"type"`
+	Name         *string  `json:"name,omitempty"`
+	Weight       float64  `json:"weight"`
+	HalfLifeDays *float64 `json:"half_life_days,omitempty"`
+	IsActive     *bool    `json:"is_active,omitempty"`
+}
+
+type EventTypeConfigUpsertRequest struct {
+	Namespace string            `json:"namespace"`
+	Types     []EventTypeConfig `json:"types"`
+}
+
+type EventTypeConfigUpsertResponse struct {
+	Type         int16    `json:"type"`
+	Name         *string  `json:"name,omitempty"`
+	Weight       float64  `json:"weight"`
+	HalfLifeDays *float64 `json:"half_life_days,omitempty"`
+	IsActive     bool     `json:"is_active"`
+	Source       string   `json:"source"` // "tenant" or "default"
 }

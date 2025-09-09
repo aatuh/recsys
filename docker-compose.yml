@@ -1,6 +1,9 @@
 services:
   db:
-    image: postgres:16-alpine
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    image: recsys-pgvector:pg16-init
     ports: ["${POSTGRES_PORT:-5432}:5432"]
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-recsys}
@@ -15,7 +18,8 @@ services:
       interval: 5s
       timeout: 3s
       retries: 20
-    volumes: ["db_data:/var/lib/postgresql/data"]
+    volumes:
+      - db_data:/var/lib/postgresql/data
 
   api:
     container_name: recsys-api
@@ -31,7 +35,67 @@ services:
     ports: ["${API_PORT}:8000"]
     volumes:
       - ./api:/app
-      - air_cache:/go/pkg/mod
+      - api_tmp:/app/tmp
+      - api_pkg:/go/pkg/mod
+      - api_gocache:/root/.cache/go-build
+    # Make shutdowns fast and reliable
+    init: true
+    stop_signal: SIGINT
+    stop_grace_period: 1s
+    command: >
+      sh -c '
+        # Watch all .go files to run the server
+        reflex -r "\\.go$" -s -- sh -c "go run ./cmd/api"
+      '
+
+  test:
+    build:
+      context: ./api
+      dockerfile: ./Dockerfile.dev
+    env_file:
+      - ./api/.env.test
+    environment:
+      - GOCACHE=/root/.cache/go-build
+      - GOMODCACHE=/go/pkg/mod
+    depends_on:
+      db:
+        condition: service_healthy
+      api:
+        condition: service_started
+    volumes:
+      - ./api:/app
+      - test_tmp:/app/tmp
+      - test_pkg:/go/pkg/mod
+      - test_gocache:/root/.cache/go-build
+    #
+    # To run only a specific test case, set the TEST_PATTERN environment variable
+    # when running this service. For example:
+    #   docker compose run -e TEST_PATTERN=TestClerkMiddleware_UserCreation/new_user_creation --rm test
+    #
+    # If TEST_PATTERN is not set, all tests will run by default.
+    #
+    command: ["/app/scripts/test.sh"]
+    profiles: ["test"]
+
+  demo:
+    container_name: recsys-demo-ui
+    build:
+      context: ./demo-ui
+      dockerfile: Dockerfile
+    depends_on:
+      api:
+        condition: service_started
+    env_file:
+      - ./demo-ui/.env
+    environment:
+      - VITE_API_BASE_URL=${VITE_API_BASE_URL}
+      - VITE_ALLOWED_HOSTS=localhost,127.0.0.1,pepe.local
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./demo-ui:/app
+      - demo_node_modules:/app/node_modules
+    command: ["/bin/sh", "-c", "/app/entrypoint.sh"]
 
   atlas:
     image: arigaio/atlas:latest
@@ -63,9 +127,16 @@ services:
       - "80:80"
     depends_on:
       - api
+      - demo
 
 volumes:
   db_data:
-  air_cache:
+  api_tmp:
+  api_pkg:
+  test_tmp:
+  test_pkg:
+  api_gocache:
+  test_gocache:
   mkcert_ca:
   caddy_certs:
+  demo_node_modules:

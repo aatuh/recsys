@@ -3,11 +3,12 @@ package common
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
-	"github.com/jackc/pgconn"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 type APIError struct {
@@ -37,6 +38,11 @@ func Unauthorized(w http.ResponseWriter, r *http.Request) {
 func ServiceUnavailable(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, r, NewAPIError("service_unavailable", "Service unavailable", http.StatusServiceUnavailable))
 }
+func Unprocessable(w http.ResponseWriter, r *http.Request, code, msg string, details map[string]any) {
+	ae := NewAPIError(code, msg, http.StatusUnprocessableEntity)
+	ae.Details = details
+	writeJSON(w, r, ae)
+}
 
 func HttpError(w http.ResponseWriter, r *http.Request, err error, fallback int) {
 	ae := mapError(err)
@@ -47,6 +53,8 @@ func HttpError(w http.ResponseWriter, r *http.Request, err error, fallback int) 
 }
 
 func mapError(err error) APIError {
+	fmt.Println("ERROR is", err)
+	fmt.Printf("ERROR type is %T\n", err)
 	if err == nil {
 		return NewAPIError("internal", "Unexpected error", http.StatusInternalServerError)
 	}
@@ -65,6 +73,12 @@ func mapError(err error) APIError {
 		ae.debugMsg = err.Error()
 		return ae
 	}
+	// Handle "unexpected EOF" and other JSON decode errors
+	if err.Error() == "unexpected EOF" || err.Error() == "unexpected end of JSON input" {
+		ae := NewAPIError("invalid_json", "Malformed JSON", http.StatusBadRequest)
+		ae.debugMsg = err.Error()
+		return ae
+	}
 
 	// Postgres constraint mapping (pgx)
 	var pgErr *pgconn.PgError
@@ -79,16 +93,18 @@ func mapError(err error) APIError {
 }
 
 // https://www.postgresql.org/docs/current/errcodes-appendix.html
-func fromPgCode(code string, _original error) APIError {
+func fromPgCode(code string, _ error) APIError {
 	switch code {
-	case "23505":
+	case "23505": // unique violation
 		return NewAPIError("unique_violation", "Resource already exists", http.StatusConflict)
-	case "23503":
+	case "23503": // foreign key violation
 		return NewAPIError("foreign_key_violation", "Related resource does not exist", http.StatusUnprocessableEntity)
-	case "23502":
+	case "23502": // not null violation
 		return NewAPIError("not_null_violation", "Missing required field", http.StatusUnprocessableEntity)
-	case "23514":
+	case "23514": // check violation
 		return NewAPIError("check_violation", "Data violates a constraint", http.StatusUnprocessableEntity)
+	case "22001": // string_data_right_truncation
+		return NewAPIError("string_truncation", "String data right truncation", http.StatusUnprocessableEntity)
 	default:
 		return NewAPIError("constraint_violation", "Data violates a constraint", http.StatusUnprocessableEntity)
 	}

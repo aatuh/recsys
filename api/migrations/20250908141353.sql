@@ -1,3 +1,30 @@
+-- Create "event_type_config" table
+CREATE TABLE "public"."event_type_config" (
+  "org_id" uuid NOT NULL,
+  "namespace" text NOT NULL,
+  "type" smallint NOT NULL,
+  "name" text NULL,
+  "weight" double precision NOT NULL,
+  "half_life_days" double precision NULL,
+  "is_active" boolean NOT NULL DEFAULT true,
+  "updated_at" timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY ("org_id", "namespace", "type"),
+  CONSTRAINT "event_type_config_hl_positive" CHECK ((half_life_days IS NULL) OR (half_life_days > (0)::double precision)),
+  CONSTRAINT "event_type_config_type_nonneg" CHECK (type >= 0),
+  CONSTRAINT "event_type_config_weight_positive" CHECK (weight > (0)::double precision)
+);
+-- Create index "event_type_config_org_ns_active_idx" to table: "event_type_config"
+CREATE INDEX "event_type_config_org_ns_active_idx" ON "public"."event_type_config" ("org_id", "namespace") WHERE (is_active = true);
+-- Create "event_type_defaults" table
+CREATE TABLE "public"."event_type_defaults" (
+  "type" smallint NOT NULL,
+  "name" text NOT NULL,
+  "weight" double precision NOT NULL,
+  "half_life_days" double precision NULL,
+  PRIMARY KEY ("type"),
+  CONSTRAINT "event_type_defaults_hl_positive" CHECK ((half_life_days IS NULL) OR (half_life_days > (0)::double precision)),
+  CONSTRAINT "event_type_defaults_weight_positive" CHECK (weight > (0)::double precision)
+);
 -- Create "events" table
 CREATE TABLE "public"."events" (
   "org_id" uuid NOT NULL,
@@ -7,7 +34,8 @@ CREATE TABLE "public"."events" (
   "type" smallint NOT NULL,
   "value" double precision NOT NULL DEFAULT 1,
   "ts" timestamptz NOT NULL,
-  "meta" jsonb NOT NULL DEFAULT '{}'
+  "meta" jsonb NOT NULL DEFAULT '{}',
+  "source_event_id" text NULL
 );
 -- Create index "events_org_ns_item_ts_idx" to table: "events"
 CREATE INDEX "events_org_ns_item_ts_idx" ON "public"."events" ("org_id", "namespace", "item_id", "ts");
@@ -15,6 +43,8 @@ CREATE INDEX "events_org_ns_item_ts_idx" ON "public"."events" ("org_id", "namesp
 CREATE INDEX "events_org_ns_ts_idx" ON "public"."events" ("org_id", "namespace", "ts");
 -- Create index "events_org_ns_user_ts_idx" to table: "events"
 CREATE INDEX "events_org_ns_user_ts_idx" ON "public"."events" ("org_id", "namespace", "user_id", "ts");
+-- Create index "events_source_uidx" to table: "events"
+CREATE UNIQUE INDEX "events_source_uidx" ON "public"."events" ("org_id", "namespace", "source_event_id");
 -- Create "items" table
 CREATE TABLE "public"."items" (
   "org_id" uuid NOT NULL,
@@ -23,7 +53,7 @@ CREATE TABLE "public"."items" (
   "available" boolean NOT NULL DEFAULT true,
   "price" numeric(12,2) NULL,
   "tags" text[] NOT NULL DEFAULT '{}',
-  "vector" real[] NULL,
+  "embedding" public.vector(384) NULL,
   "props" jsonb NOT NULL DEFAULT '{}',
   "created_at" timestamptz NOT NULL DEFAULT now(),
   "updated_at" timestamptz NOT NULL DEFAULT now(),
@@ -31,6 +61,12 @@ CREATE TABLE "public"."items" (
 );
 -- Create index "items_ns_created_idx" to table: "items"
 CREATE INDEX "items_ns_created_idx" ON "public"."items" ("org_id", "namespace", "created_at");
+-- Create index "items_org_ns_available_item_idx" to table: "items"
+CREATE INDEX "items_org_ns_available_item_idx" ON "public"."items" ("org_id", "namespace", "available", "item_id");
+-- Create index "items_tags_gin_idx" to table: "items"
+CREATE INDEX "items_tags_gin_idx" ON "public"."items" USING gin ("tags");
+-- Set comment to column: "embedding" on table: "items"
+COMMENT ON COLUMN "public"."items"."embedding" IS 'Text embedding for ANN similarity';
 -- Create "organizations" table
 CREATE TABLE "public"."organizations" (
   "org_id" uuid NOT NULL,
