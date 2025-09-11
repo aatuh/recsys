@@ -45,6 +45,7 @@ type Handler struct {
 // @Success      202      {object}  types.Ack
 // @Failure      400      {object}  common.APIError
 // @Router       /v1/items:upsert [post]
+// @ID upsertItems
 func (h *Handler) ItemsUpsert(w http.ResponseWriter, r *http.Request) {
 	var req types.ItemsUpsertRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -104,6 +105,7 @@ func (h *Handler) ItemsUpsert(w http.ResponseWriter, r *http.Request) {
 // @Success      202      {object}  types.Ack
 // @Failure      400      {object}  common.APIError
 // @Router       /v1/users:upsert [post]
+// @ID upsertUsers
 func (h *Handler) UsersUpsert(w http.ResponseWriter, r *http.Request) {
 	var req types.UsersUpsertRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -138,6 +140,7 @@ func (h *Handler) UsersUpsert(w http.ResponseWriter, r *http.Request) {
 // @Success      202      {object}  types.Ack
 // @Failure      400      {object}  common.APIError
 // @Router       /v1/events:batch [post]
+// @ID batchEvents
 func (h *Handler) EventsBatch(w http.ResponseWriter, r *http.Request) {
 	var req types.EventsBatchRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {

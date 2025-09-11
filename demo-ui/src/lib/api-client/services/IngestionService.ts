@@ -16,7 +16,7 @@ export class IngestionService {
      * @returns types_Ack Accepted
      * @throws ApiError
      */
-    public static postV1Events:batch(
+    public static batchEvents(
         payload: types_EventsBatchRequest,
     ): CancelablePromise<types_Ack> {
         return __request(OpenAPI, {
@@ -35,7 +35,7 @@ export class IngestionService {
      * @returns types_Ack Accepted
      * @throws ApiError
      */
-    public static postV1Items:upsert(
+    public static upsertItems(
         payload: types_ItemsUpsertRequest,
     ): CancelablePromise<types_Ack> {
         return __request(OpenAPI, {
@@ -53,7 +53,7 @@ export class IngestionService {
      * @returns types_Ack Accepted
      * @throws ApiError
      */
-    public static postV1Users:upsert(
+    public static upsertUsers(
         payload: types_UsersUpsertRequest,
     ): CancelablePromise<types_Ack> {
         return __request(OpenAPI, {

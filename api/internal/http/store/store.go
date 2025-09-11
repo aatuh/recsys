@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -437,4 +438,363 @@ func vectorLiteral(v []float64) string {
 	}
 	sb.WriteByte(']')
 	return sb.String()
+}
+
+// List and Delete methods
+
+// ListUsers returns a paginated list of users with optional filtering
+func (s *Store) ListUsers(ctx context.Context, orgID uuid.UUID, ns string, limit, offset int, filters map[string]interface{}) ([]map[string]interface{}, int, error) {
+	// Build WHERE clause
+	whereClause := "WHERE org_id = $1 AND namespace = $2"
+	args := []interface{}{orgID, ns}
+	argIndex := 3
+
+	// Add filters
+	if userID, ok := filters["user_id"].(string); ok && userID != "" {
+		whereClause += fmt.Sprintf(" AND user_id = $%d", argIndex)
+		args = append(args, userID)
+		argIndex++
+	}
+
+	if createdAfter, ok := filters["created_after"].(string); ok && createdAfter != "" {
+		whereClause += fmt.Sprintf(" AND created_at >= $%d", argIndex)
+		args = append(args, createdAfter)
+		argIndex++
+	}
+
+	if createdBefore, ok := filters["created_before"].(string); ok && createdBefore != "" {
+		whereClause += fmt.Sprintf(" AND created_at <= $%d", argIndex)
+		args = append(args, createdBefore)
+		argIndex++
+	}
+
+	// Count total
+	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM users %s", whereClause)
+	var total int
+	err := s.Pool.QueryRow(ctx, countQuery, args...).Scan(&total)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// Get paginated results
+	query := fmt.Sprintf(`
+		SELECT user_id, traits, created_at, updated_at
+		FROM users %s
+		ORDER BY created_at DESC
+		LIMIT $%d OFFSET $%d
+	`, whereClause, argIndex, argIndex+1)
+	args = append(args, limit, offset)
+
+	rows, err := s.Pool.Query(ctx, query, args...)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	var users []map[string]interface{}
+	for rows.Next() {
+		var userID string
+		var traits []byte
+		var createdAt, updatedAt time.Time
+
+		err := rows.Scan(&userID, &traits, &createdAt, &updatedAt)
+		if err != nil {
+			return nil, 0, err
+		}
+
+		user := map[string]interface{}{
+			"user_id":    userID,
+			"traits":     string(traits),
+			"created_at": createdAt.Format(time.RFC3339),
+			"updated_at": updatedAt.Format(time.RFC3339),
+		}
+		users = append(users, user)
+	}
+
+	return users, total, rows.Err()
+}
+
+// ListItems returns a paginated list of items with optional filtering
+func (s *Store) ListItems(ctx context.Context, orgID uuid.UUID, ns string, limit, offset int, filters map[string]interface{}) ([]map[string]interface{}, int, error) {
+	// Build WHERE clause
+	whereClause := "WHERE org_id = $1 AND namespace = $2"
+	args := []interface{}{orgID, ns}
+	argIndex := 3
+
+	// Add filters
+	if itemID, ok := filters["item_id"].(string); ok && itemID != "" {
+		whereClause += fmt.Sprintf(" AND item_id = $%d", argIndex)
+		args = append(args, itemID)
+		argIndex++
+	}
+
+	if createdAfter, ok := filters["created_after"].(string); ok && createdAfter != "" {
+		whereClause += fmt.Sprintf(" AND created_at >= $%d", argIndex)
+		args = append(args, createdAfter)
+		argIndex++
+	}
+
+	if createdBefore, ok := filters["created_before"].(string); ok && createdBefore != "" {
+		whereClause += fmt.Sprintf(" AND created_at <= $%d", argIndex)
+		args = append(args, createdBefore)
+		argIndex++
+	}
+
+	// Count total
+	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM items %s", whereClause)
+	var total int
+	err := s.Pool.QueryRow(ctx, countQuery, args...).Scan(&total)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// Get paginated results
+	query := fmt.Sprintf(`
+		SELECT item_id, available, price, tags, props, created_at, updated_at
+		FROM items %s
+		ORDER BY created_at DESC
+		LIMIT $%d OFFSET $%d
+	`, whereClause, argIndex, argIndex+1)
+	args = append(args, limit, offset)
+
+	rows, err := s.Pool.Query(ctx, query, args...)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	var items []map[string]interface{}
+	for rows.Next() {
+		var itemID string
+		var available bool
+		var price *float64
+		var tags []string
+		var props []byte
+		var createdAt, updatedAt time.Time
+
+		err := rows.Scan(&itemID, &available, &price, &tags, &props, &createdAt, &updatedAt)
+		if err != nil {
+			return nil, 0, err
+		}
+
+		item := map[string]interface{}{
+			"item_id":    itemID,
+			"available":  available,
+			"price":      price,
+			"tags":       tags,
+			"props":      string(props),
+			"created_at": createdAt.Format(time.RFC3339),
+			"updated_at": updatedAt.Format(time.RFC3339),
+		}
+		items = append(items, item)
+	}
+
+	return items, total, rows.Err()
+}
+
+// ListEvents returns a paginated list of events with optional filtering
+func (s *Store) ListEvents(ctx context.Context, orgID uuid.UUID, ns string, limit, offset int, filters map[string]interface{}) ([]map[string]interface{}, int, error) {
+	// Build WHERE clause
+	whereClause := "WHERE org_id = $1 AND namespace = $2"
+	args := []interface{}{orgID, ns}
+	argIndex := 3
+
+	// Add filters
+	if userID, ok := filters["user_id"].(string); ok && userID != "" {
+		whereClause += fmt.Sprintf(" AND user_id = $%d", argIndex)
+		args = append(args, userID)
+		argIndex++
+	}
+
+	if itemID, ok := filters["item_id"].(string); ok && itemID != "" {
+		whereClause += fmt.Sprintf(" AND item_id = $%d", argIndex)
+		args = append(args, itemID)
+		argIndex++
+	}
+
+	if eventType, ok := filters["event_type"].(int16); ok {
+		whereClause += fmt.Sprintf(" AND type = $%d", argIndex)
+		args = append(args, eventType)
+		argIndex++
+	}
+
+	if createdAfter, ok := filters["created_after"].(string); ok && createdAfter != "" {
+		whereClause += fmt.Sprintf(" AND ts >= $%d", argIndex)
+		args = append(args, createdAfter)
+		argIndex++
+	}
+
+	if createdBefore, ok := filters["created_before"].(string); ok && createdBefore != "" {
+		whereClause += fmt.Sprintf(" AND ts <= $%d", argIndex)
+		args = append(args, createdBefore)
+		argIndex++
+	}
+
+	// Count total
+	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM events %s", whereClause)
+	var total int
+	err := s.Pool.QueryRow(ctx, countQuery, args...).Scan(&total)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// Get paginated results
+	query := fmt.Sprintf(`
+		SELECT user_id, item_id, type, value, ts, meta, source_event_id
+		FROM events %s
+		ORDER BY ts DESC
+		LIMIT $%d OFFSET $%d
+	`, whereClause, argIndex, argIndex+1)
+	args = append(args, limit, offset)
+
+	rows, err := s.Pool.Query(ctx, query, args...)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	var events []map[string]interface{}
+	for rows.Next() {
+		var userID, itemID string
+		var eventType int16
+		var value float64
+		var ts time.Time
+		var meta []byte
+		var sourceEventID *string
+
+		err := rows.Scan(&userID, &itemID, &eventType, &value, &ts, &meta, &sourceEventID)
+		if err != nil {
+			return nil, 0, err
+		}
+
+		event := map[string]interface{}{
+			"user_id":         userID,
+			"item_id":         itemID,
+			"type":            eventType,
+			"value":           value,
+			"ts":              ts.Format(time.RFC3339),
+			"meta":            string(meta),
+			"source_event_id": sourceEventID,
+		}
+		events = append(events, event)
+	}
+
+	return events, total, rows.Err()
+}
+
+// DeleteUsers deletes users based on filters
+func (s *Store) DeleteUsers(ctx context.Context, orgID uuid.UUID, ns string, filters map[string]interface{}) (int, error) {
+	// Build WHERE clause
+	whereClause := "WHERE org_id = $1 AND namespace = $2"
+	args := []interface{}{orgID, ns}
+	argIndex := 3
+
+	// Add filters
+	if userID, ok := filters["user_id"].(string); ok && userID != "" {
+		whereClause += fmt.Sprintf(" AND user_id = $%d", argIndex)
+		args = append(args, userID)
+		argIndex++
+	}
+
+	if createdAfter, ok := filters["created_after"].(string); ok && createdAfter != "" {
+		whereClause += fmt.Sprintf(" AND created_at >= $%d", argIndex)
+		args = append(args, createdAfter)
+		argIndex++
+	}
+
+	if createdBefore, ok := filters["created_before"].(string); ok && createdBefore != "" {
+		whereClause += fmt.Sprintf(" AND created_at <= $%d", argIndex)
+		args = append(args, createdBefore)
+		argIndex++
+	}
+
+	query := fmt.Sprintf("DELETE FROM users %s", whereClause)
+	result, err := s.Pool.Exec(ctx, query, args...)
+	if err != nil {
+		return 0, err
+	}
+
+	return int(result.RowsAffected()), nil
+}
+
+// DeleteItems deletes items based on filters
+func (s *Store) DeleteItems(ctx context.Context, orgID uuid.UUID, ns string, filters map[string]interface{}) (int, error) {
+	// Build WHERE clause
+	whereClause := "WHERE org_id = $1 AND namespace = $2"
+	args := []interface{}{orgID, ns}
+	argIndex := 3
+
+	// Add filters
+	if itemID, ok := filters["item_id"].(string); ok && itemID != "" {
+		whereClause += fmt.Sprintf(" AND item_id = $%d", argIndex)
+		args = append(args, itemID)
+		argIndex++
+	}
+
+	if createdAfter, ok := filters["created_after"].(string); ok && createdAfter != "" {
+		whereClause += fmt.Sprintf(" AND created_at >= $%d", argIndex)
+		args = append(args, createdAfter)
+		argIndex++
+	}
+
+	if createdBefore, ok := filters["created_before"].(string); ok && createdBefore != "" {
+		whereClause += fmt.Sprintf(" AND created_at <= $%d", argIndex)
+		args = append(args, createdBefore)
+		argIndex++
+	}
+
+	query := fmt.Sprintf("DELETE FROM items %s", whereClause)
+	result, err := s.Pool.Exec(ctx, query, args...)
+	if err != nil {
+		return 0, err
+	}
+
+	return int(result.RowsAffected()), nil
+}
+
+// DeleteEvents deletes events based on filters
+func (s *Store) DeleteEvents(ctx context.Context, orgID uuid.UUID, ns string, filters map[string]interface{}) (int, error) {
+	// Build WHERE clause
+	whereClause := "WHERE org_id = $1 AND namespace = $2"
+	args := []interface{}{orgID, ns}
+	argIndex := 3
+
+	// Add filters
+	if userID, ok := filters["user_id"].(string); ok && userID != "" {
+		whereClause += fmt.Sprintf(" AND user_id = $%d", argIndex)
+		args = append(args, userID)
+		argIndex++
+	}
+
+	if itemID, ok := filters["item_id"].(string); ok && itemID != "" {
+		whereClause += fmt.Sprintf(" AND item_id = $%d", argIndex)
+		args = append(args, itemID)
+		argIndex++
+	}
+
+	if eventType, ok := filters["event_type"].(int16); ok {
+		whereClause += fmt.Sprintf(" AND type = $%d", argIndex)
+		args = append(args, eventType)
+		argIndex++
+	}
+
+	if createdAfter, ok := filters["created_after"].(string); ok && createdAfter != "" {
+		whereClause += fmt.Sprintf(" AND ts >= $%d", argIndex)
+		args = append(args, createdAfter)
+		argIndex++
+	}
+
+	if createdBefore, ok := filters["created_before"].(string); ok && createdBefore != "" {
+		whereClause += fmt.Sprintf(" AND ts <= $%d", argIndex)
+		args = append(args, createdBefore)
+		argIndex++
+	}
+
+	query := fmt.Sprintf("DELETE FROM events %s", whereClause)
+	result, err := s.Pool.Exec(ctx, query, args...)
+	if err != nil {
+		return 0, err
+	}
+
+	return int(result.RowsAffected()), nil
 }

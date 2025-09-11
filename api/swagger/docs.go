@@ -58,6 +58,7 @@ const docTemplate = `{
                     "config"
                 ],
                 "summary": "Upsert tenant event-type config",
+                "operationId": "upsertEventTypes",
                 "parameters": [
                     {
                         "description": "Event types",
@@ -79,6 +80,87 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/events": {
+            "get": {
+                "description": "Get a paginated list of events with optional filtering by user_id, item_id, event_type, date range, etc.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "data-management"
+                ],
+                "summary": "List events with pagination and filtering",
+                "operationId": "listEvents",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Namespace",
+                        "name": "namespace",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit (default: 100, max: 1000)",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Offset (default: 0)",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by user ID",
+                        "name": "user_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by item ID",
+                        "name": "item_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Filter by event type",
+                        "name": "event_type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by creation date (ISO8601)",
+                        "name": "created_after",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by creation date (ISO8601)",
+                        "name": "created_before",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.ListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/events:batch": {
             "post": {
                 "consumes": [
@@ -91,6 +173,7 @@ const docTemplate = `{
                     "ingestion"
                 ],
                 "summary": "Ingest events (batch)",
+                "operationId": "batchEvents",
                 "parameters": [
                     {
                         "description": "Events batch",
@@ -107,6 +190,116 @@ const docTemplate = `{
                         "description": "Accepted",
                         "schema": {
                             "$ref": "#/definitions/types.Ack"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/events:delete": {
+            "post": {
+                "description": "Delete events based on filters. If no filters provided, deletes all events in namespace.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "data-management"
+                ],
+                "summary": "Delete events with optional filtering",
+                "operationId": "deleteEvents",
+                "parameters": [
+                    {
+                        "description": "Delete request",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.DeleteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.DeleteResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/items": {
+            "get": {
+                "description": "Get a paginated list of items with optional filtering by item_id, date range, etc.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "data-management"
+                ],
+                "summary": "List items with pagination and filtering",
+                "operationId": "listItems",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Namespace",
+                        "name": "namespace",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit (default: 100, max: 1000)",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Offset (default: 0)",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by item ID",
+                        "name": "item_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by creation date (ISO8601)",
+                        "name": "created_after",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by creation date (ISO8601)",
+                        "name": "created_before",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.ListResponse"
                         }
                     },
                     "400": {
@@ -169,6 +362,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/items:delete": {
+            "post": {
+                "description": "Delete items based on filters. If no filters provided, deletes all items in namespace.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "data-management"
+                ],
+                "summary": "Delete items with optional filtering",
+                "operationId": "deleteItems",
+                "parameters": [
+                    {
+                        "description": "Delete request",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.DeleteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.DeleteResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/items:upsert": {
             "post": {
                 "description": "Create or update items by opaque IDs.",
@@ -182,6 +416,7 @@ const docTemplate = `{
                     "ingestion"
                 ],
                 "summary": "Upsert items (batch)",
+                "operationId": "upsertItems",
                 "parameters": [
                     {
                         "description": "Items upsert",
@@ -248,6 +483,116 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/users": {
+            "get": {
+                "description": "Get a paginated list of users with optional filtering by user_id, date range, etc.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "data-management"
+                ],
+                "summary": "List users with pagination and filtering",
+                "operationId": "listUsers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Namespace",
+                        "name": "namespace",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit (default: 100, max: 1000)",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Offset (default: 0)",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by user ID",
+                        "name": "user_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by creation date (ISO8601)",
+                        "name": "created_after",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by creation date (ISO8601)",
+                        "name": "created_before",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.ListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/users:delete": {
+            "post": {
+                "description": "Delete users based on filters. If no filters provided, deletes all users in namespace.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "data-management"
+                ],
+                "summary": "Delete users with optional filtering",
+                "operationId": "deleteUsers",
+                "parameters": [
+                    {
+                        "description": "Delete request",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.DeleteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.DeleteResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/users:upsert": {
             "post": {
                 "consumes": [
@@ -260,6 +605,7 @@ const docTemplate = `{
                     "ingestion"
                 ],
                 "summary": "Upsert users (batch)",
+                "operationId": "upsertUsers",
                 "parameters": [
                     {
                         "description": "Users upsert",
@@ -311,6 +657,48 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.DeleteRequest": {
+            "type": "object",
+            "properties": {
+                "created_after": {
+                    "description": "Date range filters",
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
+                },
+                "created_before": {
+                    "type": "string",
+                    "example": "2025-12-31T23:59:59Z"
+                },
+                "event_type": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "item_id": {
+                    "type": "string",
+                    "example": "i_123"
+                },
+                "namespace": {
+                    "type": "string",
+                    "example": "default"
+                },
+                "user_id": {
+                    "description": "Optional filters - if not provided, deletes all data in namespace",
+                    "type": "string",
+                    "example": "u_123"
+                }
+            }
+        },
+        "types.DeleteResponse": {
+            "type": "object",
+            "properties": {
+                "deleted_count": {
+                    "type": "integer"
+                },
+                "message": {
                     "type": "string"
                 }
             }
@@ -460,6 +848,30 @@ const docTemplate = `{
                 "namespace": {
                     "type": "string",
                     "example": "default"
+                }
+            }
+        },
+        "types.ListResponse": {
+            "type": "object",
+            "properties": {
+                "has_more": {
+                    "type": "boolean"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {}
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "next_offset": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },

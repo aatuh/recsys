@@ -9,6 +9,8 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { common_APIError } from './models/common_APIError';
 export type { types_Ack } from './models/types_Ack';
+export type { types_DeleteRequest } from './models/types_DeleteRequest';
+export type { types_DeleteResponse } from './models/types_DeleteResponse';
 export type { types_Event } from './models/types_Event';
 export type { types_EventsBatchRequest } from './models/types_EventsBatchRequest';
 export type { types_EventTypeConfig } from './models/types_EventTypeConfig';
@@ -16,6 +18,7 @@ export type { types_EventTypeConfigUpsertRequest } from './models/types_EventTyp
 export type { types_EventTypeConfigUpsertResponse } from './models/types_EventTypeConfigUpsertResponse';
 export type { types_Item } from './models/types_Item';
 export type { types_ItemsUpsertRequest } from './models/types_ItemsUpsertRequest';
+export type { types_ListResponse } from './models/types_ListResponse';
 export type { types_RecommendBlend } from './models/types_RecommendBlend';
 export type { types_RecommendConstraints } from './models/types_RecommendConstraints';
 export type { types_RecommendRequest } from './models/types_RecommendRequest';
@@ -25,5 +28,6 @@ export type { types_User } from './models/types_User';
 export type { types_UsersUpsertRequest } from './models/types_UsersUpsertRequest';
 
 export { ConfigService } from './services/ConfigService';
+export { DataManagementService } from './services/DataManagementService';
 export { IngestionService } from './services/IngestionService';
 export { RankingService } from './services/RankingService';

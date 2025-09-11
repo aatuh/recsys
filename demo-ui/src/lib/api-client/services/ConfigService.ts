@@ -32,7 +32,7 @@ export class ConfigService {
      * @returns types_Ack Accepted
      * @throws ApiError
      */
-    public static postV1EventTypes:upsert(
+    public static upsertEventTypes(
         payload: types_EventTypeConfigUpsertRequest,
     ): CancelablePromise<types_Ack> {
         return __request(OpenAPI, {

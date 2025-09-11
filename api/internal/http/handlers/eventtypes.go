@@ -17,6 +17,7 @@ import (
 // @Param payload body types.EventTypeConfigUpsertRequest true "Event types"
 // @Success 202 {object} types.Ack
 // @Router /v1/event-types:upsert [post]
+// @ID upsertEventTypes
 func (h *Handler) EventTypesUpsert(w http.ResponseWriter, r *http.Request) {
 	var req types.EventTypeConfigUpsertRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {

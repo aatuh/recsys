@@ -103,3 +103,43 @@ type EventTypeConfigUpsertResponse struct {
 	IsActive     bool     `json:"is_active"`
 	Source       string   `json:"source"` // "tenant" or "default"
 }
+
+// List and Delete types
+
+type ListRequest struct {
+	Namespace string `json:"namespace" example:"default"`
+	Limit     int    `json:"limit,omitempty" example:"100"`
+	Offset    int    `json:"offset,omitempty" example:"0"`
+	// Optional filters
+	UserID    *string `json:"user_id,omitempty" example:"u_123"`
+	ItemID    *string `json:"item_id,omitempty" example:"i_123"`
+	EventType *int16  `json:"event_type,omitempty" example:"0"`
+	// Date range filters
+	CreatedAfter  *string `json:"created_after,omitempty" example:"2025-01-01T00:00:00Z"`
+	CreatedBefore *string `json:"created_before,omitempty" example:"2025-12-31T23:59:59Z"`
+}
+
+type DeleteRequest struct {
+	Namespace string `json:"namespace" example:"default"`
+	// Optional filters - if not provided, deletes all data in namespace
+	UserID    *string `json:"user_id,omitempty" example:"u_123"`
+	ItemID    *string `json:"item_id,omitempty" example:"i_123"`
+	EventType *int16  `json:"event_type,omitempty" example:"0"`
+	// Date range filters
+	CreatedAfter  *string `json:"created_after,omitempty" example:"2025-01-01T00:00:00Z"`
+	CreatedBefore *string `json:"created_before,omitempty" example:"2025-12-31T23:59:59Z"`
+}
+
+type ListResponse struct {
+	Items      []any `json:"items"`
+	Total      int   `json:"total"`
+	Limit      int   `json:"limit"`
+	Offset     int   `json:"offset"`
+	HasMore    bool  `json:"has_more"`
+	NextOffset *int  `json:"next_offset,omitempty"`
+}
+
+type DeleteResponse struct {
+	DeletedCount int    `json:"deleted_count"`
+	Message      string `json:"message"`
+}

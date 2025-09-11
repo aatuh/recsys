@@ -17,6 +17,36 @@ definitions:
       status:
         type: string
     type: object
+  types.DeleteRequest:
+    properties:
+      created_after:
+        description: Date range filters
+        example: "2025-01-01T00:00:00Z"
+        type: string
+      created_before:
+        example: "2025-12-31T23:59:59Z"
+        type: string
+      event_type:
+        example: 0
+        type: integer
+      item_id:
+        example: i_123
+        type: string
+      namespace:
+        example: default
+        type: string
+      user_id:
+        description: Optional filters - if not provided, deletes all data in namespace
+        example: u_123
+        type: string
+    type: object
+  types.DeleteResponse:
+    properties:
+      deleted_count:
+        type: integer
+      message:
+        type: string
+    type: object
   types.Event:
     properties:
       item_id:
@@ -117,6 +147,22 @@ definitions:
       namespace:
         example: default
         type: string
+    type: object
+  types.ListResponse:
+    properties:
+      has_more:
+        type: boolean
+      items:
+        items: {}
+        type: array
+      limit:
+        type: integer
+      next_offset:
+        type: integer
+      offset:
+        type: integer
+      total:
+        type: integer
     type: object
   types.RecommendBlend:
     properties:
@@ -244,6 +290,7 @@ paths:
     post:
       consumes:
       - application/json
+      operationId: upsertEventTypes
       parameters:
       - description: Event types
         in: body
@@ -261,10 +308,66 @@ paths:
       summary: Upsert tenant event-type config
       tags:
       - config
+  /v1/events:
+    get:
+      consumes:
+      - application/json
+      description: Get a paginated list of events with optional filtering by user_id,
+        item_id, event_type, date range, etc.
+      operationId: listEvents
+      parameters:
+      - description: Namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: 'Limit (default: 100, max: 1000)'
+        in: query
+        name: limit
+        type: integer
+      - description: 'Offset (default: 0)'
+        in: query
+        name: offset
+        type: integer
+      - description: Filter by user ID
+        in: query
+        name: user_id
+        type: string
+      - description: Filter by item ID
+        in: query
+        name: item_id
+        type: string
+      - description: Filter by event type
+        in: query
+        name: event_type
+        type: integer
+      - description: Filter by creation date (ISO8601)
+        in: query
+        name: created_after
+        type: string
+      - description: Filter by creation date (ISO8601)
+        in: query
+        name: created_before
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.APIError'
+      summary: List events with pagination and filtering
+      tags:
+      - data-management
   /v1/events:batch:
     post:
       consumes:
       - application/json
+      operationId: batchEvents
       parameters:
       - description: Events batch
         in: body
@@ -286,6 +389,81 @@ paths:
       summary: Ingest events (batch)
       tags:
       - ingestion
+  /v1/events:delete:
+    post:
+      consumes:
+      - application/json
+      description: Delete events based on filters. If no filters provided, deletes
+        all events in namespace.
+      operationId: deleteEvents
+      parameters:
+      - description: Delete request
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.DeleteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.DeleteResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.APIError'
+      summary: Delete events with optional filtering
+      tags:
+      - data-management
+  /v1/items:
+    get:
+      consumes:
+      - application/json
+      description: Get a paginated list of items with optional filtering by item_id,
+        date range, etc.
+      operationId: listItems
+      parameters:
+      - description: Namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: 'Limit (default: 100, max: 1000)'
+        in: query
+        name: limit
+        type: integer
+      - description: 'Offset (default: 0)'
+        in: query
+        name: offset
+        type: integer
+      - description: Filter by item ID
+        in: query
+        name: item_id
+        type: string
+      - description: Filter by creation date (ISO8601)
+        in: query
+        name: created_after
+        type: string
+      - description: Filter by creation date (ISO8601)
+        in: query
+        name: created_before
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.APIError'
+      summary: List items with pagination and filtering
+      tags:
+      - data-management
   /v1/items/{item_id}/similar:
     get:
       parameters:
@@ -320,11 +498,40 @@ paths:
       summary: Get similar items
       tags:
       - ranking
+  /v1/items:delete:
+    post:
+      consumes:
+      - application/json
+      description: Delete items based on filters. If no filters provided, deletes
+        all items in namespace.
+      operationId: deleteItems
+      parameters:
+      - description: Delete request
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.DeleteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.DeleteResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.APIError'
+      summary: Delete items with optional filtering
+      tags:
+      - data-management
   /v1/items:upsert:
     post:
       consumes:
       - application/json
       description: Create or update items by opaque IDs.
+      operationId: upsertItems
       parameters:
       - description: Items upsert
         in: body
@@ -371,10 +578,86 @@ paths:
       summary: Get recommendations for a user
       tags:
       - ranking
+  /v1/users:
+    get:
+      consumes:
+      - application/json
+      description: Get a paginated list of users with optional filtering by user_id,
+        date range, etc.
+      operationId: listUsers
+      parameters:
+      - description: Namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: 'Limit (default: 100, max: 1000)'
+        in: query
+        name: limit
+        type: integer
+      - description: 'Offset (default: 0)'
+        in: query
+        name: offset
+        type: integer
+      - description: Filter by user ID
+        in: query
+        name: user_id
+        type: string
+      - description: Filter by creation date (ISO8601)
+        in: query
+        name: created_after
+        type: string
+      - description: Filter by creation date (ISO8601)
+        in: query
+        name: created_before
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.APIError'
+      summary: List users with pagination and filtering
+      tags:
+      - data-management
+  /v1/users:delete:
+    post:
+      consumes:
+      - application/json
+      description: Delete users based on filters. If no filters provided, deletes
+        all users in namespace.
+      operationId: deleteUsers
+      parameters:
+      - description: Delete request
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.DeleteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.DeleteResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.APIError'
+      summary: Delete users with optional filtering
+      tags:
+      - data-management
   /v1/users:upsert:
     post:
       consumes:
       - application/json
+      operationId: upsertUsers
       parameters:
       - description: Users upsert
         in: body

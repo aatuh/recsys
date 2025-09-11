@@ -117,6 +117,14 @@ func main() {
 	r.Post("/v1/event-types:upsert", hs.EventTypesUpsert)
 	r.Get("/v1/event-types", hs.EventTypesList)
 
+	// Data management endpoints
+	r.Get("/v1/users", hs.ListUsers)
+	r.Get("/v1/items", hs.ListItems)
+	r.Get("/v1/events", hs.ListEvents)
+	r.Post("/v1/users:delete", hs.DeleteUsers)
+	r.Post("/v1/items:delete", hs.DeleteItems)
+	r.Post("/v1/events:delete", hs.DeleteEvents)
+
 	srv := &http.Server{
 		Addr:              ":" + serverCfg.Port,
 		Handler:           r,
