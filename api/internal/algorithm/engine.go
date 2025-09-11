@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"recsys/internal/types"
+
+	"github.com/google/uuid"
 )
 
 // Engine handles recommendation algorithm logic
@@ -31,7 +33,7 @@ func (e *Engine) Recommend(ctx context.Context, req Request) (*Response, error) 
 	}
 
 	// Get popularity candidates
-	candidates, err := e.getPopularityCandidates(ctx, req, k)
+	candidates, err := e.getPopularityCandidates(ctx, req.OrgID, req.Namespace, k, req.Constraints)
 	if err != nil {
 		return nil, err
 	}
@@ -76,23 +78,25 @@ func (e *Engine) Recommend(ctx context.Context, req Request) (*Response, error) 
 	return e.buildResponse(candidateData, k, modelVersion, req.IncludeReasons, weights), nil
 }
 
-// getPopularityCandidates fetches the base popularity candidates
-func (e *Engine) getPopularityCandidates(ctx context.Context, req Request, k int) ([]types.ScoredItem, error) {
-	// Calculate fanout
-	fetchK := k * 2 // Simple fanout, could be configurable
-	if fetchK < k {
+// getPopularityCandidates fetches a popularity-based candidate pool.
+// Uses configurable fanout: if <=0 -> k; if <k -> k.
+func (e *Engine) getPopularityCandidates(
+	ctx context.Context, orgID uuid.UUID, ns string, k int, c *types.PopConstraints,
+) ([]types.ScoredItem, error) {
+	// Respect configured fanout if provided; otherwise default to k.
+	fetchK := e.config.PopularityFanout
+	if fetchK <= 0 || fetchK < k {
 		fetchK = k
 	}
 
-	// Get popularity candidates
-	return e.store.PopularityTopK(
-		ctx,
-		req.OrgID,
-		req.Namespace,
-		e.config.HalfLifeDays,
-		fetchK,
-		req.Constraints,
-	)
+	cands, err := e.store.PopularityTopK(ctx, orgID, ns, e.config.HalfLifeDays, fetchK, c)
+	if err != nil {
+		return nil, err
+	}
+	// if len(cands) > k {
+	// 	cands = cands[:k]
+	// }
+	return cands, nil
 }
 
 // applyExclusions removes excluded items from candidates

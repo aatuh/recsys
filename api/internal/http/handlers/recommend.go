@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 	"time"
@@ -13,6 +14,19 @@ import (
 
 	"github.com/go-chi/chi/v5"
 )
+
+// CreatedAfterParseError represents an error parsing the CreatedAfterISO field
+type CreatedAfterParseError struct {
+	Err error
+}
+
+func (e *CreatedAfterParseError) Error() string {
+	return e.Err.Error()
+}
+
+func (e *CreatedAfterParseError) Unwrap() error {
+	return e.Err
+}
 
 // Recommend godoc
 // @Summary      Get recommendations for a user
@@ -33,6 +47,15 @@ func (h *Handler) Recommend(w http.ResponseWriter, r *http.Request) {
 	// Convert HTTP request to algorithm request
 	algoReq, err := h.convertToAlgorithmRequest(r, req)
 	if err != nil {
+		// Handle specific parsing errors with proper error codes
+		var parseErr *CreatedAfterParseError
+		if errors.As(err, &parseErr) {
+			common.BadRequest(
+				w, r, "invalid_created_after",
+				"created_after must be RFC3339", nil,
+			)
+			return
+		}
 		common.HttpError(w, r, err, http.StatusBadRequest)
 		return
 	}
@@ -129,7 +152,8 @@ func (h *Handler) convertToAlgorithmRequest(r *http.Request, req handlerstypes.R
 		if req.Constraints.CreatedAfterISO != "" {
 			ts, err := time.Parse(time.RFC3339, req.Constraints.CreatedAfterISO)
 			if err != nil {
-				return algorithm.Request{}, err
+				// Return a specific error that can be handled by the caller
+				return algorithm.Request{}, &CreatedAfterParseError{Err: err}
 			}
 			constraints.CreatedAfter = &ts
 		}
@@ -191,5 +215,6 @@ func (h *Handler) getAlgorithmConfig() algorithm.Config {
 		CoVisWindowDays:      int(h.CoVisWindowDays),
 		PurchasedWindowDays:  int(h.PurchasedWindowDays),
 		RuleExcludePurchased: h.RuleExcludePurchased,
+		PopularityFanout:     h.PopularityFanout,
 	}
 }
