@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"fmt"
+	"recsys/internal/types"
 	"strconv"
 	"strings"
 	"time"
@@ -154,18 +155,6 @@ func (s *Store) InsertEvents(ctx context.Context, orgID uuid.UUID, ns string, ev
 	return nil
 }
 
-type PopConstraints struct {
-	IncludeTagsAny     []string
-	MinPrice, MaxPrice *float64
-	CreatedAfter       *time.Time
-	ExcludeItemIDs     []string
-}
-
-type ScoredItem struct {
-	ItemID string
-	Score  float64
-}
-
 // Time-decayed popularity with fixed type weights.
 func (s *Store) PopularityTopK(
 	ctx context.Context,
@@ -173,8 +162,8 @@ func (s *Store) PopularityTopK(
 	ns string,
 	halfLifeDays float64,
 	k int,
-	c *PopConstraints,
-) ([]ScoredItem, error) {
+	c *types.PopConstraints,
+) ([]types.ScoredItem, error) {
 	if k <= 0 {
 		k = 20
 	}
@@ -216,9 +205,9 @@ func (s *Store) PopularityTopK(
 		return nil, err
 	}
 	defer rows.Close()
-	out := make([]ScoredItem, 0, k)
+	out := make([]types.ScoredItem, 0, k)
 	for rows.Next() {
-		var it ScoredItem
+		var it types.ScoredItem
 		if err := rows.Scan(&it.ItemID, &it.Score); err != nil {
 			return nil, err
 		}
@@ -235,7 +224,7 @@ func (s *Store) CooccurrenceTopKWithin(
 	itemID string,
 	k int,
 	since time.Time,
-) ([]ScoredItem, error) {
+) ([]types.ScoredItem, error) {
 	if k <= 0 {
 		k = 20
 	}
@@ -260,9 +249,9 @@ LIMIT $4
 		return nil, err
 	}
 	defer rows.Close()
-	out := make([]ScoredItem, 0, k)
+	out := make([]types.ScoredItem, 0, k)
 	for rows.Next() {
-		var it ScoredItem
+		var it types.ScoredItem
 		if err := rows.Scan(&it.ItemID, &it.Score); err != nil {
 			return nil, err
 		}
@@ -350,21 +339,15 @@ func (s *Store) EnsureEventTypeDefaults(ctx context.Context) error {
 	return err
 }
 
-// ItemMeta holds lightweight metadata required for diversity and caps.
-type ItemMeta struct {
-	ItemID string
-	Tags   []string
-}
-
 // ListItemsMeta returns tags for the given item IDs.
 func (s *Store) ListItemsMeta(
 	ctx context.Context,
 	orgID uuid.UUID,
 	ns string,
 	itemIDs []string,
-) (map[string]ItemMeta, error) {
+) (map[string]types.ItemMeta, error) {
 	if len(itemIDs) == 0 {
-		return map[string]ItemMeta{}, nil
+		return map[string]types.ItemMeta{}, nil
 	}
 	rows, err := s.Pool.Query(ctx, `
 SELECT item_id, tags
@@ -378,14 +361,14 @@ WHERE org_id = $1
 	}
 	defer rows.Close()
 
-	out := make(map[string]ItemMeta, len(itemIDs))
+	out := make(map[string]types.ItemMeta, len(itemIDs))
 	for rows.Next() {
 		var id string
 		var tags []string
 		if err := rows.Scan(&id, &tags); err != nil {
 			return nil, err
 		}
-		out[id] = ItemMeta{ItemID: id, Tags: tags}
+		out[id] = types.ItemMeta{ItemID: id, Tags: tags}
 	}
 	return out, rows.Err()
 }

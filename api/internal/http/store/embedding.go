@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"recsys/internal/types"
 
 	"github.com/google/uuid"
 )
@@ -16,7 +17,7 @@ func (s *Store) SimilarByEmbeddingTopK(
 	ns string,
 	itemID string,
 	k int,
-) ([]ScoredItem, error) {
+) ([]types.ScoredItem, error) {
 	if k <= 0 {
 		k = 20
 	}
@@ -42,9 +43,9 @@ LIMIT $4
 	}
 	defer rows.Close()
 
-	out := make([]ScoredItem, 0, k)
+	out := make([]types.ScoredItem, 0, k)
 	for rows.Next() {
-		var it ScoredItem
+		var it types.ScoredItem
 		if err := rows.Scan(&it.ItemID, &it.Score); err != nil {
 			return nil, err
 		}
