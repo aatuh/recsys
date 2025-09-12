@@ -1,11 +1,11 @@
 import React, { useMemo } from "react";
-import type { types_ScoredItem } from "../lib/api-client";
+import type { internal_http_types_ScoredItem } from "../lib/api-client";
 
 type Blend = { pop: number; cooc: number; als: number };
 
 interface ExplainModalProps {
   open: boolean;
-  item: types_ScoredItem | null;
+  item: internal_http_types_ScoredItem | null;
   blend: Blend;
   onClose: () => void;
 }

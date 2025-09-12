@@ -3,7 +3,9 @@ package config
 import (
 	"errors"
 	"strconv"
+	"strings"
 
+	"recsys/internal/bandit"
 	"recsys/shared/util"
 
 	"github.com/google/uuid"
@@ -27,6 +29,7 @@ type Config struct {
 	BlendAlpha           float64
 	BlendBeta            float64
 	BlendGamma           float64
+	BanditAlgo           bandit.Algorithm
 }
 
 func Load() (Config, error) {
@@ -39,11 +42,10 @@ func Load() (Config, error) {
 		return c, err
 	}
 	c.DefaultOrgID = id
-
 	hl := util.MustGetEnv("POPULARITY_HALFLIFE_DAYS")
 	v, err := strconv.ParseFloat(hl, 64)
 	if err != nil || v <= 0 {
-		panic("POPULARITY_HALFLIFE_DAYS must be a positive number")
+		return c, errors.New("POPULARITY_HALFLIFE_DAYS must be a positive number")
 	}
 	c.HalfLifeDays = v
 
@@ -51,38 +53,38 @@ func Load() (Config, error) {
 	if vv, err := strconv.ParseFloat(util.MustGetEnv("POPULARITY_WINDOW_DAYS"), 64); err == nil && vv > 0 {
 		c.PopularityWindowDays = vv
 	} else {
-		panic("POPULARITY_WINDOW_DAYS must be a positive number")
+		return c, errors.New("POPULARITY_WINDOW_DAYS must be a positive number")
 	}
 	if vv, err := strconv.ParseFloat(util.MustGetEnv("COVIS_WINDOW_DAYS"), 64); err == nil && vv > 0 {
 		c.CoVisWindowDays = vv
 	} else {
-		panic("COVIS_WINDOW_DAYS must be a positive number")
+		return c, errors.New("COVIS_WINDOW_DAYS must be a positive number")
 	}
 
 	// Optional fan-out cap (not strictly required in Stage 1).
 	if iv, err := strconv.Atoi(util.MustGetEnv("POPULARITY_FANOUT")); err == nil && iv > 0 {
 		c.PopularityFanout = iv
 	} else {
-		panic("POPULARITY_FANOUT must be a positive number")
+		return c, errors.New("POPULARITY_FANOUT must be a positive number")
 	}
 
 	// MMR lambda in [0,1]. 0 disables MMR.
 	fv, err := strconv.ParseFloat(util.MustGetEnv("MMR_LAMBDA"), 64)
 	if err != nil || fv < 0 || fv > 1 {
-		panic("MMR_LAMBDA must be a float in [0,1]")
+		return c, errors.New("MMR_LAMBDA must be a float in [0,1]")
 	}
 	c.MMRLambda = fv
 
 	// Caps. 0 disables.
 	iv, err := strconv.Atoi(util.MustGetEnv("BRAND_CAP"))
 	if err != nil || iv < 0 {
-		panic("BRAND_CAP must be a non-negative integer")
+		return c, errors.New("BRAND_CAP must be a non-negative integer")
 	}
 	c.BrandCap = iv
 
 	iv, err = strconv.Atoi(util.MustGetEnv("CATEGORY_CAP"))
 	if err != nil || iv < 0 {
-		panic("CATEGORY_CAP must be a non-negative integer")
+		return c, errors.New("CATEGORY_CAP must be a non-negative integer")
 	}
 	c.CategoryCap = iv
 
@@ -91,7 +93,7 @@ func Load() (Config, error) {
 
 	fv, err = strconv.ParseFloat(util.MustGetEnv("PURCHASED_WINDOW_DAYS"), 64)
 	if err != nil || fv <= 0 {
-		panic("PURCHASED_WINDOW_DAYS must be a positive number")
+		return c, errors.New("PURCHASED_WINDOW_DAYS must be a positive number")
 	}
 	c.PurchasedWindowDays = fv
 
@@ -144,6 +146,17 @@ func Load() (Config, error) {
 		c.BlendGamma = f
 	} else {
 		return c, errors.New("BLEND_GAMMA must be >= 0")
+	}
+
+	// Bandit algorithm
+	ba := strings.ToLower(util.MustGetEnv("BANDIT_ALGO"))
+	switch ba {
+	case "thompson":
+		c.BanditAlgo = bandit.AlgorithmThompson
+	case "ucb1":
+		c.BanditAlgo = bandit.AlgorithmUCB1
+	default:
+		return c, errors.New("BANDIT_ALGO must be 'thompson' or 'ucb1'")
 	}
 
 	return c, nil

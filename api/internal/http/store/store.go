@@ -169,7 +169,7 @@ func (s *Store) PopularityTopK(
 	}
 	rows, err := s.Pool.Query(ctx, popularitySQL,
 		orgID, ns, halfLifeDays, k,
-		// $5..$9:
+		// $5..$10:
 		func() any {
 			if c != nil && c.CreatedAfter != nil {
 				return *c.CreatedAfter
@@ -199,6 +199,9 @@ func (s *Store) PopularityTopK(
 				return c.ExcludeItemIDs
 			}
 			return []string{}
+		}(),
+		func() any {
+			return time.Now()
 		}(),
 	)
 	if err != nil {
@@ -325,18 +328,6 @@ func (s *Store) ListEventTypeConfigEffective(ctx context.Context, orgID uuid.UUI
 		out = append(out, r)
 	}
 	return out, rows.Err()
-}
-
-func (s *Store) EnsureEventTypeDefaults(ctx context.Context) error {
-	_, err := s.Pool.Exec(ctx, `
-    INSERT INTO event_type_defaults(type, name, weight, half_life_days) VALUES
-      (0,'view',0.1,NULL),(1,'click',0.3,NULL),(2,'add',0.7,NULL),(3,'purchase',1.0,NULL),(4,'custom',0.2,NULL)
-    ON CONFLICT (type) DO UPDATE
-      SET name=EXCLUDED.name,
-          weight=EXCLUDED.weight,
-          half_life_days=EXCLUDED.half_life_days;
-  `)
-	return err
 }
 
 // ListItemsMeta returns tags for the given item IDs.

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"recsys/internal/bandit"
 	"recsys/internal/http/common"
 	"recsys/internal/http/store"
 	"recsys/internal/http/types"
@@ -33,6 +34,7 @@ type Handler struct {
 	BlendAlpha           float64
 	BlendBeta            float64
 	BlendGamma           float64
+	BanditAlgo           bandit.Algorithm
 }
 
 // ItemsUpsert godoc

@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: dev down logs swag migrate-apply migrate-status migrate-clean tidy test
+.PHONY: dev down logs swag migrate-build migrate-up migrate-down migrate-status migrate-new tidy test
 
 help:
 	@echo "Usage: make <target>"
@@ -9,10 +9,9 @@ help:
 	@echo "  down            - Stop the development environment"
 	@echo "  logs            - View the logs of the development environment"
 	@echo "  swag            - Generate the swagger files"
-	@echo "  migrate-diff    - Generate the migration files"
-	@echo "  migrate-apply   - Apply the migration files"
+	@echo "  migrate-up      - Apply the migrations"
+	@echo "  migrate-down    - Rollback the migrations"
 	@echo "  migrate-status  - Show the status of the migrations"
-	@echo "  migrate-clean   - Clean database and remove Atlas revision tables"
 	@echo "  tidy            - Tidy the go modules"
 	@echo "  test            - Run the tests"
 
@@ -29,24 +28,14 @@ swag:
 	# generate swagger files inside the api container
 	docker compose exec api swag init -g cmd/api/main.go -o ./swagger
 
-migrate-diff:
-	docker compose run --rm atlas migrate diff \
-	--env dev \
-	--dev-url "postgres://recsys:recsys@db:5432/recsys?sslmode=disable" \
-	--dir "file://migrations" \
-	--to  "file://schema.hcl"
+migrate-up:
+	docker compose exec api sh -c "go run ./cmd/migrate -dir \$$MIGRATIONS_DIR up"
 
-migrate-apply:
-	docker compose run --rm atlas \
-	  migrate apply --env dev
+migrate-down:
+	docker compose exec api sh -c "go run ./cmd/migrate -dir \$$MIGRATIONS_DIR --allow-down down"
 
 migrate-status:
-	docker compose run --rm atlas \
-	  migrate status --env dev
-
-migrate-clean:
-	docker compose exec db psql -U recsys -d recsys -c "DROP TABLE IF EXISTS atlas_schema_revisions CASCADE;"
-	docker compose exec db psql -U recsys -d recsys -c "DROP SCHEMA IF EXISTS atlas CASCADE;"
+	docker compose exec api sh -c "go run ./cmd/migrate -dir \$$MIGRATIONS_DIR status"
 
 tidy:
 	docker compose exec api go mod tidy

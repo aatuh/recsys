@@ -15,7 +15,7 @@ import {
 } from "./apiService";
 import type { TraitConfig } from "../components/UserTraitsEditor";
 import type { ItemConfig, PriceRange } from "../components/ItemConfigEditor";
-import type { EventTypeConfig } from "../App";
+import type { EventTypeConfig } from "../types";
 
 /**
  * Seeding service for generating and uploading synthetic data.

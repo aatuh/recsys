@@ -13,7 +13,7 @@ export function NamespaceSection({
   apiBase,
 }: NamespaceSectionProps) {
   return (
-    <Section title="1) Namespace">
+    <Section title="Namespace">
       <Row>
         <Label text="Namespace">
           <TextInput

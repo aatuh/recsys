@@ -302,3 +302,219 @@ table "event_type_config" {
     expr = "type >= 0"
   }
 }
+
+table "bandit_policies" {
+  schema = schema.public
+
+  column "org_id" {
+    type = uuid
+    null = false
+  }
+  column "namespace" {
+    type = text
+    null = false
+  }
+  column "policy_id" {
+    type = text
+    null = false
+  }
+  column "name" {
+    type = text
+    null = false
+  }
+  column "is_active" {
+    type = boolean
+    null = false
+    default = true
+  }
+  column "config" {
+    type = jsonb
+    null = false
+  }
+  column "created_at" {
+    type = timestamptz
+    null = false
+    default = sql("now()")
+  }
+  column "updated_at" {
+    type = timestamptz
+    null = false
+    default = sql("now()")
+  }
+
+  primary_key { columns = [column.org_id, column.namespace, column.policy_id] }
+
+  index "bandit_policies_active_idx" {
+    columns = [column.org_id, column.namespace]
+    where   = "is_active = true"
+  }
+}
+
+table "bandit_stats" {
+  schema = schema.public
+
+  column "org_id" {
+    type = uuid
+    null = false
+  }
+  column "namespace" {
+    type = text
+    null = false
+  }
+  column "surface" {
+    type = text
+    null = false
+  }
+  column "bucket_key" {
+    type = text
+    null = false
+  }
+  column "policy_id" {
+    type = text
+    null = false
+  }
+  column "algo" {
+    type = text
+    null = false
+    comment = "thompson | ucb1"
+  }
+  column "trials" {
+    type = bigint
+    null = false
+    default = 0
+  }
+  column "successes" {
+    type = bigint
+    null = false
+    default = 0
+  }
+  column "alpha" {
+    type = double_precision
+    null = false
+    default = 1.0
+  }
+  column "beta" {
+    type = double_precision
+    null = false
+    default = 1.0
+  }
+  column "updated_at" {
+    type = timestamptz
+    null = false
+    default = sql("now()")
+  }
+
+  primary_key { columns = [column.org_id, column.namespace, column.surface, column.bucket_key, column.policy_id, column.algo] }
+}
+
+table "bandit_decisions_log" {
+  schema = schema.public
+
+  column "id" {
+    type = bigserial
+    null = false
+  }
+  column "ts" {
+    type = timestamptz
+    null = false
+    default = sql("now()")
+  }
+  column "org_id" {
+    type = uuid
+    null = false
+  }
+  column "namespace" {
+    type = text
+    null = false
+  }
+  column "surface" {
+    type = text
+    null = false
+  }
+  column "bucket_key" {
+    type = text
+    null = false
+  }
+  column "policy_id" {
+    type = text
+    null = false
+  }
+  column "algo" {
+    type = text
+    null = false
+  }
+  column "explore" {
+    type = boolean
+    null = false
+  }
+  column "request_id" {
+    type = text
+    null = true
+  }
+  column "meta" {
+    type = jsonb
+    null = true
+  }
+
+  primary_key { columns = [column.id] }
+
+  index "bandit_decisions_idx" {
+    columns = [column.org_id, column.namespace, column.surface, column.bucket_key]
+  }
+}
+
+table "bandit_rewards_log" {
+  schema = schema.public
+
+  column "id" {
+    type = bigserial
+    null = false
+  }
+  column "ts" {
+    type = timestamptz
+    null = false
+    default = sql("now()")
+  }
+  column "org_id" {
+    type = uuid
+    null = false
+  }
+  column "namespace" {
+    type = text
+    null = false
+  }
+  column "surface" {
+    type = text
+    null = false
+  }
+  column "bucket_key" {
+    type = text
+    null = false
+  }
+  column "policy_id" {
+    type = text
+    null = false
+  }
+  column "algo" {
+    type = text
+    null = false
+  }
+  column "reward" {
+    type = boolean
+    null = false
+  }
+  column "request_id" {
+    type = text
+    null = true
+  }
+  column "meta" {
+    type = jsonb
+    null = true
+  }
+
+  primary_key { columns = [column.id] }
+
+  index "bandit_rewards_idx" {
+    columns = [column.org_id, column.namespace, column.surface, column.bucket_key]
+  }
+}

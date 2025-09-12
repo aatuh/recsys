@@ -2,8 +2,11 @@ package main
 
 import (
 	"context"
+	"database/sql"
+	"log"
 	"net/http"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -13,7 +16,9 @@ import (
 	"recsys/internal/http/handlers"
 	httpmiddleware "recsys/internal/http/middleware"
 	"recsys/internal/http/store"
+	"recsys/internal/migrator"
 	"recsys/shared/util"
+	"recsys/swagger"
 
 	httpSwagger "github.com/swaggo/http-swagger"
 
@@ -27,9 +32,11 @@ import (
 // @version      0.0.1
 // @description  Domain-agnostic recommendation service.
 // @BasePath     /
-
+//
 // @host         localhost:8000
 // @schemes      https
+// Note: The host and schemes are dynamically configured at runtime using
+// environment variables. Generated docs will use these above values.
 
 func main() {
 	logger, _ := zap.NewDevelopment()
@@ -46,6 +53,9 @@ func main() {
 	}
 	debugCfg := common.LoadDebugConfig()
 
+	// Configure Swagger dynamically based on environment variables
+	configureSwagger(serverCfg)
+
 	// Inject debug config into common package
 	common.SetDebugConfig(debugCfg)
 
@@ -59,11 +69,36 @@ func main() {
 		logger.Fatal("db not reachable", zap.Error(err))
 	}
 
+	// Run migrations on start
+	if util.MustGetEnv("MIGRATE_ON_START") == "true" {
+		sqlDB, err := sql.Open("pgx", cfg.DatabaseURL)
+		if err != nil {
+			log.Fatalf("open sql db: %v", err)
+		}
+		defer sqlDB.Close()
+
+		r := migrator.New(sqlDB, nil, migrator.Options{
+			MigrationsDir: util.MustGetEnv("MIGRATIONS_DIR"),
+			Logger:        func(f string, a ...any) { log.Printf(f, a...) },
+		})
+		if err := r.Up(ctx); err != nil {
+			log.Fatalf("migrate on start: %v", err)
+		}
+	}
+
 	r := chi.NewRouter()
+	r.Use(httpmiddleware.CORS())
 	r.Use(middleware.RequestID, middleware.RealIP)
 	r.Use(httpmiddleware.RequestLogger(logger))
 	r.Use(httpmiddleware.JSONRecovererWithLogger(logger))
 	r.Use(httpmiddleware.ErrorLogger(logger))
+
+	// Global OPTIONS fallback to prevent 405 on unmatched preflights.
+	// The CORS middleware should handle most cases, but this ensures any
+	// path still returns 204 for OPTIONS.
+	r.Options("/*", func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	})
 
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -79,17 +114,16 @@ func main() {
 		httpSwagger.URL("/swagger/swagger.json"),
 	))
 
-	// Serve swagger.json file
+	// Serve swagger.json file dynamically
 	r.Get("/swagger/swagger.json", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		http.ServeFile(w, r, "swagger/swagger.json")
+		// Use the dynamically configured SwaggerInfo instead of static file
+		swaggerJSON := swagger.SwaggerInfo.ReadDoc()
+		_, _ = w.Write([]byte(swaggerJSON))
 	})
 
 	// v1 endpoints
 	st := store.New(pool)
-	if err := st.EnsureEventTypeDefaults(ctx); err != nil {
-		logger.Fatal("failed to ensure event type defaults", zap.Error(err))
-	}
 	hs := &handlers.Handler{
 		Store:                st,
 		DefaultOrg:           cfg.DefaultOrgID,
@@ -108,6 +142,7 @@ func main() {
 		BlendAlpha:           cfg.BlendAlpha,
 		BlendBeta:            cfg.BlendBeta,
 		BlendGamma:           cfg.BlendGamma,
+		BanditAlgo:           cfg.BanditAlgo,
 	}
 	r.Post("/v1/items:upsert", hs.ItemsUpsert)
 	r.Post("/v1/users:upsert", hs.UsersUpsert)
@@ -124,6 +159,13 @@ func main() {
 	r.Post("/v1/users:delete", hs.DeleteUsers)
 	r.Post("/v1/items:delete", hs.DeleteItems)
 	r.Post("/v1/events:delete", hs.DeleteEvents)
+
+	// Bandit endpoints
+	r.Post("/v1/bandit/policies:upsert", hs.BanditPoliciesUpsert)
+	r.Get("/v1/bandit/policies", hs.BanditPoliciesList)
+	r.Post("/v1/bandit/decide", hs.BanditDecide)
+	r.Post("/v1/bandit/reward", hs.BanditReward)
+	r.Post("/v1/bandit/recommendations", hs.RecommendWithBandit)
 
 	srv := &http.Server{
 		Addr:              ":" + serverCfg.Port,
@@ -148,12 +190,23 @@ func main() {
 }
 
 type ServerConfig struct {
-	Port string
+	Port           string
+	SwaggerHost    string
+	SwaggerSchemes []string
 }
 
 func LoadServerConfig() ServerConfig {
+	schemesStr := util.MustGetEnv("SWAGGER_SCHEMES")
+	schemes := strings.Split(schemesStr, ",")
+	// Trim whitespace from each scheme
+	for i, scheme := range schemes {
+		schemes[i] = strings.TrimSpace(scheme)
+	}
+
 	return ServerConfig{
-		Port: util.MustGetEnv("API_PORT"),
+		Port:           util.MustGetEnv("API_PORT"),
+		SwaggerHost:    util.MustGetEnv("SWAGGER_HOST"),
+		SwaggerSchemes: schemes,
 	}
 }
 
@@ -161,4 +214,10 @@ func pingDB(ctx context.Context, pool *pgxpool.Pool) error {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	return pool.Ping(ctx)
+}
+
+// configureSwagger sets the Swagger host and schemes based on server configuration.
+func configureSwagger(cfg ServerConfig) {
+	swagger.SwaggerInfo.Host = cfg.SwaggerHost
+	swagger.SwaggerInfo.Schemes = cfg.SwaggerSchemes
 }

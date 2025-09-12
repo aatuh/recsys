@@ -3,6 +3,9 @@
  */
 
 export function randChoice<T>(arr: T[]): T {
+  if (arr.length === 0) {
+    throw new Error("Cannot select from empty array");
+  }
   return arr[Math.floor(Math.random() * arr.length)]!;
 }
 

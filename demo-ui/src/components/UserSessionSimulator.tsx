@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useEffect, useCallback, useMemo } from "react";
 import {
   Section,
   Row,
@@ -11,14 +11,24 @@ import {
 import { DataTable, Column } from "./DataTable";
 import { EventSequenceBuilder } from "./EventSequenceBuilder";
 import { UserJourneyVisualization } from "./UserJourneyVisualization";
-import { batchEvents, recommend } from "../services/apiService";
-import type { types_ScoredItem } from "../lib/api-client";
+import {
+  batchEvents,
+  recommend,
+  listItems,
+  listUsers,
+} from "../services/apiService";
+import type { internal_http_types_ScoredItem } from "../lib/api-client";
 import { randChoice, randInt, iso, daysAgo } from "../utils/helpers";
+
+// Import types from context
+import type { UserEvent, EventSequence } from "../contexts/ViewStateContext";
 
 interface UserSessionSimulatorProps {
   namespace: string;
   generatedUsers: string[];
+  setGeneratedUsers: (users: string[]) => void;
   generatedItems: string[];
+  setGeneratedItems: (items: string[]) => void;
   eventTypes: Array<{
     id: string;
     title: string;
@@ -28,30 +38,50 @@ interface UserSessionSimulatorProps {
   }>;
   blend: { pop: number; cooc: number; als: number };
   k: number;
-}
-
-interface EventSequence {
-  id: string;
-  name: string;
-  description: string;
-  events: Array<{
-    type: number;
-    delayMs: number;
-    itemSelection: "random" | "recommended" | "similar" | "specific";
-    specificItemId?: string;
-    value?: number;
-  }>;
-}
-
-interface UserEvent {
-  id: string;
-  user_id: string;
-  item_id: string;
-  type: number;
-  typeName: string;
-  ts: string;
-  value: number;
-  addedAt: Date;
+  userSession: {
+    selectedUserId: string;
+    userEvents: UserEvent[];
+    currentRecommendations: internal_http_types_ScoredItem[] | null;
+    recommendationHistory: Array<{
+      timestamp: Date;
+      events: UserEvent[];
+      recommendations: internal_http_types_ScoredItem[];
+    }>;
+    isSimulating: boolean;
+    selectedSequence: string;
+    customEventType: number;
+    customItemId: string;
+    autoRefresh: boolean;
+    simulationSpeed: number;
+    log: string;
+    showSequenceBuilder: boolean;
+    customSequences: EventSequence[];
+    showJourneyViz: boolean;
+    hasAutoLoaded: boolean;
+  };
+  setUserSession: React.Dispatch<
+    React.SetStateAction<{
+      selectedUserId: string;
+      userEvents: UserEvent[];
+      currentRecommendations: internal_http_types_ScoredItem[] | null;
+      recommendationHistory: Array<{
+        timestamp: Date;
+        events: UserEvent[];
+        recommendations: internal_http_types_ScoredItem[];
+      }>;
+      isSimulating: boolean;
+      selectedSequence: string;
+      customEventType: number;
+      customItemId: string;
+      autoRefresh: boolean;
+      simulationSpeed: number;
+      log: string;
+      showSequenceBuilder: boolean;
+      customSequences: EventSequence[];
+      showJourneyViz: boolean;
+      hasAutoLoaded: boolean;
+    }>
+  >;
 }
 
 const PREDEFINED_SEQUENCES: EventSequence[] = [
@@ -113,46 +143,30 @@ const PREDEFINED_SEQUENCES: EventSequence[] = [
 export function UserSessionSimulator({
   namespace,
   generatedUsers,
+  setGeneratedUsers,
   generatedItems,
+  setGeneratedItems,
   eventTypes,
   blend,
   k,
+  userSession,
+  setUserSession,
 }: UserSessionSimulatorProps) {
-  const [selectedUserId, setSelectedUserId] = useState("");
-  const [userEvents, setUserEvents] = useState<UserEvent[]>([]);
-  const [currentRecommendations, setCurrentRecommendations] = useState<
-    types_ScoredItem[] | null
-  >(null);
-  const [recommendationHistory, setRecommendationHistory] = useState<
-    Array<{
-      timestamp: Date;
-      events: UserEvent[];
-      recommendations: types_ScoredItem[];
-    }>
-  >([]);
-  const [isSimulating, setIsSimulating] = useState(false);
-  const [selectedSequence, setSelectedSequence] = useState<string>("");
-  const [customEventType, setCustomEventType] = useState<number>(0);
-  const [customItemId, setCustomItemId] = useState("");
-  const [autoRefresh, setAutoRefresh] = useState(true);
-  const [simulationSpeed, setSimulationSpeed] = useState(1); // 1x, 2x, 5x, 10x
-  const [log, setLog] = useState<string>("");
-  const [showSequenceBuilder, setShowSequenceBuilder] = useState(false);
-  const [customSequences, setCustomSequences] = useState<EventSequence[]>([]);
-  const [showJourneyViz, setShowJourneyViz] = useState(false);
+  const appendLog = useCallback(
+    (message: string) => {
+      const timestamp = new Date().toLocaleTimeString();
+      setUserSession((prev) => ({
+        ...prev,
+        log: `${prev.log}${prev.log ? "\n" : ""}[${timestamp}] ${message}`,
+      }));
+    },
+    [setUserSession]
+  );
 
-  const appendLog = useCallback((message: string) => {
-    const timestamp = new Date().toLocaleTimeString();
-    setLog((prev) => `${prev}${prev ? "\n" : ""}[${timestamp}] ${message}`);
-  }, []);
-
-  // Auto-suggest first available user if none selected
-  useEffect(() => {
-    if (generatedUsers.length > 0 && !selectedUserId) {
-      // Just show a hint in the placeholder, don't auto-select
-      appendLog(`Tip: Try using ${generatedUsers[0]} or any other user ID`);
-    }
-  }, [generatedUsers, selectedUserId, appendLog]);
+  // Get the first available user for fallback
+  const firstUser = useMemo(() => {
+    return generatedUsers.length > 0 ? generatedUsers[0] : "user-0001";
+  }, [generatedUsers]);
 
   const getEventTypeName = useCallback(
     (typeIndex: number) => {
@@ -176,12 +190,22 @@ export function UserSessionSimulator({
   );
 
   const refreshRecommendations = useCallback(async () => {
-    if (!selectedUserId) return;
+    const userId = userSession.selectedUserId || firstUser;
+    if (!userId) return;
 
-    const recommendations = await getRecommendations(selectedUserId);
-    setCurrentRecommendations(recommendations);
+    const recommendations = await getRecommendations(userId);
+    setUserSession((prev) => ({
+      ...prev,
+      currentRecommendations: recommendations,
+    }));
     appendLog(`Updated recommendations (${recommendations.length} items)`);
-  }, [selectedUserId, getRecommendations, appendLog]);
+  }, [
+    userSession.selectedUserId,
+    firstUser,
+    getRecommendations,
+    appendLog,
+    setUserSession,
+  ]);
 
   const addEvent = useCallback(
     async (userId: string, itemId: string, type: number, value: number = 1) => {
@@ -196,8 +220,11 @@ export function UserSessionSimulator({
         addedAt: new Date(),
       };
 
-      // Add to local state
-      setUserEvents((prev) => [...prev, event]);
+      // Add to context state
+      setUserSession((prev) => ({
+        ...prev,
+        userEvents: [...prev.userEvents, event],
+      }));
 
       // Send to API
       try {
@@ -205,7 +232,7 @@ export function UserSessionSimulator({
         appendLog(`Added ${event.typeName} event for ${userId} on ${itemId}`);
 
         // Refresh recommendations if auto-refresh is enabled
-        if (autoRefresh) {
+        if (userSession.autoRefresh) {
           setTimeout(refreshRecommendations, 500); // Small delay to ensure event is processed
         }
       } catch (error) {
@@ -216,8 +243,9 @@ export function UserSessionSimulator({
       namespace,
       getEventTypeName,
       appendLog,
-      autoRefresh,
+      userSession.autoRefresh,
       refreshRecommendations,
+      setUserSession,
     ]
   );
 
@@ -226,36 +254,53 @@ export function UserSessionSimulator({
       selection: "random" | "recommended" | "similar" | "specific",
       specificItemId?: string
     ): string => {
+      // Fallback item ID when no items are available
+      const fallbackItemId = "item-0001";
+
+      const getRandomItem = (): string => {
+        if (generatedItems.length === 0) {
+          appendLog(
+            `⚠️ No generated items available, using fallback: ${fallbackItemId}`
+          );
+          return fallbackItemId;
+        }
+        return randChoice(generatedItems);
+      };
+
       switch (selection) {
         case "random":
-          return randChoice(generatedItems);
+          return getRandomItem();
         case "recommended":
-          if (currentRecommendations && currentRecommendations.length > 0) {
-            const rec = randChoice(currentRecommendations);
-            return rec.item_id || randChoice(generatedItems);
+          if (
+            userSession.currentRecommendations &&
+            userSession.currentRecommendations.length > 0
+          ) {
+            const rec = randChoice(userSession.currentRecommendations);
+            return rec.item_id || getRandomItem();
           }
-          return randChoice(generatedItems); // fallback
+          return getRandomItem(); // fallback
         case "similar":
           // For now, just return a random item
           // In a real implementation, you'd call the similar items API
-          return randChoice(generatedItems);
+          return getRandomItem();
         case "specific":
-          return specificItemId || randChoice(generatedItems);
+          return specificItemId || getRandomItem();
         default:
-          return randChoice(generatedItems);
+          return getRandomItem();
       }
     },
-    [generatedItems, currentRecommendations]
+    [generatedItems, userSession.currentRecommendations, appendLog]
   );
 
   const runEventSequence = useCallback(
     async (sequence: EventSequence) => {
-      if (!selectedUserId) {
-        appendLog("No user selected");
+      const userId = userSession.selectedUserId || firstUser;
+      if (!userId) {
+        appendLog("No user available");
         return;
       }
 
-      setIsSimulating(true);
+      setUserSession((prev) => ({ ...prev, isSimulating: true }));
       appendLog(`Starting sequence: ${sequence.name}`);
 
       for (let i = 0; i < sequence.events.length; i++) {
@@ -268,7 +313,7 @@ export function UserSessionSimulator({
         );
 
         await addEvent(
-          selectedUserId,
+          userId,
           itemId,
           eventConfig.type,
           eventConfig.value || 1
@@ -276,73 +321,241 @@ export function UserSessionSimulator({
 
         // Wait for the specified delay (adjusted by simulation speed)
         if (i < sequence.events.length - 1) {
-          const delay = eventConfig.delayMs / simulationSpeed;
+          const delay = eventConfig.delayMs / userSession.simulationSpeed;
           await new Promise((resolve) => setTimeout(resolve, delay));
         }
       }
 
-      setIsSimulating(false);
+      setUserSession((prev) => ({ ...prev, isSimulating: false }));
       appendLog(`Completed sequence: ${sequence.name}`);
 
       // Save recommendation snapshot
-      const recommendations = await getRecommendations(selectedUserId);
-      setRecommendationHistory((prev) => [
+      const recommendations = await getRecommendations(userId);
+      setUserSession((prev) => ({
         ...prev,
-        {
-          timestamp: new Date(),
-          events: [...userEvents],
-          recommendations: recommendations.map((rec) => ({
-            item_id: rec.item_id || "",
-            score: rec.score,
-          })),
-        },
-      ]);
+        recommendationHistory: [
+          ...prev.recommendationHistory,
+          {
+            timestamp: new Date(),
+            events: [...prev.userEvents],
+            recommendations: recommendations.map((rec) => ({
+              item_id: rec.item_id || "",
+              score: rec.score,
+            })),
+          },
+        ],
+      }));
     },
     [
-      selectedUserId,
+      userSession.selectedUserId,
+      userSession.simulationSpeed,
+      firstUser,
       addEvent,
       selectItemForEvent,
-      simulationSpeed,
       appendLog,
       getRecommendations,
-      userEvents,
+      setUserSession,
     ]
   );
 
   const saveCustomSequence = useCallback(
     (sequence: EventSequence) => {
-      setCustomSequences((prev) => [...prev, sequence]);
+      setUserSession((prev) => ({
+        ...prev,
+        customSequences: [...prev.customSequences, sequence],
+      }));
       appendLog(`Saved custom sequence: ${sequence.name}`);
     },
-    [appendLog]
+    [appendLog, setUserSession]
   );
 
   const allSequences = useMemo(() => {
-    return [...PREDEFINED_SEQUENCES, ...customSequences];
-  }, [customSequences]);
+    return [...PREDEFINED_SEQUENCES, ...userSession.customSequences];
+  }, [userSession.customSequences]);
 
   const addCustomEvent = useCallback(async () => {
-    if (!selectedUserId) {
-      appendLog("No user selected");
+    const userId = userSession.selectedUserId || firstUser;
+    if (!userId) {
+      appendLog("No user available");
       return;
     }
 
-    const itemId = customItemId || randChoice(generatedItems);
-    await addEvent(selectedUserId, itemId, customEventType);
-  }, [selectedUserId, customItemId, customEventType, generatedItems, addEvent]);
+    const itemId =
+      userSession.customItemId ||
+      (generatedItems.length > 0 ? randChoice(generatedItems) : "item-0001");
+    await addEvent(userId, itemId, userSession.customEventType);
+  }, [
+    userSession.selectedUserId,
+    userSession.customItemId,
+    userSession.customEventType,
+    firstUser,
+    generatedItems,
+    addEvent,
+  ]);
 
   const clearUserEvents = useCallback(() => {
-    setUserEvents([]);
-    setRecommendationHistory([]);
-    setCurrentRecommendations(null);
+    setUserSession((prev) => ({
+      ...prev,
+      userEvents: [],
+      recommendationHistory: [],
+      currentRecommendations: null,
+    }));
     appendLog("Cleared user events and history");
-  }, [appendLog]);
+  }, [appendLog, setUserSession]);
+
+  const loadExistingItems = useCallback(async () => {
+    if (!namespace) {
+      appendLog("No namespace selected");
+      return;
+    }
+
+    try {
+      setUserSession((prev) => ({ ...prev, hasAutoLoaded: false })); // Reset auto-load flag
+      appendLog("Loading existing items from database...");
+      const response = await listItems({
+        namespace,
+        limit: 1000, // Load up to 1000 items
+        offset: 0,
+      });
+
+      const itemIds = response.items
+        .map((item: any) => item.item_id)
+        .filter(Boolean);
+      setGeneratedItems(itemIds);
+      appendLog(`✅ Loaded ${itemIds.length} existing items from database`);
+    } catch (error) {
+      appendLog(`❌ Error loading items: ${error}`);
+    }
+  }, [namespace, setGeneratedItems, appendLog, setUserSession]);
+
+  const loadExistingUsers = useCallback(async () => {
+    if (!namespace) {
+      appendLog("No namespace selected");
+      return;
+    }
+
+    try {
+      setUserSession((prev) => ({ ...prev, hasAutoLoaded: false })); // Reset auto-load flag
+      appendLog("Loading existing users from database...");
+      const response = await listUsers({
+        namespace,
+        limit: 1000, // Load up to 1000 users
+        offset: 0,
+      });
+
+      const userIds = response.items
+        .map((user: any) => user.user_id)
+        .filter(Boolean);
+      setGeneratedUsers(userIds);
+      appendLog(`✅ Loaded ${userIds.length} existing users from database`);
+    } catch (error) {
+      appendLog(`❌ Error loading users: ${error}`);
+    }
+  }, [namespace, setGeneratedUsers, appendLog, setUserSession]);
+
+  const autoLoadExistingData = useCallback(async () => {
+    if (!namespace || userSession.hasAutoLoaded) {
+      return;
+    }
+
+    try {
+      setUserSession((prev) => ({ ...prev, hasAutoLoaded: true }));
+      appendLog("🔄 Auto-loading existing data from database...");
+
+      // Load both users and items in parallel
+      const [usersResponse, itemsResponse] = await Promise.all([
+        listUsers({ namespace, limit: 1000, offset: 0 }),
+        listItems({ namespace, limit: 1000, offset: 0 }),
+      ]);
+
+      const userIds = usersResponse.items
+        .map((user: any) => user.user_id)
+        .filter(Boolean);
+      const itemIds = itemsResponse.items
+        .map((item: any) => item.item_id)
+        .filter(Boolean);
+
+      setGeneratedUsers(userIds);
+      setGeneratedItems(itemIds);
+
+      appendLog(
+        `✅ Auto-loaded ${userIds.length} users and ${itemIds.length} items from database`
+      );
+    } catch (error) {
+      appendLog(`❌ Error auto-loading data: ${error}`);
+      setUserSession((prev) => ({ ...prev, hasAutoLoaded: false })); // Reset so it can try again
+    }
+  }, [
+    namespace,
+    userSession.hasAutoLoaded,
+    setGeneratedUsers,
+    setGeneratedItems,
+    appendLog,
+    setUserSession,
+  ]);
+
+  // Auto-load existing data when component mounts or namespace changes
+  useEffect(() => {
+    if (
+      namespace &&
+      generatedUsers.length === 0 &&
+      generatedItems.length === 0
+    ) {
+      autoLoadExistingData();
+    }
+  }, [
+    namespace,
+    generatedUsers.length,
+    generatedItems.length,
+    autoLoadExistingData,
+  ]);
+
+  const refreshAllData = useCallback(async () => {
+    if (!namespace) {
+      appendLog("No namespace selected");
+      return;
+    }
+
+    try {
+      setUserSession((prev) => ({ ...prev, hasAutoLoaded: false })); // Reset auto-load flag
+      appendLog("🔄 Refreshing all data from database...");
+
+      // Load both users and items in parallel
+      const [usersResponse, itemsResponse] = await Promise.all([
+        listUsers({ namespace, limit: 1000, offset: 0 }),
+        listItems({ namespace, limit: 1000, offset: 0 }),
+      ]);
+
+      const userIds = usersResponse.items
+        .map((user: any) => user.user_id)
+        .filter(Boolean);
+      const itemIds = itemsResponse.items
+        .map((item: any) => item.item_id)
+        .filter(Boolean);
+
+      setGeneratedUsers(userIds);
+      setGeneratedItems(itemIds);
+
+      appendLog(
+        `✅ Refreshed ${userIds.length} users and ${itemIds.length} items from database`
+      );
+    } catch (error) {
+      appendLog(`❌ Error refreshing data: ${error}`);
+    }
+  }, [
+    namespace,
+    setGeneratedUsers,
+    setGeneratedItems,
+    appendLog,
+    setUserSession,
+  ]);
 
   const exportUserJourney = useCallback(() => {
+    const userId = userSession.selectedUserId || firstUser;
     const journey = {
-      userId: selectedUserId,
-      events: userEvents,
-      recommendationHistory,
+      userId: userId,
+      events: userSession.userEvents,
+      recommendationHistory: userSession.recommendationHistory,
       timestamp: new Date().toISOString(),
     };
     const blob = new Blob([JSON.stringify(journey, null, 2)], {
@@ -351,11 +564,17 @@ export function UserSessionSimulator({
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `user-journey-${selectedUserId}-${Date.now()}.json`;
+    a.download = `user-journey-${userId}-${Date.now()}.json`;
     a.click();
     URL.revokeObjectURL(url);
     appendLog("Exported user journey");
-  }, [selectedUserId, userEvents, recommendationHistory, appendLog]);
+  }, [
+    userSession.selectedUserId,
+    userSession.userEvents,
+    userSession.recommendationHistory,
+    firstUser,
+    appendLog,
+  ]);
 
   // Event table columns
   const eventColumns: Column<UserEvent>[] = [
@@ -366,22 +585,30 @@ export function UserSessionSimulator({
     { key: "ts", title: "Timestamp", width: "150px", sortable: true },
   ];
 
+  // Recommendation history data type
+  interface HistoryDataEntry {
+    timestamp: string;
+    eventCount: number;
+    topRecommendation: string;
+    topScore: string;
+  }
+
   // Recommendation history columns
-  const historyColumns: Column<any>[] = [
+  const historyColumns: Column<HistoryDataEntry>[] = [
     { key: "timestamp", title: "Time", width: "120px", sortable: true },
     { key: "eventCount", title: "Events", width: "80px", align: "right" },
     { key: "topRecommendation", title: "Top Rec", width: "120px" },
     { key: "topScore", title: "Score", width: "80px", align: "right" },
   ];
 
-  const historyData = useMemo(() => {
-    return recommendationHistory.map((entry, index) => ({
+  const historyData = useMemo((): HistoryDataEntry[] => {
+    return userSession.recommendationHistory.map((entry, index) => ({
       timestamp: entry.timestamp.toLocaleTimeString(),
       eventCount: entry.events.length,
       topRecommendation: entry.recommendations[0]?.item_id || "None",
       topScore: entry.recommendations[0]?.score?.toFixed(3) || "0.000",
     }));
-  }, [recommendationHistory]);
+  }, [userSession.recommendationHistory]);
 
   return (
     <Section title="User Session Simulator">
@@ -413,45 +640,32 @@ export function UserSessionSimulator({
             User Selection
           </h3>
           <Row>
-            <Label text="User ID">
-              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                <TextInput
-                  placeholder="e.g., user-0001 or any valid user ID"
-                  value={selectedUserId}
-                  onChange={(e) => {
-                    setSelectedUserId(e.target.value);
-                    setUserEvents([]);
-                    setRecommendationHistory([]);
-                    setCurrentRecommendations(null);
-                  }}
-                  style={{ minWidth: 200 }}
-                />
-                {generatedUsers.length > 0 && (
-                  <Button
-                    onClick={() => {
-                      const randomUser = randChoice(generatedUsers);
-                      setSelectedUserId(randomUser);
-                      setUserEvents([]);
-                      setRecommendationHistory([]);
-                      setCurrentRecommendations(null);
-                    }}
-                    style={{
-                      padding: "4px 8px",
-                      fontSize: 11,
-                      backgroundColor: "#e3f2fd",
-                      color: "#1565c0",
-                    }}
-                  >
-                    Pick Random
-                  </Button>
-                )}
-              </div>
+            <Label text="User ID (leave blank to use first generated)">
+              <TextInput
+                placeholder={firstUser || "user-0001"}
+                value={userSession.selectedUserId}
+                onChange={(e) => {
+                  setUserSession((prev) => ({
+                    ...prev,
+                    selectedUserId: e.target.value,
+                    userEvents: [],
+                    recommendationHistory: [],
+                    currentRecommendations: null,
+                  }));
+                }}
+                style={{ minWidth: 200 }}
+              />
             </Label>
             <Label text="Auto-refresh recommendations">
               <input
                 type="checkbox"
-                checked={autoRefresh}
-                onChange={(e) => setAutoRefresh(e.target.checked)}
+                checked={userSession.autoRefresh}
+                onChange={(e) =>
+                  setUserSession((prev) => ({
+                    ...prev,
+                    autoRefresh: e.target.checked,
+                  }))
+                }
                 style={{ marginLeft: 8 }}
               />
             </Label>
@@ -465,15 +679,34 @@ export function UserSessionSimulator({
               </p>
             </div>
           )}
-          {selectedUserId && (
+          {generatedItems.length > 0 && (
+            <div style={{ marginTop: 4 }}>
+              <p style={{ fontSize: 12, color: "#666", margin: 0 }}>
+                Available items: {generatedItems.slice(0, 5).join(", ")}
+                {generatedItems.length > 5 &&
+                  ` (+${generatedItems.length - 5} more)`}
+              </p>
+            </div>
+          )}
+          {generatedItems.length === 0 && (
+            <div style={{ marginTop: 4 }}>
+              <p style={{ fontSize: 12, color: "#ff9800", margin: 0 }}>
+                ⚠️ No items available. Generate some items first or use specific
+                item IDs.
+              </p>
+            </div>
+          )}
+          {(userSession.selectedUserId || firstUser) && (
             <div style={{ marginTop: 8 }}>
               <p style={{ fontSize: 12, color: "#666", margin: 0 }}>
-                Events: {userEvents.length} | Recommendations:{" "}
-                {currentRecommendations?.length || 0} | History:{" "}
-                {recommendationHistory.length}
+                Using: {userSession.selectedUserId || firstUser} | Events:{" "}
+                {userSession.userEvents.length} | Recommendations:{" "}
+                {userSession.currentRecommendations?.length || 0} | History:{" "}
+                {userSession.recommendationHistory.length}
               </p>
-              {generatedUsers.length > 0 &&
-                !generatedUsers.includes(selectedUserId) && (
+              {userSession.selectedUserId &&
+                generatedUsers.length > 0 &&
+                !generatedUsers.includes(userSession.selectedUserId) && (
                   <p
                     style={{
                       fontSize: 11,
@@ -516,8 +749,13 @@ export function UserSessionSimulator({
           <Row>
             <Label text="Sequence">
               <select
-                value={selectedSequence}
-                onChange={(e) => setSelectedSequence(e.target.value)}
+                value={userSession.selectedSequence}
+                onChange={(e) =>
+                  setUserSession((prev) => ({
+                    ...prev,
+                    selectedSequence: e.target.value,
+                  }))
+                }
                 style={{
                   padding: "6px 8px",
                   border: "1px solid #ccc",
@@ -536,8 +774,13 @@ export function UserSessionSimulator({
             </Label>
             <Label text="Speed">
               <select
-                value={simulationSpeed}
-                onChange={(e) => setSimulationSpeed(Number(e.target.value))}
+                value={userSession.simulationSpeed}
+                onChange={(e) =>
+                  setUserSession((prev) => ({
+                    ...prev,
+                    simulationSpeed: Number(e.target.value),
+                  }))
+                }
                 style={{
                   padding: "6px 8px",
                   border: "1px solid #ccc",
@@ -556,21 +799,31 @@ export function UserSessionSimulator({
             <Button
               onClick={() => {
                 const sequence = allSequences.find(
-                  (s) => s.id === selectedSequence
+                  (s) => s.id === userSession.selectedSequence
                 );
                 if (sequence) runEventSequence(sequence);
               }}
-              disabled={!selectedSequence || !selectedUserId || isSimulating}
-              style={{ backgroundColor: "#4caf50" }}
+              disabled={
+                !userSession.selectedSequence || userSession.isSimulating
+              }
             >
-              {isSimulating ? "Running..." : "Run Sequence"}
+              {userSession.isSimulating ? "Running..." : "Run Sequence"}
             </Button>
             <Button
-              onClick={() => setShowSequenceBuilder(true)}
-              style={{ backgroundColor: "#9c27b0" }}
+              onClick={() =>
+                setUserSession((prev) => ({
+                  ...prev,
+                  showSequenceBuilder: true,
+                }))
+              }
             >
               Build Custom
             </Button>
+            {!userSession.selectedSequence && (
+              <span style={{ fontSize: 12, color: "#666", marginLeft: 8 }}>
+                Select a sequence above to enable
+              </span>
+            )}
           </div>
         </div>
 
@@ -597,8 +850,13 @@ export function UserSessionSimulator({
           <Row>
             <Label text="Event Type">
               <select
-                value={customEventType}
-                onChange={(e) => setCustomEventType(Number(e.target.value))}
+                value={userSession.customEventType}
+                onChange={(e) =>
+                  setUserSession((prev) => ({
+                    ...prev,
+                    customEventType: Number(e.target.value),
+                  }))
+                }
                 style={{
                   padding: "6px 8px",
                   border: "1px solid #ccc",
@@ -616,113 +874,110 @@ export function UserSessionSimulator({
             <Label text="Item ID (leave blank for random)">
               <TextInput
                 placeholder="item-0001 or leave blank"
-                value={customItemId}
-                onChange={(e) => setCustomItemId(e.target.value)}
+                value={userSession.customItemId}
+                onChange={(e) =>
+                  setUserSession((prev) => ({
+                    ...prev,
+                    customItemId: e.target.value,
+                  }))
+                }
                 style={{ minWidth: 150 }}
               />
             </Label>
           </Row>
           <div style={{ marginTop: 8 }}>
-            <Button
-              onClick={addCustomEvent}
-              disabled={!selectedUserId}
-              style={{ backgroundColor: "#2196f3" }}
-            >
-              Add Event
-            </Button>
+            <Button onClick={addCustomEvent}>Add Event</Button>
           </div>
         </div>
 
         {/* Actions */}
         <div style={{ marginBottom: 16 }}>
           <Row>
-            <Button
-              onClick={refreshRecommendations}
-              disabled={!selectedUserId}
-              style={{ backgroundColor: "#ff9800" }}
-            >
+            <Button onClick={refreshRecommendations}>
               Refresh Recommendations
             </Button>
-            <Button
-              onClick={clearUserEvents}
-              disabled={!selectedUserId}
-              style={{ backgroundColor: "#f44336" }}
-            >
-              Clear Events
-            </Button>
+            <Button onClick={clearUserEvents}>Clear Events</Button>
+            <Button onClick={refreshAllData}>Refresh Data</Button>
+            <Button onClick={loadExistingUsers}>Load Existing Users</Button>
+            <Button onClick={loadExistingItems}>Load Existing Items</Button>
             <Button
               onClick={exportUserJourney}
-              disabled={!selectedUserId || userEvents.length === 0}
-              style={{ backgroundColor: "#9c27b0" }}
+              disabled={userSession.userEvents.length === 0}
             >
               Export Journey
             </Button>
             <Button
-              onClick={() => setShowJourneyViz(!showJourneyViz)}
-              disabled={!selectedUserId}
-              style={{ backgroundColor: "#ff5722" }}
+              onClick={() =>
+                setUserSession((prev) => ({
+                  ...prev,
+                  showJourneyViz: !prev.showJourneyViz,
+                }))
+              }
             >
-              {showJourneyViz ? "Hide" : "Show"} Timeline
+              {userSession.showJourneyViz ? "Hide" : "Show"} Timeline
             </Button>
           </Row>
         </div>
 
         {/* Current Recommendations */}
-        {currentRecommendations && currentRecommendations.length > 0 && (
-          <div
-            style={{
-              border: "1px solid #e0e0e0",
-              borderRadius: 6,
-              padding: 12,
-              marginBottom: 16,
-              backgroundColor: "#f8f9fa",
-            }}
-          >
-            <h3
+        {userSession.currentRecommendations &&
+          userSession.currentRecommendations.length > 0 && (
+            <div
               style={{
-                marginTop: 0,
-                marginBottom: 8,
-                fontSize: 14,
-                color: "#333",
+                border: "1px solid #e0e0e0",
+                borderRadius: 6,
+                padding: 12,
+                marginBottom: 16,
+                backgroundColor: "#f8f9fa",
               }}
             >
-              Current Recommendations
-            </h3>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-              {currentRecommendations.slice(0, 10).map((rec, index) => (
-                <span
-                  key={rec.item_id}
-                  style={{
-                    backgroundColor: "#e3f2fd",
-                    color: "#1565c0",
-                    padding: "4px 8px",
-                    borderRadius: "4px",
-                    fontSize: "12px",
-                    border: "1px solid #bbdefb",
-                  }}
-                >
-                  #{index + 1} {rec.item_id} ({rec.score?.toFixed(3)})
-                </span>
-              ))}
+              <h3
+                style={{
+                  marginTop: 0,
+                  marginBottom: 8,
+                  fontSize: 14,
+                  color: "#333",
+                }}
+              >
+                Current Recommendations
+              </h3>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                {userSession.currentRecommendations
+                  .slice(0, 10)
+                  .map((rec, index) => (
+                    <span
+                      key={rec.item_id}
+                      style={{
+                        backgroundColor: "#e3f2fd",
+                        color: "#1565c0",
+                        padding: "4px 8px",
+                        borderRadius: "4px",
+                        fontSize: "12px",
+                        border: "1px solid #bbdefb",
+                      }}
+                    >
+                      #{index + 1} {rec.item_id} ({rec.score?.toFixed(3)})
+                    </span>
+                  ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Event History */}
-        {userEvents.length > 0 && (
+        {userSession.userEvents.length > 0 && (
           <div style={{ marginBottom: 16 }}>
             <h3 style={{ fontSize: 14, color: "#333", marginBottom: 8 }}>
-              Event History ({userEvents.length} events)
+              Event History ({userSession.userEvents.length} events)
             </h3>
             <DataTable
-              data={userEvents}
+              data={userSession.userEvents}
               columns={eventColumns}
               loading={false}
               selectable={false}
               pagination={{
                 page: 1,
                 pageSize: 10,
-                total: userEvents.length,
+                total: userSession.userEvents.length,
                 onPageChange: () => {},
                 onPageSizeChange: () => {},
               }}
@@ -731,11 +986,11 @@ export function UserSessionSimulator({
         )}
 
         {/* Recommendation History */}
-        {recommendationHistory.length > 0 && (
+        {userSession.recommendationHistory.length > 0 && (
           <div style={{ marginBottom: 16 }}>
             <h3 style={{ fontSize: 14, color: "#333", marginBottom: 8 }}>
-              Recommendation Evolution ({recommendationHistory.length}{" "}
-              snapshots)
+              Recommendation Evolution (
+              {userSession.recommendationHistory.length} snapshots)
             </h3>
             <DataTable
               data={historyData}
@@ -754,31 +1009,35 @@ export function UserSessionSimulator({
         )}
 
         {/* User Journey Visualization */}
-        {showJourneyViz && (
+        {userSession.showJourneyViz && (
           <UserJourneyVisualization
-            events={userEvents}
-            recommendationHistory={recommendationHistory.map((entry) => ({
-              ...entry,
-              recommendations: entry.recommendations.map((rec) => ({
-                item_id: rec.item_id || "",
-                score: rec.score,
-              })),
-            }))}
-            selectedUserId={selectedUserId}
+            events={userSession.userEvents}
+            recommendationHistory={userSession.recommendationHistory.map(
+              (entry) => ({
+                ...entry,
+                recommendations: entry.recommendations.map((rec) => ({
+                  item_id: rec.item_id || "",
+                  score: rec.score,
+                })),
+              })
+            )}
+            selectedUserId={userSession.selectedUserId}
           />
         )}
 
         {/* Log */}
-        <Code>{log || "Ready to simulate user events."}</Code>
+        <Code>{userSession.log || "Ready to simulate user events."}</Code>
       </div>
 
       {/* Event Sequence Builder Modal */}
-      {showSequenceBuilder && (
+      {userSession.showSequenceBuilder && (
         <EventSequenceBuilder
           eventTypes={eventTypes}
           generatedItems={generatedItems}
           onSaveSequence={saveCustomSequence}
-          onClose={() => setShowSequenceBuilder(false)}
+          onClose={() =>
+            setUserSession((prev) => ({ ...prev, showSequenceBuilder: false }))
+          }
         />
       )}
     </Section>

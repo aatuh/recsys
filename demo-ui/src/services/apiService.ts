@@ -235,3 +235,103 @@ export async function deleteEvents(
     body: JSON.stringify(params),
   });
 }
+
+// Export API methods
+
+/**
+ * Fetches all data for a specific table type with pagination
+ */
+export async function fetchAllData(
+  dataType: "users" | "items" | "events",
+  params: Omit<ListParams, "limit" | "offset">
+): Promise<any[]> {
+  const allData: any[] = [];
+  let offset = 0;
+  const limit = 1000; // Large batch size for efficiency
+  
+  while (true) {
+    const batchParams: ListParams = {
+      ...params,
+      limit,
+      offset,
+    };
+    
+    let response: ListResponse;
+    switch (dataType) {
+      case "users":
+        response = await listUsers(batchParams);
+        break;
+      case "items":
+        response = await listItems(batchParams);
+        break;
+      case "events":
+        response = await listEvents(batchParams);
+        break;
+      default:
+        throw new Error("Invalid data type");
+    }
+    
+    allData.push(...response.items);
+    
+    // If we got fewer items than requested, we've reached the end
+    if (response.items.length < limit || !response.has_more) {
+      break;
+    }
+    
+    offset += limit;
+  }
+  
+  return allData;
+}
+
+/**
+ * Fetches all data for multiple table types
+ */
+export async function fetchAllDataForTables(
+  namespace: string,
+  selectedTables: string[],
+  filters: {
+    user_id: string;
+    item_id: string;
+    event_type: string;
+    created_after: string;
+    created_before: string;
+  }
+): Promise<{
+  users?: any[];
+  items?: any[];
+  events?: any[];
+}> {
+  const baseParams = {
+    namespace,
+    user_id: filters.user_id || undefined,
+    item_id: filters.item_id || undefined,
+    event_type: filters.event_type ? parseInt(filters.event_type) : undefined,
+    created_after: filters.created_after || undefined,
+    created_before: filters.created_before || undefined,
+  };
+  
+  const result: {
+    users?: any[];
+    items?: any[];
+    events?: any[];
+  } = {};
+  
+  // Fetch data for each selected table in parallel
+  const promises = selectedTables.map(async (table) => {
+    switch (table) {
+      case "users":
+        result.users = await fetchAllData("users", baseParams);
+        break;
+      case "items":
+        result.items = await fetchAllData("items", baseParams);
+        break;
+      case "events":
+        result.events = await fetchAllData("events", baseParams);
+        break;
+    }
+  });
+  
+  await Promise.all(promises);
+  return result;
+}

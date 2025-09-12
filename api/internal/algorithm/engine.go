@@ -13,11 +13,11 @@ import (
 // Engine handles recommendation algorithm logic
 type Engine struct {
 	config Config
-	store  types.Store
+	store  types.AlgoStore
 }
 
 // NewEngine creates a new recommendation engine
-func NewEngine(config Config, store types.Store) *Engine {
+func NewEngine(config Config, store types.AlgoStore) *Engine {
 	return &Engine{
 		config: config,
 		store:  store,
@@ -25,7 +25,9 @@ func NewEngine(config Config, store types.Store) *Engine {
 }
 
 // Recommend generates recommendations using the blended scoring approach
-func (e *Engine) Recommend(ctx context.Context, req Request) (*Response, error) {
+func (e *Engine) Recommend(
+	ctx context.Context, req Request,
+) (*Response, error) {
 	// Set defaults
 	k := req.K
 	if k <= 0 {
@@ -33,7 +35,9 @@ func (e *Engine) Recommend(ctx context.Context, req Request) (*Response, error) 
 	}
 
 	// Get popularity candidates
-	candidates, err := e.getPopularityCandidates(ctx, req.OrgID, req.Namespace, k, req.Constraints)
+	candidates, err := e.getPopularityCandidates(
+		ctx, req.OrgID, req.Namespace, k, req.Constraints,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +79,9 @@ func (e *Engine) Recommend(ctx context.Context, req Request) (*Response, error) 
 	}
 
 	// Build response
-	return e.buildResponse(candidateData, k, modelVersion, req.IncludeReasons, weights), nil
+	return e.buildResponse(
+		candidateData, k, modelVersion, req.IncludeReasons, weights,
+	), nil
 }
 
 // getPopularityCandidates fetches a popularity-based candidate pool.
@@ -89,18 +95,22 @@ func (e *Engine) getPopularityCandidates(
 		fetchK = k
 	}
 
-	cands, err := e.store.PopularityTopK(ctx, orgID, ns, e.config.HalfLifeDays, fetchK, c)
+	cands, err := e.store.PopularityTopK(
+		ctx, orgID, ns, e.config.HalfLifeDays, fetchK, c,
+	)
 	if err != nil {
 		return nil, err
 	}
-	// if len(cands) > k {
-	// 	cands = cands[:k]
-	// }
+
 	return cands, nil
 }
 
 // applyExclusions removes excluded items from candidates
-func (e *Engine) applyExclusions(ctx context.Context, candidates []types.ScoredItem, req Request) ([]types.ScoredItem, error) {
+func (e *Engine) applyExclusions(
+	ctx context.Context,
+	candidates []types.ScoredItem,
+	req Request,
+) ([]types.ScoredItem, error) {
 	exclude := make(map[string]struct{})
 
 	// Add constraint exclusions
@@ -141,7 +151,9 @@ func (e *Engine) applyExclusions(ctx context.Context, candidates []types.ScoredI
 }
 
 // getCandidateMetadata fetches metadata for all candidates
-func (e *Engine) getCandidateMetadata(ctx context.Context, candidates []types.ScoredItem, req Request) (map[string]types.ItemMeta, error) {
+func (e *Engine) getCandidateMetadata(
+	ctx context.Context, candidates []types.ScoredItem, req Request,
+) (map[string]types.ItemMeta, error) {
 	if len(candidates) == 0 {
 		return make(map[string]types.ItemMeta), nil
 	}
@@ -183,7 +195,12 @@ func (e *Engine) getBlendWeights(req Request) BlendWeights {
 }
 
 // gatherSignals collects co-visitation and embedding signals
-func (e *Engine) gatherSignals(ctx context.Context, candidates []types.ScoredItem, req Request, weights BlendWeights) (*CandidateData, error) {
+func (e *Engine) gatherSignals(
+	ctx context.Context,
+	candidates []types.ScoredItem,
+	req Request,
+	weights BlendWeights,
+) (*CandidateData, error) {
 	data := &CandidateData{
 		Candidates: candidates,
 		CoocScores: make(map[string]float64),
@@ -230,7 +247,9 @@ func (e *Engine) gatherSignals(ctx context.Context, candidates []types.ScoredIte
 }
 
 // getRecentAnchors gets recent items for the user to use as anchors
-func (e *Engine) getRecentAnchors(ctx context.Context, req Request) ([]string, error) {
+func (e *Engine) getRecentAnchors(
+	ctx context.Context, req Request,
+) ([]string, error) {
 	days := e.config.CoVisWindowDays
 	if days <= 0 {
 		days = 30
@@ -248,7 +267,13 @@ func (e *Engine) getRecentAnchors(ctx context.Context, req Request) ([]string, e
 }
 
 // gatherCoVisitationSignals collects co-visitation scores
-func (e *Engine) gatherCoVisitationSignals(ctx context.Context, data *CandidateData, req Request, anchors []string, candSet map[string]struct{}) error {
+func (e *Engine) gatherCoVisitationSignals(
+	ctx context.Context,
+	data *CandidateData,
+	req Request,
+	anchors []string,
+	candSet map[string]struct{},
+) error {
 	days := e.config.CoVisWindowDays
 	if days <= 0 {
 		days = 30
@@ -283,7 +308,13 @@ func (e *Engine) gatherCoVisitationSignals(ctx context.Context, data *CandidateD
 }
 
 // gatherEmbeddingSignals collects embedding similarity scores
-func (e *Engine) gatherEmbeddingSignals(ctx context.Context, data *CandidateData, req Request, anchors []string, candSet map[string]struct{}) error {
+func (e *Engine) gatherEmbeddingSignals(
+	ctx context.Context,
+	data *CandidateData,
+	req Request,
+	anchors []string,
+	candSet map[string]struct{},
+) error {
 	for _, anchor := range anchors {
 		neighbors, err := e.store.SimilarByEmbeddingTopK(
 			ctx,
@@ -311,7 +342,9 @@ func (e *Engine) gatherEmbeddingSignals(ctx context.Context, data *CandidateData
 }
 
 // applyBlendedScoring applies the blended scoring formula
-func (e *Engine) applyBlendedScoring(data *CandidateData, weights BlendWeights) {
+func (e *Engine) applyBlendedScoring(
+	data *CandidateData, weights BlendWeights,
+) {
 	// Find max scores for normalization
 	maxPop := 0.0
 	maxCooc := 0.0
@@ -354,13 +387,17 @@ func (e *Engine) applyBlendedScoring(data *CandidateData, weights BlendWeights) 
 			embNorm = data.EmbScores[id] / maxEmb
 		}
 
-		blended := weights.Pop*popNorm + weights.Cooc*coocNorm + weights.ALS*embNorm
+		blended := weights.Pop*popNorm +
+			weights.Cooc*coocNorm + weights.ALS*embNorm
+
 		data.Candidates[i].Score = blended
 	}
 }
 
 // applyPersonalizationBoost applies personalization boost based on user profile
-func (e *Engine) applyPersonalizationBoost(ctx context.Context, data *CandidateData, req Request) {
+func (e *Engine) applyPersonalizationBoost(
+	ctx context.Context, data *CandidateData, req Request,
+) {
 	if req.UserID == "" || e.config.ProfileBoost <= 0 {
 		return
 	}
@@ -414,7 +451,9 @@ func (e *Engine) shouldUseCaps() bool {
 }
 
 // applyMMRAndCaps applies MMR re-ranking and caps
-func (e *Engine) applyMMRAndCaps(data *CandidateData, k int) []types.ScoredItem {
+func (e *Engine) applyMMRAndCaps(
+	data *CandidateData, k int,
+) []types.ScoredItem {
 	return MMRReRank(
 		data.Candidates,
 		data.Meta,
@@ -426,7 +465,13 @@ func (e *Engine) applyMMRAndCaps(data *CandidateData, k int) []types.ScoredItem 
 }
 
 // buildResponse builds the final response
-func (e *Engine) buildResponse(data *CandidateData, k int, modelVersion string, includeReasons bool, weights BlendWeights) *Response {
+func (e *Engine) buildResponse(
+	data *CandidateData,
+	k int,
+	modelVersion string,
+	includeReasons bool,
+	weights BlendWeights,
+) *Response {
 	response := &Response{
 		ModelVersion: modelVersion,
 		Items:        make([]ScoredItem, 0, minInt(k, len(data.Candidates))),
@@ -437,7 +482,9 @@ func (e *Engine) buildResponse(data *CandidateData, k int, modelVersion string, 
 			break
 		}
 
-		reasons := e.buildReasons(candidate.ItemID, includeReasons, weights, data)
+		reasons := e.buildReasons(
+			candidate.ItemID, includeReasons, weights, data,
+		)
 
 		response.Items = append(response.Items, ScoredItem{
 			ItemID:  candidate.ItemID,
@@ -450,7 +497,12 @@ func (e *Engine) buildResponse(data *CandidateData, k int, modelVersion string, 
 }
 
 // buildReasons builds the reasons for a scored item
-func (e *Engine) buildReasons(itemID string, includeReasons bool, weights BlendWeights, data *CandidateData) []string {
+func (e *Engine) buildReasons(
+	itemID string,
+	includeReasons bool,
+	weights BlendWeights,
+	data *CandidateData,
+) []string {
 	if !includeReasons {
 		return nil
 	}

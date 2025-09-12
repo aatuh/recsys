@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Section, Button, Code } from "./UIComponents";
 import { DataTable, Column } from "./DataTable";
+import { useViewState } from "../contexts/ViewStateContext";
 import {
   listUsers,
   listItems,
@@ -8,11 +9,17 @@ import {
   deleteUsers,
   deleteItems,
   deleteEvents,
+  fetchAllDataForTables,
   type ListParams,
   type DeleteParams,
   type ListResponse,
 } from "../services/apiService";
 import { updateItemEmbedding } from "../actions/updateItemEmbedding";
+import {
+  downloadJsonFile,
+  generateExportFilename,
+  formatExportData,
+} from "../utils/exportUtils";
 
 interface DataManagementSectionProps {
   namespace: string;
@@ -39,29 +46,49 @@ const initialFilters: FilterState = {
 export function DataManagementSection({
   namespace,
 }: DataManagementSectionProps) {
-  const [dataType, setDataType] = useState<DataType>("users");
+  const { dataManagement, setDataManagement } = useViewState();
+
+  // Local state that doesn't need to be preserved across navigation
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
-  const [filters, setFilters] = useState<FilterState>(initialFilters);
-  const [sortBy, setSortBy] = useState<string>("");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
-  const [pagination, setPagination] = useState({
-    page: 1,
-    pageSize: 25,
-    total: 0,
-  });
-  const [embeddingsLoading, setEmbeddingsLoading] = useState(false);
-  const [embeddingsProgress, setEmbeddingsProgress] = useState({
-    current: 0,
-    total: 0,
-    message: "",
-  });
+
+  // Helper function to create clickable JSON renderer
+  const createJsonRenderer = (fieldName: string, maxLength: number = 50) => {
+    return (value: any, row: any, toggleExpansion?: () => void) => {
+      const jsonStr =
+        typeof value === "string" ? value : JSON.stringify(value) || "";
+      const isTruncated = jsonStr.length > maxLength;
+
+      return (
+        <code
+          style={{
+            fontSize: "11px",
+            backgroundColor: "#f5f5f5",
+            padding: "2px 4px",
+            borderRadius: "3px",
+            cursor: isTruncated ? "pointer" : "default",
+            border: isTruncated ? "1px solid #e0e0e0" : "none",
+            display: "inline-block",
+          }}
+          onClick={(e) => {
+            if (isTruncated && toggleExpansion) {
+              e.stopPropagation();
+              toggleExpansion();
+            }
+          }}
+          title={isTruncated ? "Click to expand row" : ""}
+        >
+          {jsonStr.substring(0, maxLength)}
+          {isTruncated ? "..." : ""}
+        </code>
+      );
+    };
+  };
 
   // Define columns for each data type
   const getColumns = (): Column<any>[] => {
-    switch (dataType) {
+    switch (dataManagement.dataType) {
       case "users":
         return [
           { key: "user_id", title: "User ID", width: "150px", sortable: true },
@@ -69,25 +96,7 @@ export function DataManagementSection({
             key: "traits",
             title: "Traits",
             width: "200px",
-            render: (value) => (
-              <code
-                style={{
-                  fontSize: "11px",
-                  backgroundColor: "#f5f5f5",
-                  padding: "2px 4px",
-                  borderRadius: "3px",
-                }}
-              >
-                {typeof value === "string"
-                  ? value.substring(0, 50)
-                  : (JSON.stringify(value) || "").substring(0, 50)}
-                {(typeof value === "string"
-                  ? value.length
-                  : (JSON.stringify(value) || "").length) > 50
-                  ? "..."
-                  : ""}
-              </code>
-            ),
+            render: createJsonRenderer("User Traits"),
           },
           {
             key: "created_at",
@@ -146,25 +155,7 @@ export function DataManagementSection({
             key: "props",
             title: "Properties",
             width: "150px",
-            render: (value) => (
-              <code
-                style={{
-                  fontSize: "11px",
-                  backgroundColor: "#f5f5f5",
-                  padding: "2px 4px",
-                  borderRadius: "3px",
-                }}
-              >
-                {typeof value === "string"
-                  ? value.substring(0, 30)
-                  : (JSON.stringify(value) || "").substring(0, 30)}
-                {(typeof value === "string"
-                  ? value.length
-                  : (JSON.stringify(value) || "").length) > 30
-                  ? "..."
-                  : ""}
-              </code>
-            ),
+            render: createJsonRenderer("Item Properties", 30),
           },
           {
             key: "created_at",
@@ -218,25 +209,7 @@ export function DataManagementSection({
             key: "meta",
             title: "Metadata",
             width: "100px",
-            render: (value) => (
-              <code
-                style={{
-                  fontSize: "11px",
-                  backgroundColor: "#f5f5f5",
-                  padding: "2px 4px",
-                  borderRadius: "3px",
-                }}
-              >
-                {typeof value === "string"
-                  ? value.substring(0, 20)
-                  : (JSON.stringify(value) || "").substring(0, 20)}
-                {(typeof value === "string"
-                  ? value.length
-                  : (JSON.stringify(value) || "").length) > 20
-                  ? "..."
-                  : ""}
-              </code>
-            ),
+            render: createJsonRenderer("Event Metadata", 20),
           },
         ];
       default:
@@ -253,20 +226,26 @@ export function DataManagementSection({
     try {
       const params: ListParams = {
         namespace,
-        limit: pagination.pageSize,
-        offset: (pagination.page - 1) * pagination.pageSize,
+        limit: dataManagement.pagination.pageSize,
+        offset:
+          (dataManagement.pagination.page - 1) *
+          dataManagement.pagination.pageSize,
       };
 
       // Add filters
-      if (filters.user_id) params.user_id = filters.user_id;
-      if (filters.item_id) params.item_id = filters.item_id;
-      if (filters.event_type) params.event_type = parseInt(filters.event_type);
-      if (filters.created_after) params.created_after = filters.created_after;
-      if (filters.created_before)
-        params.created_before = filters.created_before;
+      if (dataManagement.filters.user_id)
+        params.user_id = dataManagement.filters.user_id;
+      if (dataManagement.filters.item_id)
+        params.item_id = dataManagement.filters.item_id;
+      if (dataManagement.filters.event_type)
+        params.event_type = parseInt(dataManagement.filters.event_type);
+      if (dataManagement.filters.created_after)
+        params.created_after = dataManagement.filters.created_after;
+      if (dataManagement.filters.created_before)
+        params.created_before = dataManagement.filters.created_before;
 
       let response: ListResponse;
-      switch (dataType) {
+      switch (dataManagement.dataType) {
         case "users":
           response = await listUsers(params);
           break;
@@ -281,13 +260,22 @@ export function DataManagementSection({
       }
 
       setData(response.items);
-      setPagination((prev) => ({ ...prev, total: response.total }));
+      setDataManagement((prev) => ({
+        ...prev,
+        pagination: { ...prev.pagination, total: response.total },
+      }));
     } catch (err: any) {
       setError(err.message || "Failed to load data");
     } finally {
       setLoading(false);
     }
-  }, [namespace, dataType, pagination.page, pagination.pageSize, filters]);
+  }, [
+    namespace,
+    dataManagement.dataType,
+    dataManagement.pagination.page,
+    dataManagement.pagination.pageSize,
+    dataManagement.filters,
+  ]);
 
   useEffect(() => {
     loadData();
@@ -297,8 +285,8 @@ export function DataManagementSection({
     if (!namespace) return;
 
     const confirmMessage = selectedOnly
-      ? `Are you sure you want to delete ${selectedRows.size} selected ${dataType}?`
-      : `Are you sure you want to delete ALL ${dataType} in this namespace? This action cannot be undone.`;
+      ? `Are you sure you want to delete ${dataManagement.selectedRows.size} selected ${dataManagement.dataType}?`
+      : `Are you sure you want to delete ALL ${dataManagement.dataType} in this namespace? This action cannot be undone.`;
 
     if (!window.confirm(confirmMessage)) return;
 
@@ -310,7 +298,7 @@ export function DataManagementSection({
 
       // If deleting selected only, we need to get the IDs and delete them individually
       // For now, we'll delete all and let the user filter first
-      if (selectedOnly && selectedRows.size > 0) {
+      if (selectedOnly && dataManagement.selectedRows.size > 0) {
         // TODO: Implement individual deletion by ID
         alert(
           "Individual deletion not yet implemented. Please use filters to narrow down your selection."
@@ -320,15 +308,19 @@ export function DataManagementSection({
       }
 
       // Add filters for targeted deletion
-      if (filters.user_id) params.user_id = filters.user_id;
-      if (filters.item_id) params.item_id = filters.item_id;
-      if (filters.event_type) params.event_type = parseInt(filters.event_type);
-      if (filters.created_after) params.created_after = filters.created_after;
-      if (filters.created_before)
-        params.created_before = filters.created_before;
+      if (dataManagement.filters.user_id)
+        params.user_id = dataManagement.filters.user_id;
+      if (dataManagement.filters.item_id)
+        params.item_id = dataManagement.filters.item_id;
+      if (dataManagement.filters.event_type)
+        params.event_type = parseInt(dataManagement.filters.event_type);
+      if (dataManagement.filters.created_after)
+        params.created_after = dataManagement.filters.created_after;
+      if (dataManagement.filters.created_before)
+        params.created_before = dataManagement.filters.created_before;
 
       let response;
-      switch (dataType) {
+      switch (dataManagement.dataType) {
         case "users":
           response = await deleteUsers(params);
           break;
@@ -342,8 +334,10 @@ export function DataManagementSection({
           throw new Error("Invalid data type");
       }
 
-      alert(`Successfully deleted ${response.deleted_count} ${dataType}`);
-      setSelectedRows(new Set());
+      alert(
+        `Successfully deleted ${response.deleted_count} ${dataManagement.dataType}`
+      );
+      setDataManagement((prev) => ({ ...prev, selectedRows: new Set() }));
       loadData();
     } catch (err: any) {
       setError(err.message || "Failed to delete data");
@@ -353,34 +347,52 @@ export function DataManagementSection({
   };
 
   const handleSort = (column: string, direction: "asc" | "desc") => {
-    setSortBy(column);
-    setSortDirection(direction);
+    setDataManagement((prev) => ({
+      ...prev,
+      sortBy: column,
+      sortDirection: direction,
+    }));
     // Note: In a real implementation, you'd pass sort parameters to the API
   };
 
   const handleFilterChange = (newFilters: Record<string, any>) => {
-    setFilters((prev) => ({ ...prev, ...newFilters }));
-    setPagination((prev) => ({ ...prev, page: 1 })); // Reset to first page
+    setDataManagement((prev) => ({
+      ...prev,
+      filters: { ...prev.filters, ...newFilters },
+      pagination: { ...prev.pagination, page: 1 },
+    }));
   };
 
   const handlePageChange = (page: number) => {
-    setPagination((prev) => ({ ...prev, page }));
+    setDataManagement((prev) => ({
+      ...prev,
+      pagination: { ...prev.pagination, page },
+    }));
   };
 
   const handlePageSizeChange = (pageSize: number) => {
-    setPagination((prev) => ({ ...prev, pageSize, page: 1 }));
+    setDataManagement((prev) => ({
+      ...prev,
+      pagination: { ...prev.pagination, pageSize, page: 1 },
+    }));
   };
 
   const clearFilters = () => {
-    setFilters(initialFilters);
-    setPagination((prev) => ({ ...prev, page: 1 }));
+    setDataManagement((prev) => ({
+      ...prev,
+      filters: initialFilters,
+      pagination: { ...prev.pagination, page: 1 },
+    }));
   };
 
   const handleUpdateEmbeddings = async () => {
-    if (dataType !== "items" || !namespace) return;
+    if (dataManagement.dataType !== "items" || !namespace) return;
 
-    setEmbeddingsLoading(true);
-    setEmbeddingsProgress({ current: 0, total: 0, message: "Starting..." });
+    setDataManagement((prev) => ({
+      ...prev,
+      embeddingsLoading: true,
+      embeddingsProgress: { current: 0, total: 0, message: "Starting..." },
+    }));
     setError(null);
 
     try {
@@ -392,29 +404,36 @@ export function DataManagementSection({
       };
 
       // Add current filters
-      if (filters.item_id) allItemsParams.item_id = filters.item_id;
-      if (filters.created_after)
-        allItemsParams.created_after = filters.created_after;
-      if (filters.created_before)
-        allItemsParams.created_before = filters.created_before;
+      if (dataManagement.filters.item_id)
+        allItemsParams.item_id = dataManagement.filters.item_id;
+      if (dataManagement.filters.created_after)
+        allItemsParams.created_after = dataManagement.filters.created_after;
+      if (dataManagement.filters.created_before)
+        allItemsParams.created_before = dataManagement.filters.created_before;
 
       const response = await listItems(allItemsParams);
       const itemsToProcess = response.items;
 
       if (itemsToProcess.length === 0) {
-        setEmbeddingsProgress({
-          current: 0,
-          total: 0,
-          message: "No items to process",
-        });
+        setDataManagement((prev) => ({
+          ...prev,
+          embeddingsProgress: {
+            current: 0,
+            total: 0,
+            message: "No items to process",
+          },
+        }));
         return;
       }
 
-      setEmbeddingsProgress({
-        current: 0,
-        total: itemsToProcess.length,
-        message: `Processing ${itemsToProcess.length} items...`,
-      });
+      setDataManagement((prev) => ({
+        ...prev,
+        embeddingsProgress: {
+          current: 0,
+          total: itemsToProcess.length,
+          message: `Processing ${itemsToProcess.length} items...`,
+        },
+      }));
 
       // Process items in small batches to avoid overwhelming the browser
       const batchSize = 5;
@@ -436,23 +455,32 @@ export function DataManagementSection({
                   props: item.props,
                 },
                 (message) => {
-                  setEmbeddingsProgress((prev) => ({
+                  setDataManagement((prev) => ({
                     ...prev,
-                    message: `${item.item_id}: ${message}`,
+                    embeddingsProgress: {
+                      ...prev.embeddingsProgress,
+                      message: `${item.item_id}: ${message}`,
+                    },
                   }));
                 }
               );
               processed++;
-              setEmbeddingsProgress((prev) => ({
+              setDataManagement((prev) => ({
                 ...prev,
-                current: processed,
-                message: `Processed ${processed}/${itemsToProcess.length} items`,
+                embeddingsProgress: {
+                  ...prev.embeddingsProgress,
+                  current: processed,
+                  message: `Processed ${processed}/${itemsToProcess.length} items`,
+                },
               }));
             } catch (err: any) {
               console.error(`Failed to process item ${item.item_id}:`, err);
-              setEmbeddingsProgress((prev) => ({
+              setDataManagement((prev) => ({
                 ...prev,
-                message: `Error processing ${item.item_id}: ${err.message}`,
+                embeddingsProgress: {
+                  ...prev.embeddingsProgress,
+                  message: `Error processing ${item.item_id}: ${err.message}`,
+                },
               }));
             }
           })
@@ -462,19 +490,167 @@ export function DataManagementSection({
         await new Promise((resolve) => setTimeout(resolve, 100));
       }
 
-      setEmbeddingsProgress({
-        current: processed,
-        total: itemsToProcess.length,
-        message: `Completed! Processed ${processed} items`,
-      });
+      setDataManagement((prev) => ({
+        ...prev,
+        embeddingsProgress: {
+          current: processed,
+          total: itemsToProcess.length,
+          message: `Completed! Processed ${processed} items`,
+        },
+      }));
 
       // Refresh the data to show updated items
       loadData();
     } catch (err: any) {
       setError(err.message || "Failed to update embeddings");
-      setEmbeddingsProgress({ current: 0, total: 0, message: "Failed" });
+      setDataManagement((prev) => ({
+        ...prev,
+        embeddingsProgress: { current: 0, total: 0, message: "Failed" },
+      }));
     } finally {
-      setEmbeddingsLoading(false);
+      setDataManagement((prev) => ({ ...prev, embeddingsLoading: false }));
+    }
+  };
+
+  const handleDestroyAllData = async () => {
+    if (!namespace) return;
+
+    // Show a very clear warning dialog
+    const confirmMessage = `⚠️ DANGER: This will PERMANENTLY DELETE ALL DATA in namespace "${namespace}"!
+
+This includes:
+• ALL users
+• ALL items  
+• ALL events
+
+This action CANNOT be undone!
+
+Are you sure you want to continue?`;
+
+    const confirmed = window.confirm(confirmMessage);
+    if (!confirmed) {
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const params: DeleteParams = { namespace };
+
+      // Delete all data types in sequence
+      const results = {
+        users: 0,
+        items: 0,
+        events: 0,
+      };
+
+      // Delete users
+      try {
+        const userResult = await deleteUsers(params);
+        results.users = userResult.deleted_count;
+      } catch (err: any) {
+        console.warn("Failed to delete users:", err);
+      }
+
+      // Delete items
+      try {
+        const itemResult = await deleteItems(params);
+        results.items = itemResult.deleted_count;
+      } catch (err: any) {
+        console.warn("Failed to delete items:", err);
+      }
+
+      // Delete events
+      try {
+        const eventResult = await deleteEvents(params);
+        results.events = eventResult.deleted_count;
+      } catch (err: any) {
+        console.warn("Failed to delete events:", err);
+      }
+
+      const totalDeleted = results.users + results.items + results.events;
+
+      alert(`✅ Successfully destroyed all data in namespace "${namespace}"!
+
+Deleted:
+• ${results.users} users
+• ${results.items} items
+• ${results.events} events
+
+Total: ${totalDeleted} records deleted`);
+
+      // Reset state and refresh
+      setDataManagement((prev) => ({
+        ...prev,
+        selectedRows: new Set(),
+        filters: initialFilters,
+        pagination: { ...prev.pagination, page: 1, total: 0 },
+      }));
+      setData([]);
+    } catch (err: any) {
+      setError(err.message || "Failed to destroy all data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleExportData = async () => {
+    if (!namespace || dataManagement.selectedExportTables.length === 0) return;
+
+    setDataManagement((prev) => ({
+      ...prev,
+      exportLoading: true,
+      exportProgress: { current: 0, total: 0, message: "Starting export..." },
+    }));
+    setError(null);
+
+    try {
+      // Fetch all data for selected tables
+      const data = await fetchAllDataForTables(
+        namespace,
+        dataManagement.selectedExportTables,
+        dataManagement.filters
+      );
+
+      // Format the export data
+      const exportData = formatExportData(
+        namespace,
+        dataManagement.selectedExportTables,
+        data
+      );
+
+      // Generate filename and download
+      const filename = generateExportFilename(
+        namespace,
+        dataManagement.selectedExportTables
+      );
+      downloadJsonFile(exportData, filename);
+
+      setDataManagement((prev) => ({
+        ...prev,
+        exportProgress: {
+          current: 1,
+          total: 1,
+          message: `Export completed! Downloaded ${filename}`,
+        },
+      }));
+
+      // Clear progress after a delay
+      setTimeout(() => {
+        setDataManagement((prev) => ({
+          ...prev,
+          exportLoading: false,
+          exportProgress: { current: 0, total: 0, message: "" },
+        }));
+      }, 3000);
+    } catch (err: any) {
+      setError(err.message || "Failed to export data");
+      setDataManagement((prev) => ({
+        ...prev,
+        exportLoading: false,
+        exportProgress: { current: 0, total: 0, message: "Export failed" },
+      }));
     }
   };
 
@@ -498,13 +674,17 @@ export function DataManagementSection({
               <Button
                 key={type}
                 onClick={() => {
-                  setDataType(type);
-                  setSelectedRows(new Set());
-                  setPagination((prev) => ({ ...prev, page: 1 }));
+                  setDataManagement((prev) => ({
+                    ...prev,
+                    dataType: type,
+                    selectedRows: new Set(),
+                    pagination: { ...prev.pagination, page: 1 },
+                  }));
                 }}
                 style={{
-                  backgroundColor: dataType === type ? "#1976d2" : "#f5f5f5",
-                  color: dataType === type ? "white" : "#333",
+                  backgroundColor:
+                    dataManagement.dataType === type ? "#e3f2fd" : "#f5f5f5",
+                  color: dataManagement.dataType === type ? "1565c0" : "#666",
                   textTransform: "capitalize",
                 }}
               >
@@ -554,7 +734,7 @@ export function DataManagementSection({
               gap: "12px",
             }}
           >
-            {dataType === "users" && (
+            {dataManagement.dataType === "users" && (
               <div>
                 <label
                   style={{
@@ -567,7 +747,7 @@ export function DataManagementSection({
                 </label>
                 <input
                   type="text"
-                  value={filters.user_id}
+                  value={dataManagement.filters.user_id}
                   onChange={(e) =>
                     handleFilterChange({ user_id: e.target.value })
                   }
@@ -583,7 +763,7 @@ export function DataManagementSection({
               </div>
             )}
 
-            {dataType === "items" && (
+            {dataManagement.dataType === "items" && (
               <div>
                 <label
                   style={{
@@ -596,7 +776,7 @@ export function DataManagementSection({
                 </label>
                 <input
                   type="text"
-                  value={filters.item_id}
+                  value={dataManagement.filters.item_id}
                   onChange={(e) =>
                     handleFilterChange({ item_id: e.target.value })
                   }
@@ -612,7 +792,7 @@ export function DataManagementSection({
               </div>
             )}
 
-            {dataType === "events" && (
+            {dataManagement.dataType === "events" && (
               <>
                 <div>
                   <label
@@ -626,7 +806,7 @@ export function DataManagementSection({
                   </label>
                   <input
                     type="text"
-                    value={filters.user_id}
+                    value={dataManagement.filters.user_id}
                     onChange={(e) =>
                       handleFilterChange({ user_id: e.target.value })
                     }
@@ -652,7 +832,7 @@ export function DataManagementSection({
                   </label>
                   <input
                     type="text"
-                    value={filters.item_id}
+                    value={dataManagement.filters.item_id}
                     onChange={(e) =>
                       handleFilterChange({ item_id: e.target.value })
                     }
@@ -677,7 +857,7 @@ export function DataManagementSection({
                     Event Type:
                   </label>
                   <select
-                    value={filters.event_type}
+                    value={dataManagement.filters.event_type}
                     onChange={(e) =>
                       handleFilterChange({ event_type: e.target.value })
                     }
@@ -711,7 +891,7 @@ export function DataManagementSection({
               </label>
               <input
                 type="datetime-local"
-                value={filters.created_after}
+                value={dataManagement.filters.created_after}
                 onChange={(e) =>
                   handleFilterChange({ created_after: e.target.value })
                 }
@@ -737,7 +917,7 @@ export function DataManagementSection({
               </label>
               <input
                 type="datetime-local"
-                value={filters.created_before}
+                value={dataManagement.filters.created_before}
                 onChange={(e) =>
                   handleFilterChange({ created_before: e.target.value })
                 }
@@ -753,6 +933,103 @@ export function DataManagementSection({
           </div>
         </div>
 
+        {/* Export Section */}
+        <div
+          style={{
+            border: "1px solid #e0e0e0",
+            borderRadius: "6px",
+            padding: "16px",
+            marginBottom: "16px",
+            backgroundColor: "#f8f9fa",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: "12px",
+            }}
+          >
+            <h4 style={{ margin: 0, fontSize: "14px", color: "#333" }}>
+              Export Data
+            </h4>
+          </div>
+
+          <div style={{ marginBottom: "12px" }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "12px",
+                marginBottom: "8px",
+                fontWeight: "600",
+              }}
+            >
+              Select tables to export:
+            </label>
+            <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+              {(["users", "items", "events"] as const).map((table) => (
+                <label
+                  key={table}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    cursor: "pointer",
+                    fontSize: "12px",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={dataManagement.selectedExportTables.includes(
+                      table
+                    )}
+                    onChange={(e) => {
+                      const newTables = e.target.checked
+                        ? [...dataManagement.selectedExportTables, table]
+                        : dataManagement.selectedExportTables.filter(
+                            (t) => t !== table
+                          );
+                      setDataManagement((prev) => ({
+                        ...prev,
+                        selectedExportTables: newTables,
+                      }));
+                    }}
+                    style={{ cursor: "pointer" }}
+                  />
+                  <span style={{ textTransform: "capitalize" }}>{table}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+            <Button
+              onClick={handleExportData}
+              disabled={
+                loading ||
+                dataManagement.exportLoading ||
+                dataManagement.selectedExportTables.length === 0
+              }
+              style={{
+                backgroundColor: "#4caf50",
+                color: "white",
+                border: "none",
+              }}
+            >
+              {dataManagement.exportLoading ? "Exporting..." : "Export JSON"}
+            </Button>
+
+            <span style={{ fontSize: "11px", color: "#666" }}>
+              {dataManagement.selectedExportTables.length === 0
+                ? "Select at least one table to export"
+                : `Will export: ${dataManagement.selectedExportTables.join(
+                    ", "
+                  )}`}
+            </span>
+          </div>
+        </div>
+
         {/* Actions */}
         <div
           style={{
@@ -763,49 +1040,52 @@ export function DataManagementSection({
             flexWrap: "wrap",
           }}
         >
-          <Button
-            onClick={() => loadData()}
-            disabled={loading}
-            style={{ backgroundColor: "#4caf50" }}
-          >
+          <Button onClick={() => loadData()} disabled={loading}>
             {loading ? "Loading..." : "Refresh"}
           </Button>
 
-          {dataType === "items" && (
+          {dataManagement.dataType === "items" && (
             <Button
               onClick={handleUpdateEmbeddings}
-              disabled={loading || embeddingsLoading}
-              style={{ backgroundColor: "#9c27b0" }}
+              disabled={loading || dataManagement.embeddingsLoading}
             >
-              {embeddingsLoading ? "Updating..." : "Update Embeddings"}
+              {dataManagement.embeddingsLoading
+                ? "Updating..."
+                : "Update Embeddings"}
             </Button>
           )}
 
-          {selectedRows.size > 0 && (
-            <Button
-              onClick={() => handleDelete(true)}
-              disabled={loading}
-              style={{ backgroundColor: "#f44336" }}
-            >
-              Delete Selected ({selectedRows.size})
+          {dataManagement.selectedRows.size > 0 && (
+            <Button onClick={() => handleDelete(true)} disabled={loading}>
+              Delete Selected ({dataManagement.selectedRows.size})
             </Button>
           )}
 
-          <Button
-            onClick={() => handleDelete(false)}
-            disabled={loading}
-            style={{ backgroundColor: "#ff9800" }}
-          >
+          <Button onClick={() => handleDelete(false)} disabled={loading}>
             Delete All (Filtered)
           </Button>
 
+          <Button
+            onClick={handleDestroyAllData}
+            disabled={loading}
+            style={{
+              backgroundColor: "#f5f5f5",
+              color: "#d32f2f",
+              border: "1px solid #e0e0e0",
+              fontSize: "12px",
+            }}
+            title="Permanently delete ALL users, items, and events in this namespace"
+          >
+            {loading ? "Destroying..." : "Clear All Data"}
+          </Button>
+
           <span style={{ fontSize: "12px", color: "#666", marginLeft: "16px" }}>
-            {pagination.total} total {dataType}
+            {dataManagement.pagination.total} total {dataManagement.dataType}
           </span>
         </div>
 
         {/* Embeddings Progress */}
-        {embeddingsLoading && (
+        {dataManagement.embeddingsLoading && (
           <div
             style={{
               backgroundColor: "#e8f5e8",
@@ -834,11 +1114,12 @@ export function DataManagementSection({
               <div
                 style={{ marginLeft: "auto", fontSize: "12px", color: "#666" }}
               >
-                {embeddingsProgress.current}/{embeddingsProgress.total}
+                {dataManagement.embeddingsProgress.current}/
+                {dataManagement.embeddingsProgress.total}
               </div>
             </div>
 
-            {embeddingsProgress.total > 0 && (
+            {dataManagement.embeddingsProgress.total > 0 && (
               <div
                 style={{
                   width: "100%",
@@ -851,7 +1132,8 @@ export function DataManagementSection({
                 <div
                   style={{
                     width: `${
-                      (embeddingsProgress.current / embeddingsProgress.total) *
+                      (dataManagement.embeddingsProgress.current /
+                        dataManagement.embeddingsProgress.total) *
                       100
                     }%`,
                     backgroundColor: "#4caf50",
@@ -864,7 +1146,74 @@ export function DataManagementSection({
             )}
 
             <div style={{ fontSize: "12px", color: "#666" }}>
-              {embeddingsProgress.message}
+              {dataManagement.embeddingsProgress.message}
+            </div>
+          </div>
+        )}
+
+        {/* Export Progress */}
+        {dataManagement.exportLoading && (
+          <div
+            style={{
+              backgroundColor: "#e3f2fd",
+              border: "1px solid #2196f3",
+              borderRadius: "4px",
+              padding: "12px",
+              marginBottom: "16px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "8px",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "14px",
+                  fontWeight: "600",
+                  color: "#1565c0",
+                }}
+              >
+                Exporting Data
+              </div>
+              <div
+                style={{ marginLeft: "auto", fontSize: "12px", color: "#666" }}
+              >
+                {dataManagement.exportProgress.current}/
+                {dataManagement.exportProgress.total}
+              </div>
+            </div>
+
+            {dataManagement.exportProgress.total > 0 && (
+              <div
+                style={{
+                  width: "100%",
+                  backgroundColor: "#e0e0e0",
+                  borderRadius: "4px",
+                  height: "8px",
+                  marginBottom: "8px",
+                }}
+              >
+                <div
+                  style={{
+                    width: `${
+                      (dataManagement.exportProgress.current /
+                        dataManagement.exportProgress.total) *
+                      100
+                    }%`,
+                    backgroundColor: "#2196f3",
+                    height: "100%",
+                    borderRadius: "4px",
+                    transition: "width 0.3s ease",
+                  }}
+                />
+              </div>
+            )}
+
+            <div style={{ fontSize: "12px", color: "#666" }}>
+              {dataManagement.exportProgress.message}
             </div>
           </div>
         )}
@@ -891,19 +1240,21 @@ export function DataManagementSection({
           columns={getColumns()}
           loading={loading}
           selectable={true}
-          selectedRows={selectedRows}
-          onSelectionChange={setSelectedRows}
-          sortBy={sortBy}
-          sortDirection={sortDirection}
+          selectedRows={dataManagement.selectedRows}
+          onSelectionChange={(rows) =>
+            setDataManagement((prev) => ({ ...prev, selectedRows: rows }))
+          }
+          sortBy={dataManagement.sortBy}
+          sortDirection={dataManagement.sortDirection}
           onSort={handleSort}
           pagination={{
-            page: pagination.page,
-            pageSize: pagination.pageSize,
-            total: pagination.total,
+            page: dataManagement.pagination.page,
+            pageSize: dataManagement.pagination.pageSize,
+            total: dataManagement.pagination.total,
             onPageChange: handlePageChange,
             onPageSizeChange: handlePageSizeChange,
           }}
-          emptyMessage={`No ${dataType} found. Try adjusting your filters.`}
+          emptyMessage={`No ${dataManagement.dataType} found. Try adjusting your filters.`}
         />
       </div>
     </Section>

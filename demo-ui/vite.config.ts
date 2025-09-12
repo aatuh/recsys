@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-const apiTarget = "http://recsys-api:8000";
+const apiTarget = process.env.VITE_API_HOST;
 
 // Parse allowed hosts from environment variable
 const getAllowedHosts = (): string[] => {

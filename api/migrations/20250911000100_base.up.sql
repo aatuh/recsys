@@ -1,3 +1,9 @@
+-- Create public schema if it doesn't exist.
+CREATE SCHEMA IF NOT EXISTS "public";
+
+-- Runs only when /var/lib/postgresql/data is empty.
+CREATE EXTENSION IF NOT EXISTS vector WITH SCHEMA public;
+
 -- Create "event_type_config" table
 CREATE TABLE "public"."event_type_config" (
   "org_id" uuid NOT NULL,
@@ -97,3 +103,15 @@ CREATE TABLE "public"."namespaces" (
 );
 -- Create index "namespaces_org_id_name_uq" to table: "namespaces"
 CREATE UNIQUE INDEX "namespaces_org_id_name_uq" ON "public"."namespaces" ("org_id", "name");
+
+-- Insert default event types if they don't exist
+INSERT INTO event_type_defaults(type, name, weight, half_life_days) VALUES
+  (0, 'view', 0.1, NULL),
+  (1, 'click', 0.3, NULL),
+  (2, 'add', 0.7, NULL),
+  (3, 'purchase', 1.0, NULL),
+  (4, 'custom', 0.2, NULL)
+ON CONFLICT (type) DO UPDATE
+  SET name = EXCLUDED.name,
+      weight = EXCLUDED.weight,
+      half_life_days = EXCLUDED.half_life_days;

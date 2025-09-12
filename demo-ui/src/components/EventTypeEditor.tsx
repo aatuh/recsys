@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Section, Row, Label, NumberInput, Button, Code } from "./UIComponents";
-import type { EventTypeConfig } from "../App";
+import type { EventTypeConfig } from "../types";
 
 interface EventTypeEditorProps {
   eventTypes: EventTypeConfig[];
@@ -159,8 +159,8 @@ export function EventTypeEditor({
             style={{
               padding: "4px 8px",
               fontSize: 12,
-              backgroundColor: "#fff3e0",
-              color: "#e65100",
+              backgroundColor: "#f5f5f5",
+              color: "#666",
             }}
           >
             Reset to Defaults

@@ -10,7 +10,7 @@ import {
 } from "./UIComponents";
 import { recommend } from "../services/apiService";
 import type {
-  types_ScoredItem,
+  internal_http_types_ScoredItem,
   types_RecommendResponse,
 } from "../lib/api-client";
 import { ExplainModal } from "./ExplainModal";
@@ -24,8 +24,8 @@ interface RecommendationsSectionProps {
   setBlend: (blend: { pop: number; cooc: number; als: number }) => void;
   namespace: string;
   exampleUser: string;
-  recOut: types_ScoredItem[] | null;
-  setRecOut: (items: types_ScoredItem[] | null) => void;
+  recOut: internal_http_types_ScoredItem[] | null;
+  setRecOut: (items: internal_http_types_ScoredItem[] | null) => void;
   recLoading: boolean;
   setRecLoading: (loading: boolean) => void;
 }
@@ -44,7 +44,8 @@ export function RecommendationsSection({
   recLoading,
   setRecLoading,
 }: RecommendationsSectionProps) {
-  const [explainItem, setExplainItem] = useState<types_ScoredItem | null>(null);
+  const [explainItem, setExplainItem] =
+    useState<internal_http_types_ScoredItem | null>(null);
 
   async function runRecommend() {
     const id = recUserId || exampleUser;
@@ -66,7 +67,7 @@ export function RecommendationsSection({
   }
 
   return (
-    <Section title="3) Recommendations playground">
+    <Section title="Recommendations playground">
       <Row>
         <Label text="User ID (leave blank to use first generated)">
           <TextInput

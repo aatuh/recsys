@@ -6,7 +6,7 @@ import { UserTraitsEditor } from "./UserTraitsEditor";
 import type { ItemConfig, PriceRange } from "./ItemConfigEditor";
 import { ItemConfigEditor } from "./ItemConfigEditor";
 import { EventTypeEditor } from "./EventTypeEditor";
-import type { EventTypeConfig } from "../App";
+import type { EventTypeConfig } from "../types";
 
 interface SeedDataSectionProps {
   userCount: number;
@@ -153,7 +153,7 @@ export function SeedDataSection({
   };
 
   return (
-    <Section title="2) Seed Data">
+    <Section title="Seed Data">
       {/* Data Counts Sub-section */}
       <div
         style={{

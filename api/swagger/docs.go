@@ -15,6 +15,170 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/v1/bandit/decide": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bandit"
+                ],
+                "summary": "Decide best policy for this request context",
+                "parameters": [
+                    {
+                        "description": "Decision request",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.BanditDecideRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.BanditDecideResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/bandit/policies": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bandit"
+                ],
+                "summary": "List active bandit policies",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Namespace",
+                        "name": "namespace",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/types.BanditPolicy"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/bandit/policies:upsert": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bandit"
+                ],
+                "summary": "Upsert bandit policies",
+                "operationId": "upsertBanditPolicies",
+                "parameters": [
+                    {
+                        "description": "Policies",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.BanditPoliciesUpsertRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "$ref": "#/definitions/types.Ack"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/bandit/recommendations": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ranking"
+                ],
+                "summary": "Recommend with bandit-selected policy",
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.RecommendWithBanditRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.RecommendWithBanditResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/bandit/reward": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bandit"
+                ],
+                "summary": "Report binary reward for a previous decision",
+                "parameters": [
+                    {
+                        "description": "Reward request",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.BanditRewardRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "$ref": "#/definitions/types.Ack"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/event-types": {
             "get": {
                 "produces": [
@@ -349,7 +513,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/types.ScoredItem"
+                                "$ref": "#/definitions/internal_http_types.ScoredItem"
                             }
                         }
                     },
@@ -653,10 +817,159 @@ const docTemplate = `{
                 }
             }
         },
+        "internal_http_types.ScoredItem": {
+            "type": "object",
+            "properties": {
+                "item_id": {
+                    "type": "string",
+                    "example": "i_101"
+                },
+                "reasons": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "score": {
+                    "type": "number",
+                    "example": 0.87
+                }
+            }
+        },
         "types.Ack": {
             "type": "object",
             "properties": {
                 "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.BanditDecideRequest": {
+            "type": "object",
+            "properties": {
+                "algorithm": {
+                    "type": "string"
+                },
+                "candidate_policy_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "context": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "namespace": {
+                    "type": "string"
+                },
+                "request_id": {
+                    "type": "string"
+                },
+                "surface": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.BanditDecideResponse": {
+            "type": "object",
+            "properties": {
+                "algorithm": {
+                    "type": "string"
+                },
+                "bucket_key": {
+                    "type": "string"
+                },
+                "explain": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "explore": {
+                    "type": "boolean"
+                },
+                "policy_id": {
+                    "type": "string"
+                },
+                "surface": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.BanditPoliciesUpsertRequest": {
+            "type": "object",
+            "properties": {
+                "namespace": {
+                    "type": "string"
+                },
+                "policies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.BanditPolicy"
+                    }
+                }
+            }
+        },
+        "types.BanditPolicy": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "blend_alpha": {
+                    "type": "number"
+                },
+                "blend_beta": {
+                    "type": "number"
+                },
+                "blend_gamma": {
+                    "type": "number"
+                },
+                "brand_cap": {
+                    "type": "integer"
+                },
+                "category_cap": {
+                    "type": "integer"
+                },
+                "mmr_lambda": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "policy_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.BanditRewardRequest": {
+            "type": "object",
+            "properties": {
+                "algorithm": {
+                    "type": "string"
+                },
+                "bucket_key": {
+                    "type": "string"
+                },
+                "namespace": {
+                    "type": "string"
+                },
+                "policy_id": {
+                    "type": "string"
+                },
+                "request_id": {
+                    "type": "string"
+                },
+                "reward": {
+                    "type": "boolean"
+                },
+                "surface": {
                     "type": "string"
                 }
             }
@@ -956,7 +1269,7 @@ const docTemplate = `{
                 "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/types.ScoredItem"
+                        "$ref": "#/definitions/internal_http_types.ScoredItem"
                     }
                 },
                 "model_version": {
@@ -965,22 +1278,81 @@ const docTemplate = `{
                 }
             }
         },
-        "types.ScoredItem": {
+        "types.RecommendWithBanditRequest": {
             "type": "object",
             "properties": {
-                "item_id": {
-                    "type": "string",
-                    "example": "i_101"
+                "algorithm": {
+                    "type": "string"
                 },
-                "reasons": {
+                "blend": {
+                    "$ref": "#/definitions/types.RecommendBlend"
+                },
+                "candidate_policy_ids": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
-                "score": {
-                    "type": "number",
-                    "example": 0.87
+                "constraints": {
+                    "$ref": "#/definitions/types.RecommendConstraints"
+                },
+                "context": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "include_reasons": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "k": {
+                    "type": "integer",
+                    "example": 20
+                },
+                "namespace": {
+                    "type": "string",
+                    "example": "default"
+                },
+                "surface": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string",
+                    "example": "u_123"
+                }
+            }
+        },
+        "types.RecommendWithBanditResponse": {
+            "type": "object",
+            "properties": {
+                "algorithm": {
+                    "type": "string"
+                },
+                "bandit_bucket": {
+                    "type": "string"
+                },
+                "bandit_explain": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "chosen_policy_id": {
+                    "type": "string"
+                },
+                "explore": {
+                    "type": "boolean"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_http_types.ScoredItem"
+                    }
+                },
+                "model_version": {
+                    "type": "string",
+                    "example": "pop_2025-09-07_01"
                 }
             }
         },

@@ -9,7 +9,7 @@ import {
   ResultsTable,
 } from "./UIComponents";
 import { similar } from "../services/apiService";
-import type { types_ScoredItem } from "../lib/api-client";
+import type { internal_http_types_ScoredItem } from "../lib/api-client";
 
 interface SimilarItemsSectionProps {
   simItemId: string;
@@ -18,8 +18,8 @@ interface SimilarItemsSectionProps {
   setK: (k: number) => void;
   namespace: string;
   exampleItem: string;
-  simOut: types_ScoredItem[] | null;
-  setSimOut: (items: types_ScoredItem[] | null) => void;
+  simOut: internal_http_types_ScoredItem[] | null;
+  setSimOut: (items: internal_http_types_ScoredItem[] | null) => void;
   simLoading: boolean;
   setSimLoading: (loading: boolean) => void;
 }
@@ -51,7 +51,7 @@ export function SimilarItemsSection({
   }
 
   return (
-    <Section title="4) Similar items">
+    <Section title="Similar items">
       <Row>
         <Label text="Item ID (leave blank to use first generated)">
           <TextInput

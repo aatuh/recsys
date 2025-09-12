@@ -12,9 +12,107 @@ definitions:
       message:
         type: string
     type: object
+  internal_http_types.ScoredItem:
+    properties:
+      item_id:
+        example: i_101
+        type: string
+      reasons:
+        items:
+          type: string
+        type: array
+      score:
+        example: 0.87
+        type: number
+    type: object
   types.Ack:
     properties:
       status:
+        type: string
+    type: object
+  types.BanditDecideRequest:
+    properties:
+      algorithm:
+        type: string
+      candidate_policy_ids:
+        items:
+          type: string
+        type: array
+      context:
+        additionalProperties:
+          type: string
+        type: object
+      namespace:
+        type: string
+      request_id:
+        type: string
+      surface:
+        type: string
+    type: object
+  types.BanditDecideResponse:
+    properties:
+      algorithm:
+        type: string
+      bucket_key:
+        type: string
+      explain:
+        additionalProperties:
+          type: string
+        type: object
+      explore:
+        type: boolean
+      policy_id:
+        type: string
+      surface:
+        type: string
+    type: object
+  types.BanditPoliciesUpsertRequest:
+    properties:
+      namespace:
+        type: string
+      policies:
+        items:
+          $ref: '#/definitions/types.BanditPolicy'
+        type: array
+    type: object
+  types.BanditPolicy:
+    properties:
+      active:
+        type: boolean
+      blend_alpha:
+        type: number
+      blend_beta:
+        type: number
+      blend_gamma:
+        type: number
+      brand_cap:
+        type: integer
+      category_cap:
+        type: integer
+      mmr_lambda:
+        type: number
+      name:
+        type: string
+      notes:
+        type: string
+      policy_id:
+        type: string
+    type: object
+  types.BanditRewardRequest:
+    properties:
+      algorithm:
+        type: string
+      bucket_key:
+        type: string
+      namespace:
+        type: string
+      policy_id:
+        type: string
+      request_id:
+        type: string
+      reward:
+        type: boolean
+      surface:
         type: string
     type: object
   types.DeleteRequest:
@@ -223,24 +321,64 @@ definitions:
     properties:
       items:
         items:
-          $ref: '#/definitions/types.ScoredItem'
+          $ref: '#/definitions/internal_http_types.ScoredItem'
         type: array
       model_version:
         example: pop_2025-09-07_01
         type: string
     type: object
-  types.ScoredItem:
+  types.RecommendWithBanditRequest:
     properties:
-      item_id:
-        example: i_101
+      algorithm:
         type: string
-      reasons:
+      blend:
+        $ref: '#/definitions/types.RecommendBlend'
+      candidate_policy_ids:
         items:
           type: string
         type: array
-      score:
-        example: 0.87
-        type: number
+      constraints:
+        $ref: '#/definitions/types.RecommendConstraints'
+      context:
+        additionalProperties:
+          type: string
+        type: object
+      include_reasons:
+        example: true
+        type: boolean
+      k:
+        example: 20
+        type: integer
+      namespace:
+        example: default
+        type: string
+      surface:
+        type: string
+      user_id:
+        example: u_123
+        type: string
+    type: object
+  types.RecommendWithBanditResponse:
+    properties:
+      algorithm:
+        type: string
+      bandit_bucket:
+        type: string
+      bandit_explain:
+        additionalProperties:
+          type: string
+        type: object
+      chosen_policy_id:
+        type: string
+      explore:
+        type: boolean
+      items:
+        items:
+          $ref: '#/definitions/internal_http_types.ScoredItem'
+        type: array
+      model_version:
+        example: pop_2025-09-07_01
+        type: string
     type: object
   types.User:
     properties:
@@ -266,6 +404,111 @@ info:
   title: Recsys API
   version: 0.0.1
 paths:
+  /v1/bandit/decide:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Decision request
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.BanditDecideRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.BanditDecideResponse'
+      summary: Decide best policy for this request context
+      tags:
+      - bandit
+  /v1/bandit/policies:
+    get:
+      parameters:
+      - description: Namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.BanditPolicy'
+            type: array
+      summary: List active bandit policies
+      tags:
+      - bandit
+  /v1/bandit/policies:upsert:
+    post:
+      consumes:
+      - application/json
+      operationId: upsertBanditPolicies
+      parameters:
+      - description: Policies
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.BanditPoliciesUpsertRequest'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/types.Ack'
+      summary: Upsert bandit policies
+      tags:
+      - bandit
+  /v1/bandit/recommendations:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Request
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.RecommendWithBanditRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.RecommendWithBanditResponse'
+      summary: Recommend with bandit-selected policy
+      tags:
+      - ranking
+  /v1/bandit/reward:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Reward request
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.BanditRewardRequest'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/types.Ack'
+      summary: Report binary reward for a previous decision
+      tags:
+      - bandit
   /v1/event-types:
     get:
       parameters:
@@ -489,7 +732,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/types.ScoredItem'
+              $ref: '#/definitions/internal_http_types.ScoredItem'
             type: array
         "400":
           description: Bad Request

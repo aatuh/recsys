@@ -2,9 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { types_ScoredItem } from './types_ScoredItem';
+import type { internal_http_types_ScoredItem } from './internal_http_types_ScoredItem';
 export type types_RecommendResponse = {
-    items?: Array<types_ScoredItem>;
+    items?: Array<internal_http_types_ScoredItem>;
     model_version?: string;
 };
 

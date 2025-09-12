@@ -9,12 +9,12 @@ import (
 
 // SimilarItemsEngine handles similar items recommendations
 type SimilarItemsEngine struct {
-	store           types.Store
+	store           types.AlgoStore
 	coVisWindowDays int
 }
 
 // NewSimilarItemsEngine creates a new similar items engine
-func NewSimilarItemsEngine(store types.Store, coVisWindowDays int) *SimilarItemsEngine {
+func NewSimilarItemsEngine(store types.AlgoStore, coVisWindowDays int) *SimilarItemsEngine {
 	return &SimilarItemsEngine{
 		store:           store,
 		coVisWindowDays: coVisWindowDays,

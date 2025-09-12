@@ -87,25 +87,12 @@ services:
         condition: service_started
     env_file:
       - ./demo-ui/.env
-    environment:
-      - VITE_API_BASE_URL=${VITE_API_BASE_URL}
-      - VITE_ALLOWED_HOSTS=localhost,127.0.0.1,pepe.local
     ports:
       - "3000:3000"
     volumes:
       - ./demo-ui:/app
       - demo_node_modules:/app/node_modules
     command: ["/bin/sh", "-c", "/app/entrypoint.sh"]
-
-  atlas:
-    image: arigaio/atlas:latest
-    depends_on:
-      db: { condition: service_healthy }
-    env_file:
-      - ./api/.env
-    working_dir: /src/api
-    volumes: [".:/src"]
-    command: migrate apply --env dev
 
   adminer:
     image: adminer:latest
