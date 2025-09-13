@@ -25,6 +25,7 @@ export type { types_EventTypeConfigUpsertResponse } from './models/types_EventTy
 export type { types_Item } from './models/types_Item';
 export type { types_ItemsUpsertRequest } from './models/types_ItemsUpsertRequest';
 export type { types_ListResponse } from './models/types_ListResponse';
+export type { types_Overrides } from './models/types_Overrides';
 export type { types_RecommendBlend } from './models/types_RecommendBlend';
 export type { types_RecommendConstraints } from './models/types_RecommendConstraints';
 export type { types_RecommendRequest } from './models/types_RecommendRequest';

@@ -2,6 +2,8 @@ export * from "./UIComponents";
 export * from "./NamespaceSection";
 export * from "./SeedDataSection";
 export * from "./RecommendationsSection";
+export * from "./OverridesSection";
+export * from "./ProfileEditor";
 export * from "./SimilarItemsSection";
 export * from "./UserTraitsEditor";
 export * from "./ItemConfigEditor";

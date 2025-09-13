@@ -62,12 +62,32 @@ type RecommendBlend struct {
 	ALS  float64 `json:"als,omitempty" example:"0.0"`
 }
 
+type Overrides struct {
+	PopularityHalfLifeDays *int     `json:"popularity_halflife_days,omitempty"`
+	PopularityWindowDays   *int     `json:"popularity_window_days,omitempty"`
+	CoVisWindowDays        *int     `json:"covis_window_days,omitempty"`
+	PopularityFanout       *int     `json:"popularity_fanout,omitempty"`
+	MMRLambda              *float64 `json:"mmr_lambda,omitempty"`
+	BrandCap               *int     `json:"brand_cap,omitempty"`
+	CategoryCap            *int     `json:"category_cap,omitempty"`
+	RuleExcludePurchased   *bool    `json:"rule_exclude_purchased,omitempty"`
+	PurchasedWindowDays    *int     `json:"purchased_window_days,omitempty"`
+	ProfileWindowDays      *int     `json:"profile_window_days,omitempty"`
+	ProfileBoost           *float64 `json:"profile_boost,omitempty"`
+	ProfileTopN            *int     `json:"profile_top_n,omitempty"`
+	BlendAlpha             *float64 `json:"blend_alpha,omitempty"`
+	BlendBeta              *float64 `json:"blend_beta,omitempty"`
+	BlendGamma             *float64 `json:"blend_gamma,omitempty"`
+	BanditAlgo             *string  `json:"bandit_algo,omitempty"`
+}
+
 type RecommendRequest struct {
 	UserID         string                `json:"user_id" example:"u_123"`
 	Namespace      string                `json:"namespace" example:"default"`
 	K              int                   `json:"k" example:"20"`
 	Constraints    *RecommendConstraints `json:"constraints,omitempty"`
 	Blend          *RecommendBlend       `json:"blend,omitempty"`
+	Overrides      *Overrides            `json:"overrides,omitempty"`
 	IncludeReasons bool                  `json:"include_reasons,omitempty" example:"true"`
 }
 

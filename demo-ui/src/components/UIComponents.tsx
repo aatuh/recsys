@@ -17,7 +17,10 @@ export function Section(props: { title: string; children: React.ReactNode }) {
   );
 }
 
-export function Row(props: { children: React.ReactNode }) {
+export function Row(props: {
+  children: React.ReactNode;
+  style?: React.CSSProperties;
+}) {
   return (
     <div
       style={{
@@ -26,6 +29,7 @@ export function Row(props: { children: React.ReactNode }) {
         flexWrap: "wrap",
         alignItems: "center",
         marginBottom: 8,
+        ...props.style,
       }}
     >
       {props.children}

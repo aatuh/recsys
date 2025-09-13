@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"recsys/internal/algorithm"
+	"recsys/internal/bandit"
 	"recsys/internal/http/common"
 	handlerstypes "recsys/internal/http/types"
 	"recsys/internal/types"
@@ -61,7 +62,12 @@ func (h *Handler) Recommend(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create algorithm engine
-	engine := algorithm.NewEngine(h.getAlgorithmConfig(), h.Store)
+	config, err := h.getAlgorithmConfig(req.Overrides)
+	if err != nil {
+		common.HttpError(w, r, err, http.StatusInternalServerError)
+		return
+	}
+	engine := algorithm.NewEngine(config, h.Store)
 
 	// Get recommendations
 	algoResp, err := engine.Recommend(r.Context(), algoReq)
@@ -199,9 +205,11 @@ func (h *Handler) convertToHTTPResponse(algoResp *algorithm.Response) handlersty
 	}
 }
 
-// getAlgorithmConfig creates algorithm configuration from handler config
-func (h *Handler) getAlgorithmConfig() algorithm.Config {
-	return algorithm.Config{
+// getAlgorithmConfig creates algorithm configuration from handler config and overrides
+func (h *Handler) getAlgorithmConfig(
+	overrides *handlerstypes.Overrides,
+) (algorithm.Config, error) {
+	config := algorithm.Config{
 		BlendAlpha:           h.BlendAlpha,
 		BlendBeta:            h.BlendBeta,
 		BlendGamma:           h.BlendGamma,
@@ -217,4 +225,59 @@ func (h *Handler) getAlgorithmConfig() algorithm.Config {
 		RuleExcludePurchased: h.RuleExcludePurchased,
 		PopularityFanout:     h.PopularityFanout,
 	}
+
+	// Apply overrides if provided
+	if overrides != nil {
+		if overrides.BlendAlpha != nil {
+			config.BlendAlpha = *overrides.BlendAlpha
+		}
+		if overrides.BlendBeta != nil {
+			config.BlendBeta = *overrides.BlendBeta
+		}
+		if overrides.BlendGamma != nil {
+			config.BlendGamma = *overrides.BlendGamma
+		}
+		if overrides.ProfileBoost != nil {
+			config.ProfileBoost = *overrides.ProfileBoost
+		}
+		if overrides.ProfileWindowDays != nil {
+			config.ProfileWindowDays = float64(*overrides.ProfileWindowDays)
+		}
+		if overrides.ProfileTopN != nil {
+			config.ProfileTopNTags = *overrides.ProfileTopN
+		}
+		if overrides.MMRLambda != nil {
+			config.MMRLambda = *overrides.MMRLambda
+		}
+		if overrides.BrandCap != nil {
+			config.BrandCap = *overrides.BrandCap
+		}
+		if overrides.CategoryCap != nil {
+			config.CategoryCap = *overrides.CategoryCap
+		}
+		if overrides.PopularityHalfLifeDays != nil {
+			config.HalfLifeDays = float64(*overrides.PopularityHalfLifeDays)
+		}
+		if overrides.CoVisWindowDays != nil {
+			config.CoVisWindowDays = *overrides.CoVisWindowDays
+		}
+		if overrides.PurchasedWindowDays != nil {
+			config.PurchasedWindowDays = *overrides.PurchasedWindowDays
+		}
+		if overrides.RuleExcludePurchased != nil {
+			config.RuleExcludePurchased = *overrides.RuleExcludePurchased
+		}
+		if overrides.PopularityFanout != nil {
+			config.PopularityFanout = *overrides.PopularityFanout
+		}
+		if overrides.BanditAlgo != nil {
+			algo, err := bandit.ParseAlgorithm(*overrides.BanditAlgo)
+			if err != nil {
+				return config, errors.New("invalid bandit algorithm: " + *overrides.BanditAlgo)
+			}
+			config.BanditAlgo = algo
+		}
+	}
+
+	return config, nil
 }

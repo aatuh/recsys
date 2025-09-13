@@ -12,6 +12,7 @@ import { recommend } from "../services/apiService";
 import type {
   internal_http_types_ScoredItem,
   types_RecommendResponse,
+  types_Overrides,
 } from "../lib/api-client";
 import { ExplainModal } from "./ExplainModal";
 
@@ -28,6 +29,7 @@ interface RecommendationsSectionProps {
   setRecOut: (items: internal_http_types_ScoredItem[] | null) => void;
   recLoading: boolean;
   setRecLoading: (loading: boolean) => void;
+  overrides: types_Overrides | null;
 }
 
 export function RecommendationsSection({
@@ -43,6 +45,7 @@ export function RecommendationsSection({
   setRecOut,
   recLoading,
   setRecLoading,
+  overrides,
 }: RecommendationsSectionProps) {
   const [explainItem, setExplainItem] =
     useState<internal_http_types_ScoredItem | null>(null);
@@ -56,7 +59,8 @@ export function RecommendationsSection({
         id,
         namespace,
         k,
-        blend
+        blend,
+        overrides
       );
       setRecOut(r.items ?? []);
     } catch (e: any) {

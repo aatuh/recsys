@@ -2,7 +2,10 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 import type { EventTypeConfig } from "../types";
 import type { TraitConfig } from "../components/UserTraitsEditor";
 import type { ItemConfig, PriceRange } from "../components/ItemConfigEditor";
-import type { internal_http_types_ScoredItem } from "../lib/api-client";
+import type {
+  internal_http_types_ScoredItem,
+  types_Overrides,
+} from "../lib/api-client";
 
 // UserSession specific types
 export interface UserEvent {
@@ -52,6 +55,15 @@ interface RecommendationsPlaygroundState {
   simItemId: string;
   simOut: internal_http_types_ScoredItem[] | null;
   simLoading: boolean;
+  overrides: types_Overrides | null;
+  customProfiles: Array<{
+    id: string;
+    name: string;
+    description: string;
+    overrides: types_Overrides;
+  }>;
+  selectedProfileId: string | null;
+  isEditingProfile: boolean;
 }
 
 interface DataManagementState {
@@ -231,6 +243,10 @@ const initialRecommendationsPlaygroundState: RecommendationsPlaygroundState = {
   simItemId: "",
   simOut: null,
   simLoading: false,
+  overrides: null,
+  customProfiles: [],
+  selectedProfileId: null,
+  isEditingProfile: false,
 };
 
 const initialDataManagementState: DataManagementState = {

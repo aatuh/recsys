@@ -1,5 +1,8 @@
 import { useMemo, useRef, useState } from "react";
-import type { internal_http_types_ScoredItem } from "../lib/api-client";
+import type {
+  internal_http_types_ScoredItem,
+  types_Overrides,
+} from "../lib/api-client";
 import {
   NamespaceSection,
   SeedDataSection,
@@ -65,6 +68,7 @@ export function DemoView({ namespace, setNamespace, apiBase }: DemoViewProps) {
   /* Blend controls for recommendations */
   const [blend, setBlend] = useState({ pop: 1.0, cooc: 0.5, als: 0.0 });
   const [k, setK] = useState(20);
+  const [overrides, setOverrides] = useState<types_Overrides | null>(null);
 
   /* User trait configuration */
   const [traitConfigs, setTraitConfigs] = useState<TraitConfig[]>([
@@ -253,6 +257,7 @@ export function DemoView({ namespace, setNamespace, apiBase }: DemoViewProps) {
         setRecOut={setRecOut}
         recLoading={recLoading}
         setRecLoading={setRecLoading}
+        overrides={overrides}
       />
 
       <SimilarItemsSection

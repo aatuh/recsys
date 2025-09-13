@@ -10,6 +10,7 @@ import type {
   types_EventsBatchRequest,
   types_RecommendRequest,
   types_RecommendResponse,
+  types_Overrides,
 } from "../lib/api-client";
 
 /**
@@ -75,7 +76,8 @@ export async function recommend(
   userId: string,
   namespace: string,
   kVal: number,
-  blendVal: { pop: number; cooc: number; als: number }
+  blendVal: { pop: number; cooc: number; als: number },
+  overrides?: types_Overrides | null
 ): Promise<types_RecommendResponse> {
   const payload: types_RecommendRequest = {
     user_id: userId,
@@ -84,6 +86,7 @@ export async function recommend(
     include_reasons: true,
     constraints: {},
     blend: blendVal,
+    overrides: overrides || undefined,
   };
   return RankingService.postV1Recommendations(payload);
 }
@@ -248,14 +251,14 @@ export async function fetchAllData(
   const allData: any[] = [];
   let offset = 0;
   const limit = 1000; // Large batch size for efficiency
-  
+
   while (true) {
     const batchParams: ListParams = {
       ...params,
       limit,
       offset,
     };
-    
+
     let response: ListResponse;
     switch (dataType) {
       case "users":
@@ -270,17 +273,17 @@ export async function fetchAllData(
       default:
         throw new Error("Invalid data type");
     }
-    
+
     allData.push(...response.items);
-    
+
     // If we got fewer items than requested, we've reached the end
     if (response.items.length < limit || !response.has_more) {
       break;
     }
-    
+
     offset += limit;
   }
-  
+
   return allData;
 }
 
@@ -310,13 +313,13 @@ export async function fetchAllDataForTables(
     created_after: filters.created_after || undefined,
     created_before: filters.created_before || undefined,
   };
-  
+
   const result: {
     users?: any[];
     items?: any[];
     events?: any[];
   } = {};
-  
+
   // Fetch data for each selected table in parallel
   const promises = selectedTables.map(async (table) => {
     switch (table) {
@@ -331,7 +334,7 @@ export async function fetchAllDataForTables(
         break;
     }
   });
-  
+
   await Promise.all(promises);
   return result;
 }

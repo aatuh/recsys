@@ -1185,6 +1185,56 @@
                 }
             }
         },
+        "types.Overrides": {
+            "type": "object",
+            "properties": {
+                "blend_alpha": {
+                    "type": "number"
+                },
+                "blend_beta": {
+                    "type": "number"
+                },
+                "blend_gamma": {
+                    "type": "number"
+                },
+                "brand_cap": {
+                    "type": "integer"
+                },
+                "category_cap": {
+                    "type": "integer"
+                },
+                "covis_window_days": {
+                    "type": "integer"
+                },
+                "mmr_lambda": {
+                    "type": "number"
+                },
+                "popularity_fanout": {
+                    "type": "integer"
+                },
+                "popularity_halflife_days": {
+                    "type": "integer"
+                },
+                "popularity_window_days": {
+                    "type": "integer"
+                },
+                "profile_boost": {
+                    "type": "number"
+                },
+                "profile_top_n": {
+                    "type": "integer"
+                },
+                "profile_window_days": {
+                    "type": "integer"
+                },
+                "purchased_window_days": {
+                    "type": "integer"
+                },
+                "rule_exclude_purchased": {
+                    "type": "boolean"
+                }
+            }
+        },
         "types.RecommendBlend": {
             "type": "object",
             "properties": {
@@ -1254,6 +1304,9 @@
                     "type": "string",
                     "example": "default"
                 },
+                "overrides": {
+                    "$ref": "#/definitions/types.Overrides"
+                },
                 "user_id": {
                     "type": "string",
                     "example": "u_123"
@@ -1310,6 +1363,9 @@
                 "namespace": {
                     "type": "string",
                     "example": "default"
+                },
+                "overrides": {
+                    "$ref": "#/definitions/types.Overrides"
                 },
                 "surface": {
                     "type": "string"

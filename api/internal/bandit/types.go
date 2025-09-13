@@ -3,6 +3,7 @@ package bandit
 import (
 	"crypto/sha1"
 	"encoding/hex"
+	"errors"
 	"sort"
 	"strings"
 )
@@ -13,6 +14,23 @@ const (
 	AlgorithmThompson Algorithm = "thompson"
 	AlgorithmUCB1     Algorithm = "ucb1"
 )
+
+func (a Algorithm) String() string {
+	return string(a)
+}
+
+// ParseAlgorithm converts a string to an Algorithm, returning an error if
+// invalid.
+func ParseAlgorithm(s string) (Algorithm, error) {
+	switch strings.ToLower(strings.TrimSpace(s)) {
+	case string(AlgorithmThompson):
+		return AlgorithmThompson, nil
+	case string(AlgorithmUCB1):
+		return AlgorithmUCB1, nil
+	default:
+		return "", errors.New("invalid algorithm: " + s)
+	}
+}
 
 // PolicyConfig describes the scoring configuration used by the ranker.
 type PolicyConfig struct {

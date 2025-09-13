@@ -1,5 +1,9 @@
 import React, { useMemo } from "react";
-import { RecommendationsSection, SimilarItemsSection } from "./";
+import {
+  RecommendationsSection,
+  OverridesSection,
+  SimilarItemsSection,
+} from "./";
 import { useViewState } from "../contexts/ViewStateContext";
 import type { internal_http_types_ScoredItem } from "../lib/api-client";
 
@@ -33,6 +37,37 @@ export function RecommendationsPlaygroundView({
         recommendations.
       </p>
 
+      <OverridesSection
+        overrides={recommendationsPlayground.overrides}
+        setOverrides={(value) =>
+          setRecommendationsPlayground((prev) => ({
+            ...prev,
+            overrides: value,
+          }))
+        }
+        customProfiles={recommendationsPlayground.customProfiles}
+        setCustomProfiles={(value) =>
+          setRecommendationsPlayground((prev) => ({
+            ...prev,
+            customProfiles: value,
+          }))
+        }
+        selectedProfileId={recommendationsPlayground.selectedProfileId}
+        setSelectedProfileId={(value) =>
+          setRecommendationsPlayground((prev) => ({
+            ...prev,
+            selectedProfileId: value,
+          }))
+        }
+        isEditingProfile={recommendationsPlayground.isEditingProfile}
+        setIsEditingProfile={(value) =>
+          setRecommendationsPlayground((prev) => ({
+            ...prev,
+            isEditingProfile: value,
+          }))
+        }
+      />
+
       <RecommendationsSection
         recUserId={recommendationsPlayground.recUserId}
         setRecUserId={(value) =>
@@ -62,6 +97,7 @@ export function RecommendationsPlaygroundView({
             recLoading: value,
           }))
         }
+        overrides={recommendationsPlayground.overrides}
       />
 
       <SimilarItemsSection

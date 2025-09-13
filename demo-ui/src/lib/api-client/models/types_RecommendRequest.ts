@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { types_Overrides } from './types_Overrides';
 import type { types_RecommendBlend } from './types_RecommendBlend';
 import type { types_RecommendConstraints } from './types_RecommendConstraints';
 export type types_RecommendRequest = {
@@ -10,6 +11,7 @@ export type types_RecommendRequest = {
     include_reasons?: boolean;
     'k'?: number;
     namespace?: string;
+    overrides?: types_Overrides;
     user_id?: string;
 };
 

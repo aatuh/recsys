@@ -2,6 +2,7 @@ package algorithm
 
 import (
 	"context"
+	"fmt"
 	"math"
 	"time"
 
@@ -18,6 +19,7 @@ type Engine struct {
 
 // NewEngine creates a new recommendation engine
 func NewEngine(config Config, store types.AlgoStore) *Engine {
+	fmt.Println("config", config)
 	return &Engine{
 		config: config,
 		store:  store,
