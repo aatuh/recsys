@@ -264,6 +264,8 @@ definitions:
     type: object
   types.Overrides:
     properties:
+      bandit_algo:
+        type: string
       blend_alpha:
         type: number
       blend_beta:

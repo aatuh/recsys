@@ -1191,6 +1191,9 @@ const docTemplate = `{
         "types.Overrides": {
             "type": "object",
             "properties": {
+                "bandit_algo": {
+                    "type": "string"
+                },
                 "blend_alpha": {
                     "type": "number"
                 },
