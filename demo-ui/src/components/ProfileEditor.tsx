@@ -30,11 +30,6 @@ const OVERRIDE_FIELDS = [
     type: "number" as const,
   },
   {
-    key: "popularity_window_days" as const,
-    label: "Popularity Window (days)",
-    type: "number" as const,
-  },
-  {
     key: "covis_window_days" as const,
     label: "Co-Vis Window (days)",
     type: "number" as const,

@@ -89,7 +89,11 @@ func (e *Engine) Recommend(
 // getPopularityCandidates fetches a popularity-based candidate pool.
 // Uses configurable fanout: if <=0 -> k; if <k -> k.
 func (e *Engine) getPopularityCandidates(
-	ctx context.Context, orgID uuid.UUID, ns string, k int, c *types.PopConstraints,
+	ctx context.Context,
+	orgID uuid.UUID,
+	ns string,
+	k int,
+	c *types.PopConstraints,
 ) ([]types.ScoredItem, error) {
 	// Respect configured fanout if provided; otherwise default to k.
 	fetchK := e.config.PopularityFanout

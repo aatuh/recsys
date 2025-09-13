@@ -64,7 +64,6 @@ type RecommendBlend struct {
 
 type Overrides struct {
 	PopularityHalfLifeDays *int     `json:"popularity_halflife_days,omitempty"`
-	PopularityWindowDays   *int     `json:"popularity_window_days,omitempty"`
 	CoVisWindowDays        *int     `json:"covis_window_days,omitempty"`
 	PopularityFanout       *int     `json:"popularity_fanout,omitempty"`
 	MMRLambda              *float64 `json:"mmr_lambda,omitempty"`

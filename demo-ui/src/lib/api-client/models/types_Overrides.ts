@@ -13,7 +13,6 @@ export type types_Overrides = {
     mmr_lambda?: number;
     popularity_fanout?: number;
     popularity_halflife_days?: number;
-    popularity_window_days?: number;
     profile_boost?: number;
     profile_top_n?: number;
     profile_window_days?: number;

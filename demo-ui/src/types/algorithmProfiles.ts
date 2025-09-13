@@ -15,7 +15,6 @@ export const ALGORITHM_PROFILES: AlgorithmProfile[] = [
       "Very reactive, newsy feel. Use when you want clicks to reshuffle quickly.",
     overrides: {
       popularity_halflife_days: 3,
-      popularity_window_days: 7,
       covis_window_days: 14,
       popularity_fanout: 1000,
       mmr_lambda: 0,
@@ -39,7 +38,6 @@ export const ALGORITHM_PROFILES: AlgorithmProfile[] = [
       "Let the user's trail matter a lot. Interact (views/clicks/ATC) and refresh to see ranking shift.",
     overrides: {
       popularity_halflife_days: 10,
-      popularity_window_days: 30,
       covis_window_days: 21,
       popularity_fanout: 1000,
       mmr_lambda: 0.1,
@@ -63,7 +61,6 @@ export const ALGORITHM_PROFILES: AlgorithmProfile[] = [
       "People who did X also did Y. Great after you create a few co-occurrence events in the demo.",
     overrides: {
       popularity_halflife_days: 14,
-      popularity_window_days: 60,
       covis_window_days: 30,
       popularity_fanout: 1500,
       mmr_lambda: 0.2,
@@ -87,7 +84,6 @@ export const ALGORITHM_PROFILES: AlgorithmProfile[] = [
       "If you have embeddings wired. Puts strong weight on content similarity; pop still anchors results.",
     overrides: {
       popularity_halflife_days: 21,
-      popularity_window_days: 90,
       covis_window_days: 30,
       popularity_fanout: 2000,
       mmr_lambda: 0.25,
@@ -111,7 +107,6 @@ export const ALGORITHM_PROFILES: AlgorithmProfile[] = [
       "Avoids spammy dominance and shows variety; great for catalog demos.",
     overrides: {
       popularity_halflife_days: 14,
-      popularity_window_days: 60,
       covis_window_days: 30,
       popularity_fanout: 2000,
       mmr_lambda: 0.35,
@@ -134,7 +129,6 @@ export const ALGORITHM_PROFILES: AlgorithmProfile[] = [
     description: "Stable, mixed signals, gentle diversity, no weird surprises.",
     overrides: {
       popularity_halflife_days: 14,
-      popularity_window_days: 90,
       covis_window_days: 30,
       popularity_fanout: 3000,
       mmr_lambda: 0.25,

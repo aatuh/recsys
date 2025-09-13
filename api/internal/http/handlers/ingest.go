@@ -20,7 +20,6 @@ type Handler struct {
 	Store                *store.Store
 	DefaultOrg           uuid.UUID
 	HalfLifeDays         float64
-	PopularityWindowDays float64
 	CoVisWindowDays      float64
 	PopularityFanout     int
 	MMRLambda            float64

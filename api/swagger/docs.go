@@ -1221,9 +1221,6 @@ const docTemplate = `{
                 "popularity_halflife_days": {
                     "type": "integer"
                 },
-                "popularity_window_days": {
-                    "type": "integer"
-                },
                 "profile_boost": {
                     "type": "number"
                 },

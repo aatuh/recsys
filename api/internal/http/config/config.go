@@ -15,7 +15,6 @@ type Config struct {
 	DatabaseURL          string
 	DefaultOrgID         uuid.UUID
 	HalfLifeDays         float64 // popularity decay half-life
-	PopularityWindowDays float64 // default pop window (e.g., 90)
 	CoVisWindowDays      float64 // default co-vis window (e.g., 30)
 	PopularityFanout     int     // optional prefilter cap for popularity
 	MMRLambda            float64 // 0..1; 0 disables MMR
@@ -50,11 +49,6 @@ func Load() (Config, error) {
 	c.HalfLifeDays = v
 
 	// Optional/tenant-configurable windows; provide sensible defaults.
-	if vv, err := strconv.ParseFloat(util.MustGetEnv("POPULARITY_WINDOW_DAYS"), 64); err == nil && vv > 0 {
-		c.PopularityWindowDays = vv
-	} else {
-		return c, errors.New("POPULARITY_WINDOW_DAYS must be a positive number")
-	}
 	if vv, err := strconv.ParseFloat(util.MustGetEnv("COVIS_WINDOW_DAYS"), 64); err == nil && vv > 0 {
 		c.CoVisWindowDays = vv
 	} else {
@@ -97,22 +91,17 @@ func Load() (Config, error) {
 	}
 	c.PurchasedWindowDays = fv
 
-	// If PROFILE_WINDOW_DAYS is not set, default to PopularityWindowDays on -1.
 	s := util.MustGetEnv("PROFILE_WINDOW_DAYS")
-	if s != "-1" {
-		f, err := strconv.ParseFloat(s, 64)
-		if err == nil && f > 0 {
-			c.ProfileWindowDays = f
-		} else {
-			return c, errors.New("PROFILE_WINDOW_DAYS must be a positive number when set")
-		}
+	f, err := strconv.ParseFloat(s, 64)
+	if err == nil && f > 0 {
+		c.ProfileWindowDays = f
 	} else {
-		c.ProfileWindowDays = c.PopularityWindowDays
+		return c, errors.New("PROFILE_WINDOW_DAYS must be a positive number when set")
 	}
 
 	// Boost factor. 0 disables personalization.
 	s = util.MustGetEnv("PROFILE_BOOST")
-	f, err := strconv.ParseFloat(s, 64)
+	f, err = strconv.ParseFloat(s, 64)
 	if err == nil && f >= 0 {
 		c.ProfileBoost = f
 	} else {

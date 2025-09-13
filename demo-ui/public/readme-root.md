@@ -83,7 +83,7 @@ UserTagProfile ────────────────> Light personali
 
 ## Pseudocode (Simplified)
 
-```text
+```plaintext
 function recommend(req):
   k = req.k or 20
 
@@ -128,7 +128,7 @@ function recommend(req):
 
   # 4) Light personalization
   if PROFILE_BOOST > 0 and req.user_id:
-    window = PROFILE_WINDOW_DAYS or POPULARITY_WINDOW_DAYS
+    window = PROFILE_WINDOW_DAYS
     profile = buildUserTagProfile(org, ns, req.user_id, window, PROFILE_TOP_N)
     for item in cand:
       overlap = sum(profile[tag] for tag in meta[item].tags)
@@ -195,10 +195,23 @@ vector("A"), vector("B"), vector("C"), vector("X"), vector("Y")
 
 #### 1) Build the candidate list from popularity
 
-- Query recent events within POPULARITY_WINDOW_DAYS.
+- Doesn't take into account user information i.e. user ID is not used but other
+  filters like namespace and organization ID are used.
 - Apply time decay with POPULARITY_HALFLIFE_DAYS.
 - Sum per item to get "raw popularity."
 - Keep the top POPULARITY_FANOUT items (at least K).
+
+Scoring formula used for single item to find candidates. Each score is summed
+among all events with the same event ID ("raw popularity").
+
+```plaintext
+0.5 ^ ( age_seconds / (hl_days * 86400) ) * event_type_weight * event_value
+```
+
+- 86400 is one day in seconds.
+- Half-life means: every hl_days, the contribution halves.
+- Larger event weight or event value increases the contribution. Older
+  timestamps decrease it exponentially.
 
 #### Example outcome from building candidate list
 
@@ -339,7 +352,7 @@ balances score and novelty. Caps can skip items that would break limits.
 
 ---
 
-## Algorithms (Plain English)
+## Algorithms
 
 ### Time-decayed popularity
 
@@ -401,7 +414,6 @@ Put these in your service environment (see your `.env.example` files).
 | Variable                   | Type / Range | What it does                                 | Effect of higher / lower                  |
 |----------------------------|--------------|----------------------------------------------|-------------------------------------------|
 | `POPULARITY_HALFLIFE_DAYS` | float > 0    | How fast old events fade.                    | Smaller = favors recency; larger = memory |
-| `POPULARITY_WINDOW_DAYS`   | float > 0    | Hard lookback for popularity events.         | Larger = more history, more work          |
 | `COVIS_WINDOW_DAYS`        | float > 0    | Lookback for co-vis and user anchors.        | Larger = more seasonal signal             |
 | `POPULARITY_FANOUT`        | int > 0      | How many popularity candidates to pre-fetch. | Larger = more choice, more DB work        |
 
@@ -417,11 +429,11 @@ Put these in your service environment (see your `.env.example` files).
 
 ### Light personalization vars
 
-| Variable              | Type / Range      | What it does                          | Notes                              |
-|-----------------------|-------------------|---------------------------------------|------------------------------------|
-| `PROFILE_WINDOW_DAYS` | float > 0 or `-1` | Lookback for building user profile.   | `-1` uses `POPULARITY_WINDOW_DAYS` |
-| `PROFILE_TOP_N`       | int > 0           | Keep only the strongest N tags.       | Higher N = broader, noisier        |
-| `PROFILE_BOOST`       | float ≥ 0         | Strength of the multiplicative boost. | `0` disables personalization       |
+| Variable              | Type / Range      | What it does                          | Notes                        |
+|-----------------------|-------------------|---------------------------------------|------------------------------|
+| `PROFILE_WINDOW_DAYS` | float > 0 or `-1` | Lookback for building user profile.   |                              |
+| `PROFILE_TOP_N`       | int > 0           | Keep only the strongest N tags.       | Higher N = broader, noisier  |
+| `PROFILE_BOOST`       | float ≥ 0         | Strength of the multiplicative boost. | `0` disables personalization |
 
 ### Blended scoring weight vars
 
@@ -670,6 +682,5 @@ tags for performance. No model training or embeddings are required; it’s just
 decayed counts on item tags.
 
 **Windows**  
-Lookback durations for data (e.g., `POPULARITY_WINDOW_DAYS`,
-`COVIS_WINDOW_DAYS`, `PROFILE_WINDOW_DAYS`). Larger windows mean more
-history; smaller windows favor recency.
+Lookback durations for data (e.g., `COVIS_WINDOW_DAYS`, `PROFILE_WINDOW_DAYS`).
+Larger windows mean more history; smaller windows favor recency.

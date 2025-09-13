@@ -128,7 +128,6 @@ func main() {
 		Store:                st,
 		DefaultOrg:           cfg.DefaultOrgID,
 		HalfLifeDays:         cfg.HalfLifeDays,
-		PopularityWindowDays: cfg.PopularityWindowDays,
 		CoVisWindowDays:      cfg.CoVisWindowDays,
 		PopularityFanout:     cfg.PopularityFanout,
 		MMRLambda:            cfg.MMRLambda,
