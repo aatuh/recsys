@@ -127,25 +127,13 @@ func (e *Engine) applyExclusions(
 	}
 
 	// Add purchased exclusions if enabled
-	if e.config.RuleExcludePurchased && req.UserID != "" {
-		lookback := time.Duration(e.config.PurchasedWindowDays*24.0) * time.Hour
-		since := time.Now().UTC().Add(-lookback)
-		bought, err := e.store.ListUserPurchasedSince(
-			ctx,
-			req.OrgID,
-			req.Namespace,
-			req.UserID,
-			since,
-		)
-		if err != nil {
-			return nil, err
-		}
-		for _, id := range bought {
-			exclude[id] = struct{}{}
-		}
+	var err error
+	exclude, err = e.excludePurchasedItems(ctx, req, exclude)
+	if err != nil {
+		return nil, err
 	}
 
-	// Filter candidates
+	// Filter candidates by excluding excluded items
 	filtered := make([]types.ScoredItem, 0, len(candidates))
 	for _, candidate := range candidates {
 		if _, skip := exclude[candidate.ItemID]; !skip {
@@ -154,6 +142,32 @@ func (e *Engine) applyExclusions(
 	}
 
 	return filtered, nil
+}
+
+func (e *Engine) excludePurchasedItems(
+	ctx context.Context,
+	req Request,
+	exclude map[string]struct{},
+) (map[string]struct{}, error) {
+	if !e.config.RuleExcludePurchased || req.UserID == "" {
+		return exclude, nil
+	}
+	lookback := time.Duration(e.config.PurchasedWindowDays*24.0) * time.Hour
+	since := time.Now().UTC().Add(-lookback)
+	bought, err := e.store.ListUserPurchasedSince(
+		ctx,
+		req.OrgID,
+		req.Namespace,
+		req.UserID,
+		since,
+	)
+	if err != nil {
+		return nil, err
+	}
+	for _, id := range bought {
+		exclude[id] = struct{}{}
+	}
+	return exclude, nil
 }
 
 // getCandidateMetadata fetches metadata for all candidates

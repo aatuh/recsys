@@ -44,6 +44,7 @@ type AlgoStore interface {
 	ListItemsMeta(ctx context.Context, orgID uuid.UUID, ns string,
 		itemIDs []string,
 	) (map[string]ItemMeta, error)
+
 	// ListUserPurchasedSince returns distinct item IDs the user purchased
 	// on/after the timestamp. Order is not guaranteed.
 	ListUserPurchasedSince(ctx context.Context, orgID uuid.UUID, ns string,
