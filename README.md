@@ -614,6 +614,16 @@ means an event’s influence halves every 14 days.
 **Item**
 something you could recommend (e.g., product "A").
 
+**Light personalization**
+A small score boost for items that share tags with what this user has
+recently engaged with. The engine builds a short-lived tag profile from the
+user’s own events (using your event-type weights and half-lives), then, for
+each candidate item, sums the overlap of its tags with that profile and
+multiplies the item’s score by `1 + PROFILE_BOOST * overlap`. Set
+`PROFILE_BOOST=0` to turn it off; `PROFILE_WINDOW_DAYS` and `PROFILE_TOP_N`
+control how the profile is built. Items boosted this way get a
+"personalization" reason in the response.
+
 **MMR (Maximal Marginal Relevance)**  
 A standard relevance-vs-diversity trade-off method. Used as a
 re-ranking step that balances "high score" vs "be different from what
@@ -649,6 +659,15 @@ candidate before blending.
 
 **Top-K**
 Return the K highest-scoring items after filters.
+
+**UserTagProfile**
+A lightweight map of "tag" -> weight that summarizes a user’s recent interests,
+normalized to sum to 1
+(e.g., `{"t:android": 0.6, "category:phone": 0.3, "brand:acme": 0.1}`). It’s
+computed from the user’s past events by applying your per-type weights and time
+decay (half-life), optionally limited to a recent window and capped to the top-N
+tags for performance. No model training or embeddings are required; it’s just
+decayed counts on item tags.
 
 **Windows**  
 Lookback durations for data (e.g., `POPULARITY_WINDOW_DAYS`,
