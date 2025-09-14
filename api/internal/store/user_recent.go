@@ -4,8 +4,13 @@ import (
 	"context"
 	"time"
 
+	_ "embed"
+
 	"github.com/google/uuid"
 )
+
+//go:embed queries/user_recent_items.sql
+var userRecentItemsSQL string
 
 // ListUserRecentItemIDs returns distinct recent items for a user since "since".
 // Items are ordered by most recent interaction time and capped by limit.
@@ -20,19 +25,7 @@ func (s *Store) ListUserRecentItemIDs(
 	if userID == "" || limit <= 0 {
 		return []string{}, nil
 	}
-	rows, err := s.Pool.Query(ctx, `
-SELECT item_id
-FROM (
-  SELECT item_id, MAX(ts) AS last_ts
-  FROM events
-  WHERE org_id = $1 AND namespace = $2
-    AND user_id = $3
-    AND ts >= $4
-  GROUP BY item_id
-) u
-ORDER BY last_ts DESC
-LIMIT $5
-`, orgID, ns, userID, since, limit)
+	rows, err := s.Pool.Query(ctx, userRecentItemsSQL, orgID, ns, userID, since, limit)
 	if err != nil {
 		return nil, err
 	}

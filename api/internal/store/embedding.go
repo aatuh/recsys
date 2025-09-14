@@ -4,8 +4,16 @@ import (
 	"context"
 	"recsys/internal/types"
 
+	_ "embed"
+
 	"github.com/google/uuid"
 )
+
+//go:embed queries/embedding_similarity.sql
+var embeddingSimilaritySQL string
+
+//go:embed queries/items_embeddings.sql
+var itemsEmbeddingsSQL string
 
 // SimilarByEmbeddingTopK returns k nearest neighbors by cosine distance
 // from the anchor item's embedding. Requires both anchor and neighbor
@@ -21,27 +29,7 @@ func (s *Store) SimilarByEmbeddingTopK(
 	if k <= 0 {
 		k = 20
 	}
-	rows, err := s.Pool.Query(ctx, `
-WITH anchor AS (
-  SELECT embedding
-  FROM items
-  WHERE org_id=$1
-    AND namespace=$2
-    AND item_id=$3
-    AND embedding IS NOT NULL
-)
-SELECT
-  i.item_id, (1.0 - (a.embedding <=> i.embedding)) AS score
-FROM anchor a
-JOIN items i
-  ON i.org_id=$1
-  AND i.namespace=$2
-WHERE i.item_id <> $3
-  AND i.available = true
-  AND i.embedding IS NOT NULL
-ORDER BY a.embedding <=> i.embedding ASC
-LIMIT $4
-`, orgID, ns, itemID, k)
+	rows, err := s.Pool.Query(ctx, embeddingSimilaritySQL, orgID, ns, itemID, k)
 	if err != nil {
 		return nil, err
 	}
@@ -70,13 +58,7 @@ func (s *Store) ListItemsEmbeddings(
 		return map[string][]float64{}, nil
 	}
 
-	rows, err := s.Pool.Query(ctx, `
-SELECT item_id, embedding
-FROM items
-WHERE org_id = $1 AND namespace = $2
-  AND item_id = ANY($3)
-  AND embedding IS NOT NULL
-`, orgID, ns, ids)
+	rows, err := s.Pool.Query(ctx, itemsEmbeddingsSQL, orgID, ns, ids)
 	if err != nil {
 		return nil, err
 	}

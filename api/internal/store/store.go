@@ -57,6 +57,30 @@ type EventTypeConfig struct {
 //go:embed queries/popularity.sql
 var popularitySQL string
 
+//go:embed queries/items_upsert.sql
+var itemsUpsertSQL string
+
+//go:embed queries/users_upsert.sql
+var usersUpsertSQL string
+
+//go:embed queries/events_insert.sql
+var eventsInsertSQL string
+
+//go:embed queries/cooccurrence_top_k.sql
+var cooccurrenceTopKSQL string
+
+//go:embed queries/event_type_config_upsert.sql
+var eventTypeConfigUpsertSQL string
+
+//go:embed queries/event_type_config_effective.sql
+var eventTypeConfigEffectiveSQL string
+
+//go:embed queries/items_tags.sql
+var itemsTagsSQL string
+
+//go:embed queries/user_purchased_since.sql
+var userPurchasedSinceSQL string
+
 func (s *Store) UpsertItems(
 	ctx context.Context,
 	orgID uuid.UUID,
@@ -75,33 +99,7 @@ func (s *Store) UpsertItems(
 			embText = &t
 		}
 
-		bat.Queue(`
-		INSERT INTO items (
-		  org_id, namespace, item_id, available, price, tags, props, embedding,
-		  created_at, updated_at
-		)
-		VALUES (
-		  $1,$2,$3,$4,
-		  $5,
-		  COALESCE($6, '{}'::text[]),
-		  COALESCE($7, '{}'::jsonb),
-		  CASE WHEN $8::text IS NULL
-		       THEN NULL
-		       ELSE CAST($8 AS vector(`+strconv.Itoa(EmbeddingDims)+`))
-		  END,
-		  now(), now()
-		)
-		ON CONFLICT (org_id, namespace, item_id) DO UPDATE SET
-		  available = EXCLUDED.available,
-		  price     = COALESCE(EXCLUDED.price, items.price),
-		  tags      = COALESCE(EXCLUDED.tags,  items.tags),
-		  props     = COALESCE(EXCLUDED.props, items.props),
-		  embedding = CASE WHEN EXCLUDED.embedding IS NULL
-		                  THEN items.embedding
-		                  ELSE EXCLUDED.embedding
-		             END,
-		  updated_at= now()
-	  `, orgID, ns, it.ItemID, it.Available, it.Price, it.Tags, it.Props, embText)
+		bat.Queue(itemsUpsertSQL, orgID, ns, it.ItemID, it.Available, it.Price, it.Tags, it.Props, embText)
 	}
 	br := s.Pool.SendBatch(ctx, bat)
 	defer br.Close()
@@ -119,13 +117,7 @@ func (s *Store) UpsertUsers(ctx context.Context, orgID uuid.UUID, ns string, use
 	}
 	bat := &pgx.Batch{}
 	for _, u := range users {
-		bat.Queue(`
-		INSERT INTO users (org_id, namespace, user_id, traits, created_at, updated_at)
-		VALUES ($1,$2,$3, COALESCE($4, '{}'::jsonb), now(), now())
-		ON CONFLICT (org_id, namespace, user_id) DO UPDATE SET
-		  traits    = COALESCE(EXCLUDED.traits, users.traits),
-		  updated_at= now()
-	  `, orgID, ns, u.UserID, u.Traits)
+		bat.Queue(usersUpsertSQL, orgID, ns, u.UserID, u.Traits)
 	}
 	br := s.Pool.SendBatch(ctx, bat)
 	defer br.Close()
@@ -143,11 +135,7 @@ func (s *Store) InsertEvents(ctx context.Context, orgID uuid.UUID, ns string, ev
 	}
 	bat := &pgx.Batch{}
 	for _, e := range evs {
-		bat.Queue(`
-		INSERT INTO events (org_id, namespace, user_id, item_id, type, value, ts, meta, source_event_id)
-		VALUES ($1,$2,$3,$4,$5,$6,$7, COALESCE($8, '{}'::jsonb), $9)
-		ON CONFLICT (org_id, namespace, source_event_id) DO NOTHING
-	  `, orgID, ns, e.UserID, e.ItemID, e.Type, e.Value, e.TS, e.Meta, e.SourceEventID)
+		bat.Queue(eventsInsertSQL, orgID, ns, e.UserID, e.ItemID, e.Type, e.Value, e.TS, e.Meta, e.SourceEventID)
 
 	}
 	br := s.Pool.SendBatch(ctx, bat)
@@ -236,23 +224,7 @@ func (s *Store) CooccurrenceTopKWithin(
 	if k <= 0 {
 		k = 20
 	}
-	rows, err := s.Pool.Query(ctx, `
-SELECT e2.item_id, COUNT(*)::float8 AS c
-FROM events e1
-JOIN events e2
-  ON e1.org_id = e2.org_id
-  AND e1.namespace = e2.namespace
-  AND e1.user_id = e2.user_id
-  AND e2.item_id <> $3
-WHERE e1.org_id = $1
-  AND e1.namespace = $2
-  AND e1.item_id = $3
-  AND e1.ts > $5
-  AND e2.ts > $5
-GROUP BY e2.item_id
-ORDER BY c DESC
-LIMIT $4
-`, orgID, ns, itemID, k, since)
+	rows, err := s.Pool.Query(ctx, cooccurrenceTopKSQL, orgID, ns, itemID, k, since)
 	if err != nil {
 		return nil, err
 	}
@@ -275,16 +247,7 @@ func (s *Store) UpsertEventTypeConfig(ctx context.Context, orgID uuid.UUID, ns s
 	}
 	bat := &pgx.Batch{}
 	for _, r := range rows {
-		bat.Queue(`
-		INSERT INTO event_type_config (org_id, namespace, type, name, weight, half_life_days, is_active, updated_at)
-		VALUES ($1,$2,$3,$4,$5,$6,COALESCE($7,true), now())
-		ON CONFLICT (org_id, namespace, type) DO UPDATE SET
-		  name          = COALESCE(EXCLUDED.name, event_type_config.name),
-		  weight        = EXCLUDED.weight,
-		  half_life_days= EXCLUDED.half_life_days,
-		  is_active     = COALESCE(EXCLUDED.is_active, event_type_config.is_active),
-		  updated_at    = now()
-	  `, orgID, ns, r.Type, r.Name, r.Weight, r.HalfLifeDays, r.IsActive)
+		bat.Queue(eventTypeConfigUpsertSQL, orgID, ns, r.Type, r.Name, r.Weight, r.HalfLifeDays, r.IsActive)
 	}
 	br := s.Pool.SendBatch(ctx, bat)
 	defer br.Close()
@@ -307,19 +270,7 @@ type EventTypeConfigRow struct {
 
 // Effective view (tenant override if exists; else default).
 func (s *Store) ListEventTypeConfigEffective(ctx context.Context, orgID uuid.UUID, ns string) ([]EventTypeConfigRow, error) {
-	rows, err := s.Pool.Query(ctx, `
-	  SELECT COALESCE(tc.type, d.type) AS type,
-			 COALESCE(tc.name, d.name) AS name,
-			 COALESCE(tc.weight, d.weight) AS weight,
-			 COALESCE(tc.half_life_days, d.half_life_days) AS half_life_days,
-			 COALESCE(tc.is_active, true) AS is_active,
-			 CASE WHEN tc.type IS NULL THEN 'default' ELSE 'tenant' END AS source
-	  FROM event_type_defaults d
-	  FULL OUTER JOIN event_type_config tc
-		ON tc.org_id=$1 AND tc.namespace=$2 AND tc.type=d.type
-	  WHERE COALESCE(tc.is_active, true)=true
-	  ORDER BY type
-	`, orgID, ns)
+	rows, err := s.Pool.Query(ctx, eventTypeConfigEffectiveSQL, orgID, ns)
 	if err != nil {
 		return nil, err
 	}
@@ -345,13 +296,7 @@ func (s *Store) ListItemsTags(
 	if len(itemIDs) == 0 {
 		return map[string]types.ItemTags{}, nil
 	}
-	rows, err := s.Pool.Query(ctx, `
-SELECT item_id, tags
-FROM items
-WHERE org_id = $1
-  AND namespace = $2
-  AND item_id = ANY($3::text[])
-`, orgID, ns, itemIDs)
+	rows, err := s.Pool.Query(ctx, itemsTagsSQL, orgID, ns, itemIDs)
 	if err != nil {
 		return nil, err
 	}
@@ -378,15 +323,7 @@ func (s *Store) ListUserPurchasedSince(
 	userID string,
 	since time.Time,
 ) ([]string, error) {
-	rows, err := s.Pool.Query(ctx, `
-SELECT DISTINCT item_id
-FROM events
-WHERE org_id = $1
-  AND namespace = $2
-  AND user_id = $3
-  AND type = 3
-  AND ts >= $4
-`, orgID, ns, userID, since)
+	rows, err := s.Pool.Query(ctx, userPurchasedSinceSQL, orgID, ns, userID, since)
 	if err != nil {
 		return nil, err
 	}
@@ -684,7 +621,6 @@ func (s *Store) DeleteUsers(ctx context.Context, orgID uuid.UUID, ns string, fil
 	if createdBefore, ok := filters["created_before"].(string); ok && createdBefore != "" {
 		whereClause += fmt.Sprintf(" AND created_at <= $%d", argIndex)
 		args = append(args, createdBefore)
-		argIndex++
 	}
 
 	query := fmt.Sprintf("DELETE FROM users %s", whereClause)
@@ -719,7 +655,6 @@ func (s *Store) DeleteItems(ctx context.Context, orgID uuid.UUID, ns string, fil
 	if createdBefore, ok := filters["created_before"].(string); ok && createdBefore != "" {
 		whereClause += fmt.Sprintf(" AND created_at <= $%d", argIndex)
 		args = append(args, createdBefore)
-		argIndex++
 	}
 
 	query := fmt.Sprintf("DELETE FROM items %s", whereClause)
@@ -766,7 +701,6 @@ func (s *Store) DeleteEvents(ctx context.Context, orgID uuid.UUID, ns string, fi
 	if createdBefore, ok := filters["created_before"].(string); ok && createdBefore != "" {
 		whereClause += fmt.Sprintf(" AND ts <= $%d", argIndex)
 		args = append(args, createdBefore)
-		argIndex++
 	}
 
 	query := fmt.Sprintf("DELETE FROM events %s", whereClause)

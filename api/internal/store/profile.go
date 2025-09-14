@@ -4,8 +4,13 @@ import (
 	"context"
 	"time"
 
+	_ "embed"
+
 	"github.com/google/uuid"
 )
+
+//go:embed queries/user_tag_profile.sql
+var userTagProfileSQL string
 
 // BuildUserTagProfile builds a lightweight user profile as decayed, weighted
 // tag preferences from the user's own events. It returns a normalized map
@@ -38,42 +43,7 @@ func (s *Store) BuildUserTagProfile(
 		since = &t
 	}
 
-	rows, err := s.Pool.Query(ctx, `
-WITH w AS (
-  SELECT
-    COALESCE(tc.type, d.type) AS type,
-    COALESCE(tc.weight, d.weight) AS w,
-    COALESCE(
-      NULLIF(tc.half_life_days, 0),
-      d.half_life_days,
-      14
-    ) AS hl
-  FROM event_type_defaults d
-  FULL OUTER JOIN event_type_config tc
-    ON tc.org_id = $1 AND tc.namespace = $2 AND tc.type = d.type
-  WHERE COALESCE(tc.is_active, true) = true
-)
-SELECT t.tag,
-       SUM(
-         POWER(0.5, EXTRACT(EPOCH FROM (now() - e.ts))
-               / (NULLIF(w.hl,0) * 86400.0))
-         * w.w * COALESCE(e.value, 1)
-       ) AS s
-FROM events e
-JOIN w ON w.type = e.type
-JOIN items i
-  ON i.org_id = e.org_id
- AND i.namespace = e.namespace
- AND i.item_id = e.item_id
-CROSS JOIN LATERAL UNNEST(i.tags) AS t(tag)
-WHERE e.org_id = $1
-  AND e.namespace = $2
-  AND e.user_id = $3
-  AND ($4::timestamptz IS NULL OR e.ts >= $4)
-GROUP BY t.tag
-ORDER BY s DESC
-LIMIT $5
-`, orgID, ns, userID, since, topN)
+	rows, err := s.Pool.Query(ctx, userTagProfileSQL, orgID, ns, userID, since, topN)
 	if err != nil {
 		return nil, err
 	}

@@ -7,8 +7,31 @@ import (
 
 	"recsys/internal/bandit"
 
+	_ "embed"
+
 	"github.com/jackc/pgx/v5"
 )
+
+//go:embed queries/bandit_policies_upsert.sql
+var banditPoliciesUpsertSQL string
+
+//go:embed queries/bandit_policies_active.sql
+var banditPoliciesActiveSQL string
+
+//go:embed queries/bandit_policies_by_ids.sql
+var banditPoliciesByIdsSQL string
+
+//go:embed queries/bandit_stats_get.sql
+var banditStatsGetSQL string
+
+//go:embed queries/bandit_stats_increment.sql
+var banditStatsIncrementSQL string
+
+//go:embed queries/bandit_decisions_log.sql
+var banditDecisionsLogSQL string
+
+//go:embed queries/bandit_rewards_log.sql
+var banditRewardsLogSQL string
 
 type BanditPolicyRow struct {
 	PolicyID   string
@@ -24,16 +47,7 @@ func (s *Store) UpsertBanditPolicies(
 	if len(rows) == 0 {
 		return nil
 	}
-	const q = `
-INSERT INTO bandit_policies
-(org_id, namespace, policy_id, name, is_active, config, updated_at)
-VALUES ($1, $2, $3, $4, $5, $6, NOW())
-ON CONFLICT (org_id, namespace, policy_id) DO UPDATE
-SET name = EXCLUDED.name,
-    is_active = EXCLUDED.is_active,
-    config = EXCLUDED.config,
-    updated_at = NOW()
-`
+	q := banditPoliciesUpsertSQL
 	batch := &pgx.Batch{}
 	for _, r := range rows {
 		cfg, _ := json.Marshal(r)
@@ -52,12 +66,7 @@ SET name = EXCLUDED.name,
 func (s *Store) ListActivePolicies(
 	ctx context.Context, orgID string, ns string,
 ) ([]bandit.PolicyConfig, error) {
-	const q = `
-SELECT policy_id, name, is_active, config
-FROM bandit_policies
-WHERE org_id = $1 AND namespace = $2 AND is_active = true
-ORDER BY policy_id
-`
+	q := banditPoliciesActiveSQL
 	rows, err := s.Pool.Query(ctx, q, orgID, ns)
 	if err != nil {
 		return nil, err
@@ -72,12 +81,7 @@ func (s *Store) ListPoliciesByIDs(
 	if len(ids) == 0 {
 		return []bandit.PolicyConfig{}, nil
 	}
-	const q = `
-SELECT policy_id, name, is_active, config
-FROM bandit_policies
-WHERE org_id = $1 AND namespace = $2 AND policy_id = ANY($3)
-ORDER BY policy_id
-`
+	q := banditPoliciesByIdsSQL
 	rows, err := s.Pool.Query(ctx, q, orgID, ns, ids)
 	if err != nil {
 		return nil, err
@@ -113,12 +117,7 @@ func (s *Store) GetStats(
 	orgID, ns, surface, bucket string,
 	algo bandit.Algorithm,
 ) (map[string]bandit.Stats, error) {
-	const q = `
-SELECT policy_id, trials, successes, alpha, beta
-FROM bandit_stats
-WHERE org_id = $1 AND namespace = $2
-  AND surface = $3 AND bucket_key = $4 AND algo = $5
-`
+	q := banditStatsGetSQL
 	rows, err := s.Pool.Query(ctx, q, orgID, ns, surface, bucket, string(algo))
 	if err != nil {
 		return nil, err
@@ -141,17 +140,7 @@ func (s *Store) IncrementStats(
 	orgID, ns, surface, bucket string,
 	algo bandit.Algorithm, policyID string, reward bool,
 ) error {
-	const q = `
-INSERT INTO bandit_stats
-(org_id, namespace, surface, bucket_key, policy_id, algo,
- trials, successes, alpha, beta, updated_at)
-VALUES ($1,$2,$3,$4,$5,$6, 1, CASE WHEN $7 THEN 1 ELSE 0 END, 1, 1, NOW())
-ON CONFLICT (org_id, namespace, surface, bucket_key, policy_id, algo)
-DO UPDATE SET
-  trials = bandit_stats.trials + 1,
-  successes = bandit_stats.successes + CASE WHEN EXCLUDED.successes=1 THEN 1 ELSE 0 END,
-  updated_at = NOW()
-`
+	q := banditStatsIncrementSQL
 	_, err := s.Pool.Exec(ctx, q, orgID, ns, surface, bucket, policyID,
 		string(algo), reward)
 	return err
@@ -163,11 +152,7 @@ func (s *Store) LogDecision(
 	algo bandit.Algorithm, policyID string, explore bool,
 	reqID string, meta map[string]any,
 ) error {
-	const q = `
-INSERT INTO bandit_decisions_log
-(org_id, namespace, surface, bucket_key, policy_id, algo, explore, request_id, meta)
-VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
-`
+	q := banditDecisionsLogSQL
 	var js []byte
 	if meta != nil {
 		js, _ = json.Marshal(meta)
@@ -183,11 +168,7 @@ func (s *Store) LogReward(
 	algo bandit.Algorithm, policyID string, reward bool,
 	reqID string, meta map[string]any,
 ) error {
-	const q = `
-INSERT INTO bandit_rewards_log
-(org_id, namespace, surface, bucket_key, policy_id, algo, reward, request_id, meta)
-VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
-`
+	q := banditRewardsLogSQL
 	var js []byte
 	if meta != nil {
 		js, _ = json.Marshal(meta)
