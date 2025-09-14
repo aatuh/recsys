@@ -103,7 +103,7 @@ function recommend(req):
     exclude += listUserPurchasedSince(org, ns, req.user_id, since)
 
   cand = pop minus exclude
-  meta = listItemsMeta(org, ns, ids(cand))
+  meta = listItemsTags(org, ns, ids(cand))
 
   # 2) Signals from user anchors (need user + recent activity)
   cooc, emb = zeros(), zeros()

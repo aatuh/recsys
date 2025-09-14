@@ -71,7 +71,7 @@ type ScoredItem struct {
 // CandidateData holds all the data needed for recommendation
 type CandidateData struct {
 	Candidates []types.ScoredItem
-	Meta       map[string]types.ItemMeta
+	Tags       map[string]types.ItemTags
 	CoocScores map[string]float64
 	EmbScores  map[string]float64
 	UsedCooc   map[string]bool

@@ -50,7 +50,7 @@ users, items, and events. The service returns top-K recommendations and
 #### Entities (DB vs derived vs request-time)
 
 ```plaintext
-[DB] Items        : id, tags, metadata
+[DB] Items        : id, tags
 [DB] Events       : t, user_id, item_id, type
 [DB] Embeddings   : item_id, vector
 [DB] Tenancy      : org_id, namespace
@@ -103,7 +103,7 @@ function recommend(req):
     exclude += listUserPurchasedSince(org, ns, req.user_id, since)
 
   cand = pop minus exclude
-  meta = listItemsMeta(org, ns, ids(cand))
+  meta = listItemsTags(org, ns, ids(cand))
 
   # 2) Signals from user anchors (need user + recent activity)
   cooc, emb = zeros(), zeros()
@@ -216,22 +216,26 @@ among all events with the same event ID ("raw popularity").
 #### Example outcome from building candidate list
 
 ```plaintext
-raw_pop = { A: 8.4, B: 5.1, C: 2.3, ... }
-candidates = [A, B, C, ...]
+raw_popularity = {
+  A: 8.4,
+  B: 5.1,
+  C: 2.3,
+}
 ```
 
-#### 2) Apply business rules and fetch metadata
+#### 2) Apply business rules and fetch tags
 
-- Remove explicit excludes (`constraints.exclude_ids`, or "exclude purchased"
-  if enabled).
-- Fetch item tags/metadata for the survivors.
+- Remove excluded results (e.g. recently purchased, specific item IDs).
+- Fetch item tags for the survivors.
 
 #### Example outcome from business rules
 
 ```plaintext
 candidates = [A, B] # C was excluded by constraints
-meta[A].tags = ["brand:NOVA","cat:sneaker"]
-meta[B].tags = ["brand:NOVA","cat:sneaker"]
+tags = {
+  A: {"brand": "NOVA", "cat": "sneaker"},
+  B: {"brand": "NOVA", "cat": "sneaker"},
+}
 ```
 
 #### 3) Gather user anchors (if user_id present)
@@ -247,7 +251,7 @@ anchors = ["X","Y"] # from u-42's recent activity
 
 #### 4) Compute per‑candidate signals
 
-- **Popularity**: already have `raw_pop` from step 1.
+- **Popularity**: already have `raw_popularity` from step 1.
 - **Co‑visitation**: how often anchors co‑occurred with each candidate.
 - **Embeddings**: cosine similarity between each candidate and the anchors
   (use the max or a small aggregate like mean or 95th percentile).
@@ -443,11 +447,11 @@ We rescore each candidate using normalized signals:
 final = alpha*pop_norm + beta*co_vis_norm + gamma*embed_norm
 ```
 
-| Variable      | Type / Range | What it does                                | Notes                                     |
-|---------------|--------------|---------------------------------------------|-------------------------------------------|
-| `BLEND_ALPHA` | float ≥ 0    | Weight for normalized popularity.           | If all three are zero, we fallback to pop |
-| `BLEND_BETA`  | float ≥ 0    | Weight for normalized co-vis strength.      | Needs user anchors                        |
-| `BLEND_GAMMA` | float ≥ 0    | Weight for normalized embedding similarity. | Needs embeddings + user anchors           |
+| Variable      | Type / Range | What it does                                | Notes                             |
+|---------------|--------------|---------------------------------------------|-----------------------------------|
+| `BLEND_ALPHA` | float ≥ 0    | Weight for normalized popularity.           | If all three are zero, set to `1` |
+| `BLEND_BETA`  | float ≥ 0    | Weight for normalized co-vis strength.      | Needs user anchors                |
+| `BLEND_GAMMA` | float ≥ 0    | Weight for normalized embedding similarity. | Needs embeddings + user anchors   |
 
 **Why normalize?** Raw signals live on different scales (counts,
 decayed sums, cosine similarity). Normalizing to `[0, 1]` makes the

@@ -11,6 +11,21 @@ import (
 	"github.com/google/uuid"
 )
 
+// Default recent anchors window days if not configured.
+const DEFAULT_RECENT_ANCHORS_WINDOW_DAYS = 30
+
+// Default co-visitation window days if not configured.
+const DEFAULT_COVIS_WINDOW_DAYS = 30
+
+// Limit anchors for performance.
+const MAX_RECENT_ANCHORS = 10
+
+// Limit co-visitation neighbors for performance.
+const MAX_COVIS_NEIGHBORS = 200
+
+// Limit embedding neighbors for performance.
+const MAX_EMB_NEIGHBORS = 200
+
 // Engine handles recommendation algorithm logic
 type Engine struct {
 	config Config
@@ -50,8 +65,8 @@ func (e *Engine) Recommend(
 		return nil, err
 	}
 
-	// Get metadata for all candidates
-	meta, err := e.getCandidateMetadata(ctx, candidates, req)
+	// Get tags for all candidates
+	tags, err := e.getCandidateTags(ctx, candidates, req)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +79,7 @@ func (e *Engine) Recommend(
 	if err != nil {
 		return nil, err
 	}
-	candidateData.Meta = meta
+	candidateData.Tags = tags
 
 	// Apply blended scoring
 	e.applyBlendedScoring(candidateData, weights)
@@ -101,6 +116,7 @@ func (e *Engine) getPopularityCandidates(
 		fetchK = k
 	}
 
+	// Fetch popularity candidates
 	cands, err := e.store.PopularityTopK(
 		ctx, orgID, ns, e.config.HalfLifeDays, fetchK, c,
 	)
@@ -144,6 +160,7 @@ func (e *Engine) applyExclusions(
 	return filtered, nil
 }
 
+// excludePurchasedItems excludes purchased items from the candidate set.
 func (e *Engine) excludePurchasedItems(
 	ctx context.Context,
 	req Request,
@@ -152,6 +169,8 @@ func (e *Engine) excludePurchasedItems(
 	if !e.config.RuleExcludePurchased || req.UserID == "" {
 		return exclude, nil
 	}
+
+	// Exclude purchased items in a time window
 	lookback := time.Duration(e.config.PurchasedWindowDays*24.0) * time.Hour
 	since := time.Now().UTC().Add(-lookback)
 	bought, err := e.store.ListUserPurchasedSince(
@@ -164,31 +183,31 @@ func (e *Engine) excludePurchasedItems(
 	if err != nil {
 		return nil, err
 	}
+
+	// Add purchased items to exclude
 	for _, id := range bought {
 		exclude[id] = struct{}{}
 	}
+
 	return exclude, nil
 }
 
-// getCandidateMetadata fetches metadata for all candidates
-func (e *Engine) getCandidateMetadata(
+// getCandidateTags fetches tags for all candidates
+func (e *Engine) getCandidateTags(
 	ctx context.Context, candidates []types.ScoredItem, req Request,
-) (map[string]types.ItemMeta, error) {
+) (map[string]types.ItemTags, error) {
 	if len(candidates) == 0 {
-		return make(map[string]types.ItemMeta), nil
+		return make(map[string]types.ItemTags), nil
 	}
 
-	idList := make([]string, 0, len(candidates))
+	// Build list of candidate IDs
+	ids := make([]string, 0, len(candidates))
 	for _, candidate := range candidates {
-		idList = append(idList, candidate.ItemID)
+		ids = append(ids, candidate.ItemID)
 	}
 
-	return e.store.ListItemsMeta(
-		ctx,
-		req.OrgID,
-		req.Namespace,
-		idList,
-	)
+	// Fetch tags for all candidates
+	return e.store.ListItemsTags(ctx, req.OrgID, req.Namespace, ids)
 }
 
 // getBlendWeights returns the blend weights to use
@@ -214,7 +233,7 @@ func (e *Engine) getBlendWeights(req Request) BlendWeights {
 	return weights
 }
 
-// gatherSignals collects co-visitation and embedding signals
+// gatherSignals collects recent anchors, co-visitation and embedding signals.
 func (e *Engine) gatherSignals(
 	ctx context.Context,
 	candidates []types.ScoredItem,
@@ -272,7 +291,7 @@ func (e *Engine) getRecentAnchors(
 ) ([]string, error) {
 	days := e.config.CoVisWindowDays
 	if days <= 0 {
-		days = 30
+		days = DEFAULT_RECENT_ANCHORS_WINDOW_DAYS
 	}
 	since := time.Now().UTC().Add(-time.Duration(days*24.0) * time.Hour)
 
@@ -282,11 +301,11 @@ func (e *Engine) getRecentAnchors(
 		req.Namespace,
 		req.UserID,
 		since,
-		10, // Limit anchors for performance
+		MAX_RECENT_ANCHORS,
 	)
 }
 
-// gatherCoVisitationSignals collects co-visitation scores
+// gatherCoVisitationSignals collects co-visitation scores.
 func (e *Engine) gatherCoVisitationSignals(
 	ctx context.Context,
 	data *CandidateData,
@@ -296,27 +315,30 @@ func (e *Engine) gatherCoVisitationSignals(
 ) error {
 	days := e.config.CoVisWindowDays
 	if days <= 0 {
-		days = 30
+		days = DEFAULT_COVIS_WINDOW_DAYS
 	}
 	since := time.Now().UTC().Add(-time.Duration(days*24.0) * time.Hour)
 
 	for _, anchor := range anchors {
+		// Gather co-visitation neighbors
 		neighbors, err := e.store.CooccurrenceTopKWithin(
 			ctx,
 			req.OrgID,
 			req.Namespace,
 			anchor,
-			200, // Limit neighbors for performance
+			MAX_COVIS_NEIGHBORS,
 			since,
 		)
 		if err != nil {
 			continue // Skip this anchor on error
 		}
 
+		// Update co-visitation scores.
 		for _, neighbor := range neighbors {
 			if _, ok := candSet[neighbor.ItemID]; !ok {
 				continue // Not in candidate set
 			}
+			// Set score if higher than current score.
 			if neighbor.Score > data.CoocScores[neighbor.ItemID] {
 				data.CoocScores[neighbor.ItemID] = neighbor.Score
 				data.UsedCooc[neighbor.ItemID] = true
@@ -327,7 +349,7 @@ func (e *Engine) gatherCoVisitationSignals(
 	return nil
 }
 
-// gatherEmbeddingSignals collects embedding similarity scores
+// gatherEmbeddingSignals collects embedding similarity scores.
 func (e *Engine) gatherEmbeddingSignals(
 	ctx context.Context,
 	data *CandidateData,
@@ -336,21 +358,24 @@ func (e *Engine) gatherEmbeddingSignals(
 	candSet map[string]struct{},
 ) error {
 	for _, anchor := range anchors {
+		// Gather embedding neighbors
 		neighbors, err := e.store.SimilarByEmbeddingTopK(
 			ctx,
 			req.OrgID,
 			req.Namespace,
 			anchor,
-			200, // Limit neighbors for performance
+			MAX_EMB_NEIGHBORS,
 		)
 		if err != nil {
 			continue // Skip this anchor on error
 		}
 
+		// Update embedding scores.
 		for _, neighbor := range neighbors {
 			if _, ok := candSet[neighbor.ItemID]; !ok {
 				continue // Not in candidate set
 			}
+			// Set score if higher than current score.
 			if neighbor.Score > data.EmbScores[neighbor.ItemID] {
 				data.EmbScores[neighbor.ItemID] = neighbor.Score
 				data.UsedEmb[neighbor.ItemID] = true
@@ -361,7 +386,7 @@ func (e *Engine) gatherEmbeddingSignals(
 	return nil
 }
 
-// applyBlendedScoring applies the blended scoring formula
+// applyBlendedScoring applies the blended scoring formula.
 func (e *Engine) applyBlendedScoring(
 	data *CandidateData, weights BlendWeights,
 ) {
@@ -414,7 +439,8 @@ func (e *Engine) applyBlendedScoring(
 	}
 }
 
-// applyPersonalizationBoost applies personalization boost based on user profile
+// applyPersonalizationBoost applies personalization boost based on user
+// profile.
 func (e *Engine) applyPersonalizationBoost(
 	ctx context.Context, data *CandidateData, req Request,
 ) {
@@ -436,10 +462,10 @@ func (e *Engine) applyPersonalizationBoost(
 
 	for i := range data.Candidates {
 		id := data.Candidates[i].ItemID
-		meta := data.Meta[id]
+		tags := data.Tags[id]
 
 		overlap := 0.0
-		for _, tag := range meta.Tags {
+		for _, tag := range tags.Tags {
 			if weight, ok := profile[tag]; ok {
 				overlap += weight
 			}
@@ -452,7 +478,7 @@ func (e *Engine) applyPersonalizationBoost(
 	}
 }
 
-// getModelVersion determines the model version based on weights
+// getModelVersion determines the model version based on weights.
 func (e *Engine) getModelVersion(weights BlendWeights) string {
 	if weights.Cooc == 0 && weights.ALS == 0 {
 		return "popularity_v1"
@@ -460,23 +486,23 @@ func (e *Engine) getModelVersion(weights BlendWeights) string {
 	return "blend_v1"
 }
 
-// shouldUseMMR returns true if MMR should be applied
+// shouldUseMMR returns true if MMR should be applied.
 func (e *Engine) shouldUseMMR() bool {
 	return e.config.MMRLambda > 0
 }
 
-// shouldUseCaps returns true if caps should be applied
+// shouldUseCaps returns true if caps should be applied.
 func (e *Engine) shouldUseCaps() bool {
 	return e.config.BrandCap > 0 || e.config.CategoryCap > 0
 }
 
-// applyMMRAndCaps applies MMR re-ranking and caps
+// applyMMRAndCaps applies MMR re-ranking and caps.
 func (e *Engine) applyMMRAndCaps(
 	data *CandidateData, k int,
 ) []types.ScoredItem {
 	return MMRReRank(
 		data.Candidates,
-		data.Meta,
+		data.Tags,
 		k,
 		e.config.MMRLambda,
 		e.config.BrandCap,
@@ -484,7 +510,7 @@ func (e *Engine) applyMMRAndCaps(
 	)
 }
 
-// buildResponse builds the final response
+// buildResponse builds the final response.
 func (e *Engine) buildResponse(
 	data *CandidateData,
 	k int,
@@ -516,7 +542,7 @@ func (e *Engine) buildResponse(
 	return response
 }
 
-// buildReasons builds the reasons for a scored item
+// buildReasons builds the reasons for a scored item.
 func (e *Engine) buildReasons(
 	itemID string,
 	includeReasons bool,
@@ -552,7 +578,7 @@ func (e *Engine) buildReasons(
 	return deduplicateReasons(reasons)
 }
 
-// Utility functions
+// Utility functions.
 func maxInt(a, b int) int {
 	if a > b {
 		return a
@@ -567,6 +593,7 @@ func minInt(a, b int) int {
 	return b
 }
 
+// deduplicateReasons deduplicates reasons.
 func deduplicateReasons(reasons []string) []string {
 	seen := make(map[string]struct{}, len(reasons))
 	out := make([]string, 0, len(reasons))

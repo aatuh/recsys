@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	_ "embed"
+
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -51,6 +53,9 @@ type EventTypeConfig struct {
 	HalfLifeDays *float64
 	IsActive     *bool
 }
+
+//go:embed queries/popularity.sql
+var popularitySQL string
 
 func (s *Store) UpsertItems(
 	ctx context.Context,
@@ -236,9 +241,9 @@ SELECT e2.item_id, COUNT(*)::float8 AS c
 FROM events e1
 JOIN events e2
   ON e1.org_id = e2.org_id
- AND e1.namespace = e2.namespace
- AND e1.user_id = e2.user_id
- AND e2.item_id <> $3
+  AND e1.namespace = e2.namespace
+  AND e1.user_id = e2.user_id
+  AND e2.item_id <> $3
 WHERE e1.org_id = $1
   AND e1.namespace = $2
   AND e1.item_id = $3
@@ -330,15 +335,15 @@ func (s *Store) ListEventTypeConfigEffective(ctx context.Context, orgID uuid.UUI
 	return out, rows.Err()
 }
 
-// ListItemsMeta returns tags for the given item IDs.
-func (s *Store) ListItemsMeta(
+// ListItemsTags returns tags for the given item IDs.
+func (s *Store) ListItemsTags(
 	ctx context.Context,
 	orgID uuid.UUID,
 	ns string,
 	itemIDs []string,
-) (map[string]types.ItemMeta, error) {
+) (map[string]types.ItemTags, error) {
 	if len(itemIDs) == 0 {
-		return map[string]types.ItemMeta{}, nil
+		return map[string]types.ItemTags{}, nil
 	}
 	rows, err := s.Pool.Query(ctx, `
 SELECT item_id, tags
@@ -352,14 +357,14 @@ WHERE org_id = $1
 	}
 	defer rows.Close()
 
-	out := make(map[string]types.ItemMeta, len(itemIDs))
+	out := make(map[string]types.ItemTags, len(itemIDs))
 	for rows.Next() {
 		var id string
 		var tags []string
 		if err := rows.Scan(&id, &tags); err != nil {
 			return nil, err
 		}
-		out[id] = types.ItemMeta{ItemID: id, Tags: tags}
+		out[id] = types.ItemTags{ItemID: id, Tags: tags}
 	}
 	return out, rows.Err()
 }

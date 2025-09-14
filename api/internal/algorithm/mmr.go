@@ -21,7 +21,7 @@ import (
 // Returns: Re-ranked items up to k items
 func MMRReRank(
 	candidates []types.ScoredItem,
-	meta map[string]types.ItemMeta,
+	meta map[string]types.ItemTags,
 	k int,
 	lambda float64,
 	brandCap, categoryCap int,
@@ -29,7 +29,7 @@ func MMRReRank(
 	if k <= 0 {
 		k = 1
 	}
-	
+
 	out := make([]types.ScoredItem, 0, minInt(k, len(candidates)))
 	if len(candidates) == 0 {
 		return out
@@ -42,7 +42,7 @@ func MMRReRank(
 			maxScore = candidate.Score
 		}
 	}
-	
+
 	normScore := func(s float64) float64 {
 		if maxScore <= 0 {
 			return 0
@@ -100,7 +100,7 @@ func MMRReRank(
 		pick := remaining[bestIdx]
 		out = append(out, pick)
 		selected[pick.ItemID] = struct{}{}
-		
+
 		// Update counts
 		if brand := brandMap[pick.ItemID]; brand != "" {
 			brandCount[brand]++
@@ -117,7 +117,7 @@ func MMRReRank(
 }
 
 // prepareMetadata extracts tag sets, brand, and category mappings from metadata
-func prepareMetadata(meta map[string]types.ItemMeta) (
+func prepareMetadata(meta map[string]types.ItemTags) (
 	tagSets map[string]map[string]struct{},
 	brandMap map[string]string,
 	categoryMap map[string]string,
@@ -132,10 +132,10 @@ func prepareMetadata(meta map[string]types.ItemMeta) (
 		}
 
 		tagSet := make(map[string]struct{})
-		
+
 		for _, tag := range itemMeta.Tags {
 			lowerTag := strings.ToLower(strings.TrimSpace(tag))
-			
+
 			switch {
 			case strings.HasPrefix(lowerTag, "brand:"):
 				brandMap[id] = strings.TrimSpace(lowerTag[len("brand:"):])
@@ -151,7 +151,7 @@ func prepareMetadata(meta map[string]types.ItemMeta) (
 				}
 			}
 		}
-		
+
 		if len(tagSet) > 0 {
 			tagSets[id] = tagSet
 		}
@@ -172,13 +172,13 @@ func canSelectWithCaps(
 			return false
 		}
 	}
-	
+
 	if categoryCap > 0 {
 		if category := categoryMap[id]; category != "" && categoryCount[category] >= categoryCap {
 			return false
 		}
 	}
-	
+
 	return true
 }
 
@@ -187,18 +187,18 @@ func jaccard(a, b map[string]struct{}) float64 {
 	if len(a) == 0 || len(b) == 0 {
 		return 0
 	}
-	
+
 	intersection := 0
 	for k := range a {
 		if _, ok := b[k]; ok {
 			intersection++
 		}
 	}
-	
+
 	union := len(a) + len(b) - intersection
 	if union == 0 {
 		return 0
 	}
-	
+
 	return float64(intersection) / float64(union)
 }

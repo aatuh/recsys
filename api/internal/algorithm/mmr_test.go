@@ -12,8 +12,8 @@ import (
 // - brand:acme / brand:bravo
 // - category:phone / category:laptop
 // - content tags: t:android, t:ios, t:gaming, t:work
-func metaFixture() map[string]types.ItemMeta {
-	return map[string]types.ItemMeta{
+func metaFixture() map[string]types.ItemTags {
+	return map[string]types.ItemTags{
 		"A": {ItemID: "A", Tags: []string{
 			"brand:acme", "category:phone", "t:android", "t:gaming",
 		}},

@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"recsys/internal/http/store"
+	"recsys/internal/store"
 	"recsys/shared/util"
 
 	"github.com/google/uuid"

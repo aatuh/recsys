@@ -25,13 +25,17 @@ func (s *Store) SimilarByEmbeddingTopK(
 WITH anchor AS (
   SELECT embedding
   FROM items
-  WHERE org_id=$1 AND namespace=$2 AND item_id=$3 AND embedding IS NOT NULL
+  WHERE org_id=$1
+    AND namespace=$2
+    AND item_id=$3
+    AND embedding IS NOT NULL
 )
-SELECT i.item_id,
-       (1.0 - (a.embedding <=> i.embedding)) AS score
+SELECT
+  i.item_id, (1.0 - (a.embedding <=> i.embedding)) AS score
 FROM anchor a
 JOIN items i
-  ON i.org_id=$1 AND i.namespace=$2
+  ON i.org_id=$1
+  AND i.namespace=$2
 WHERE i.item_id <> $3
   AND i.available = true
   AND i.embedding IS NOT NULL

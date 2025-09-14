@@ -7,8 +7,8 @@ import (
 
 	"recsys/internal/bandit"
 	"recsys/internal/http/common"
-	"recsys/internal/http/store"
 	"recsys/internal/http/types"
+	"recsys/internal/store"
 
 	"github.com/google/uuid"
 )

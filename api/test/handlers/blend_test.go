@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"recsys/internal/http/store"
+	"recsys/internal/store"
 	"recsys/test/shared"
 
 	"github.com/stretchr/testify/require"

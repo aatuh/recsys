@@ -15,8 +15,8 @@ import (
 	"recsys/internal/http/db"
 	"recsys/internal/http/handlers"
 	httpmiddleware "recsys/internal/http/middleware"
-	"recsys/internal/http/store"
 	"recsys/internal/migrator"
+	"recsys/internal/store"
 	"recsys/shared/util"
 	"recsys/swagger"
 
