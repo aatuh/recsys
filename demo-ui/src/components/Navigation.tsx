@@ -3,6 +3,7 @@ import { Button } from "./UIComponents";
 export type ViewType =
   | "namespace-seed"
   | "recommendations-playground"
+  | "bandit-playground"
   | "user-session"
   | "data-management"
   | "documentation";
@@ -107,7 +108,26 @@ export function Navigation({
             }}
             title="Middle-click to open in new tab"
           >
-            Recommendations
+            Recommendations Playground
+          </Button>
+          <Button
+            type="button"
+            onClick={() => onViewChange("bandit-playground")}
+            onMouseDown={(e) => handleMouseDown("bandit-playground", e)}
+            style={{
+              padding: "8px 16px",
+              fontSize: 14,
+              backgroundColor:
+                activeView === "bandit-playground" ? "#1976d2" : "#fff",
+              color: activeView === "bandit-playground" ? "#fff" : "#666",
+              border: "1px solid #ddd",
+              borderRadius: 6,
+              cursor: "pointer",
+              fontWeight: activeView === "bandit-playground" ? 600 : 400,
+            }}
+            title="Middle-click to open in new tab"
+          >
+            Bandit Playground
           </Button>
           <Button
             type="button"

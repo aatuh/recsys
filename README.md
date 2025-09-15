@@ -13,15 +13,26 @@ users, items, and events. The service returns top-K recommendations and
 
 - **Trending / Popular now** with time decay: recent, important events
   push items up.
+
 - **"People who engaged with X also like Y"** using co-visitation.
+
 - **"Show me items like this"** using semantic similarity (embeddings).
+
 - **Light personalization** (optional) from a user's recent tags.
+
 - **Diversity & caps** (optional) to avoid showing too many items from
   one brand/category.
+
 - **Blended scoring** decides how high each candidate should rank, and the
   re‑ranker (MMR + caps) decides which of the high scorers make the final top‑K.
 
-## Algorithms Used
+- **Contextual multi-armed bandit** (optional) picks the best ranking
+  policy per surface and context, learning online from later rewards
+  (e.g., click or purchase).
+
+## Recommendation Algorithms Used
+
+These algorithms are used together in the recommendation pipeline.
 
 ### Time-decayed popularity
 
@@ -56,7 +67,7 @@ Maximal Marginal Relevance (MMR) trades off "more relevant" vs "more
 diverse." You choose the trade-off with `MMR_LAMBDA`. Caps limit how
 many items per brand/category make it to the final top-K.
 
-## How It Works (Big Picture)
+## How Recommendation Works
 
 ### The Ranking Pipeline
 
@@ -92,7 +103,7 @@ many items per brand/category make it to the final top-K.
 [Request-time] Candidates : item_ids (≥ max(K, FANOUT))
 [Request-time] Signals    : {pop_norm, co_vis_norm, embed_norm, …}
 [Request-time] Score      : alpha*pop + beta*co + gamma*embed
-[Request-time] Re-rank    : MMR + caps → Top-K
+[Request-time] Re-rank    : MMR + caps -> Top-K
 [Response]     Reasons    : ["popularity","co_visitation","embedding",...]
 ```
 
@@ -320,17 +331,268 @@ Tiny example (3 items, tags)
 - For each returned item, include a compact reason array such as:
   `["popularity", "co_visitation", "embedding", "personalization", "diversity"]`.
 
-### What happens for anonymous users?
+### Recommendation FAQs
 
-- Steps 3–4 (anchors, co‑visitation, embeddings vs anchors) are skipped or
-  produce zeros. The system still works using popularity and, optionally, MMR.
-- Personalization is skipped (no user profile).
+- **What happens for anonymous users?**
+  - Steps with anchors, co‑visitation, embeddings vs anchors are skipped or
+    produce zeros. The system still works using popularity and, optionally, MMR.
+  - Personalization is skipped (no user profile).
 
-### What happens when embeddings are missing?
+- **What happens when embeddings are missing?**
+  - `embed_raw` is absent -> `embed_norm = 0` -> no contribution to the blend.
+  - Co‑visitation can still add context if the user has recent anchors.
+  - Otherwise, popularity carries the result (still stable and explainable).
 
-- `embed_raw` is absent -> `embed_norm = 0` -> no contribution to the blend.
-- Co‑visitation can still add context if the user has recent anchors.
-- Otherwise, popularity carries the result (still stable and explainable).
+## Contextual Multi‑Armed Bandit
+
+A lightweight, online‑learning AI component that chooses which ranking
+policy (a bundle of scorer knobs) to use per surface and request
+context. It learns directly from the live rewards you send later (e.g.,
+click/purchase), balancing exploration vs exploitation without
+offline training.
+
+- **Policy** = one complete set of ranker knobs:
+  `blend_alpha`, `blend_beta`, `blend_gamma`, `mmr_lambda`, `brand_cap`,
+  `category_cap`, plus metadata like `policy_id`, `name`, `active`.
+
+- **Contextual** = learning is tracked per surface (placement like
+  `"home_top"`, `"pdp_carousel"`) and a compact context bucket derived
+  from a small map you send (e.g., `{"device":"ios","locale":"fi"}` ->
+  `ctx:device=ios|locale=fi`).
+
+The bandit does not tune knobs one‑by‑one. It selects among the predefined
+policies and shifts traffic toward the winners.
+
+The recommendation ranking pipeline stays the same. The bandit only chooses the
+policy for this request. You can call the one‑shot endpoint to "decide + rank" in
+one go, then send a reward later when you know the outcome.
+
+### Usage: end‑to‑end with examples
+
+#### Define policies (the arms)
+
+```json
+POST /v1/bandit/policies:upsert
+{
+  "namespace": "default",
+  "policies": [
+    {
+      "policy_id": "p_baseline",
+      "name": "Baseline blend",
+      "active": true,
+      "blend_alpha": 1.0,
+      "blend_beta": 0.1,
+      "blend_gamma": 0.1,
+      "mmr_lambda": 0.8,
+      "brand_cap": 0,
+      "category_cap": 0
+    },
+    {
+      "policy_id": "p_diverse",
+      "name": "Diverse caps",
+      "active": true,
+      "blend_alpha": 1.0,
+      "blend_beta": 0.2,
+      "blend_gamma": 0.2,
+      "mmr_lambda": 0.6,
+      "brand_cap": 1,
+      "category_cap": 2
+    }
+  ]
+}
+```
+
+Inspect later:
+
+```plaintext
+GET /v1/bandit/policies?namespace=default
+```
+
+#### Decide a policy for this request
+
+Or use the one‑shot below.
+
+```json
+POST /v1/bandit/decide
+{
+  "namespace": "default",
+  "surface": "home_top",
+  "context": { "device": "ios", "locale": "fi" },
+  "candidate_policy_ids": ["p_baseline", "p_diverse"],
+  "algorithm": "thompson",
+  "request_id": "req-12345"
+}
+```
+
+Example response:
+
+```json
+{
+  "policy_id": "p_diverse",
+  "algorithm": "thompson",
+  "surface": "home_top",
+  "bucket_key": "ctx:device=ios|locale=fi",
+  "explore": true,
+  "explain": { "emp_best": "p_baseline" }
+}
+```
+
+##### One‑shot: decide + recommend
+
+Returns items + bandit metadata.
+
+```json
+POST /v1/bandit/recommendations
+{
+  "user_id": "u_123",
+  "namespace": "default",
+  "k": 20,
+  "surface": "home_top",
+  "context": { "device": "ios", "locale": "fi" },
+  "candidate_policy_ids": ["p_baseline", "p_diverse"],
+  "algorithm": "thompson",
+  "include_reasons": true
+}
+```
+
+Truncated response:
+
+```json
+{
+  "items": [{ "item_id": "i_101", "score": 0.87 }],
+  "chosen_policy_id": "p_diverse",
+  "algorithm": "thompson",
+  "bandit_bucket": "ctx:device=ios|locale=fi",
+  "explore": true,
+  "bandit_explain": { "emp_best": "p_baseline" }
+}
+```
+
+##### Or do it manually
+
+Call `/v1/bandit/decide`, then call your normal `/v1/recommendations` with that
+policy's knobs as overrides.
+
+#### Reward
+
+Later, when you know the outcome.
+
+```json
+POST /v1/bandit/reward
+{
+  "namespace": "default",
+  "surface": "home_top",
+  "bucket_key": "ctx:device=ios|locale=fi",
+  "policy_id": "p_diverse",
+  "reward": true,
+  "algorithm": "thompson",
+  "request_id": "req-12345"
+}
+```
+
+**What counts as a reward?** Whatever you decide (click, add‑to‑cart,
+purchase, dwell‑time threshold, etc.). The bandit updates online stats
+per `(surface, bucket, policy, algorithm)` and adapts future choices.
+
+### Algorithms Used In the Bandit
+
+We support two classic, minimal‑config bandit algorithms. Both are
+"greedy after computing a score" and require only success/failure counts.
+
+#### Thompson Sampling (Beta–Bernoulli)
+
+- Maintain a Beta posterior per arm: `Beta(α, β)` where  
+  `α = prior_success + successes`, `β = prior_failure + failures`.
+- Decision time: sample one plausible CTR for each arm and pick the
+  best.
+  - Implementation trick: sample `X ~ Gamma(α,1)`, `Y ~ Gamma(β,1)` and
+    set `p = X / (X + Y)`; then choose the arm with max `p`.
+
+Beta posterior means is current belief about an arm's true success
+rate (e.g., CTR) after seeing data. It is a `Beta(α, β)` distribution
+whose shape narrows as you collect more evidence (more α+β), meaning
+you are more confident.
+
+Thompson sampling uses Gamma distribution sampling `gamma(shape, scale)`. It
+returns a positive random number. In Thompson we use two draws with
+`shape = α and β` (scale=1 for both): `X ~ Gamma(α,1)`, `Y ~ Gamma(β,1)`,
+then `Beta(α, β)`, which is `p = X/(X+Y)`.
+
+- Bigger **α (successes)** shifts X larger on average -> **higher** p.
+- Bigger **β (failures)** shifts Y larger -> **lower** p.
+- Bigger **α+β** (keeping the ratio α/(α+β) fixed) makes p **less noisy**
+  (narrower distribution around the mean α/(α+β)).
+
+**Why it works (intuition)**  
+Treat each arm's success rate as uncertain. Arms with little data have a
+wide posterior so they sometimes sample high (exploration). As evidence
+grows the posterior narrows and the best arm wins more often
+(exploitation).
+
+- **Pros**
+  - Naturally balances explore/exploit via uncertainty.
+  - Handles cold start via priors; easy to add decay/sliding windows.
+  - Strong empirical performance with binary rewards.
+
+- **Cons**
+  - Randomized decisions (harder to replay deterministically).
+  - Requires an RNG; audits must record the sampled values to reproduce
+    exact choices.
+
+#### UCB1 (Upper Confidence Bound)
+
+For each arm at time N (total trials), compute and pick the arm with the largest
+`score_i`:
+
+```plaintext
+score_i = mean_i + sqrt(2 * ln(N) / n_i)
+```
+
+- **mean_i**: Equal to `successes_i / n_i` (0 if `n_i=0`), `n_i` = trials for
+  arm i.
+- **N**: total trials across all arms so far. Larger N increases the
+  bonus slowly (via ln(N)), ensuring occasional exploration never dies.
+- **n_i**: trials for arm i. Larger n_i **reduces** the bonus
+  `sqrt(2 ln N / n_i)`, so heavily-tested arms rely mostly on their mean.
+- **mean_i**: empirical success rate `successes_i / n_i` (0 if `n_i=0`).
+  Higher mean directly raises the score.
+- **Practical effect**: if two arms have the same mean, the one with
+  fewer trials will be chosen (bigger bonus). As n_i grows, its bonus
+  shrinks and selection depends more on mean.
+
+**Why it works (intuition)**
+Be optimistic about what you don't know: under‑tried arms get a
+bigger bonus, so they're explored. As `n_i` grows the bonus shrinks and
+you exploit the better‐measured mean.
+
+- **Pros**
+  - Simple, deterministic; strong classical regret bounds.
+  - Clear audit story: "mean + uncertainty bonus."
+
+- **Cons**
+  - Can over‑explore early; no priors (cold start is uniform).
+  - Sensitive to non‑stationarity unless you add decay or windowing. This means
+    it considers time‑decayed counts or windowed statistics for arms if your
+    environment shifts.
+
+### Bandit FAQs
+
+- **Is this "AI"?** Yes, this is online machine learning. It learns from your
+  live rewards. No offline training is needed.
+
+- **Does it tune knobs one‑by‑one?** No. It picks among full policies you
+  define. You can add/retire policies anytime.
+
+- **Where does contextual come in?** Learning is segmented by surface and a
+  deterministic context bucket built from your `context` map. The same policy
+  can be great on mobile but not on web, and the bandit learns that difference.
+
+- **Cold start?** Both algorithms ensure every arm gets tried. Thompson can also
+  use informative priors to speed this up. Informative prior are starting
+  pseudo-counts (`α0, β0`) that encode prior knowledge or a sensible default.
+  Example: `α0=1, β0=1` is "uninformative" (uniform). `α0=10, β0=10` centers
+  belief near 50% but with more initial confidence. Priors mainly affect early
+  decisions.
 
 ## Configuration (Environment Variables)
 

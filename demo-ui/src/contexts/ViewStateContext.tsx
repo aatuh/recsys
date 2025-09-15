@@ -5,7 +5,36 @@ import type { ItemConfig, PriceRange } from "../components/ItemConfigEditor";
 import type {
   internal_http_types_ScoredItem,
   types_Overrides,
+  types_BanditDecideResponse,
+  types_RecommendWithBanditResponse,
 } from "../lib/api-client";
+
+// Bandit dashboard entries
+export interface BanditDecisionEntry {
+  id: string;
+  timestamp: Date;
+  requestId?: string;
+  policyId: string;
+  surface: string;
+  bucketKey: string;
+  algorithm: string;
+  explore: boolean;
+  empBestPolicyId?: string;
+  context: DecisionContext;
+}
+
+export interface BanditRewardEntry {
+  id: string;
+  timestamp: Date;
+  requestId?: string;
+  policyId: string;
+  surface: string;
+  bucketKey: string;
+  algorithm: string;
+  reward: boolean;
+  success: boolean;
+  error?: string;
+}
 
 // UserSession specific types
 export interface UserEvent {
@@ -120,6 +149,33 @@ interface UserSessionState {
   hasAutoLoaded: boolean;
 }
 
+export interface DecisionContext {
+  device: string;
+  locale: string;
+  [key: string]: string;
+}
+
+interface BanditPlaygroundState {
+  // Decision Section state
+  surface: string;
+  context: DecisionContext;
+  candidatePolicyIds: string[];
+  algorithm: string;
+  requestId: string;
+  decisionResult: types_BanditDecideResponse | null;
+  loading: boolean;
+  error: string | null;
+
+  // Recommendation Section state
+  recommendationResult: types_RecommendWithBanditResponse | null;
+  recommendationLoading: boolean;
+  recommendationError: string | null;
+
+  // Histories for dashboards
+  decisionHistory: BanditDecisionEntry[];
+  rewardHistory: BanditRewardEntry[];
+}
+
 interface ViewStateContextType {
   // Namespace Seed View State
   namespaceSeed: NamespaceSeedState;
@@ -139,11 +195,18 @@ interface ViewStateContextType {
   userSession: UserSessionState;
   setUserSession: React.Dispatch<React.SetStateAction<UserSessionState>>;
 
+  // Bandit Playground State
+  banditPlayground: BanditPlaygroundState;
+  setBanditPlayground: React.Dispatch<
+    React.SetStateAction<BanditPlaygroundState>
+  >;
+
   // Reset functions for each view
   resetNamespaceSeed: () => void;
   resetRecommendationsPlayground: () => void;
   resetDataManagement: () => void;
   resetUserSession: () => void;
+  resetBanditPlayground: () => void;
 }
 
 // Initial state values
@@ -299,6 +362,25 @@ const initialUserSessionState: UserSessionState = {
   hasAutoLoaded: false,
 };
 
+const initialBanditPlaygroundState: BanditPlaygroundState = {
+  surface: "homepage",
+  context: {
+    device: "mobile",
+    locale: "en-US",
+  },
+  candidatePolicyIds: [],
+  algorithm: "thompson",
+  requestId: "",
+  decisionResult: null,
+  loading: false,
+  error: null,
+  recommendationResult: null,
+  recommendationLoading: false,
+  recommendationError: null,
+  decisionHistory: [],
+  rewardHistory: [],
+};
+
 const ViewStateContext = createContext<ViewStateContextType | undefined>(
   undefined
 );
@@ -321,6 +403,58 @@ export function ViewStateProvider({ children }: ViewStateProviderProps) {
   const [userSession, setUserSession] = useState<UserSessionState>(
     initialUserSessionState
   );
+  const [banditPlayground, setBanditPlayground] =
+    useState<BanditPlaygroundState>(() => {
+      try {
+        const saved = localStorage.getItem("recsys-bandit-playground");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          // Rehydrate Date fields in histories
+          if (parsed?.decisionHistory) {
+            parsed.decisionHistory = parsed.decisionHistory.map((d: any) => ({
+              ...d,
+              timestamp: new Date(d.timestamp),
+            }));
+          }
+          if (parsed?.rewardHistory) {
+            parsed.rewardHistory = parsed.rewardHistory.map((r: any) => ({
+              ...r,
+              timestamp: new Date(r.timestamp),
+            }));
+          }
+          return { ...initialBanditPlaygroundState, ...parsed };
+        }
+      } catch {
+        // ignore
+      }
+      return initialBanditPlaygroundState;
+    });
+
+  // Persist lightweight bandit playground state to localStorage
+  React.useEffect(() => {
+    try {
+      const toSave = {
+        surface: banditPlayground.surface,
+        context: banditPlayground.context,
+        candidatePolicyIds: banditPlayground.candidatePolicyIds,
+        algorithm: banditPlayground.algorithm,
+        requestId: banditPlayground.requestId,
+        decisionHistory: banditPlayground.decisionHistory,
+        rewardHistory: banditPlayground.rewardHistory,
+      };
+      localStorage.setItem("recsys-bandit-playground", JSON.stringify(toSave));
+    } catch {
+      // ignore
+    }
+  }, [
+    banditPlayground.surface,
+    banditPlayground.context,
+    banditPlayground.candidatePolicyIds,
+    banditPlayground.algorithm,
+    banditPlayground.requestId,
+    banditPlayground.decisionHistory,
+    banditPlayground.rewardHistory,
+  ]);
 
   const resetNamespaceSeed = () => {
     setNamespaceSeed(initialNamespaceSeedState);
@@ -338,6 +472,10 @@ export function ViewStateProvider({ children }: ViewStateProviderProps) {
     setUserSession(initialUserSessionState);
   };
 
+  const resetBanditPlayground = () => {
+    setBanditPlayground(initialBanditPlaygroundState);
+  };
+
   const value: ViewStateContextType = {
     namespaceSeed,
     setNamespaceSeed,
@@ -347,10 +485,13 @@ export function ViewStateProvider({ children }: ViewStateProviderProps) {
     setDataManagement,
     userSession,
     setUserSession,
+    banditPlayground,
+    setBanditPlayground,
     resetNamespaceSeed,
     resetRecommendationsPlayground,
     resetDataManagement,
     resetUserSession,
+    resetBanditPlayground,
   };
 
   return (

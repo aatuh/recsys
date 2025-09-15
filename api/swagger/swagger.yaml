@@ -479,7 +479,7 @@ paths:
             items:
               $ref: '#/definitions/types.BanditPolicy'
             type: array
-      summary: List active bandit policies
+      summary: List all bandit policies (active and inactive)
       tags:
       - bandit
   /v1/bandit/policies:upsert:

@@ -71,7 +71,7 @@ export function RecommendationsSection({
   }
 
   return (
-    <Section title="Recommendations playground">
+    <Section title="Recommendations">
       <Row>
         <Label text="User ID (leave blank to use first generated)">
           <TextInput

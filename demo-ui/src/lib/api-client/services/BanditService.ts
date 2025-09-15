@@ -28,7 +28,7 @@ export class BanditService {
         });
     }
     /**
-     * List active bandit policies
+     * List all bandit policies (active and inactive)
      * @param namespace Namespace
      * @returns types_BanditPolicy OK
      * @throws ApiError

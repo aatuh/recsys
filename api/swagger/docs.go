@@ -56,7 +56,7 @@ const docTemplate = `{
                 "tags": [
                     "bandit"
                 ],
-                "summary": "List active bandit policies",
+                "summary": "List all bandit policies (active and inactive)",
                 "parameters": [
                     {
                         "type": "string",

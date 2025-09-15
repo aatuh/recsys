@@ -2,8 +2,8 @@ package algorithm
 
 import (
 	"context"
-	"fmt"
 	"math"
+	"sort"
 	"time"
 
 	"recsys/internal/types"
@@ -38,7 +38,6 @@ type Engine struct {
 
 // NewEngine creates a new recommendation engine.
 func NewEngine(config Config, store types.RecAlgoStore) *Engine {
-	fmt.Println("config", config)
 	return &Engine{
 		config: config,
 		store:  store,
@@ -538,7 +537,17 @@ func (e *Engine) buildResponse(
 		Items:        make([]ScoredItem, 0, minInt(k, len(data.Candidates))),
 	}
 
-	for i, candidate := range data.Candidates {
+	// Sort candidates by score in descending order (highest first)
+	// This ensures recommendations are returned in score order
+	sortedCandidates := make([]types.ScoredItem, len(data.Candidates))
+	copy(sortedCandidates, data.Candidates)
+
+	// Sort by score descending (highest scores first)
+	sort.Slice(sortedCandidates, func(i, j int) bool {
+		return sortedCandidates[i].Score > sortedCandidates[j].Score
+	})
+
+	for i, candidate := range sortedCandidates {
 		if i >= k {
 			break
 		}

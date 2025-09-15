@@ -62,7 +62,7 @@ func (h *Handler) BanditPoliciesUpsert(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(types.Ack{Status: "accepted"})
 }
 
-// @Summary List active bandit policies
+// @Summary List all bandit policies (active and inactive)
 // @Tags bandit
 // @Produce json
 // @Param namespace query string true "Namespace"
@@ -71,11 +71,13 @@ func (h *Handler) BanditPoliciesUpsert(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) BanditPoliciesList(w http.ResponseWriter, r *http.Request) {
 	ns := r.URL.Query().Get("namespace")
 	if ns == "" {
-		common.BadRequest(w, r, "missing_namespace", "namespace is required", nil)
+		common.BadRequest(
+			w, r, "missing_namespace", "namespace is required", nil,
+		)
 		return
 	}
 	orgID := h.defaultOrgFromHeader(r).String()
-	rows, err := h.Store.ListActivePolicies(r.Context(), orgID, ns)
+	rows, err := h.Store.ListAllPolicies(r.Context(), orgID, ns)
 	if err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)
 		return

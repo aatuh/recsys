@@ -3,7 +3,6 @@ package common
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5/middleware"
@@ -53,8 +52,6 @@ func HttpError(w http.ResponseWriter, r *http.Request, err error, fallback int) 
 }
 
 func mapError(err error) APIError {
-	fmt.Println("ERROR is", err)
-	fmt.Printf("ERROR type is %T\n", err)
 	if err == nil {
 		return NewAPIError("internal", "Unexpected error", http.StatusInternalServerError)
 	}

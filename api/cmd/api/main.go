@@ -3,12 +3,16 @@ package main
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os/signal"
 	"strings"
 	"syscall"
 	"time"
+
+	"gopkg.in/yaml.v2"
 
 	"recsys/internal/http/common"
 	"recsys/internal/http/config"
@@ -117,9 +121,25 @@ func main() {
 	// Serve swagger.json file dynamically
 	r.Get("/swagger/swagger.json", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		// Use the dynamically configured SwaggerInfo instead of static file
-		swaggerJSON := swagger.SwaggerInfo.ReadDoc()
-		_, _ = w.Write([]byte(swaggerJSON))
+		// Generate swagger JSON with dynamic servers section
+		swaggerJSON, err := generateSwaggerWithServers(serverCfg)
+		if err != nil {
+			http.Error(w, "Failed to generate swagger", http.StatusInternalServerError)
+			return
+		}
+		_, _ = w.Write(swaggerJSON)
+	})
+
+	// Serve swagger.yaml file dynamically
+	r.Get("/swagger/swagger.yaml", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/x-yaml")
+		// Generate swagger YAML with dynamic servers section
+		swaggerYAML, err := generateSwaggerYAMLWithServers(serverCfg)
+		if err != nil {
+			http.Error(w, "Failed to generate swagger", http.StatusInternalServerError)
+			return
+		}
+		_, _ = w.Write(swaggerYAML)
 	})
 
 	// v1 endpoints
@@ -215,8 +235,66 @@ func pingDB(ctx context.Context, pool *pgxpool.Pool) error {
 	return pool.Ping(ctx)
 }
 
-// configureSwagger sets the Swagger host and schemes based on server configuration.
+// configureSwagger sets the Swagger host, schemes, and server URL based on server configuration.
 func configureSwagger(cfg ServerConfig) {
 	swagger.SwaggerInfo.Host = cfg.SwaggerHost
 	swagger.SwaggerInfo.Schemes = cfg.SwaggerSchemes
+}
+
+// generateSwaggerWithServers reads the static swagger.json and adds the servers section dynamically
+func generateSwaggerWithServers(cfg ServerConfig) ([]byte, error) {
+	// Read the static swagger.json file
+	swaggerData, err := ioutil.ReadFile("swagger/swagger.json")
+	if err != nil {
+		return nil, err
+	}
+
+	// Parse the JSON
+	var swaggerDoc map[string]interface{}
+	if err := json.Unmarshal(swaggerData, &swaggerDoc); err != nil {
+		return nil, err
+	}
+
+	// Add the servers section
+	if len(cfg.SwaggerSchemes) > 0 {
+		serverURL := cfg.SwaggerSchemes[0] + "://" + cfg.SwaggerHost
+		swaggerDoc["servers"] = []map[string]interface{}{
+			{
+				"url":         serverURL,
+				"description": "API",
+			},
+		}
+	}
+
+	// Marshal back to JSON
+	return json.MarshalIndent(swaggerDoc, "", "    ")
+}
+
+// generateSwaggerYAMLWithServers reads the static swagger.yaml and adds the servers section dynamically
+func generateSwaggerYAMLWithServers(cfg ServerConfig) ([]byte, error) {
+	// Read the static swagger.yaml file
+	swaggerData, err := ioutil.ReadFile("swagger/swagger.yaml")
+	if err != nil {
+		return nil, err
+	}
+
+	// Parse the YAML
+	var swaggerDoc map[string]interface{}
+	if err := yaml.Unmarshal(swaggerData, &swaggerDoc); err != nil {
+		return nil, err
+	}
+
+	// Add the servers section
+	if len(cfg.SwaggerSchemes) > 0 {
+		serverURL := cfg.SwaggerSchemes[0] + "://" + cfg.SwaggerHost
+		swaggerDoc["servers"] = []map[string]interface{}{
+			{
+				"url":         serverURL,
+				"description": "API",
+			},
+		}
+	}
+
+	// Marshal back to YAML
+	return yaml.Marshal(swaggerDoc)
 }

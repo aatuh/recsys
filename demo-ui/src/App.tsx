@@ -4,6 +4,7 @@ import {
   Navigation,
   NamespaceSeedView,
   RecommendationsPlaygroundView,
+  BanditPlaygroundView,
   UserSessionView,
   DataManagementView,
   DocumentationView,
@@ -53,6 +54,7 @@ export default function App() {
       [
         "namespace-seed",
         "recommendations-playground",
+        "bandit-playground",
         "user-session",
         "data-management",
         "documentation",
@@ -126,6 +128,13 @@ export default function App() {
             namespace={namespace}
             generatedUsers={generatedUsers}
             generatedItems={generatedItems}
+          />
+        )}
+
+        {activeView === "bandit-playground" && (
+          <BanditPlaygroundView
+            namespace={namespace}
+            generatedUsers={generatedUsers}
           />
         )}
 

@@ -18,6 +18,9 @@ var banditPoliciesUpsertSQL string
 //go:embed queries/bandit_policies_active.sql
 var banditPoliciesActiveSQL string
 
+//go:embed queries/bandit_policies_all.sql
+var banditPoliciesAllSQL string
+
 //go:embed queries/bandit_policies_by_ids.sql
 var banditPoliciesByIdsSQL string
 
@@ -67,6 +70,18 @@ func (s *Store) ListActivePolicies(
 	ctx context.Context, orgID string, ns string,
 ) ([]types.PolicyConfig, error) {
 	q := banditPoliciesActiveSQL
+	rows, err := s.Pool.Query(ctx, q, orgID, ns)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return scanPolicies(rows)
+}
+
+func (s *Store) ListAllPolicies(
+	ctx context.Context, orgID string, ns string,
+) ([]types.PolicyConfig, error) {
+	q := banditPoliciesAllSQL
 	rows, err := s.Pool.Query(ctx, q, orgID, ns)
 	if err != nil {
 		return nil, err
