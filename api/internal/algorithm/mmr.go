@@ -7,12 +7,13 @@ import (
 	"recsys/internal/types"
 )
 
-// MMRReRank performs MMR (Maximal Marginal Relevance) re-ranking on candidate items
-// using tag overlap as a similarity proxy. It also enforces brand/category caps.
+// MMRReRank performs MMR (Maximal Marginal Relevance) re-ranking on candidate
+// items using tag overlap as a similarity proxy. It also enforces
+// brand/category caps.
 //
 // Parameters:
 //   - candidates: Items to re-rank
-//   - meta: Item metadata for diversity calculation
+//   - tags: Item tags for diversity calculation
 //   - k: Number of items to select
 //   - lambda: MMR balance (0=diversity, 1=relevance)
 //   - brandCap: Max items per brand (0=disabled)
@@ -21,7 +22,7 @@ import (
 // Returns: Re-ranked items up to k items
 func MMRReRank(
 	candidates []types.ScoredItem,
-	meta map[string]types.ItemTags,
+	tags map[string]types.ItemTags,
 	k int,
 	lambda float64,
 	brandCap, categoryCap int,
@@ -35,73 +36,80 @@ func MMRReRank(
 		return out
 	}
 
-	// Precompute normalized scores
+	// Precompute normalized scores.
 	maxScore := 0.0
 	for _, candidate := range candidates {
 		if candidate.Score > maxScore {
 			maxScore = candidate.Score
 		}
 	}
+	// Prepare metadata for efficient lookup.
+	tagSets, brandMap, categoryMap := prepareTags(tags)
 
-	normScore := func(s float64) float64 {
-		if maxScore <= 0 {
-			return 0
-		}
-		return s / maxScore
-	}
-
-	// Prepare metadata for efficient lookup
-	tagSets, brandMap, categoryMap := prepareMetadata(meta)
-
-	// Track counts for caps
+	// Track counts for caps.
 	brandCount := make(map[string]int)
 	categoryCount := make(map[string]int)
 	selected := make(map[string]struct{})
 
-	remaining := append([]types.ScoredItem(nil), candidates...)
+	remainingCands := append([]types.ScoredItem(nil), candidates...)
 
-	// Greedy MMR with deterministic tie-break by initial order
-	for len(out) < k && len(remaining) > 0 {
-		bestIdx := -1
+	// Greedy MMR with deterministic tie-break by initial order.
+	for len(out) < k && len(remainingCands) > 0 {
 		bestMMR := math.Inf(-1)
+		bestIdx := -1
 
-		for i, candidate := range remaining {
-			id := candidate.ItemID
+		// Iterate over the remaining candidates and find the best MMR score.
+		for i, candidate := range remainingCands {
+			itemId := candidate.ItemID
 
-			// Enforce caps
-			if !canSelectWithCaps(id, brandMap, categoryMap, brandCount, categoryCount, brandCap, categoryCap) {
+			// Enforce caps.
+			if !canSelectWithCaps(
+				itemId,
+				brandMap,
+				categoryMap,
+				brandCount,
+				categoryCount,
+				brandCap,
+				categoryCap,
+			) {
 				continue
 			}
 
-			// Calculate diversity term: max similarity to already selected
+			// Calculate diversity term: max similarity to already selected.
 			maxSim := 0.0
 			if len(selected) > 0 {
+				// Iterate over the selected items and calculate similarity.
 				for selectedID := range selected {
-					sim := jaccard(tagSets[id], tagSets[selectedID])
+					sim := jaccard(tagSets[itemId], tagSets[selectedID])
 					if sim > maxSim {
 						maxSim = sim
 					}
 				}
 			}
 
-			// MMR score: lambda * relevance - (1-lambda) * diversity
-			score := lambda*normScore(candidate.Score) - (1.0-lambda)*maxSim
+			// MMR score. The first round will pick the highest score ("best")
+			// item without similarity penalty. From the second pick onward,
+			// each candidate is penalized by how similar it is to anything
+			// already selected.
+			score := lambda*normScore(candidate.Score, maxScore) - // relevance
+				(1.0-lambda)*maxSim // diversity
+
 			if score > bestMMR {
 				bestMMR = score
 				bestIdx = i
 			}
 		}
 
-		// If caps block all remaining items, stop selection early
+		// If caps block all remaining items, stop selection early.
 		if bestIdx == -1 {
 			break
 		}
 
-		pick := remaining[bestIdx]
+		pick := remainingCands[bestIdx]
 		out = append(out, pick)
 		selected[pick.ItemID] = struct{}{}
 
-		// Update counts
+		// Update counts.
 		if brand := brandMap[pick.ItemID]; brand != "" {
 			brandCount[brand]++
 		}
@@ -109,41 +117,51 @@ func MMRReRank(
 			categoryCount[category]++
 		}
 
-		// Remove selected item from remaining
-		remaining = append(remaining[:bestIdx], remaining[bestIdx+1:]...)
+		// Remove selected item from remaining.
+		remainingCands = append(
+			remainingCands[:bestIdx], remainingCands[bestIdx+1:]...,
+		)
 	}
 
 	return out
 }
 
-// prepareMetadata extracts tag sets, brand, and category mappings from metadata
-func prepareMetadata(meta map[string]types.ItemTags) (
-	tagSets map[string]map[string]struct{},
-	brandMap map[string]string,
-	categoryMap map[string]string,
-) {
-	tagSets = make(map[string]map[string]struct{})
-	brandMap = make(map[string]string)
-	categoryMap = make(map[string]string)
+// normScore normalizes a score to [0, 1].
+func normScore(score float64, maxScore float64) float64 {
+	if maxScore <= 0 {
+		return 0
+	}
+	return score / maxScore
+}
 
-	for id, itemMeta := range meta {
-		if len(itemMeta.Tags) == 0 {
+// prepareTags extracts tag sets, brand, and category mappings from tags.
+func prepareTags(tags map[string]types.ItemTags) (
+	map[string]map[string]struct{},
+	map[string]string,
+	map[string]string,
+) {
+	tagSets := make(map[string]map[string]struct{})
+	brandMap := make(map[string]string)
+	categoryMap := make(map[string]string)
+
+	for itemId, itemTags := range tags {
+		if len(itemTags.Tags) == 0 {
 			continue
 		}
 
 		tagSet := make(map[string]struct{})
 
-		for _, tag := range itemMeta.Tags {
+		for _, tag := range itemTags.Tags {
 			lowerTag := strings.ToLower(strings.TrimSpace(tag))
 
 			switch {
 			case strings.HasPrefix(lowerTag, "brand:"):
-				brandMap[id] = strings.TrimSpace(lowerTag[len("brand:"):])
+				brandMap[itemId] = strings.TrimSpace(lowerTag[len("brand:"):])
 			case strings.HasPrefix(lowerTag, "category:"):
-				categoryMap[id] = strings.TrimSpace(lowerTag[len("category:"):])
+				categoryMap[itemId] = strings.TrimSpace(lowerTag[len("category:"):])
 			case strings.HasPrefix(lowerTag, "cat:"):
-				if _, ok := categoryMap[id]; !ok {
-					categoryMap[id] = strings.TrimSpace(lowerTag[len("cat:"):])
+				if _, ok := categoryMap[itemId]; !ok {
+					categoryMap[itemId] = strings.TrimSpace(lowerTag[len("cat:"):])
 				}
 			default:
 				if lowerTag != "" {
@@ -153,28 +171,33 @@ func prepareMetadata(meta map[string]types.ItemTags) (
 		}
 
 		if len(tagSet) > 0 {
-			tagSets[id] = tagSet
+			tagSets[itemId] = tagSet
 		}
 	}
 
 	return tagSets, brandMap, categoryMap
 }
 
-// canSelectWithCaps checks if an item can be selected given the current caps
+// canSelectWithCaps checks if an item can be selected given the current caps.
 func canSelectWithCaps(
-	id string,
+	itemId string,
 	brandMap, categoryMap map[string]string,
 	brandCount, categoryCount map[string]int,
-	brandCap, categoryCap int,
+	brandCap int,
+	categoryCap int,
 ) bool {
 	if brandCap > 0 {
-		if brand := brandMap[id]; brand != "" && brandCount[brand] >= brandCap {
+		// Check if the brand count is greater than or equal to the brand cap.
+		if brand := brandMap[itemId]; brand != "" &&
+			brandCount[brand] >= brandCap {
 			return false
 		}
 	}
 
 	if categoryCap > 0 {
-		if category := categoryMap[id]; category != "" && categoryCount[category] >= categoryCap {
+		// Check if the cat count is greater than or equal to the cat cap.
+		if category := categoryMap[itemId]; category != "" &&
+			categoryCount[category] >= categoryCap {
 			return false
 		}
 	}
@@ -182,12 +205,14 @@ func canSelectWithCaps(
 	return true
 }
 
-// jaccard computes Jaccard similarity of two string sets
+// jaccard computes Jaccard similarity of two string sets. It returns a value
+// between 0 and 1.
 func jaccard(a, b map[string]struct{}) float64 {
 	if len(a) == 0 || len(b) == 0 {
 		return 0
 	}
 
+	// Calculate the intersection of the two sets.
 	intersection := 0
 	for k := range a {
 		if _, ok := b[k]; ok {
@@ -195,6 +220,8 @@ func jaccard(a, b map[string]struct{}) float64 {
 		}
 	}
 
+	// Calculate the union of the two sets.
+	// Union is total unique elements: |A| + |B| - |A ∩ B|
 	union := len(a) + len(b) - intersection
 	if union == 0 {
 		return 0

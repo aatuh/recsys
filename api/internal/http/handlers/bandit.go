@@ -10,19 +10,8 @@ import (
 	"recsys/internal/bandit"
 	"recsys/internal/http/common"
 	"recsys/internal/http/types"
+	internaltypes "recsys/internal/types"
 )
-
-func (h *Handler) banditAlgoOverride(s string) bandit.Algorithm {
-	s = strings.ToLower(strings.TrimSpace(s))
-	switch s {
-	case string(bandit.AlgorithmThompson):
-		return bandit.AlgorithmThompson
-	case string(bandit.AlgorithmUCB1):
-		return bandit.AlgorithmUCB1
-	default:
-		return h.BanditAlgo
-	}
-}
 
 // @Summary Upsert bandit policies
 // @Tags bandit
@@ -39,13 +28,19 @@ func (h *Handler) BanditPoliciesUpsert(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if req.Namespace == "" {
-		common.BadRequest(w, r, "missing_namespace", "namespace is required", nil)
+		common.BadRequest(
+			w,
+			r,
+			"missing_namespace",
+			"namespace is required",
+			nil,
+		)
 		return
 	}
 	orgID := h.defaultOrgFromHeader(r).String()
-	rows := make([]bandit.PolicyConfig, 0, len(req.Policies))
+	rows := make([]internaltypes.PolicyConfig, 0, len(req.Policies))
 	for _, p := range req.Policies {
-		rows = append(rows, bandit.PolicyConfig{
+		rows = append(rows, internaltypes.PolicyConfig{
 			PolicyID:    p.PolicyID,
 			Name:        p.Name,
 			Active:      p.Active,
@@ -58,7 +53,9 @@ func (h *Handler) BanditPoliciesUpsert(w http.ResponseWriter, r *http.Request) {
 			Notes:       p.Notes,
 		})
 	}
-	if err := h.Store.UpsertBanditPolicies(r.Context(), orgID, req.Namespace, rows); err != nil {
+	if err := h.Store.UpsertBanditPolicies(
+		r.Context(), orgID, req.Namespace, rows,
+	); err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)
 		return
 	}
@@ -115,19 +112,33 @@ func (h *Handler) BanditDecide(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if req.Namespace == "" || req.Surface == "" {
-		common.BadRequest(w, r, "missing_fields", "namespace and surface are required", nil)
+		common.BadRequest(
+			w,
+			r,
+			"missing_fields",
+			"namespace and surface are required",
+			nil,
+		)
 		return
 	}
 	orgID := h.defaultOrgFromHeader(r).String()
 	bucket := bandit.BucketKeyFromContext(req.Context)
 
-	mgr := h.newBanditManager(h.banditAlgoOverride(req.Algorithm))
-	dec, err := mgr.Decide(r.Context(), orgID, req.Namespace, req.Surface, bucket, req.CandidatePolicyIDs, req.RequestID)
+	mgr := h.newBanditStoreManager(h.banditAlgoOverride(req.Algorithm))
+	dec, err := mgr.Decide(
+		r.Context(),
+		orgID,
+		req.Namespace,
+		req.Surface,
+		bucket,
+		req.CandidatePolicyIDs,
+		req.RequestID,
+	)
 	if err != nil {
 		common.HttpError(w, r, err, http.StatusBadRequest)
 		return
 	}
-	_ = json.NewEncoder(w).Encode(types.BanditDecideResponse{
+	err = json.NewEncoder(w).Encode(types.BanditDecideResponse{
 		PolicyID:  dec.PolicyID,
 		Algorithm: string(dec.Algorithm),
 		Surface:   dec.Surface,
@@ -135,6 +146,10 @@ func (h *Handler) BanditDecide(w http.ResponseWriter, r *http.Request) {
 		Explore:   dec.Explore,
 		Explain:   dec.Explain,
 	})
+	if err != nil {
+		common.HttpError(w, r, err, http.StatusInternalServerError)
+		return
+	}
 }
 
 // @Summary Report binary reward for a previous decision
@@ -150,12 +165,21 @@ func (h *Handler) BanditReward(w http.ResponseWriter, r *http.Request) {
 		common.HttpError(w, r, err, http.StatusBadRequest)
 		return
 	}
-	if req.Namespace == "" || req.Surface == "" || req.PolicyID == "" || req.BucketKey == "" {
-		common.BadRequest(w, r, "missing_fields", "namespace, surface, policy_id, bucket_key required", nil)
+	if req.Namespace == "" ||
+		req.Surface == "" ||
+		req.PolicyID == "" ||
+		req.BucketKey == "" {
+		common.BadRequest(
+			w,
+			r,
+			"missing_fields",
+			"namespace, surface, policy_id, bucket_key required",
+			nil,
+		)
 		return
 	}
 	orgID := h.defaultOrgFromHeader(r).String()
-	mgr := h.newBanditManager(h.banditAlgoOverride(req.Algorithm))
+	mgr := h.newBanditStoreManager(h.banditAlgoOverride(req.Algorithm))
 	err := mgr.Reward(r.Context(), orgID, req.Namespace, bandit.RewardInput{
 		PolicyID:  req.PolicyID,
 		Surface:   req.Surface,
@@ -184,7 +208,13 @@ func (h *Handler) RecommendWithBandit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if req.Namespace == "" || req.Surface == "" {
-		common.BadRequest(w, r, "missing_fields", "namespace and surface are required", nil)
+		common.BadRequest(
+			w,
+			r,
+			"missing_fields",
+			"namespace and surface are required",
+			nil,
+		)
 		return
 	}
 
@@ -197,8 +227,16 @@ func (h *Handler) RecommendWithBandit(w http.ResponseWriter, r *http.Request) {
 	bucket := bandit.BucketKeyFromContext(req.Context)
 
 	// Decide policy.
-	mgr := h.newBanditManager(h.banditAlgoOverride(req.Algorithm))
-	dec, err := mgr.Decide(r.Context(), orgID, req.Namespace, req.Surface, bucket, req.CandidatePolicyIDs, "")
+	mgr := h.newBanditStoreManager(h.banditAlgoOverride(req.Algorithm))
+	dec, err := mgr.Decide(
+		r.Context(),
+		orgID,
+		req.Namespace,
+		req.Surface,
+		bucket,
+		req.CandidatePolicyIDs,
+		"",
+	)
 	if err != nil {
 		common.HttpError(w, r, err, http.StatusBadRequest)
 		return
@@ -218,7 +256,9 @@ func (h *Handler) RecommendWithBandit(w http.ResponseWriter, r *http.Request) {
 	cfg.CategoryCap = 0
 
 	// Fetch policy to populate knobs.
-	pl, err := h.Store.ListPoliciesByIDs(r.Context(), orgID, req.Namespace, []string{dec.PolicyID})
+	pl, err := h.Store.ListPoliciesByIDs(
+		r.Context(), orgID, req.Namespace, []string{dec.PolicyID},
+	)
 	if err == nil && len(pl) == 1 {
 		cfg.BlendAlpha = pl[0].BlendAlpha
 		cfg.BlendBeta = pl[0].BlendBeta
@@ -248,39 +288,109 @@ func (h *Handler) RecommendWithBandit(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(out)
 }
 
-func (h *Handler) newBanditManager(algo bandit.Algorithm) *bandit.Manager {
+// banditAlgoOverride overrides the algorithm if provided.
+func (h *Handler) banditAlgoOverride(s string) internaltypes.Algorithm {
+	s = strings.ToLower(strings.TrimSpace(s))
+	switch s {
+	case string(internaltypes.AlgorithmThompson):
+		return internaltypes.AlgorithmThompson
+	case string(internaltypes.AlgorithmUCB1):
+		return internaltypes.AlgorithmUCB1
+	default:
+		return h.BanditAlgo
+	}
+}
+
+// newBanditStoreManager creates a new bandit manager that wraps the handlers
+// store.
+func (h *Handler) newBanditStoreManager(
+	algo internaltypes.Algorithm,
+) *bandit.Manager {
 	// The store already implements needed methods in bandit.go.
 	wrapped := &banditStoreAdapter{Store: h.Store}
 	return bandit.NewManager(wrapped, algo)
 }
 
-// banditStoreAdapter adapts the handlers store to bandit.Store.
+// banditStoreAdapter adapts the handlers store.
 type banditStoreAdapter struct {
-	Store interface {
-		ListActivePolicies(ctx context.Context, orgID string, ns string) ([]bandit.PolicyConfig, error)
-		ListPoliciesByIDs(ctx context.Context, orgID, ns string, ids []string) ([]bandit.PolicyConfig, error)
-		GetStats(ctx context.Context, orgID, ns, surface, bucket string, algo bandit.Algorithm) (map[string]bandit.Stats, error)
-		IncrementStats(ctx context.Context, orgID, ns, surface, bucket string, algo bandit.Algorithm, policyID string, reward bool) error
-		LogDecision(ctx context.Context, orgID, ns, surface, bucket string, algo bandit.Algorithm, policyID string, explore bool, reqID string, meta map[string]any) error
-		LogReward(ctx context.Context, orgID, ns, surface, bucket string, algo bandit.Algorithm, policyID string, reward bool, reqID string, meta map[string]any) error
-	}
+	Store internaltypes.BanditStore
 }
 
-func (a *banditStoreAdapter) ListActivePolicies(ctx context.Context, orgID string, ns string) ([]bandit.PolicyConfig, error) {
+// ListActivePolicies lists active policies.
+func (a *banditStoreAdapter) ListActivePolicies(
+	ctx context.Context,
+	orgID string,
+	ns string,
+) ([]internaltypes.PolicyConfig, error) {
 	return a.Store.ListActivePolicies(ctx, orgID, ns)
 }
-func (a *banditStoreAdapter) ListPoliciesByIDs(ctx context.Context, orgID, ns string, ids []string) ([]bandit.PolicyConfig, error) {
+
+// ListPoliciesByIDs lists policies by IDs.
+func (a *banditStoreAdapter) ListPoliciesByIDs(
+	ctx context.Context,
+	orgID, ns string,
+	ids []string,
+) ([]internaltypes.PolicyConfig, error) {
 	return a.Store.ListPoliciesByIDs(ctx, orgID, ns, ids)
 }
-func (a *banditStoreAdapter) GetStats(ctx context.Context, orgID, ns, surface, bucket string, algo bandit.Algorithm) (map[string]bandit.Stats, error) {
+
+// GetStats gets stats.
+func (a *banditStoreAdapter) GetStats(
+	ctx context.Context,
+	orgID string,
+	ns string,
+	surface string,
+	bucket string,
+	algo internaltypes.Algorithm,
+) (map[string]internaltypes.Stats, error) {
 	return a.Store.GetStats(ctx, orgID, ns, surface, bucket, algo)
 }
-func (a *banditStoreAdapter) IncrementStats(ctx context.Context, orgID, ns, surface, bucket string, algo bandit.Algorithm, policyID string, reward bool) error {
-	return a.Store.IncrementStats(ctx, orgID, ns, surface, bucket, algo, policyID, reward)
+
+// IncrementStats increments stats.
+func (a *banditStoreAdapter) IncrementStats(
+	ctx context.Context,
+	orgID string,
+	ns string,
+	surface string,
+	bucket string,
+	algo internaltypes.Algorithm,
+	policyID string,
+	reward bool,
+) error {
+	return a.Store.IncrementStats(
+		ctx, orgID, ns, surface, bucket, algo, policyID, reward,
+	)
 }
-func (a *banditStoreAdapter) LogDecision(ctx context.Context, orgID, ns, surface, bucket string, algo bandit.Algorithm, policyID string, explore bool, reqID string, meta map[string]any) error {
-	return a.Store.LogDecision(ctx, orgID, ns, surface, bucket, algo, policyID, explore, reqID, meta)
+
+// LogDecision logs a decision.
+func (a *banditStoreAdapter) LogDecision(
+	ctx context.Context,
+	orgID string,
+	ns string,
+	surface string,
+	bucket string,
+	algo internaltypes.Algorithm,
+	policyID string,
+	explore bool,
+	reqID string,
+	meta map[string]any,
+) error {
+	return a.Store.LogDecision(
+		ctx, orgID, ns, surface, bucket, algo, policyID, explore, reqID, meta,
+	)
 }
-func (a *banditStoreAdapter) LogReward(ctx context.Context, orgID, ns, surface, bucket string, algo bandit.Algorithm, policyID string, reward bool, reqID string, meta map[string]any) error {
-	return a.Store.LogReward(ctx, orgID, ns, surface, bucket, algo, policyID, reward, reqID, meta)
+
+// LogReward logs a reward.
+func (a *banditStoreAdapter) LogReward(
+	ctx context.Context,
+	orgID, ns, surface, bucket string,
+	algo internaltypes.Algorithm,
+	policyID string,
+	reward bool,
+	reqID string,
+	meta map[string]any,
+) error {
+	return a.Store.LogReward(
+		ctx, orgID, ns, surface, bucket, algo, policyID, reward, reqID, meta,
+	)
 }

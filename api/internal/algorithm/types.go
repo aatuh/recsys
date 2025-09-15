@@ -1,7 +1,6 @@
 package algorithm
 
 import (
-	"recsys/internal/bandit"
 	"recsys/internal/types"
 
 	"github.com/google/uuid"
@@ -34,7 +33,7 @@ type Config struct {
 	PopularityFanout int // Fanout for popularity candidates
 
 	// Bandit algorithm
-	BanditAlgo bandit.Algorithm
+	BanditAlgo types.Algorithm
 }
 
 // Request represents a recommendation request

@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	"recsys/internal/bandit"
+	"recsys/internal/types"
 
 	_ "embed"
 
@@ -42,7 +42,7 @@ type BanditPolicyRow struct {
 }
 
 func (s *Store) UpsertBanditPolicies(
-	ctx context.Context, orgID string, ns string, rows []bandit.PolicyConfig,
+	ctx context.Context, orgID string, ns string, rows []types.PolicyConfig,
 ) error {
 	if len(rows) == 0 {
 		return nil
@@ -65,7 +65,7 @@ func (s *Store) UpsertBanditPolicies(
 
 func (s *Store) ListActivePolicies(
 	ctx context.Context, orgID string, ns string,
-) ([]bandit.PolicyConfig, error) {
+) ([]types.PolicyConfig, error) {
 	q := banditPoliciesActiveSQL
 	rows, err := s.Pool.Query(ctx, q, orgID, ns)
 	if err != nil {
@@ -77,9 +77,9 @@ func (s *Store) ListActivePolicies(
 
 func (s *Store) ListPoliciesByIDs(
 	ctx context.Context, orgID, ns string, ids []string,
-) ([]bandit.PolicyConfig, error) {
+) ([]types.PolicyConfig, error) {
 	if len(ids) == 0 {
-		return []bandit.PolicyConfig{}, nil
+		return []types.PolicyConfig{}, nil
 	}
 	q := banditPoliciesByIdsSQL
 	rows, err := s.Pool.Query(ctx, q, orgID, ns, ids)
@@ -90,8 +90,8 @@ func (s *Store) ListPoliciesByIDs(
 	return scanPolicies(rows)
 }
 
-func scanPolicies(rows pgx.Rows) ([]bandit.PolicyConfig, error) {
-	var out []bandit.PolicyConfig
+func scanPolicies(rows pgx.Rows) ([]types.PolicyConfig, error) {
+	var out []types.PolicyConfig
 	for rows.Next() {
 		var id, name string
 		var active bool
@@ -99,7 +99,7 @@ func scanPolicies(rows pgx.Rows) ([]bandit.PolicyConfig, error) {
 		if err := rows.Scan(&id, &name, &active, &cfg); err != nil {
 			return nil, err
 		}
-		var pc bandit.PolicyConfig
+		var pc types.PolicyConfig
 		if err := json.Unmarshal(cfg, &pc); err != nil {
 			return nil, err
 		}
@@ -115,19 +115,22 @@ func scanPolicies(rows pgx.Rows) ([]bandit.PolicyConfig, error) {
 func (s *Store) GetStats(
 	ctx context.Context,
 	orgID, ns, surface, bucket string,
-	algo bandit.Algorithm,
-) (map[string]bandit.Stats, error) {
-	q := banditStatsGetSQL
-	rows, err := s.Pool.Query(ctx, q, orgID, ns, surface, bucket, string(algo))
+	algo types.Algorithm,
+) (map[string]types.Stats, error) {
+	rows, err := s.Pool.Query(
+		ctx, banditStatsGetSQL, orgID, ns, surface, bucket, string(algo),
+	)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	out := map[string]bandit.Stats{}
+	out := map[string]types.Stats{}
 	for rows.Next() {
 		var pid string
-		var st bandit.Stats
-		if err := rows.Scan(&pid, &st.Trials, &st.Successes, &st.Alpha, &st.Beta); err != nil {
+		var st types.Stats
+		if err := rows.Scan(
+			&pid, &st.Trials, &st.Successes, &st.Alpha, &st.Beta,
+		); err != nil {
 			return nil, err
 		}
 		out[pid] = st
@@ -138,43 +141,47 @@ func (s *Store) GetStats(
 func (s *Store) IncrementStats(
 	ctx context.Context,
 	orgID, ns, surface, bucket string,
-	algo bandit.Algorithm, policyID string, reward bool,
+	algo types.Algorithm, policyID string, reward bool,
 ) error {
-	q := banditStatsIncrementSQL
-	_, err := s.Pool.Exec(ctx, q, orgID, ns, surface, bucket, policyID,
-		string(algo), reward)
+	_, err := s.Pool.Exec(
+		ctx, banditStatsIncrementSQL,
+		orgID, ns, surface, bucket, policyID, string(algo), reward)
 	return err
 }
 
 func (s *Store) LogDecision(
 	ctx context.Context,
 	orgID, ns, surface, bucket string,
-	algo bandit.Algorithm, policyID string, explore bool,
+	algo types.Algorithm, policyID string, explore bool,
 	reqID string, meta map[string]any,
 ) error {
-	q := banditDecisionsLogSQL
 	var js []byte
 	if meta != nil {
 		js, _ = json.Marshal(meta)
 	}
-	_, err := s.Pool.Exec(ctx, q, orgID, ns, surface, bucket, policyID,
-		string(algo), explore, nullIfEmpty(reqID), js)
+	_, err := s.Pool.Exec(
+		ctx, banditDecisionsLogSQL,
+		orgID, ns, surface, bucket, policyID,
+		string(algo), explore, nullIfEmpty(reqID), js,
+	)
 	return err
 }
 
 func (s *Store) LogReward(
 	ctx context.Context,
 	orgID, ns, surface, bucket string,
-	algo bandit.Algorithm, policyID string, reward bool,
+	algo types.Algorithm, policyID string, reward bool,
 	reqID string, meta map[string]any,
 ) error {
-	q := banditRewardsLogSQL
 	var js []byte
 	if meta != nil {
 		js, _ = json.Marshal(meta)
 	}
-	_, err := s.Pool.Exec(ctx, q, orgID, ns, surface, bucket, policyID,
-		string(algo), reward, nullIfEmpty(reqID), js)
+	_, err := s.Pool.Exec(
+		ctx, banditRewardsLogSQL,
+		orgID, ns, surface, bucket, policyID, string(algo), reward,
+		nullIfEmpty(reqID), js,
+	)
 	return err
 }
 

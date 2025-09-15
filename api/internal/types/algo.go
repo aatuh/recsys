@@ -26,9 +26,9 @@ type ItemTags struct {
 	Tags   []string
 }
 
-// AlgoStore is the minimal interface the algorithm needs from persistence.
+// RecAlgoStore is the minimal interface the algorithm needs from persistence.
 // This keeps the algorithm independent of the concrete DB layer.
-type AlgoStore interface {
+type RecAlgoStore interface {
 	// Popularity
 
 	// PopularityTopK returns up to k items with highest time-decayed

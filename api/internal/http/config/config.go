@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"recsys/internal/bandit"
+	"recsys/internal/types"
 	"recsys/shared/util"
 
 	"github.com/google/uuid"
@@ -28,7 +28,7 @@ type Config struct {
 	BlendAlpha           float64
 	BlendBeta            float64
 	BlendGamma           float64
-	BanditAlgo           bandit.Algorithm
+	BanditAlgo           types.Algorithm
 }
 
 func Load() (Config, error) {
@@ -141,9 +141,9 @@ func Load() (Config, error) {
 	ba := strings.ToLower(util.MustGetEnv("BANDIT_ALGO"))
 	switch ba {
 	case "thompson":
-		c.BanditAlgo = bandit.AlgorithmThompson
+		c.BanditAlgo = types.AlgorithmThompson
 	case "ucb1":
-		c.BanditAlgo = bandit.AlgorithmUCB1
+		c.BanditAlgo = types.AlgorithmUCB1
 	default:
 		return c, errors.New("BANDIT_ALGO must be 'thompson' or 'ucb1'")
 	}

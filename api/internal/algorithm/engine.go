@@ -12,28 +12,32 @@ import (
 )
 
 // Default recent anchors window days if not configured.
-const DEFAULT_RECENT_ANCHORS_WINDOW_DAYS = 30
+const defaultRecentAnchorsWindowDays = 30
 
 // Default co-visitation window days if not configured.
-const DEFAULT_COVIS_WINDOW_DAYS = 30
+const defaultCovisWindowDays = 30
 
 // Limit anchors for performance.
-const MAX_RECENT_ANCHORS = 10
+const maxRecentAnchors = 10
 
 // Limit co-visitation neighbors for performance.
-const MAX_COVIS_NEIGHBORS = 200
+const maxCovisNeighbors = 200
 
 // Limit embedding neighbors for performance.
-const MAX_EMB_NEIGHBORS = 200
+const maxEmbNeighbors = 200
 
-// Engine handles recommendation algorithm logic
+// Model versions.
+const modelVersionPopularity = "popularity_v1"
+const modelVersionBlend = "blend_v1"
+
+// Engine handles recommendation algorithm logic.
 type Engine struct {
 	config Config
-	store  types.AlgoStore
+	store  types.RecAlgoStore
 }
 
-// NewEngine creates a new recommendation engine
-func NewEngine(config Config, store types.AlgoStore) *Engine {
+// NewEngine creates a new recommendation engine.
+func NewEngine(config Config, store types.RecAlgoStore) *Engine {
 	fmt.Println("config", config)
 	return &Engine{
 		config: config,
@@ -41,17 +45,17 @@ func NewEngine(config Config, store types.AlgoStore) *Engine {
 	}
 }
 
-// Recommend generates recommendations using the blended scoring approach
+// Recommend generates recommendations using the blended scoring approach.
 func (e *Engine) Recommend(
 	ctx context.Context, req Request,
 ) (*Response, error) {
-	// Set defaults
+	// Set defaults.
 	k := req.K
 	if k <= 0 {
 		k = 20
 	}
 
-	// Get popularity candidates
+	// Get popularity candidates.
 	candidates, err := e.getPopularityCandidates(
 		ctx, req.OrgID, req.Namespace, k, req.Constraints,
 	)
@@ -59,43 +63,50 @@ func (e *Engine) Recommend(
 		return nil, err
 	}
 
-	// Apply exclusions
+	// Apply exclusions.
 	candidates, err = e.applyExclusions(ctx, candidates, req)
 	if err != nil {
 		return nil, err
 	}
 
-	// Get tags for all candidates
+	// Get tags for all candidates.
 	tags, err := e.getCandidateTags(ctx, candidates, req)
 	if err != nil {
 		return nil, err
 	}
 
-	// Get blend weights
+	// Get blend weights.
 	weights := e.getBlendWeights(req)
 
-	// Gather co-visitation and embedding signals
+	// Gather co-visitation and embedding signals.
 	candidateData, err := e.gatherSignals(ctx, candidates, req, weights)
 	if err != nil {
 		return nil, err
 	}
 	candidateData.Tags = tags
 
-	// Apply blended scoring
+	// Apply blended scoring.
 	e.applyBlendedScoring(candidateData, weights)
 
-	// Apply personalization boost
+	// Apply personalization boost.
 	e.applyPersonalizationBoost(ctx, candidateData, req)
 
-	// Determine model version
+	// Determine model version.
 	modelVersion := e.getModelVersion(weights)
 
-	// Apply MMR and caps if needed
+	// Apply MMR and caps if needed.
 	if e.shouldUseMMR() || e.shouldUseCaps() {
-		candidateData.Candidates = e.applyMMRAndCaps(candidateData, k)
+		candidateData.Candidates = MMRReRank(
+			candidateData.Candidates,
+			candidateData.Tags,
+			k,
+			e.config.MMRLambda,
+			e.config.BrandCap,
+			e.config.CategoryCap,
+		)
 	}
 
-	// Build response
+	// Build response.
 	return e.buildResponse(
 		candidateData, k, modelVersion, req.IncludeReasons, weights,
 	), nil
@@ -116,7 +127,7 @@ func (e *Engine) getPopularityCandidates(
 		fetchK = k
 	}
 
-	// Fetch popularity candidates
+	// Fetch popularity candidates.
 	cands, err := e.store.PopularityTopK(
 		ctx, orgID, ns, e.config.HalfLifeDays, fetchK, c,
 	)
@@ -127,7 +138,7 @@ func (e *Engine) getPopularityCandidates(
 	return cands, nil
 }
 
-// applyExclusions removes excluded items from candidates
+// applyExclusions removes excluded items from candidates.
 func (e *Engine) applyExclusions(
 	ctx context.Context,
 	candidates []types.ScoredItem,
@@ -135,21 +146,21 @@ func (e *Engine) applyExclusions(
 ) ([]types.ScoredItem, error) {
 	exclude := make(map[string]struct{})
 
-	// Add constraint exclusions
+	// Add constraint exclusions.
 	if req.Constraints != nil {
 		for _, id := range req.Constraints.ExcludeItemIDs {
 			exclude[id] = struct{}{}
 		}
 	}
 
-	// Add purchased exclusions if enabled
+	// Add purchased exclusions if enabled.
 	var err error
 	exclude, err = e.excludePurchasedItems(ctx, req, exclude)
 	if err != nil {
 		return nil, err
 	}
 
-	// Filter candidates by excluding excluded items
+	// Filter candidates by excluding excluded items.
 	filtered := make([]types.ScoredItem, 0, len(candidates))
 	for _, candidate := range candidates {
 		if _, skip := exclude[candidate.ItemID]; !skip {
@@ -170,7 +181,7 @@ func (e *Engine) excludePurchasedItems(
 		return exclude, nil
 	}
 
-	// Exclude purchased items in a time window
+	// Exclude purchased items in a time window.
 	lookback := time.Duration(e.config.PurchasedWindowDays*24.0) * time.Hour
 	since := time.Now().UTC().Add(-lookback)
 	bought, err := e.store.ListUserPurchasedSince(
@@ -184,7 +195,7 @@ func (e *Engine) excludePurchasedItems(
 		return nil, err
 	}
 
-	// Add purchased items to exclude
+	// Add purchased items to exclude.
 	for _, id := range bought {
 		exclude[id] = struct{}{}
 	}
@@ -192,7 +203,7 @@ func (e *Engine) excludePurchasedItems(
 	return exclude, nil
 }
 
-// getCandidateTags fetches tags for all candidates
+// getCandidateTags fetches tags for all candidates.
 func (e *Engine) getCandidateTags(
 	ctx context.Context, candidates []types.ScoredItem, req Request,
 ) (map[string]types.ItemTags, error) {
@@ -200,17 +211,17 @@ func (e *Engine) getCandidateTags(
 		return make(map[string]types.ItemTags), nil
 	}
 
-	// Build list of candidate IDs
+	// Build list of candidate IDs.
 	ids := make([]string, 0, len(candidates))
 	for _, candidate := range candidates {
 		ids = append(ids, candidate.ItemID)
 	}
 
-	// Fetch tags for all candidates
+	// Fetch tags for all candidates.
 	return e.store.ListItemsTags(ctx, req.OrgID, req.Namespace, ids)
 }
 
-// getBlendWeights returns the blend weights to use
+// getBlendWeights returns the blend weights to use.
 func (e *Engine) getBlendWeights(req Request) BlendWeights {
 	weights := BlendWeights{
 		Pop:  e.config.BlendAlpha,
@@ -218,14 +229,14 @@ func (e *Engine) getBlendWeights(req Request) BlendWeights {
 		ALS:  e.config.BlendGamma,
 	}
 
-	// Override with request weights if provided
+	// Override with request weights if provided.
 	if req.Blend != nil {
 		weights.Pop = math.Max(0, req.Blend.Pop)
 		weights.Cooc = math.Max(0, req.Blend.Cooc)
 		weights.ALS = math.Max(0, req.Blend.ALS)
 	}
 
-	// Safety: if all weights are 0, use popularity-only
+	// Safety: if all weights are 0, use popularity-only.
 	if weights.Pop == 0 && weights.Cooc == 0 && weights.ALS == 0 {
 		weights.Pop = 1
 	}
@@ -249,24 +260,24 @@ func (e *Engine) gatherSignals(
 		Boosted:    make(map[string]bool),
 	}
 
-	// Build candidate set for quick lookup
+	// Build candidate set for quick lookup.
 	candSet := make(map[string]struct{}, len(candidates))
 	for _, candidate := range candidates {
 		candSet[candidate.ItemID] = struct{}{}
 	}
 
-	// Only gather signals if user ID is provided and weights are non-zero
+	// Only gather signals if user ID is provided and weights are non-zero.
 	if req.UserID == "" || (weights.Cooc == 0 && weights.ALS == 0) {
 		return data, nil
 	}
 
-	// Get recent anchors
+	// Get recent anchors.
 	anchors, err := e.getRecentAnchors(ctx, req)
 	if err != nil || len(anchors) == 0 {
 		return data, nil
 	}
 
-	// Gather co-visitation signals
+	// Gather co-visitation signals.
 	if weights.Cooc > 0 {
 		err = e.gatherCoVisitationSignals(ctx, data, req, anchors, candSet)
 		if err != nil {
@@ -274,7 +285,7 @@ func (e *Engine) gatherSignals(
 		}
 	}
 
-	// Gather embedding signals
+	// Gather embedding signals.
 	if weights.ALS > 0 {
 		err = e.gatherEmbeddingSignals(ctx, data, req, anchors, candSet)
 		if err != nil {
@@ -285,13 +296,13 @@ func (e *Engine) gatherSignals(
 	return data, nil
 }
 
-// getRecentAnchors gets recent items for the user to use as anchors
+// getRecentAnchors gets recent items for the user to use as anchors.
 func (e *Engine) getRecentAnchors(
 	ctx context.Context, req Request,
 ) ([]string, error) {
 	days := e.config.CoVisWindowDays
 	if days <= 0 {
-		days = DEFAULT_RECENT_ANCHORS_WINDOW_DAYS
+		days = defaultRecentAnchorsWindowDays
 	}
 	since := time.Now().UTC().Add(-time.Duration(days*24.0) * time.Hour)
 
@@ -301,7 +312,7 @@ func (e *Engine) getRecentAnchors(
 		req.Namespace,
 		req.UserID,
 		since,
-		MAX_RECENT_ANCHORS,
+		maxRecentAnchors,
 	)
 }
 
@@ -315,28 +326,28 @@ func (e *Engine) gatherCoVisitationSignals(
 ) error {
 	days := e.config.CoVisWindowDays
 	if days <= 0 {
-		days = DEFAULT_COVIS_WINDOW_DAYS
+		days = defaultCovisWindowDays
 	}
 	since := time.Now().UTC().Add(-time.Duration(days*24.0) * time.Hour)
 
 	for _, anchor := range anchors {
-		// Gather co-visitation neighbors
+		// Gather co-visitation neighbors.
 		neighbors, err := e.store.CooccurrenceTopKWithin(
 			ctx,
 			req.OrgID,
 			req.Namespace,
 			anchor,
-			MAX_COVIS_NEIGHBORS,
+			maxCovisNeighbors,
 			since,
 		)
 		if err != nil {
-			continue // Skip this anchor on error
+			continue // Skip this anchor on error.
 		}
 
 		// Update co-visitation scores.
 		for _, neighbor := range neighbors {
 			if _, ok := candSet[neighbor.ItemID]; !ok {
-				continue // Not in candidate set
+				continue // Not in candidate set.
 			}
 			// Set score if higher than current score.
 			if neighbor.Score > data.CoocScores[neighbor.ItemID] {
@@ -358,24 +369,24 @@ func (e *Engine) gatherEmbeddingSignals(
 	candSet map[string]struct{},
 ) error {
 	for _, anchor := range anchors {
-		// Gather embedding neighbors
+		// Gather embedding neighbors.
 		neighbors, err := e.store.SimilarByEmbeddingTopK(
 			ctx,
 			req.OrgID,
 			req.Namespace,
 			anchor,
-			MAX_EMB_NEIGHBORS,
+			maxEmbNeighbors,
 		)
 		if err != nil {
-			continue // Skip this anchor on error
+			continue // Skip this anchor on error.
 		}
 
 		// Update embedding scores.
 		for _, neighbor := range neighbors {
 			if _, ok := candSet[neighbor.ItemID]; !ok {
-				continue // Not in candidate set
+				continue // Not in candidate set.
 			}
-			// Set score if higher than current score.
+			// Max aggregate: set score if higher than current score.
 			if neighbor.Score > data.EmbScores[neighbor.ItemID] {
 				data.EmbScores[neighbor.ItemID] = neighbor.Score
 				data.UsedEmb[neighbor.ItemID] = true
@@ -390,30 +401,43 @@ func (e *Engine) gatherEmbeddingSignals(
 func (e *Engine) applyBlendedScoring(
 	data *CandidateData, weights BlendWeights,
 ) {
-	// Find max scores for normalization
+	maxPop, maxCooc, maxEmb := e.findMaxEmbeddingScores(data)
+	e.applyBlendedScoringWithWeights(data, weights, maxPop, maxCooc, maxEmb)
+}
+
+// findMaxEmbeddingScores finds the max scores for normalization.
+func (e *Engine) findMaxEmbeddingScores(
+	data *CandidateData,
+) (float64, float64, float64) {
 	maxPop := 0.0
 	maxCooc := 0.0
 	maxEmb := 0.0
-
 	for _, candidate := range data.Candidates {
 		if candidate.Score > maxPop {
 			maxPop = candidate.Score
 		}
 	}
-
 	for _, score := range data.CoocScores {
 		if score > maxCooc {
 			maxCooc = score
 		}
 	}
-
 	for _, score := range data.EmbScores {
 		if score > maxEmb {
 			maxEmb = score
 		}
 	}
+	return maxPop, maxCooc, maxEmb
+}
 
-	// Apply blended scoring
+// applyBlendedScoringWithWeights applies blended scoring with weights.
+func (e *Engine) applyBlendedScoringWithWeights(
+	data *CandidateData,
+	weights BlendWeights,
+	maxPop float64,
+	maxCooc float64,
+	maxEmb float64,
+) {
 	for i := range data.Candidates {
 		id := data.Candidates[i].ItemID
 
@@ -433,7 +457,8 @@ func (e *Engine) applyBlendedScoring(
 		}
 
 		blended := weights.Pop*popNorm +
-			weights.Cooc*coocNorm + weights.ALS*embNorm
+			weights.Cooc*coocNorm +
+			weights.ALS*embNorm
 
 		data.Candidates[i].Score = blended
 	}
@@ -448,6 +473,8 @@ func (e *Engine) applyPersonalizationBoost(
 		return
 	}
 
+	// Build the user tag profile. Profile is a map of tag:weight where weights
+	// sum to 1.
 	profile, err := e.store.BuildUserTagProfile(
 		ctx,
 		req.OrgID,
@@ -461,9 +488,11 @@ func (e *Engine) applyPersonalizationBoost(
 	}
 
 	for i := range data.Candidates {
-		id := data.Candidates[i].ItemID
-		tags := data.Tags[id]
+		itemId := data.Candidates[i].ItemID
+		tags := data.Tags[itemId]
 
+		// For every candidate tag get the matching tag weight from the profile.
+		// Add the weight to the overlap if it exists.
 		overlap := 0.0
 		for _, tag := range tags.Tags {
 			if weight, ok := profile[tag]; ok {
@@ -473,7 +502,7 @@ func (e *Engine) applyPersonalizationBoost(
 
 		if overlap > 0 {
 			data.Candidates[i].Score *= (1.0 + e.config.ProfileBoost*overlap)
-			data.Boosted[id] = true
+			data.Boosted[itemId] = true
 		}
 	}
 }
@@ -481,9 +510,9 @@ func (e *Engine) applyPersonalizationBoost(
 // getModelVersion determines the model version based on weights.
 func (e *Engine) getModelVersion(weights BlendWeights) string {
 	if weights.Cooc == 0 && weights.ALS == 0 {
-		return "popularity_v1"
+		return modelVersionPopularity
 	}
-	return "blend_v1"
+	return modelVersionBlend
 }
 
 // shouldUseMMR returns true if MMR should be applied.
@@ -494,20 +523,6 @@ func (e *Engine) shouldUseMMR() bool {
 // shouldUseCaps returns true if caps should be applied.
 func (e *Engine) shouldUseCaps() bool {
 	return e.config.BrandCap > 0 || e.config.CategoryCap > 0
-}
-
-// applyMMRAndCaps applies MMR re-ranking and caps.
-func (e *Engine) applyMMRAndCaps(
-	data *CandidateData, k int,
-) []types.ScoredItem {
-	return MMRReRank(
-		data.Candidates,
-		data.Tags,
-		k,
-		e.config.MMRLambda,
-		e.config.BrandCap,
-		e.config.CategoryCap,
-	)
 }
 
 // buildResponse builds the final response.
@@ -578,7 +593,7 @@ func (e *Engine) buildReasons(
 	return deduplicateReasons(reasons)
 }
 
-// Utility functions.
+// maxInt returns the maximum of two integers.
 func maxInt(a, b int) int {
 	if a > b {
 		return a
@@ -586,6 +601,7 @@ func maxInt(a, b int) int {
 	return b
 }
 
+// minInt returns the minimum of two integers.
 func minInt(a, b int) int {
 	if a < b {
 		return a

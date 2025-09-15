@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"recsys/internal/algorithm"
-	"recsys/internal/bandit"
 	"recsys/internal/http/common"
 	handlerstypes "recsys/internal/http/types"
 	"recsys/internal/types"
@@ -271,7 +270,7 @@ func (h *Handler) getAlgorithmConfig(
 			config.PopularityFanout = *overrides.PopularityFanout
 		}
 		if overrides.BanditAlgo != nil {
-			algo, err := bandit.ParseAlgorithm(*overrides.BanditAlgo)
+			algo, err := types.ParseAlgorithm(*overrides.BanditAlgo)
 			if err != nil {
 				return config, errors.New("invalid bandit algorithm: " + *overrides.BanditAlgo)
 			}
