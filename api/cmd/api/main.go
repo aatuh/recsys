@@ -4,9 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"os/signal"
 	"strings"
 	"syscall"
@@ -244,7 +244,7 @@ func configureSwagger(cfg ServerConfig) {
 // generateSwaggerWithServers reads the static swagger.json and adds the servers section dynamically
 func generateSwaggerWithServers(cfg ServerConfig) ([]byte, error) {
 	// Read the static swagger.json file
-	swaggerData, err := ioutil.ReadFile("swagger/swagger.json")
+	swaggerData, err := os.ReadFile("swagger/swagger.json")
 	if err != nil {
 		return nil, err
 	}
@@ -254,6 +254,13 @@ func generateSwaggerWithServers(cfg ServerConfig) ([]byte, error) {
 	if err := json.Unmarshal(swaggerData, &swaggerDoc); err != nil {
 		return nil, err
 	}
+
+	// Convert to OpenAPI 3.0+ format
+	swaggerDoc["openapi"] = "3.0.0"
+	delete(swaggerDoc, "swagger")  // Remove Swagger 2.0 version
+	delete(swaggerDoc, "host")     // Remove host field (not used in OpenAPI 3.0+)
+	delete(swaggerDoc, "basePath") // Remove basePath (not used in OpenAPI 3.0+)
+	delete(swaggerDoc, "schemes")  // Remove schemes (not used in OpenAPI 3.0+)
 
 	// Add the servers section
 	if len(cfg.SwaggerSchemes) > 0 {
@@ -273,7 +280,7 @@ func generateSwaggerWithServers(cfg ServerConfig) ([]byte, error) {
 // generateSwaggerYAMLWithServers reads the static swagger.yaml and adds the servers section dynamically
 func generateSwaggerYAMLWithServers(cfg ServerConfig) ([]byte, error) {
 	// Read the static swagger.yaml file
-	swaggerData, err := ioutil.ReadFile("swagger/swagger.yaml")
+	swaggerData, err := os.ReadFile("swagger/swagger.yaml")
 	if err != nil {
 		return nil, err
 	}
@@ -283,6 +290,13 @@ func generateSwaggerYAMLWithServers(cfg ServerConfig) ([]byte, error) {
 	if err := yaml.Unmarshal(swaggerData, &swaggerDoc); err != nil {
 		return nil, err
 	}
+
+	// Convert to OpenAPI 3.0+ format
+	swaggerDoc["openapi"] = "3.0.0"
+	delete(swaggerDoc, "swagger")  // Remove Swagger 2.0 version
+	delete(swaggerDoc, "host")     // Remove host field (not used in OpenAPI 3.0+)
+	delete(swaggerDoc, "basePath") // Remove basePath (not used in OpenAPI 3.0+)
+	delete(swaggerDoc, "schemes")  // Remove schemes (not used in OpenAPI 3.0+)
 
 	// Add the servers section
 	if len(cfg.SwaggerSchemes) > 0 {
