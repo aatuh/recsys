@@ -6,7 +6,8 @@ export type ViewType =
   | "bandit-playground"
   | "user-session"
   | "data-management"
-  | "documentation";
+  | "documentation"
+  | "privacy-policy";
 
 interface NavigationProps {
   activeView: ViewType;
@@ -185,6 +186,25 @@ export function Navigation({
             title="Middle-click to open in new tab"
           >
             Documentation
+          </Button>
+          <Button
+            type="button"
+            onClick={() => onViewChange("privacy-policy")}
+            onMouseDown={(e) => handleMouseDown("privacy-policy", e)}
+            style={{
+              padding: "8px 16px",
+              fontSize: 14,
+              backgroundColor:
+                activeView === "privacy-policy" ? "#1976d2" : "#fff",
+              color: activeView === "privacy-policy" ? "#fff" : "#666",
+              border: "1px solid #ddd",
+              borderRadius: 6,
+              cursor: "pointer",
+              fontWeight: activeView === "privacy-policy" ? 600 : 400,
+            }}
+            title="Middle-click to open in new tab"
+          >
+            Privacy Policy
           </Button>
         </div>
       </div>

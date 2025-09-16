@@ -28,3 +28,4 @@ export * from "./DecisionSection";
 export * from "./OneShotRecommendationsSection";
 export * from "./RewardFeedbackSection";
 export * from "./BanditDashboards";
+export * from "./PrivacyPolicyView";

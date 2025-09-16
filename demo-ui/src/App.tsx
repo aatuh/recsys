@@ -8,6 +8,7 @@ import {
   UserSessionView,
   DataManagementView,
   DocumentationView,
+  PrivacyPolicyView,
 } from "./components";
 import { ViewStateProvider } from "./contexts/ViewStateContext";
 import type { ViewType } from "./components/Navigation";
@@ -58,6 +59,7 @@ export default function App() {
         "user-session",
         "data-management",
         "documentation",
+        "privacy-policy",
       ].includes(viewParam)
     ) {
       setActiveView(viewParam);
@@ -156,6 +158,8 @@ export default function App() {
         )}
 
         {activeView === "documentation" && <DocumentationView />}
+
+        {activeView === "privacy-policy" && <PrivacyPolicyView />}
       </div>
     </ViewStateProvider>
   );
