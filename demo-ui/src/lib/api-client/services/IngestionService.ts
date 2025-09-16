@@ -2,27 +2,27 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { types_Ack } from '../models/types_Ack';
-import type { types_EventsBatchRequest } from '../models/types_EventsBatchRequest';
-import type { types_ItemsUpsertRequest } from '../models/types_ItemsUpsertRequest';
-import type { types_UsersUpsertRequest } from '../models/types_UsersUpsertRequest';
+import type { definitions_types_EventsBatchRequest } from '../models/definitions_types_EventsBatchRequest';
+import type { definitions_types_ItemsUpsertRequest } from '../models/definitions_types_ItemsUpsertRequest';
+import type { definitions_types_UsersUpsertRequest } from '../models/definitions_types_UsersUpsertRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class IngestionService {
     /**
      * Ingest events (batch)
-     * @param payload Events batch
-     * @returns types_Ack Accepted
+     * @param requestBody Events batch
+     * @returns any Accepted
      * @throws ApiError
      */
     public static batchEvents(
-        payload: types_EventsBatchRequest,
-    ): CancelablePromise<types_Ack> {
+        requestBody: definitions_types_EventsBatchRequest,
+    ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/v1/events:batch',
-            body: payload,
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `Bad Request`,
             },
@@ -31,17 +31,18 @@ export class IngestionService {
     /**
      * Upsert items (batch)
      * Create or update items by opaque IDs.
-     * @param payload Items upsert
-     * @returns types_Ack Accepted
+     * @param requestBody Items upsert
+     * @returns any Accepted
      * @throws ApiError
      */
     public static upsertItems(
-        payload: types_ItemsUpsertRequest,
-    ): CancelablePromise<types_Ack> {
+        requestBody: definitions_types_ItemsUpsertRequest,
+    ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/v1/items:upsert',
-            body: payload,
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `Bad Request`,
             },
@@ -49,17 +50,18 @@ export class IngestionService {
     }
     /**
      * Upsert users (batch)
-     * @param payload Users upsert
-     * @returns types_Ack Accepted
+     * @param requestBody Users upsert
+     * @returns any Accepted
      * @throws ApiError
      */
     public static upsertUsers(
-        payload: types_UsersUpsertRequest,
-    ): CancelablePromise<types_Ack> {
+        requestBody: definitions_types_UsersUpsertRequest,
+    ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/v1/users:upsert',
-            body: payload,
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `Bad Request`,
             },

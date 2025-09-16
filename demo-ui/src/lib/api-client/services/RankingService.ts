@@ -2,28 +2,26 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { internal_http_types_ScoredItem } from '../models/internal_http_types_ScoredItem';
-import type { types_RecommendRequest } from '../models/types_RecommendRequest';
-import type { types_RecommendResponse } from '../models/types_RecommendResponse';
-import type { types_RecommendWithBanditRequest } from '../models/types_RecommendWithBanditRequest';
-import type { types_RecommendWithBanditResponse } from '../models/types_RecommendWithBanditResponse';
+import type { definitions_types_RecommendRequest } from '../models/definitions_types_RecommendRequest';
+import type { definitions_types_RecommendWithBanditRequest } from '../models/definitions_types_RecommendWithBanditRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class RankingService {
     /**
      * Recommend with bandit-selected policy
-     * @param payload Request
-     * @returns types_RecommendWithBanditResponse OK
+     * @param requestBody Request
+     * @returns any OK
      * @throws ApiError
      */
     public static postV1BanditRecommendations(
-        payload: types_RecommendWithBanditRequest,
-    ): CancelablePromise<types_RecommendWithBanditResponse> {
+        requestBody: definitions_types_RecommendWithBanditRequest,
+    ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/v1/bandit/recommendations',
-            body: payload,
+            body: requestBody,
+            mediaType: 'application/json',
         });
     }
     /**
@@ -31,14 +29,14 @@ export class RankingService {
      * @param itemId Item ID
      * @param namespace Namespace
      * @param k Top-K
-     * @returns internal_http_types_ScoredItem OK
+     * @returns any OK
      * @throws ApiError
      */
     public static getV1ItemsSimilar(
-        itemId: string,
-        namespace: string = 'default',
-        k: number = 20,
-    ): CancelablePromise<Array<internal_http_types_ScoredItem>> {
+        itemId: any,
+        namespace?: any,
+        k?: any,
+    ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/v1/items/{item_id}/similar',
@@ -56,17 +54,18 @@ export class RankingService {
     }
     /**
      * Get recommendations for a user
-     * @param payload Recommend request
-     * @returns types_RecommendResponse OK
+     * @param requestBody Recommend request
+     * @returns any OK
      * @throws ApiError
      */
     public static postV1Recommendations(
-        payload: types_RecommendRequest,
-    ): CancelablePromise<types_RecommendResponse> {
+        requestBody: definitions_types_RecommendRequest,
+    ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/v1/recommendations',
-            body: payload,
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `Bad Request`,
             },

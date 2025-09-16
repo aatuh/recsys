@@ -2,9 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { types_DeleteRequest } from '../models/types_DeleteRequest';
-import type { types_DeleteResponse } from '../models/types_DeleteResponse';
-import type { types_ListResponse } from '../models/types_ListResponse';
+import type { definitions_types_DeleteRequest } from '../models/definitions_types_DeleteRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -20,19 +18,19 @@ export class DataManagementService {
      * @param eventType Filter by event type
      * @param createdAfter Filter by creation date (ISO8601)
      * @param createdBefore Filter by creation date (ISO8601)
-     * @returns types_ListResponse OK
+     * @returns any OK
      * @throws ApiError
      */
     public static listEvents(
-        namespace: string,
-        limit?: number,
-        offset?: number,
-        userId?: string,
-        itemId?: string,
-        eventType?: number,
-        createdAfter?: string,
-        createdBefore?: string,
-    ): CancelablePromise<types_ListResponse> {
+        namespace: any,
+        limit?: any,
+        offset?: any,
+        userId?: any,
+        itemId?: any,
+        eventType?: any,
+        createdAfter?: any,
+        createdBefore?: any,
+    ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/v1/events',
@@ -54,17 +52,18 @@ export class DataManagementService {
     /**
      * Delete events with optional filtering
      * Delete events based on filters. If no filters provided, deletes all events in namespace.
-     * @param payload Delete request
-     * @returns types_DeleteResponse OK
+     * @param requestBody Delete request
+     * @returns any OK
      * @throws ApiError
      */
     public static deleteEvents(
-        payload: types_DeleteRequest,
-    ): CancelablePromise<types_DeleteResponse> {
+        requestBody: definitions_types_DeleteRequest,
+    ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/v1/events:delete',
-            body: payload,
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `Bad Request`,
             },
@@ -79,17 +78,17 @@ export class DataManagementService {
      * @param itemId Filter by item ID
      * @param createdAfter Filter by creation date (ISO8601)
      * @param createdBefore Filter by creation date (ISO8601)
-     * @returns types_ListResponse OK
+     * @returns any OK
      * @throws ApiError
      */
     public static listItems(
-        namespace: string,
-        limit?: number,
-        offset?: number,
-        itemId?: string,
-        createdAfter?: string,
-        createdBefore?: string,
-    ): CancelablePromise<types_ListResponse> {
+        namespace: any,
+        limit?: any,
+        offset?: any,
+        itemId?: any,
+        createdAfter?: any,
+        createdBefore?: any,
+    ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/v1/items',
@@ -109,17 +108,18 @@ export class DataManagementService {
     /**
      * Delete items with optional filtering
      * Delete items based on filters. If no filters provided, deletes all items in namespace.
-     * @param payload Delete request
-     * @returns types_DeleteResponse OK
+     * @param requestBody Delete request
+     * @returns any OK
      * @throws ApiError
      */
     public static deleteItems(
-        payload: types_DeleteRequest,
-    ): CancelablePromise<types_DeleteResponse> {
+        requestBody: definitions_types_DeleteRequest,
+    ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/v1/items:delete',
-            body: payload,
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `Bad Request`,
             },
@@ -134,17 +134,17 @@ export class DataManagementService {
      * @param userId Filter by user ID
      * @param createdAfter Filter by creation date (ISO8601)
      * @param createdBefore Filter by creation date (ISO8601)
-     * @returns types_ListResponse OK
+     * @returns any OK
      * @throws ApiError
      */
     public static listUsers(
-        namespace: string,
-        limit?: number,
-        offset?: number,
-        userId?: string,
-        createdAfter?: string,
-        createdBefore?: string,
-    ): CancelablePromise<types_ListResponse> {
+        namespace: any,
+        limit?: any,
+        offset?: any,
+        userId?: any,
+        createdAfter?: any,
+        createdBefore?: any,
+    ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/v1/users',
@@ -164,17 +164,18 @@ export class DataManagementService {
     /**
      * Delete users with optional filtering
      * Delete users based on filters. If no filters provided, deletes all users in namespace.
-     * @param payload Delete request
-     * @returns types_DeleteResponse OK
+     * @param requestBody Delete request
+     * @returns any OK
      * @throws ApiError
      */
     public static deleteUsers(
-        payload: types_DeleteRequest,
-    ): CancelablePromise<types_DeleteResponse> {
+        requestBody: definitions_types_DeleteRequest,
+    ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/v1/users:delete',
-            body: payload,
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `Bad Request`,
             },
