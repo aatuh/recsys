@@ -60,7 +60,7 @@ export function DocumentationSection({ className }: DocumentationSectionProps) {
 
   const renderMarkdown = (content: string) => {
     // Enhanced markdown rendering - convert markdown to HTML
-    let html = content
+    const html = content
       // Code blocks first (to avoid conflicts with other patterns)
       .replace(
         /```([\s\S]*?)```/g,

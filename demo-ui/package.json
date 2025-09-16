@@ -10,19 +10,28 @@
     "preview": "vite preview --host 0.0.0.0 --port 3000",
     "codegen:api": "openapi --input http://localhost:8000/swagger/swagger.json --output src/lib/api-client --client fetch",
     "typecheck": "tsc --noEmit",
-    "sync:readme": "node scripts/sync-readme.js"
+    "sync:readme": "node scripts/sync-readme.js",
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix"
   },
   "dependencies": {
     "@xenova/transformers": "^2.17.2",
     "axios": "^1.11.0",
+    "eslint": "^9.35.0",
     "form-data": "^4.0.4",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.35.0",
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.9",
+    "@typescript-eslint/eslint-plugin": "^8.15.0",
+    "@typescript-eslint/parser": "^8.15.0",
     "@vitejs/plugin-react": "^5.0.2",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.14",
     "openapi-typescript-codegen": "^0.29.0",
     "typescript": "^5.9.2",
     "vite": "^7.1.5"

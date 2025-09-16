@@ -553,7 +553,7 @@ export function UserSessionSimulator({
   const exportUserJourney = useCallback(() => {
     const userId = userSession.selectedUserId || firstUser;
     const journey = {
-      userId: userId,
+      userId,
       events: userSession.userEvents,
       recommendationHistory: userSession.recommendationHistory,
       timestamp: new Date().toISOString(),

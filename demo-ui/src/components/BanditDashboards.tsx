@@ -9,7 +9,7 @@ function Bar({ value, max }: { value: number; max: number }) {
     <div style={{ background: "#eee", borderRadius: 4, height: 8 }}>
       <div
         style={{
-          width: pct + "%",
+          width: `${pct  }%`,
           height: 8,
           background: "#4caf50",
           borderRadius: 4,

@@ -56,7 +56,7 @@ export function DocumentationView() {
 
   const renderMarkdown = (content: string) => {
     // Enhanced markdown rendering - convert markdown to HTML
-    let html = content
+    const html = content
       // Horizontal rules (---) - must be processed first
       .replace(
         /^---$/gm,

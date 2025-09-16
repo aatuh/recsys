@@ -9,7 +9,13 @@ import {
   ResultsTable,
 } from "./UIComponents";
 import { similar } from "../services/apiService";
-import type { internal_http_types_ScoredItem } from "../lib/api-client";
+
+// Define ScoredItem type locally since it's not exported from api-client
+interface internal_http_types_ScoredItem {
+  item_id: string;
+  score: number;
+  reasons?: string[];
+}
 
 interface SimilarItemsSectionProps {
   simItemId: string;

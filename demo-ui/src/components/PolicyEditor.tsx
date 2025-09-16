@@ -1,6 +1,25 @@
 import React, { useState } from "react";
 import { Section, Row, Label, Button } from "./UIComponents";
-import type { types_BanditPolicy } from "../lib/api-client";
+
+// Define BanditPolicy type locally since it's not exported from api-client
+interface types_BanditPolicy {
+  policy_id?: string;
+  name: string;
+  notes?: string;
+  active: boolean;
+  blend_alpha?: number;
+  blend_beta?: number;
+  blend_gamma?: number;
+  mmr_lambda?: number;
+  brand_cap?: number;
+  category_cap?: number;
+  profile_boost?: number;
+  rule_exclude_purchased?: boolean;
+  half_life_days?: number;
+  co_vis_window_days?: number;
+  popularity_fanout?: number;
+  [key: string]: any; // Allow additional properties
+}
 
 interface PolicyEditorProps {
   policy: types_BanditPolicy;

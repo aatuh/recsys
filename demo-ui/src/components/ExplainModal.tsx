@@ -347,7 +347,7 @@ export function ExplainModal({
                 {sortedReasons.map((r, i) => (
                   <li key={`explain-${i}-${r}`}>
                     <strong>{toTitleWords(r)}</strong>:{" "}
-                    {REASON_HELP[r] || "System hint: " + toTitleWords(r)}
+                    {REASON_HELP[r] || `System hint: ${  toTitleWords(r)}`}
                   </li>
                 ))}
               </ul>
