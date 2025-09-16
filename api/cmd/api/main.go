@@ -241,6 +241,73 @@ func configureSwagger(cfg ServerConfig) {
 	swagger.SwaggerInfo.Schemes = cfg.SwaggerSchemes
 }
 
+// convertParametersToOpenAPI3 converts Swagger 2.0 parameters to OpenAPI 3.0+ format
+func convertParametersToOpenAPI3(swaggerDoc map[string]interface{}) {
+	paths, ok := swaggerDoc["paths"].(map[string]interface{})
+	if !ok {
+		return
+	}
+
+	for _, pathItem := range paths {
+		pathItemMap, ok := pathItem.(map[string]interface{})
+		if !ok {
+			continue
+		}
+
+		for _, operation := range pathItemMap {
+			operationMap, ok := operation.(map[string]interface{})
+			if !ok {
+				continue
+			}
+
+			parameters, ok := operationMap["parameters"].([]interface{})
+			if !ok {
+				continue
+			}
+
+			var newParameters []interface{}
+			var requestBody map[string]interface{}
+
+			for _, param := range parameters {
+				paramMap, ok := param.(map[string]interface{})
+				if !ok {
+					continue
+				}
+
+				// Check if this is a body parameter (Swagger 2.0)
+				if paramIn, ok := paramMap["in"].(string); ok && paramIn == "body" {
+					// Convert body parameter to requestBody (OpenAPI 3.0+)
+					requestBody = map[string]interface{}{
+						"required": paramMap["required"],
+						"content": map[string]interface{}{
+							"application/json": map[string]interface{}{
+								"schema": paramMap["schema"],
+							},
+						},
+					}
+					if description, ok := paramMap["description"].(string); ok {
+						requestBody["description"] = description
+					}
+				} else {
+					// Keep non-body parameters as they are
+					newParameters = append(newParameters, param)
+				}
+			}
+
+			// Update the operation
+			if len(newParameters) > 0 {
+				operationMap["parameters"] = newParameters
+			} else {
+				delete(operationMap, "parameters")
+			}
+
+			if requestBody != nil {
+				operationMap["requestBody"] = requestBody
+			}
+		}
+	}
+}
+
 // generateSwaggerWithServers reads the static swagger.json and adds the servers section dynamically
 func generateSwaggerWithServers(cfg ServerConfig) ([]byte, error) {
 	// Read the static swagger.json file
@@ -255,12 +322,15 @@ func generateSwaggerWithServers(cfg ServerConfig) ([]byte, error) {
 		return nil, err
 	}
 
-	// Convert to OpenAPI 3.0+ format
-	swaggerDoc["openapi"] = "3.0.0"
+	// Convert to OpenAPI 3.1+ format
+	swaggerDoc["openapi"] = "3.1.0"
 	delete(swaggerDoc, "swagger")  // Remove Swagger 2.0 version
 	delete(swaggerDoc, "host")     // Remove host field (not used in OpenAPI 3.0+)
 	delete(swaggerDoc, "basePath") // Remove basePath (not used in OpenAPI 3.0+)
 	delete(swaggerDoc, "schemes")  // Remove schemes (not used in OpenAPI 3.0+)
+
+	// Convert Swagger 2.0 parameters to OpenAPI 3.0+ format
+	convertParametersToOpenAPI3(swaggerDoc)
 
 	// Add the servers section
 	if len(cfg.SwaggerSchemes) > 0 {
@@ -291,12 +361,15 @@ func generateSwaggerYAMLWithServers(cfg ServerConfig) ([]byte, error) {
 		return nil, err
 	}
 
-	// Convert to OpenAPI 3.0+ format
-	swaggerDoc["openapi"] = "3.0.0"
+	// Convert to OpenAPI 3.1+ format
+	swaggerDoc["openapi"] = "3.1.0"
 	delete(swaggerDoc, "swagger")  // Remove Swagger 2.0 version
 	delete(swaggerDoc, "host")     // Remove host field (not used in OpenAPI 3.0+)
 	delete(swaggerDoc, "basePath") // Remove basePath (not used in OpenAPI 3.0+)
 	delete(swaggerDoc, "schemes")  // Remove schemes (not used in OpenAPI 3.0+)
+
+	// Convert Swagger 2.0 parameters to OpenAPI 3.0+ format
+	convertParametersToOpenAPI3(swaggerDoc)
 
 	// Add the servers section
 	if len(cfg.SwaggerSchemes) > 0 {
