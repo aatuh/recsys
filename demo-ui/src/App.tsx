@@ -38,6 +38,11 @@ const SWAGGER_UI_URL =
   (import.meta as any).env?.VITE_SWAGGER_UI_URL?.toString() ||
   "http://localhost:8000";
 
+// Configure Custom ChatGPT URL
+const CUSTOM_CHATGPT_URL = (
+  import.meta as any
+).env?.VITE_CUSTOM_CHATGPT_URL?.toString();
+
 /* --------------- App component --------------- */
 
 export default function App() {
@@ -112,6 +117,7 @@ export default function App() {
           onViewChange={setActiveView}
           apiBase={API_BASE}
           swaggerUrl={SWAGGER_UI_URL}
+          customChatGptUrl={CUSTOM_CHATGPT_URL}
           namespace={namespace}
         />
 

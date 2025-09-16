@@ -14,6 +14,7 @@ interface NavigationProps {
   onViewChange: (view: ViewType) => void;
   apiBase: string;
   swaggerUrl: string;
+  customChatGptUrl?: string;
   namespace: string;
 }
 
@@ -22,6 +23,7 @@ export function Navigation({
   onViewChange,
   apiBase,
   swaggerUrl,
+  customChatGptUrl,
   namespace,
 }: NavigationProps) {
   // Helper function to generate URL for a view
@@ -208,30 +210,62 @@ export function Navigation({
           </Button>
         </div>
       </div>
-      <Button
-        type="button"
-        style={{
-          padding: "6px 12px",
-          fontSize: 12,
-          backgroundColor: "#f5f5f5",
-          color: "#666",
-          border: "1px solid #666",
-          borderRadius: 4,
-        }}
-        onClick={() => {
-          window.open(`${swaggerUrl}/docs/`, "_blank", "noopener,noreferrer");
-        }}
-        onMouseDown={(e) => {
-          if (e.button === 1) {
-            // Middle mouse button
-            e.preventDefault();
+      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        {customChatGptUrl && (
+          <Button
+            type="button"
+            style={{
+              padding: "6px 12px",
+              fontSize: 12,
+              backgroundColor: "#f5f5f5",
+              color: "#666",
+              border: "1px solid #666",
+              borderRadius: 4,
+            }}
+            onClick={() => {
+              window.open(customChatGptUrl, "_blank", "noopener,noreferrer");
+            }}
+            onMouseDown={(e) => {
+              if (e.button === 1) {
+                // Middle mouse button
+                e.preventDefault();
+                window.open(customChatGptUrl, "_blank", "noopener,noreferrer");
+              }
+            }}
+            title="Middle-click to open in new tab"
+          >
+            Ask ChatGPT
+          </Button>
+        )}
+        <Button
+          type="button"
+          style={{
+            padding: "6px 12px",
+            fontSize: 12,
+            backgroundColor: "#f5f5f5",
+            color: "#666",
+            border: "1px solid #666",
+            borderRadius: 4,
+          }}
+          onClick={() => {
             window.open(`${swaggerUrl}/docs/`, "_blank", "noopener,noreferrer");
-          }
-        }}
-        title="Middle-click to open in new tab"
-      >
-        Explore API
-      </Button>
+          }}
+          onMouseDown={(e) => {
+            if (e.button === 1) {
+              // Middle mouse button
+              e.preventDefault();
+              window.open(
+                `${swaggerUrl}/docs/`,
+                "_blank",
+                "noopener,noreferrer"
+              );
+            }
+          }}
+          title="Middle-click to open in new tab"
+        >
+          Explore API
+        </Button>
+      </div>
     </div>
   );
 }
