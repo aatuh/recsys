@@ -186,55 +186,91 @@ export function DocumentationView() {
           <h2 style={{ margin: 0, fontSize: 20, fontWeight: 600 }}>
             Documentation
           </h2>
-          <div style={{ display: "flex", gap: 8 }}>
-            <Button
-              type="button"
-              onClick={() => setActiveTab("root")}
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <div style={{ display: "flex", gap: 4 }}>
+              <Button
+                type="button"
+                onClick={() => setActiveTab("root")}
+                style={{
+                  padding: "6px 16px",
+                  fontSize: 14,
+                  backgroundColor: activeTab === "root" ? "#1976d2" : "#fff",
+                  color: activeTab === "root" ? "#fff" : "#666",
+                  border: "1px solid #ddd",
+                  borderRadius: 4,
+                  cursor: "pointer",
+                  fontWeight: activeTab === "root" ? 600 : 400,
+                }}
+              >
+                Overview
+              </Button>
+              <Button
+                type="button"
+                onClick={() => setActiveTab("demo-ui")}
+                style={{
+                  padding: "6px 16px",
+                  fontSize: 14,
+                  backgroundColor: activeTab === "demo-ui" ? "#1976d2" : "#fff",
+                  color: activeTab === "demo-ui" ? "#fff" : "#666",
+                  border: "1px solid #ddd",
+                  borderRadius: 4,
+                  cursor: "pointer",
+                  fontWeight: activeTab === "demo-ui" ? 600 : 400,
+                }}
+              >
+                Demo UI
+              </Button>
+              <Button
+                type="button"
+                onClick={() => setActiveTab("api")}
+                style={{
+                  padding: "6px 16px",
+                  fontSize: 14,
+                  backgroundColor: activeTab === "api" ? "#1976d2" : "#fff",
+                  color: activeTab === "api" ? "#fff" : "#666",
+                  border: "1px solid #ddd",
+                  borderRadius: 4,
+                  cursor: "pointer",
+                  fontWeight: activeTab === "api" ? 600 : 400,
+                }}
+              >
+                API
+              </Button>
+            </div>
+            <div
               style={{
-                padding: "6px 16px",
-                fontSize: 14,
-                backgroundColor: activeTab === "root" ? "#1976d2" : "#fff",
-                color: activeTab === "root" ? "#fff" : "#666",
-                border: "1px solid #ddd",
-                borderRadius: 4,
-                cursor: "pointer",
-                fontWeight: activeTab === "root" ? 600 : 400,
+                marginLeft: 12,
+                paddingLeft: 12,
+                borderLeft: "1px solid #ddd",
               }}
             >
-              Overview
-            </Button>
-            <Button
-              type="button"
-              onClick={() => setActiveTab("demo-ui")}
-              style={{
-                padding: "6px 16px",
-                fontSize: 14,
-                backgroundColor: activeTab === "demo-ui" ? "#1976d2" : "#fff",
-                color: activeTab === "demo-ui" ? "#fff" : "#666",
-                border: "1px solid #ddd",
-                borderRadius: 4,
-                cursor: "pointer",
-                fontWeight: activeTab === "demo-ui" ? 600 : 400,
-              }}
-            >
-              Demo UI
-            </Button>
-            <Button
-              type="button"
-              onClick={() => setActiveTab("api")}
-              style={{
-                padding: "6px 16px",
-                fontSize: 14,
-                backgroundColor: activeTab === "api" ? "#1976d2" : "#fff",
-                color: activeTab === "api" ? "#fff" : "#666",
-                border: "1px solid #ddd",
-                borderRadius: 4,
-                cursor: "pointer",
-                fontWeight: activeTab === "api" ? 600 : 400,
-              }}
-            >
-              API
-            </Button>
+              <a
+                href={`/readme-${activeTab}.md`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 4,
+                  padding: "6px 12px",
+                  fontSize: 12,
+                  color: "#1976d2",
+                  textDecoration: "none",
+                  border: "1px solid #1976d2",
+                  borderRadius: 4,
+                  backgroundColor: "#fff",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = "#f5f5f5";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = "#fff";
+                }}
+              >
+                📄 View Raw
+              </a>
+            </div>
           </div>
         </div>
 
