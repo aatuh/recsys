@@ -41,16 +41,21 @@ func (h *Handler) BanditPoliciesUpsert(w http.ResponseWriter, r *http.Request) {
 	rows := make([]internaltypes.PolicyConfig, 0, len(req.Policies))
 	for _, p := range req.Policies {
 		rows = append(rows, internaltypes.PolicyConfig{
-			PolicyID:    p.PolicyID,
-			Name:        p.Name,
-			Active:      p.Active,
-			BlendAlpha:  p.BlendAlpha,
-			BlendBeta:   p.BlendBeta,
-			BlendGamma:  p.BlendGamma,
-			MMRLambda:   p.MMRLambda,
-			BrandCap:    p.BrandCap,
-			CategoryCap: p.CategoryCap,
-			Notes:       p.Notes,
+			PolicyID:             p.PolicyID,
+			Name:                 p.Name,
+			Active:               p.Active,
+			BlendAlpha:           p.BlendAlpha,
+			BlendBeta:            p.BlendBeta,
+			BlendGamma:           p.BlendGamma,
+			MMRLambda:            p.MMRLambda,
+			BrandCap:             p.BrandCap,
+			CategoryCap:          p.CategoryCap,
+			ProfileBoost:         p.ProfileBoost,
+			RuleExcludePurchased: p.RuleExcludePurchased,
+			HalfLifeDays:         p.HalfLifeDays,
+			CoVisWindowDays:      p.CoVisWindowDays,
+			PopularityFanout:     p.PopularityFanout,
+			Notes:                p.Notes,
 		})
 	}
 	if err := h.Store.UpsertBanditPolicies(
@@ -85,16 +90,21 @@ func (h *Handler) BanditPoliciesList(w http.ResponseWriter, r *http.Request) {
 	out := make([]types.BanditPolicy, 0, len(rows))
 	for _, p := range rows {
 		out = append(out, types.BanditPolicy{
-			PolicyID:    p.PolicyID,
-			Name:        p.Name,
-			Active:      p.Active,
-			BlendAlpha:  p.BlendAlpha,
-			BlendBeta:   p.BlendBeta,
-			BlendGamma:  p.BlendGamma,
-			MMRLambda:   p.MMRLambda,
-			BrandCap:    p.BrandCap,
-			CategoryCap: p.CategoryCap,
-			Notes:       p.Notes,
+			PolicyID:             p.PolicyID,
+			Name:                 p.Name,
+			Active:               p.Active,
+			BlendAlpha:           p.BlendAlpha,
+			BlendBeta:            p.BlendBeta,
+			BlendGamma:           p.BlendGamma,
+			MMRLambda:            p.MMRLambda,
+			BrandCap:             p.BrandCap,
+			CategoryCap:          p.CategoryCap,
+			ProfileBoost:         p.ProfileBoost,
+			RuleExcludePurchased: p.RuleExcludePurchased,
+			HalfLifeDays:         p.HalfLifeDays,
+			CoVisWindowDays:      p.CoVisWindowDays,
+			PopularityFanout:     p.PopularityFanout,
+			Notes:                p.Notes,
 		})
 	}
 	_ = json.NewEncoder(w).Encode(out)
@@ -256,6 +266,11 @@ func (h *Handler) RecommendWithBandit(w http.ResponseWriter, r *http.Request) {
 	cfg.MMRLambda = 0
 	cfg.BrandCap = 0
 	cfg.CategoryCap = 0
+	cfg.ProfileBoost = 0
+	cfg.RuleExcludePurchased = false
+	cfg.HalfLifeDays = 0
+	cfg.CoVisWindowDays = 0
+	cfg.PopularityFanout = 0
 
 	// Fetch policy to populate knobs.
 	pl, err := h.Store.ListPoliciesByIDs(
@@ -268,9 +283,13 @@ func (h *Handler) RecommendWithBandit(w http.ResponseWriter, r *http.Request) {
 		cfg.MMRLambda = pl[0].MMRLambda
 		cfg.BrandCap = pl[0].BrandCap
 		cfg.CategoryCap = pl[0].CategoryCap
-	} else {
-		// If not found, fall back to env-based defaults already in cfg.
+		cfg.ProfileBoost = pl[0].ProfileBoost
+		cfg.RuleExcludePurchased = pl[0].RuleExcludePurchased
+		cfg.HalfLifeDays = pl[0].HalfLifeDays
+		cfg.CoVisWindowDays = pl[0].CoVisWindowDays
+		cfg.PopularityFanout = pl[0].PopularityFanout
 	}
+	// If not found, fall back to env-based defaults already in cfg.
 
 	engine := algorithm.NewEngine(cfg, h.Store)
 	algoResp, err := engine.Recommend(r.Context(), algoReq)

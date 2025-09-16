@@ -55,10 +55,16 @@ export function PolicyEditor({
       case "blend_beta":
       case "blend_gamma":
       case "mmr_lambda":
+      case "profile_boost":
+      case "half_life_days":
         return 0.0;
       case "brand_cap":
       case "category_cap":
+      case "co_vis_window_days":
+      case "popularity_fanout":
         return 0;
+      case "rule_exclude_purchased":
+        return false;
       case "notes":
         return "";
       default:
@@ -502,6 +508,255 @@ export function PolicyEditor({
                   <div style={{ fontSize: 11, color: "#666", marginTop: 2 }}>
                     Maximum number of items from the same category (0 = no
                     limit)
+                  </div>
+                </div>
+              </Row>
+            </div>
+          </Label>
+        </div>
+
+        {/* Personalization and Filtering Parameters */}
+        <div style={{ marginBottom: 20 }}>
+          <Label text="Personalization and Filtering Parameters">
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <Row>
+                <div style={{ flex: 1 }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: 4,
+                      fontSize: 12,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Profile Boost
+                  </label>
+                  <div style={{ display: "flex", gap: 4 }}>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      value={formatValue(editedPolicy.profile_boost)}
+                      onChange={(e) =>
+                        handleFieldChange(
+                          "profile_boost",
+                          parseFloat(e.target.value) || 0
+                        )
+                      }
+                      style={{
+                        flex: 1,
+                        padding: "6px 8px",
+                        border: "1px solid #ddd",
+                        borderRadius: 4,
+                        fontSize: 14,
+                      }}
+                      placeholder="0.0"
+                    />
+                    <Button
+                      onClick={() => handleClearField("profile_boost")}
+                      style={{
+                        padding: "6px 8px",
+                        backgroundColor: "#6c757d",
+                        color: "white",
+                        border: "none",
+                        borderRadius: 4,
+                        fontSize: 12,
+                        cursor: "pointer",
+                      }}
+                      title="Clear field"
+                    >
+                      Clear
+                    </Button>
+                  </div>
+                  <div style={{ fontSize: 11, color: "#666", marginTop: 2 }}>
+                    Multiplier for personalization profile boost (≥0.0)
+                  </div>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: 4,
+                      fontSize: 12,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Half Life Days
+                  </label>
+                  <div style={{ display: "flex", gap: 4 }}>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      value={formatValue(editedPolicy.half_life_days)}
+                      onChange={(e) =>
+                        handleFieldChange(
+                          "half_life_days",
+                          parseFloat(e.target.value) || 0
+                        )
+                      }
+                      style={{
+                        flex: 1,
+                        padding: "6px 8px",
+                        border: "1px solid #ddd",
+                        borderRadius: 4,
+                        fontSize: 14,
+                      }}
+                      placeholder="0.0"
+                    />
+                    <Button
+                      onClick={() => handleClearField("half_life_days")}
+                      style={{
+                        padding: "6px 8px",
+                        backgroundColor: "#6c757d",
+                        color: "white",
+                        border: "none",
+                        borderRadius: 4,
+                        fontSize: 12,
+                        cursor: "pointer",
+                      }}
+                      title="Clear field"
+                    >
+                      Clear
+                    </Button>
+                  </div>
+                  <div style={{ fontSize: 11, color: "#666", marginTop: 2 }}>
+                    Popularity half-life in days (≥0.0)
+                  </div>
+                </div>
+              </Row>
+
+              <Row>
+                <div style={{ flex: 1 }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: 4,
+                      fontSize: 12,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Co-vis Window Days
+                  </label>
+                  <div style={{ display: "flex", gap: 4 }}>
+                    <input
+                      type="number"
+                      min="0"
+                      value={formatValue(editedPolicy.co_vis_window_days)}
+                      onChange={(e) =>
+                        handleFieldChange(
+                          "co_vis_window_days",
+                          parseInt(e.target.value) || 0
+                        )
+                      }
+                      style={{
+                        flex: 1,
+                        padding: "6px 8px",
+                        border: "1px solid #ddd",
+                        borderRadius: 4,
+                        fontSize: 14,
+                      }}
+                      placeholder="0"
+                    />
+                    <Button
+                      onClick={() => handleClearField("co_vis_window_days")}
+                      style={{
+                        padding: "6px 8px",
+                        backgroundColor: "#6c757d",
+                        color: "white",
+                        border: "none",
+                        borderRadius: 4,
+                        fontSize: 12,
+                        cursor: "pointer",
+                      }}
+                      title="Clear field"
+                    >
+                      Clear
+                    </Button>
+                  </div>
+                  <div style={{ fontSize: 11, color: "#666", marginTop: 2 }}>
+                    Co-visitation window in days (≥0)
+                  </div>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: 4,
+                      fontSize: 12,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Popularity Fanout
+                  </label>
+                  <div style={{ display: "flex", gap: 4 }}>
+                    <input
+                      type="number"
+                      min="0"
+                      value={formatValue(editedPolicy.popularity_fanout)}
+                      onChange={(e) =>
+                        handleFieldChange(
+                          "popularity_fanout",
+                          parseInt(e.target.value) || 0
+                        )
+                      }
+                      style={{
+                        flex: 1,
+                        padding: "6px 8px",
+                        border: "1px solid #ddd",
+                        borderRadius: 4,
+                        fontSize: 14,
+                      }}
+                      placeholder="0"
+                    />
+                    <Button
+                      onClick={() => handleClearField("popularity_fanout")}
+                      style={{
+                        padding: "6px 8px",
+                        backgroundColor: "#6c757d",
+                        color: "white",
+                        border: "none",
+                        borderRadius: 4,
+                        fontSize: 12,
+                        cursor: "pointer",
+                      }}
+                      title="Clear field"
+                    >
+                      Clear
+                    </Button>
+                  </div>
+                  <div style={{ fontSize: 11, color: "#666", marginTop: 2 }}>
+                    Fanout for popularity candidates (≥0)
+                  </div>
+                </div>
+              </Row>
+
+              <Row>
+                <div style={{ flex: 1 }}>
+                  <label
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      fontSize: 14,
+                      marginTop: 20,
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={editedPolicy.rule_exclude_purchased || false}
+                      onChange={(e) =>
+                        handleFieldChange(
+                          "rule_exclude_purchased",
+                          e.target.checked
+                        )
+                      }
+                      style={{ margin: 0 }}
+                    />
+                    Exclude Purchased Rule
+                  </label>
+                  <div style={{ fontSize: 11, color: "#666", marginTop: 2 }}>
+                    Whether to exclude items the user has already purchased
                   </div>
                 </div>
               </Row>

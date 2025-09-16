@@ -31,9 +31,6 @@ type Config struct {
 
 	// Popularity fanout
 	PopularityFanout int // Fanout for popularity candidates
-
-	// Bandit algorithm
-	BanditAlgo types.Algorithm
 }
 
 // Request represents a recommendation request

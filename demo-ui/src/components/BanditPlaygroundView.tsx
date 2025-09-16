@@ -4,7 +4,14 @@ import { DecisionSection } from "./DecisionSection";
 import { OneShotRecommendationsSection } from "./OneShotRecommendationsSection";
 import { RewardFeedbackSection } from "./RewardFeedbackSection";
 import { BanditDashboards } from "./BanditDashboards";
-import type { types_BanditPolicy } from "../lib/api-client";
+// Define BanditPolicy type locally since it's not exported from api-client
+interface types_BanditPolicy {
+  policy_id?: string;
+  name: string;
+  notes?: string;
+  active: boolean;
+  [key: string]: any; // Allow additional properties
+}
 
 interface BanditPlaygroundViewProps {
   namespace: string;

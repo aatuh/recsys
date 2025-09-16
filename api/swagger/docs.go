@@ -934,6 +934,12 @@ const docTemplate = `{
                 "category_cap": {
                     "type": "integer"
                 },
+                "co_vis_window_days": {
+                    "type": "integer"
+                },
+                "half_life_days": {
+                    "type": "number"
+                },
                 "mmr_lambda": {
                     "type": "number"
                 },
@@ -945,6 +951,15 @@ const docTemplate = `{
                 },
                 "policy_id": {
                     "type": "string"
+                },
+                "popularity_fanout": {
+                    "type": "integer"
+                },
+                "profile_boost": {
+                    "type": "number"
+                },
+                "rule_exclude_purchased": {
+                    "type": "boolean"
                 }
             }
         },

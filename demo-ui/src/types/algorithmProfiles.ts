@@ -28,7 +28,6 @@ export const ALGORITHM_PROFILES: AlgorithmProfile[] = [
       blend_alpha: 1.0,
       blend_beta: 0.0,
       blend_gamma: 0.0,
-      bandit_algo: "thompson",
     },
   },
   {
@@ -51,7 +50,6 @@ export const ALGORITHM_PROFILES: AlgorithmProfile[] = [
       blend_alpha: 1.0,
       blend_beta: 0.0,
       blend_gamma: 0.0,
-      bandit_algo: "thompson",
     },
   },
   {
@@ -74,7 +72,6 @@ export const ALGORITHM_PROFILES: AlgorithmProfile[] = [
       blend_alpha: 0.5,
       blend_beta: 0.5,
       blend_gamma: 0.0,
-      bandit_algo: "thompson",
     },
   },
   {
@@ -97,7 +94,6 @@ export const ALGORITHM_PROFILES: AlgorithmProfile[] = [
       blend_alpha: 0.3,
       blend_beta: 0.2,
       blend_gamma: 0.5,
-      bandit_algo: "thompson",
     },
   },
   {
@@ -120,7 +116,6 @@ export const ALGORITHM_PROFILES: AlgorithmProfile[] = [
       blend_alpha: 0.6,
       blend_beta: 0.2,
       blend_gamma: 0.2,
-      bandit_algo: "thompson",
     },
   },
   {
@@ -142,7 +137,6 @@ export const ALGORITHM_PROFILES: AlgorithmProfile[] = [
       blend_alpha: 0.6,
       blend_beta: 0.25,
       blend_gamma: 0.15,
-      bandit_algo: "thompson",
     },
   },
 ];

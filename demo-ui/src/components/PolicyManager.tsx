@@ -1,8 +1,28 @@
 import { useState, useEffect, useRef } from "react";
 import { Section, Row, Label, Button } from "./UIComponents";
 import { BanditService } from "../lib/api-client";
-import type { types_BanditPolicy } from "../lib/api-client";
 import { PolicyEditor } from "./PolicyEditor";
+import { ALGORITHM_PROFILES } from "../types/algorithmProfiles";
+
+// Define BanditPolicy type locally since it's not exported from api-client
+interface types_BanditPolicy {
+  policy_id?: string;
+  name: string;
+  notes?: string;
+  active: boolean;
+  blend_alpha?: number;
+  blend_beta?: number;
+  blend_gamma?: number;
+  mmr_lambda?: number;
+  brand_cap?: number;
+  category_cap?: number;
+  profile_boost?: number;
+  rule_exclude_purchased?: boolean;
+  half_life_days?: number;
+  co_vis_window_days?: number;
+  popularity_fanout?: number;
+  [key: string]: any; // Allow additional properties
+}
 
 interface PolicyManagerProps {
   namespace: string;
@@ -34,35 +54,75 @@ export function PolicyManager({
   const prevCustomPoliciesRef = useRef<string>("");
   const hasLoadedFromStorageRef = useRef<boolean>(false);
 
+  // Convert algorithm profile to bandit policy
+  const convertProfileToPolicy = (
+    profile: (typeof ALGORITHM_PROFILES)[0]
+  ): types_BanditPolicy => {
+    return {
+      policy_id: `template-${profile.id}`,
+      name: profile.name,
+      active: true,
+      blend_alpha: profile.overrides.blend_alpha || 0.0,
+      blend_beta: profile.overrides.blend_beta || 0.0,
+      blend_gamma: profile.overrides.blend_gamma || 0.0,
+      mmr_lambda: profile.overrides.mmr_lambda || 0.0,
+      brand_cap: profile.overrides.brand_cap || 0,
+      category_cap: profile.overrides.category_cap || 0,
+      profile_boost: profile.overrides.profile_boost || 0.0,
+      rule_exclude_purchased: profile.overrides.rule_exclude_purchased || false,
+      half_life_days: profile.overrides.popularity_halflife_days || 0.0,
+      co_vis_window_days: profile.overrides.covis_window_days || 0,
+      popularity_fanout: profile.overrides.popularity_fanout || 0,
+      notes: profile.description,
+    };
+  };
+
+  // Create predefined policy templates from algorithm profiles
+  const createPredefinedTemplates = (): CustomPolicy[] => {
+    return ALGORITHM_PROFILES.map((profile) => ({
+      id: `predefined-${profile.id}`,
+      name: profile.name,
+      description: profile.description,
+      policy: convertProfileToPolicy(profile),
+    }));
+  };
+
   // Load custom policies from localStorage on mount
   useEffect(() => {
     if (hasLoadedFromStorageRef.current) {
       return; // Only load once
     }
 
+    const predefinedTemplates = createPredefinedTemplates();
+    let userCustomPolicies: CustomPolicy[] = [];
+
     const saved = localStorage.getItem("recsys-custom-bandit-policies");
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        setCustomPolicies(parsed);
-        prevCustomPoliciesRef.current = saved; // Initialize ref with loaded data
+        userCustomPolicies = parsed;
       } catch (e) {
         console.warn("Failed to load custom policies from localStorage:", e);
-        prevCustomPoliciesRef.current = JSON.stringify([]);
       }
-    } else {
-      // Initialize ref with empty array
-      prevCustomPoliciesRef.current = JSON.stringify([]);
     }
+
+    // Merge predefined templates with user-created custom policies
+    const allCustomPolicies = [...predefinedTemplates, ...userCustomPolicies];
+    setCustomPolicies(allCustomPolicies);
+    prevCustomPoliciesRef.current = JSON.stringify(userCustomPolicies); // Only save user-created ones
 
     hasLoadedFromStorageRef.current = true;
   }, []); // Empty dependency array - only run once on mount
 
   // Save custom policies to localStorage whenever they change
   useEffect(() => {
-    const currentPoliciesString = JSON.stringify(customPolicies);
+    // Only save user-created custom policies (filter out predefined ones)
+    const userCustomPolicies = customPolicies.filter(
+      (policy) => !policy.id.startsWith("predefined-")
+    );
+    const currentPoliciesString = JSON.stringify(userCustomPolicies);
 
-    // Only save if the policies have actually changed
+    // Only save if the user-created policies have actually changed
     if (currentPoliciesString !== prevCustomPoliciesRef.current) {
       prevCustomPoliciesRef.current = currentPoliciesString;
       localStorage.setItem(
@@ -160,6 +220,11 @@ export function PolicyManager({
       mmr_lambda: 0.0,
       brand_cap: 0,
       category_cap: 0,
+      profile_boost: 0.0,
+      rule_exclude_purchased: false,
+      half_life_days: 0.0,
+      co_vis_window_days: 0,
+      popularity_fanout: 0,
       notes: "",
     };
     setEditingPolicy(newPolicy);
@@ -234,6 +299,10 @@ export function PolicyManager({
   };
 
   const handleDeleteCustomPolicy = (policyId: string) => {
+    // Don't allow deletion of predefined templates
+    if (policyId.startsWith("predefined-")) {
+      return;
+    }
     setCustomPolicies(customPolicies.filter((p) => p.id !== policyId));
   };
 
@@ -304,8 +373,10 @@ export function PolicyManager({
       <div style={{ marginBottom: 16 }}>
         <p style={{ color: "#666", fontSize: 14, marginBottom: 16 }}>
           Manage all bandit policies (active and inactive) and create custom
-          policy templates. Policies define algorithm parameters like blend
-          weights, MMR lambda, and caps for recommendation optimization.
+          policy templates. Predefined templates are based on algorithm profiles
+          from the recommendations playground. Policies define algorithm
+          parameters like blend weights, MMR lambda, and caps for recommendation
+          optimization.
         </p>
 
         {/* Action Buttons */}
@@ -603,14 +674,20 @@ export function PolicyManager({
                         backgroundColor:
                           highlightedPolicyId === customPolicy.id
                             ? "#28a745"
+                            : customPolicy.id.startsWith("predefined-")
+                            ? "#f8f9fa"
                             : "#e9ecef",
                         color:
                           highlightedPolicyId === customPolicy.id
                             ? "white"
+                            : customPolicy.id.startsWith("predefined-")
+                            ? "#6c757d"
                             : "#333",
                         border:
                           highlightedPolicyId === customPolicy.id
                             ? "2px solid #28a745"
+                            : customPolicy.id.startsWith("predefined-")
+                            ? "2px solid #dee2e6"
                             : "1px solid #ddd",
                         padding: "8px 12px",
                         borderRadius: 4,
@@ -618,7 +695,9 @@ export function PolicyManager({
                         cursor: "pointer",
                         textAlign: "left",
                         minWidth: 250,
-                        paddingRight: 116,
+                        paddingRight: customPolicy.id.startsWith("predefined-")
+                          ? 56
+                          : 116,
                         transition: "all 0.3s ease",
                         transform:
                           highlightedPolicyId === customPolicy.id
@@ -640,6 +719,21 @@ export function PolicyManager({
                         }}
                       >
                         {customPolicy.name}
+                        {customPolicy.id.startsWith("predefined-") && (
+                          <span
+                            style={{
+                              backgroundColor: "rgba(108, 117, 125, 0.9)",
+                              color: "white",
+                              fontSize: 8,
+                              fontWeight: "bold",
+                              padding: "1px 4px",
+                              borderRadius: 2,
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            TEMPLATE
+                          </span>
+                        )}
                         {highlightedPolicyId === customPolicy.id && (
                           <span
                             style={{
@@ -704,28 +798,30 @@ export function PolicyManager({
                     >
                       ✏️
                     </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteCustomPolicy(customPolicy.id);
-                      }}
-                      style={{
-                        position: "absolute",
-                        top: 4,
-                        right: 4,
-                        backgroundColor: "#dc3545",
-                        color: "white",
-                        border: "none",
-                        borderRadius: 2,
-                        padding: "2px 4px",
-                        fontSize: 10,
-                        cursor: "pointer",
-                        zIndex: 10,
-                      }}
-                      title="Delete custom template"
-                    >
-                      🗑️
-                    </button>
+                    {!customPolicy.id.startsWith("predefined-") && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteCustomPolicy(customPolicy.id);
+                        }}
+                        style={{
+                          position: "absolute",
+                          top: 4,
+                          right: 4,
+                          backgroundColor: "#dc3545",
+                          color: "white",
+                          border: "none",
+                          borderRadius: 2,
+                          padding: "2px 4px",
+                          fontSize: 10,
+                          cursor: "pointer",
+                          zIndex: 10,
+                        }}
+                        title="Delete custom template"
+                      >
+                        🗑️
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>
@@ -741,8 +837,9 @@ export function PolicyManager({
                   fontSize: 14,
                 }}
               >
-                No custom policy templates yet. Create one by saving an existing
-                policy as a template using the ⭐ button.
+                No custom policy templates yet. Use the predefined templates
+                above or create one by saving an existing policy as a template
+                using the ⭐ button.
               </div>
             )}
           </Label>

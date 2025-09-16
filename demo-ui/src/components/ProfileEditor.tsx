@@ -82,11 +82,6 @@ const OVERRIDE_FIELDS = [
     label: "Blend Gamma",
     type: "number" as const,
   },
-  {
-    key: "bandit_algo" as const,
-    label: "Bandit Algorithm",
-    type: "string" as const,
-  },
 ];
 
 export function ProfileEditor({
@@ -197,23 +192,6 @@ export function ProfileEditor({
                         placeholder="Use default"
                         style={{ flex: 1 }}
                       />
-                    ) : field.key === "bandit_algo" ? (
-                      <select
-                        value={hasValue ? value.toString() : ""}
-                        onChange={(e) =>
-                          updateStringOverride(field.key, e.target.value)
-                        }
-                        style={{
-                          padding: "8px 12px",
-                          border: "1px solid #ddd",
-                          borderRadius: 4,
-                          flex: 1,
-                        }}
-                      >
-                        <option value="">Use default</option>
-                        <option value="thompson">Thompson Sampling</option>
-                        <option value="ucb1">UCB1</option>
-                      </select>
                     ) : (
                       <select
                         value={hasValue ? value.toString() : ""}

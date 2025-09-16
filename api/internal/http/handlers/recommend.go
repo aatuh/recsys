@@ -269,13 +269,6 @@ func (h *Handler) getAlgorithmConfig(
 		if overrides.PopularityFanout != nil {
 			config.PopularityFanout = *overrides.PopularityFanout
 		}
-		if overrides.BanditAlgo != nil {
-			algo, err := types.ParseAlgorithm(*overrides.BanditAlgo)
-			if err != nil {
-				return config, errors.New("invalid bandit algorithm: " + *overrides.BanditAlgo)
-			}
-			config.BanditAlgo = algo
-		}
 	}
 
 	return config, nil
