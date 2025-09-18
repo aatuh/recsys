@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"recsys/specs/endpoints"
 	"recsys/test/shared"
 
 	"github.com/stretchr/testify/require"
@@ -24,7 +25,7 @@ func TestSimilar_KLimitAndPresence(t *testing.T) {
 		client.DoRequestWithStatus(t, method, path, body, want)
 	}
 
-	do("POST", "/v1/items:upsert", map[string]any{
+	do("POST", endpoints.ItemsUpsert, map[string]any{
 		"namespace": "default",
 		"items": []map[string]any{
 			{"item_id": "X", "available": true},
@@ -33,9 +34,9 @@ func TestSimilar_KLimitAndPresence(t *testing.T) {
 		},
 	}, http.StatusAccepted)
 
-	do("POST", "/v1/users:upsert", map[string]any{"namespace": "default", "users": []map[string]any{{"user_id": "u1"}, {"user_id": "u2"}}}, http.StatusAccepted)
+	do("POST", endpoints.UsersUpsert, map[string]any{"namespace": "default", "users": []map[string]any{{"user_id": "u1"}, {"user_id": "u2"}}}, http.StatusAccepted)
 	now := time.Now().UTC().Format(time.RFC3339)
-	do("POST", "/v1/events:batch", map[string]any{
+	do("POST", endpoints.EventsBatch, map[string]any{
 		"namespace": "default",
 		"events": []map[string]any{
 			{"user_id": "u1", "item_id": "X", "type": 0, "value": 1, "ts": now},
@@ -47,7 +48,7 @@ func TestSimilar_KLimitAndPresence(t *testing.T) {
 	}, http.StatusAccepted)
 
 	// ask similar to X with k=1
-	body := client.DoRequestWithStatus(t, http.MethodGet, "/v1/items/X/similar?namespace=default&k=1", nil, http.StatusOK)
+	body := client.DoRequestWithStatus(t, http.MethodGet, endpoints.ItemsSimilarPath("X")+"?namespace=default&k=1", nil, http.StatusOK)
 
 	var sim []struct {
 		ItemID string  `json:"item_id"`

@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"recsys/internal/http/handlers"
+	"recsys/specs/endpoints"
 )
 
 // Test that ItemsUpsert rejects embeddings with the wrong dimension.
@@ -31,7 +32,7 @@ func TestItemsUpsert_EmbeddingDimMismatch(t *testing.T) {
 		t.Fatalf("marshal payload: %v", err)
 	}
 
-	req := httptest.NewRequest(http.MethodPost, "/v1/items:upsert",
+	req := httptest.NewRequest(http.MethodPost, endpoints.ItemsUpsert,
 		bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()

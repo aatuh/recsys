@@ -6,6 +6,8 @@ import (
 	"testing"
 	"time"
 
+	"recsys/specs/endpoints"
+	"recsys/specs/types"
 	"recsys/test/shared"
 
 	"github.com/stretchr/testify/require"
@@ -24,34 +26,36 @@ func TestRecommend_ReasonsAndExcludes(t *testing.T) {
 		return client.DoRequestWithStatus(t, method, path, body, want)
 	}
 
-	do("POST", "/v1/items:upsert", map[string]any{
-		"namespace": "default",
-		"items": []map[string]any{
-			{"item_id": "A", "available": true},
-			{"item_id": "B", "available": true},
-			{"item_id": "C", "available": true},
+	do("POST", endpoints.ItemsUpsert, types.ItemsUpsertRequest{
+		Namespace: "default",
+		Items: []types.Item{
+			{ItemID: "A", Available: true},
+			{ItemID: "B", Available: true},
+			{ItemID: "C", Available: true},
 		},
 	}, http.StatusAccepted)
 
-	do("POST", "/v1/users:upsert", map[string]any{
-		"namespace": "default",
-		"users":     []map[string]any{{"user_id": "u1"}},
+	do("POST", endpoints.UsersUpsert, types.UsersUpsertRequest{
+		Namespace: "default",
+		Users:     []types.User{{UserID: "u1"}},
 	}, http.StatusAccepted)
 
 	now := time.Now().UTC().Format(time.RFC3339)
-	do("POST", "/v1/events:batch", map[string]any{
-		"namespace": "default",
-		"events": []map[string]any{
-			{"user_id": "u1", "item_id": "A", "type": 0, "value": 1, "ts": now},
-			{"user_id": "u1", "item_id": "B", "type": 3, "value": 1, "ts": now},
+	do("POST", endpoints.EventsBatch, types.EventsBatchRequest{
+		Namespace: "default",
+		Events: []types.Event{
+			{UserID: "u1", ItemID: "A", Type: 0, Value: 1, TS: now},
+			{UserID: "u1", ItemID: "B", Type: 3, Value: 1, TS: now},
 		},
 	}, http.StatusAccepted)
 
 	// include reasons + exclude B
-	body := do("POST", "/v1/recommendations", map[string]any{
-		"user_id": "u1", "namespace": "default", "k": 5,
-		"include_reasons": true,
-		"constraints":     map[string]any{"exclude_item_ids": []string{"B"}},
+	body := do("POST", endpoints.Recommendations, types.RecommendRequest{
+		UserID:         "u1",
+		Namespace:      "default",
+		K:              5,
+		IncludeReasons: true,
+		Constraints:    &types.RecommendConstraints{ExcludeItemIDs: []string{"B"}},
 	}, http.StatusOK)
 
 	var resp struct {
@@ -86,14 +90,14 @@ func TestRecommend_TenantOverrideAffectsRanking(t *testing.T) {
 		client.DoRequestWithStatus(t, method, path, body, want)
 	}
 
-	do("POST", "/v1/items:upsert", map[string]any{
+	do("POST", endpoints.ItemsUpsert, map[string]any{
 		"namespace": "default",
 		"items":     []map[string]any{{"item_id": "A", "available": true}, {"item_id": "B", "available": true}},
 	}, http.StatusAccepted)
-	do("POST", "/v1/users:upsert", map[string]any{"namespace": "default", "users": []map[string]any{{"user_id": "u1"}}}, http.StatusAccepted)
+	do("POST", endpoints.UsersUpsert, map[string]any{"namespace": "default", "users": []map[string]any{{"user_id": "u1"}}}, http.StatusAccepted)
 
 	now := time.Now().UTC().Format(time.RFC3339)
-	do("POST", "/v1/events:batch", map[string]any{
+	do("POST", endpoints.EventsBatch, map[string]any{
 		"namespace": "default",
 		"events": []map[string]any{
 			{"user_id": "u1", "item_id": "A", "type": 0, "value": 1, "ts": now}, // view
@@ -102,7 +106,7 @@ func TestRecommend_TenantOverrideAffectsRanking(t *testing.T) {
 	}, http.StatusAccepted)
 
 	// Initial recs: defaults mean B (purchase=1.0) should beat A (view=0.1)
-	body1 := client.DoRequestWithStatus(t, http.MethodPost, "/v1/recommendations", map[string]any{
+	body1 := client.DoRequestWithStatus(t, http.MethodPost, endpoints.Recommendations, map[string]any{
 		"user_id": "u1", "namespace": "default", "k": 2,
 	}, http.StatusOK)
 	var r1 struct {
@@ -115,7 +119,7 @@ func TestRecommend_TenantOverrideAffectsRanking(t *testing.T) {
 	require.Equal(t, "B", r1.Items[0].ItemID)
 
 	// Override: boost view weight above purchase
-	do("POST", "/v1/event-types:upsert", map[string]any{
+	do("POST", endpoints.EventTypesUpsert, map[string]any{
 		"namespace": "default",
 		"types": []map[string]any{
 			{"type": 0, "weight": 1.2},
@@ -124,7 +128,7 @@ func TestRecommend_TenantOverrideAffectsRanking(t *testing.T) {
 	}, http.StatusAccepted)
 
 	// Recs after override: A should now top B
-	body2 := client.DoRequestWithStatus(t, http.MethodPost, "/v1/recommendations", map[string]any{
+	body2 := client.DoRequestWithStatus(t, http.MethodPost, endpoints.Recommendations, map[string]any{
 		"user_id": "u1", "namespace": "default", "k": 2,
 	}, http.StatusOK)
 	var r2 struct {
@@ -148,7 +152,7 @@ func TestRecommend_ExplainLevels(t *testing.T) {
 		return client.DoRequestWithStatus(t, method, path, body, want)
 	}
 
-	do("POST", "/v1/items:upsert", map[string]any{
+	do("POST", endpoints.ItemsUpsert, map[string]any{
 		"namespace": "default",
 		"items": []map[string]any{
 			{"item_id": "A", "available": true, "tags": []string{"brand:acme", "category:slots"}},
@@ -156,13 +160,13 @@ func TestRecommend_ExplainLevels(t *testing.T) {
 		},
 	}, http.StatusAccepted)
 
-	do("POST", "/v1/users:upsert", map[string]any{
-		"namespace": "default",
-		"users":     []map[string]any{{"user_id": "u1"}},
+	do("POST", endpoints.UsersUpsert, types.UsersUpsertRequest{
+		Namespace: "default",
+		Users:     []types.User{{UserID: "u1"}},
 	}, http.StatusAccepted)
 
 	now := time.Now().UTC().Format(time.RFC3339)
-	do("POST", "/v1/events:batch", map[string]any{
+	do("POST", endpoints.EventsBatch, map[string]any{
 		"namespace": "default",
 		"events": []map[string]any{
 			{"user_id": "u1", "item_id": "A", "type": 0, "value": 1, "ts": now},
@@ -170,7 +174,7 @@ func TestRecommend_ExplainLevels(t *testing.T) {
 		},
 	}, http.StatusAccepted)
 
-	bodyNumeric := do("POST", "/v1/recommendations", map[string]any{
+	bodyNumeric := do("POST", endpoints.Recommendations, map[string]any{
 		"user_id":   "u1",
 		"namespace": "default",
 		"k":         1,
@@ -219,7 +223,7 @@ func TestRecommend_ExplainLevels(t *testing.T) {
 		1e-6,
 	)
 
-	bodyFull := do("POST", "/v1/recommendations", map[string]any{
+	bodyFull := do("POST", endpoints.Recommendations, map[string]any{
 		"user_id":         "u1",
 		"namespace":       "default",
 		"k":               1,

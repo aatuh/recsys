@@ -829,7 +829,7 @@ Typical entries include:
 - `personalization` (boost from tag profile overlap)
 - `diversity` (selected by MMR for novelty)
 - `cap_brand` / `cap_category` (caps enforced during selection)
-- `excluded_purchased` (item was filtered earlier due to rule)
+- `excluded_events` (item was filtered earlier due to rule)
 Not every reason appears on every item; only the applicable ones.
 
 **Signals**  

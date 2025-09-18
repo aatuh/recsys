@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"recsys/internal/store"
+	"recsys/specs/endpoints"
 	"recsys/test/shared"
 
 	"github.com/stretchr/testify/require"
@@ -42,7 +43,7 @@ func TestRecommend_Blend_EmbeddingTiltsRanking(t *testing.T) {
 	require.NoError(t, s.UpsertItems(context.Background(), org, ns, items))
 
 	// Users via API.
-	client.DoRequestWithStatus(t, http.MethodPost, "/v1/users:upsert",
+	client.DoRequestWithStatus(t, http.MethodPost, endpoints.UsersUpsert,
 		map[string]any{
 			"namespace": ns,
 			"users": []map[string]any{
@@ -53,7 +54,7 @@ func TestRecommend_Blend_EmbeddingTiltsRanking(t *testing.T) {
 
 	// Equalize base popularity for A and B.
 	now := time.Now().UTC().Format(time.RFC3339)
-	client.DoRequestWithStatus(t, http.MethodPost, "/v1/events:batch",
+	client.DoRequestWithStatus(t, http.MethodPost, endpoints.EventsBatch,
 		map[string]any{
 			"namespace": ns,
 			"events": []map[string]any{
@@ -69,7 +70,7 @@ func TestRecommend_Blend_EmbeddingTiltsRanking(t *testing.T) {
 
 	// Ask for blended recs with ALS=1 only.
 	body := client.DoRequestWithStatus(t, http.MethodPost,
-		"/v1/recommendations",
+		endpoints.Recommendations,
 		map[string]any{
 			"user_id":         "u1",
 			"namespace":       ns,
@@ -129,7 +130,7 @@ func TestRecommend_Blend_CoVisTiltsRanking(t *testing.T) {
 		}))
 
 	// Users.
-	client.DoRequestWithStatus(t, http.MethodPost, "/v1/users:upsert",
+	client.DoRequestWithStatus(t, http.MethodPost, endpoints.UsersUpsert,
 		map[string]any{
 			"namespace": ns,
 			"users": []map[string]any{
@@ -154,12 +155,12 @@ func TestRecommend_Blend_CoVisTiltsRanking(t *testing.T) {
 		// u1 touched P recently to seed anchors.
 		{"user_id": "u1", "item_id": "P", "type": 0, "value": 1, "ts": now},
 	}
-	client.DoRequestWithStatus(t, http.MethodPost, "/v1/events:batch",
+	client.DoRequestWithStatus(t, http.MethodPost, endpoints.EventsBatch,
 		map[string]any{"namespace": ns, "events": events},
 		http.StatusAccepted)
 
 	body := client.DoRequestWithStatus(t, http.MethodPost,
-		"/v1/recommendations",
+		endpoints.Recommendations,
 		map[string]any{
 			"user_id":         "u1",
 			"namespace":       ns,

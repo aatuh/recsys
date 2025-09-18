@@ -60,3 +60,12 @@ const (
 	Health = "/health"
 	Docs   = "/docs"
 )
+
+// Helper functions for endpoints with path parameters
+func AuditDecisionByIDPath(decisionID string) string {
+	return "/v1/audit/decisions/" + decisionID
+}
+
+func ItemsSimilarPath(itemID string) string {
+	return "/v1/items/" + itemID + "/similar"
+}

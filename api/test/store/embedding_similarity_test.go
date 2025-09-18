@@ -2,7 +2,6 @@ package store_test
 
 import (
 	"context"
-	"os"
 	"testing"
 	"time"
 
@@ -17,10 +16,7 @@ import (
 // If TEST_DATABASE_URL is set, it wins. Otherwise, assume Compose.
 func getTestPool(t *testing.T) *pgxpool.Pool {
 	t.Helper()
-	dsn := os.Getenv("TEST_DATABASE_URL")
-	if dsn == "" {
-		dsn = "postgres://recsys:recsys@db:5432/recsys?sslmode=disable"
-	}
+	dsn := util.MustGetEnv("TEST_DATABASE_URL")
 	cfg, err := pgxpool.ParseConfig(dsn)
 	if err != nil {
 		t.Fatalf("parse dsn: %v", err)

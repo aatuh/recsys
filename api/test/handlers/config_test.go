@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"testing"
 
+	"recsys/specs/endpoints"
+	"recsys/specs/types"
 	"recsys/test/shared"
 
 	"github.com/stretchr/testify/require"
@@ -14,25 +16,18 @@ func TestEventTypes_UpsertAndList(t *testing.T) {
 	client := shared.NewTestClient(t)
 
 	// Upsert tenant override: boost view (type=0) weight to 0.6
-	client.DoRequestWithStatus(t, http.MethodPost, "/v1/event-types:upsert",
-		map[string]any{
-			"namespace": "default",
-			"types": []map[string]any{
-				{"type": 0, "name": "view", "weight": 0.6, "is_active": true},
+	client.DoRequestWithStatus(t, http.MethodPost, endpoints.EventTypesUpsert,
+		types.EventTypeConfigUpsertRequest{
+			Namespace: "default",
+			Types: []types.EventTypeConfig{
+				{Type: 0, Name: &[]string{"view"}[0], Weight: 0.6, IsActive: &[]bool{true}[0]},
 			},
 		}, http.StatusAccepted)
 
 	// List effective config
-	body := client.DoRequestWithStatus(t, http.MethodGet, "/v1/event-types?namespace=default", nil, http.StatusOK)
+	body := client.DoRequestWithStatus(t, http.MethodGet, endpoints.EventTypes+"?namespace=default", nil, http.StatusOK)
 
-	var rows []struct {
-		Type         int16    `json:"type"`
-		Name         *string  `json:"name"`
-		Weight       float64  `json:"weight"`
-		HalfLifeDays *float64 `json:"half_life_days"`
-		IsActive     bool     `json:"is_active"`
-		Source       string   `json:"source"`
-	}
+	var rows []types.EventTypeConfigUpsertResponse
 	require.NoError(t, json.Unmarshal(body, &rows))
 	require.NotEmpty(t, rows)
 	found := false
@@ -49,5 +44,5 @@ func TestEventTypes_UpsertAndList(t *testing.T) {
 func TestEventTypes_MissingNamespace_400(t *testing.T) {
 	client := shared.NewTestClient(t)
 
-	client.DoRequestWithStatus(t, http.MethodGet, "/v1/event-types", nil, http.StatusBadRequest) // no namespace
+	client.DoRequestWithStatus(t, http.MethodGet, endpoints.EventTypes, nil, http.StatusBadRequest) // no namespace
 }

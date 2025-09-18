@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"recsys/specs/endpoints"
 	"recsys/test/shared"
 
 	"github.com/stretchr/testify/require"
@@ -37,7 +38,7 @@ func TestRecommend_PersonalizationBoostsMatchingTags(t *testing.T) {
 	// - A: candidate with t:android
 	// - B: candidate with t:ios
 	// - P1,P2: profile builders with t:android (unavailable for recs)
-	do(http.MethodPost, "/v1/items:upsert", map[string]any{
+	do(http.MethodPost, endpoints.ItemsUpsert, map[string]any{
 		"namespace": "default",
 		"items": []map[string]any{
 			{"item_id": "A", "available": true, "tags": []string{
@@ -56,7 +57,7 @@ func TestRecommend_PersonalizationBoostsMatchingTags(t *testing.T) {
 	}, http.StatusAccepted)
 
 	// Users
-	do(http.MethodPost, "/v1/users:upsert", map[string]any{
+	do(http.MethodPost, endpoints.UsersUpsert, map[string]any{
 		"namespace": "default",
 		"users":     []map[string]any{{"user_id": "u1"}, {"user_id": "u2"}},
 	}, http.StatusAccepted)
@@ -66,7 +67,7 @@ func TestRecommend_PersonalizationBoostsMatchingTags(t *testing.T) {
 	//   are present as candidates without bias.
 	// - Build u1's profile heavily toward t:android by purchasing P1 and P2.
 	now := time.Now().UTC().Format(time.RFC3339)
-	do(http.MethodPost, "/v1/events:batch", map[string]any{
+	do(http.MethodPost, endpoints.EventsBatch, map[string]any{
 		"namespace": "default",
 		"events": []map[string]any{
 			// Candidate popularity (tie A vs B)
@@ -81,7 +82,7 @@ func TestRecommend_PersonalizationBoostsMatchingTags(t *testing.T) {
 
 	// Ask for recs with reasons. Expect A above B and A to include a
 	// "personalization" reason.
-	body := do(http.MethodPost, "/v1/recommendations", map[string]any{
+	body := do(http.MethodPost, endpoints.Recommendations, map[string]any{
 		"user_id":         "u1",
 		"namespace":       "default",
 		"k":               2,
@@ -129,7 +130,7 @@ func TestRecommend_Personalization_NoHistory_NoReason(t *testing.T) {
 	}
 
 	// Candidate items with distinct tags; B will be more popular.
-	do(http.MethodPost, "/v1/items:upsert", map[string]any{
+	do(http.MethodPost, endpoints.ItemsUpsert, map[string]any{
 		"namespace": "default",
 		"items": []map[string]any{
 			{"item_id": "A", "available": true, "tags": []string{
@@ -142,7 +143,7 @@ func TestRecommend_Personalization_NoHistory_NoReason(t *testing.T) {
 	}, http.StatusAccepted)
 
 	// Users (u_new is cold; u_pop drives global popularity).
-	do(http.MethodPost, "/v1/users:upsert", map[string]any{
+	do(http.MethodPost, endpoints.UsersUpsert, map[string]any{
 		"namespace": "default",
 		"users": []map[string]any{
 			{"user_id": "u_new"},
@@ -152,7 +153,7 @@ func TestRecommend_Personalization_NoHistory_NoReason(t *testing.T) {
 
 	// Make B clearly more popular globally.
 	now := time.Now().UTC().Format(time.RFC3339)
-	do(http.MethodPost, "/v1/events:batch", map[string]any{
+	do(http.MethodPost, endpoints.EventsBatch, map[string]any{
 		"namespace": "default",
 		"events": []map[string]any{
 			{"user_id": "u_pop", "item_id": "B", "type": 3, "value": 1, "ts": now},
@@ -163,7 +164,7 @@ func TestRecommend_Personalization_NoHistory_NoReason(t *testing.T) {
 
 	// Ask recs for cold user with reasons; expect B first and no
 	// "personalization" reason present.
-	body := do(http.MethodPost, "/v1/recommendations", map[string]any{
+	body := do(http.MethodPost, endpoints.Recommendations, map[string]any{
 		"user_id":         "u_new",
 		"namespace":       "default",
 		"k":               2,
