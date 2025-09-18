@@ -255,11 +255,7 @@ func (h *Handler) RecommendWithBandit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Run ranker with chosen policy knobs.
-	cfg, err := h.getAlgorithmConfig(nil)
-	if err != nil {
-		common.HttpError(w, r, err, http.StatusInternalServerError)
-		return
-	}
+	cfg := h.baseAlgorithmConfig()
 	cfg.BlendAlpha = 0
 	cfg.BlendBeta = 0
 	cfg.BlendGamma = 0

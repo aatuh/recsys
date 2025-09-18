@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 	"recsys/internal/algorithm"
 	"recsys/internal/http/common"
 	handlerstypes "recsys/internal/http/types"
+	"recsys/internal/segments"
 	"recsys/internal/types"
 
 	"github.com/go-chi/chi/v5"
@@ -61,11 +63,19 @@ func (h *Handler) Recommend(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create algorithm engine
-	config, err := h.getAlgorithmConfig(req.Overrides)
+	config := h.baseAlgorithmConfig()
+	segmentProfile, segmentID, profileID, _, err := h.selectSegmentProfile(r.Context(), algoReq, req, nil)
 	if err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)
 		return
 	}
+	if segmentProfile != nil {
+		applySegmentProfile(&config, *segmentProfile)
+		if profileID == "" {
+			profileID = segmentProfile.ProfileID
+		}
+	}
+	applyOverrides(&config, req.Overrides)
 	engine := algorithm.NewEngine(config, h.Store)
 
 	// Get recommendations
@@ -74,6 +84,8 @@ func (h *Handler) Recommend(w http.ResponseWriter, r *http.Request) {
 		common.HttpError(w, r, err, http.StatusInternalServerError)
 		return
 	}
+	algoResp.SegmentID = segmentID
+	algoResp.ProfileID = profileID
 
 	// Convert algorithm response to HTTP response
 	httpResp := h.convertToHTTPResponse(algoResp)
@@ -141,6 +153,10 @@ func (h *Handler) ItemSimilar(w http.ResponseWriter, r *http.Request) {
 // convertToAlgorithmRequest converts HTTP request to algorithm request
 func (h *Handler) convertToAlgorithmRequest(r *http.Request, req handlerstypes.RecommendRequest) (algorithm.Request, error) {
 	orgID := h.defaultOrgFromHeader(r)
+	ns := req.Namespace
+	if ns == "" {
+		ns = "default"
+	}
 
 	// Convert constraints
 	var constraints *types.PopConstraints
@@ -179,7 +195,7 @@ func (h *Handler) convertToAlgorithmRequest(r *http.Request, req handlerstypes.R
 	return algorithm.Request{
 		OrgID:          orgID,
 		UserID:         req.UserID,
-		Namespace:      req.Namespace,
+		Namespace:      ns,
 		K:              req.K,
 		Constraints:    constraints,
 		Blend:          blend,
@@ -207,6 +223,8 @@ func (h *Handler) convertToHTTPResponse(algoResp *algorithm.Response) handlersty
 	return handlerstypes.RecommendResponse{
 		ModelVersion: algoResp.ModelVersion,
 		Items:        items,
+		SegmentID:    algoResp.SegmentID,
+		ProfileID:    algoResp.ProfileID,
 	}
 }
 
@@ -314,11 +332,8 @@ func mapCapUsage(src *algorithm.CapUsage) *handlerstypes.ExplainCapUsage {
 	return usage
 }
 
-// getAlgorithmConfig creates algorithm configuration from handler config and overrides
-func (h *Handler) getAlgorithmConfig(
-	overrides *handlerstypes.Overrides,
-) (algorithm.Config, error) {
-	config := algorithm.Config{
+func (h *Handler) baseAlgorithmConfig() algorithm.Config {
+	return algorithm.Config{
 		BlendAlpha:          h.BlendAlpha,
 		BlendBeta:           h.BlendBeta,
 		BlendGamma:          h.BlendGamma,
@@ -332,57 +347,201 @@ func (h *Handler) getAlgorithmConfig(
 		CoVisWindowDays:     int(h.CoVisWindowDays),
 		PurchasedWindowDays: int(h.PurchasedWindowDays),
 		RuleExcludeEvents:   h.RuleExcludeEvents,
-		ExcludeEventTypes:   h.ExcludeEventTypes,
-		BrandTagPrefixes:    h.BrandTagPrefixes,
-		CategoryTagPrefixes: h.CategoryTagPrefixes,
+		ExcludeEventTypes:   append([]int16(nil), h.ExcludeEventTypes...),
+		BrandTagPrefixes:    append([]string(nil), h.BrandTagPrefixes...),
+		CategoryTagPrefixes: append([]string(nil), h.CategoryTagPrefixes...),
 		PopularityFanout:    h.PopularityFanout,
 	}
+}
 
-	// Apply overrides if provided
-	if overrides != nil {
-		if overrides.BlendAlpha != nil {
-			config.BlendAlpha = *overrides.BlendAlpha
+func applyOverrides(cfg *algorithm.Config, overrides *handlerstypes.Overrides) {
+	if overrides == nil {
+		return
+	}
+	if overrides.BlendAlpha != nil {
+		cfg.BlendAlpha = *overrides.BlendAlpha
+	}
+	if overrides.BlendBeta != nil {
+		cfg.BlendBeta = *overrides.BlendBeta
+	}
+	if overrides.BlendGamma != nil {
+		cfg.BlendGamma = *overrides.BlendGamma
+	}
+	if overrides.ProfileBoost != nil {
+		cfg.ProfileBoost = *overrides.ProfileBoost
+	}
+	if overrides.ProfileWindowDays != nil {
+		cfg.ProfileWindowDays = float64(*overrides.ProfileWindowDays)
+	}
+	if overrides.ProfileTopN != nil {
+		cfg.ProfileTopNTags = *overrides.ProfileTopN
+	}
+	if overrides.MMRLambda != nil {
+		cfg.MMRLambda = *overrides.MMRLambda
+	}
+	if overrides.BrandCap != nil {
+		cfg.BrandCap = *overrides.BrandCap
+	}
+	if overrides.CategoryCap != nil {
+		cfg.CategoryCap = *overrides.CategoryCap
+	}
+	if overrides.PopularityHalfLifeDays != nil {
+		cfg.HalfLifeDays = float64(*overrides.PopularityHalfLifeDays)
+	}
+	if overrides.CoVisWindowDays != nil {
+		cfg.CoVisWindowDays = *overrides.CoVisWindowDays
+	}
+	if overrides.PurchasedWindowDays != nil {
+		cfg.PurchasedWindowDays = *overrides.PurchasedWindowDays
+	}
+	if overrides.RuleExcludeEvents != nil {
+		cfg.RuleExcludeEvents = *overrides.RuleExcludeEvents
+	}
+	if overrides.PopularityFanout != nil {
+		cfg.PopularityFanout = *overrides.PopularityFanout
+	}
+}
+
+func applySegmentProfile(cfg *algorithm.Config, profile types.SegmentProfile) {
+	cfg.BlendAlpha = profile.BlendAlpha
+	cfg.BlendBeta = profile.BlendBeta
+	cfg.BlendGamma = profile.BlendGamma
+	cfg.MMRLambda = profile.MMRLambda
+	cfg.BrandCap = profile.BrandCap
+	cfg.CategoryCap = profile.CategoryCap
+	cfg.ProfileBoost = profile.ProfileBoost
+	cfg.ProfileWindowDays = profile.ProfileWindowDays
+	cfg.ProfileTopNTags = profile.ProfileTopN
+	cfg.HalfLifeDays = profile.HalfLifeDays
+	cfg.CoVisWindowDays = profile.CoVisWindowDays
+	cfg.PurchasedWindowDays = profile.PurchasedWindowDays
+	cfg.RuleExcludeEvents = profile.RuleExcludeEvents
+	cfg.ExcludeEventTypes = append([]int16(nil), profile.ExcludeEventTypes...)
+	cfg.BrandTagPrefixes = append([]string(nil), profile.BrandTagPrefixes...)
+	cfg.CategoryTagPrefixes = append([]string(nil), profile.CategoryTagPrefixes...)
+	cfg.PopularityFanout = profile.PopularityFanout
+}
+
+func (h *Handler) selectSegmentProfile(
+	ctx context.Context,
+	req algorithm.Request,
+	httpReq handlerstypes.RecommendRequest,
+	traitsOverride map[string]any,
+) (*types.SegmentProfile, string, string, int64, error) {
+	segmentsList, err := h.Store.ListActiveSegmentsWithRules(ctx, req.OrgID, req.Namespace)
+	if err != nil {
+		return nil, "", "", 0, err
+	}
+	if len(segmentsList) == 0 {
+		return nil, "", "", 0, nil
+	}
+
+	traits := traitsOverride
+	if traits == nil && req.UserID != "" {
+		userRec, err := h.Store.GetUser(ctx, req.OrgID, req.Namespace, req.UserID)
+		if err != nil {
+			return nil, "", "", 0, err
 		}
-		if overrides.BlendBeta != nil {
-			config.BlendBeta = *overrides.BlendBeta
-		}
-		if overrides.BlendGamma != nil {
-			config.BlendGamma = *overrides.BlendGamma
-		}
-		if overrides.ProfileBoost != nil {
-			config.ProfileBoost = *overrides.ProfileBoost
-		}
-		if overrides.ProfileWindowDays != nil {
-			config.ProfileWindowDays = float64(*overrides.ProfileWindowDays)
-		}
-		if overrides.ProfileTopN != nil {
-			config.ProfileTopNTags = *overrides.ProfileTopN
-		}
-		if overrides.MMRLambda != nil {
-			config.MMRLambda = *overrides.MMRLambda
-		}
-		if overrides.BrandCap != nil {
-			config.BrandCap = *overrides.BrandCap
-		}
-		if overrides.CategoryCap != nil {
-			config.CategoryCap = *overrides.CategoryCap
-		}
-		if overrides.PopularityHalfLifeDays != nil {
-			config.HalfLifeDays = float64(*overrides.PopularityHalfLifeDays)
-		}
-		if overrides.CoVisWindowDays != nil {
-			config.CoVisWindowDays = *overrides.CoVisWindowDays
-		}
-		if overrides.PurchasedWindowDays != nil {
-			config.PurchasedWindowDays = *overrides.PurchasedWindowDays
-		}
-		if overrides.RuleExcludeEvents != nil {
-			config.RuleExcludeEvents = *overrides.RuleExcludeEvents
-		}
-		if overrides.PopularityFanout != nil {
-			config.PopularityFanout = *overrides.PopularityFanout
+		if userRec != nil && userRec.Traits != nil {
+			traits = userRec.Traits
 		}
 	}
 
-	return config, nil
+	data := buildSegmentContextData(req, httpReq.Context, traits)
+	now := time.Now().UTC()
+
+	var defaultSegment *types.Segment
+	for i := range segmentsList {
+		seg := segmentsList[i]
+		if seg.SegmentID == "default" {
+			defaultSegment = &segmentsList[i]
+		}
+		matchedRule, ok := segmentMatches(&seg, data, now)
+		if ok {
+			profile, err := h.Store.GetSegmentProfile(ctx, req.OrgID, req.Namespace, seg.ProfileID)
+			if err != nil {
+				return nil, "", "", 0, err
+			}
+			profileID := ""
+			if profile != nil {
+				profileID = profile.ProfileID
+			}
+			var ruleID int64
+			if matchedRule != nil {
+				ruleID = matchedRule.RuleID
+			}
+			return profile, seg.SegmentID, profileID, ruleID, nil
+		}
+	}
+
+	if defaultSegment != nil {
+		profile, err := h.Store.GetSegmentProfile(ctx, req.OrgID, req.Namespace, defaultSegment.ProfileID)
+		if err != nil {
+			return nil, "", "", 0, err
+		}
+		profileID := ""
+		if profile != nil {
+			profileID = profile.ProfileID
+		}
+		return profile, defaultSegment.SegmentID, profileID, 0, nil
+	}
+
+	return nil, "", "", 0, nil
+}
+
+func buildSegmentContextData(
+	req algorithm.Request,
+	ctxValues map[string]any,
+	traits map[string]any,
+) map[string]any {
+	userData := map[string]any{
+		"id": req.UserID,
+	}
+	if traits != nil {
+		userData["traits"] = traits
+	}
+	ctxData := map[string]any{}
+	for k, v := range ctxValues {
+		ctxData[k] = v
+	}
+	requestData := map[string]any{
+		"namespace": req.Namespace,
+		"k":         req.K,
+	}
+	if req.Blend != nil {
+		requestData["blend"] = map[string]any{
+			"pop":  req.Blend.Pop,
+			"cooc": req.Blend.Cooc,
+			"als":  req.Blend.ALS,
+		}
+	}
+	return map[string]any{
+		"user":    userData,
+		"ctx":     ctxData,
+		"request": requestData,
+	}
+}
+
+func segmentMatches(seg *types.Segment, data map[string]any, now time.Time) (*types.SegmentRule, bool) {
+	if seg == nil {
+		return nil, false
+	}
+	if len(seg.Rules) == 0 {
+		return nil, true
+	}
+	for i := range seg.Rules {
+		rule := seg.Rules[i]
+		if !rule.Enabled {
+			continue
+		}
+		eval := segments.NewEvaluator(data, now)
+		matched, err := eval.Match(rule.Rule)
+		if err != nil {
+			continue
+		}
+		if matched {
+			return &seg.Rules[i], true
+		}
+	}
+	return nil, false
 }

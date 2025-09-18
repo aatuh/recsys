@@ -82,6 +82,8 @@ func NormalizeExplainLevel(raw string) ExplainLevel {
 type Response struct {
 	ModelVersion string
 	Items        []ScoredItem
+	SegmentID    string
+	ProfileID    string
 }
 
 // ScoredItem represents an item with its score and reasons

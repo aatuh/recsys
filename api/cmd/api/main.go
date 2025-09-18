@@ -203,6 +203,15 @@ func main() {
 	r.Post("/v1/items:delete", hs.DeleteItems)
 	r.Post("/v1/events:delete", hs.DeleteEvents)
 
+	// Segment profiles and segments
+	r.Get("/v1/segment-profiles", hs.SegmentProfilesList)
+	r.Post("/v1/segment-profiles:upsert", hs.SegmentProfilesUpsert)
+	r.Post("/v1/segment-profiles:delete", hs.SegmentProfilesDelete)
+	r.Get("/v1/segments", hs.SegmentsList)
+	r.Post("/v1/segments:upsert", hs.SegmentsUpsert)
+	r.Post("/v1/segments:delete", hs.SegmentsDelete)
+	r.Post("/v1/segments:dry-run", hs.SegmentsDryRun)
+
 	// Bandit endpoints
 	r.Post("/v1/bandit/policies:upsert", hs.BanditPoliciesUpsert)
 	r.Get("/v1/bandit/policies", hs.BanditPoliciesList)
