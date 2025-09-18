@@ -8,6 +8,7 @@ import (
 
 	"recsys/internal/audit"
 	"recsys/internal/http/common"
+	"recsys/internal/rules"
 	"recsys/internal/store"
 	internaltypes "recsys/internal/types"
 	"recsys/specs/types"
@@ -32,6 +33,8 @@ type Handler struct {
 	ExcludeEventTypes     []int16
 	BrandTagPrefixes      []string
 	CategoryTagPrefixes   []string
+	RulesManager          *rules.Manager
+	RulesAuditSample      float64
 	PurchasedWindowDays   float64
 	ProfileWindowDays     float64 // lookback for building profile; <=0 disables windowing
 	ProfileBoost          float64 // multiplier in [0, +inf). 0 disables personalization

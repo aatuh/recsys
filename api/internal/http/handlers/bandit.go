@@ -289,7 +289,7 @@ func (h *Handler) RecommendWithBandit(w http.ResponseWriter, r *http.Request) {
 	}
 	// If not found, fall back to env-based defaults already in cfg.
 
-	engine := algorithm.NewEngine(cfg, h.Store)
+	engine := algorithm.NewEngine(cfg, h.Store, h.RulesManager)
 	algoResp, traceData, err := engine.Recommend(r.Context(), algoReq)
 	if err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)

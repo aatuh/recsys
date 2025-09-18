@@ -55,6 +55,13 @@ const (
 	AuditSearch       = V1 + "/audit/search"
 )
 
+// Admin rule engine endpoints
+const (
+	Rules       = V1 + "/admin/rules"
+	RuleByID    = V1 + "/admin/rules/{rule_id}"
+	RulesDryRun = V1 + "/admin/rules/dry-run"
+)
+
 // Health and documentation
 const (
 	Health = "/health"

@@ -26,6 +26,10 @@ type Config struct {
 	ExcludeEventTypes   []int16 // event types excluded from recommendations when rule enabled
 	BrandTagPrefixes    []string
 	CategoryTagPrefixes []string
+	RulesEnabled        bool
+	RulesCacheRefresh   time.Duration
+	RulesMaxPinSlots    int
+	RulesAuditSample    float64
 	PurchasedWindowDays float64 // lookback window for purchases (days)
 	ProfileWindowDays   float64 // lookback for building profile; <=0 disables windowing
 	ProfileBoost        float64 // multiplier in [0, +inf). 0 disables personalization
@@ -122,6 +126,41 @@ func Load() (Config, error) {
 		c.CategoryTagPrefixes = prefixes
 	} else {
 		return c, errors.New("CATEGORY_TAG_PREFIXES must include at least one prefix")
+	}
+
+	c.RulesEnabled = util.MustGetEnv("RULES_ENABLE") == "true"
+
+	refreshRaw := strings.TrimSpace(util.MustGetEnv("RULES_CACHE_REFRESH"))
+	if refreshRaw == "" {
+		c.RulesCacheRefresh = 2 * time.Second
+	} else {
+		dur, err := time.ParseDuration(refreshRaw)
+		if err != nil || dur <= 0 {
+			return c, errors.New("RULES_CACHE_REFRESH must be a positive duration (e.g. 2s)")
+		}
+		c.RulesCacheRefresh = dur
+	}
+
+	maxPinsRaw := strings.TrimSpace(util.MustGetEnv("RULES_MAX_PIN_SLOTS"))
+	if maxPinsRaw == "" {
+		c.RulesMaxPinSlots = 3
+	} else {
+		pins, err := strconv.Atoi(maxPinsRaw)
+		if err != nil || pins <= 0 {
+			return c, errors.New("RULES_MAX_PIN_SLOTS must be a positive integer")
+		}
+		c.RulesMaxPinSlots = pins
+	}
+
+	auditSampleRaw := strings.TrimSpace(util.MustGetEnv("RULES_AUDIT_SAMPLE"))
+	if auditSampleRaw == "" {
+		c.RulesAuditSample = 1.0
+	} else {
+		sample, err := strconv.ParseFloat(auditSampleRaw, 64)
+		if err != nil || sample < 0 || sample > 1 {
+			return c, errors.New("RULES_AUDIT_SAMPLE must be between 0 and 1")
+		}
+		c.RulesAuditSample = sample
 	}
 
 	// Business rule: exclude purchased items in a window.

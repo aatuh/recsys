@@ -4,7 +4,7 @@ package store
 
 import (
 	"context"
-	"os"
+	"recsys/shared/util"
 	"testing"
 	"time"
 
@@ -12,19 +12,9 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func getTestDBURL() string {
-	if v := os.Getenv("TEST_DATABASE_URL"); v != "" {
-		return v
-	}
-	return os.Getenv("DATABASE_URL")
-}
-
 func newTestPool(t *testing.T) *pgxpool.Pool {
 	t.Helper()
-	url := getTestDBURL()
-	if url == "" {
-		t.Skip("no TEST_DATABASE_URL/DATABASE_URL; skipping")
-	}
+	url := util.MustGetEnv("DATABASE_URL")
 	ctx := context.Background()
 	pool, err := pgxpool.New(ctx, url)
 	if err != nil {

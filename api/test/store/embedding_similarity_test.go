@@ -13,10 +13,9 @@ import (
 )
 
 // getTestPool connects to the DB used by other integration tests.
-// If TEST_DATABASE_URL is set, it wins. Otherwise, assume Compose.
 func getTestPool(t *testing.T) *pgxpool.Pool {
 	t.Helper()
-	dsn := util.MustGetEnv("TEST_DATABASE_URL")
+	dsn := util.MustGetEnv("DATABASE_URL")
 	cfg, err := pgxpool.ParseConfig(dsn)
 	if err != nil {
 		t.Fatalf("parse dsn: %v", err)

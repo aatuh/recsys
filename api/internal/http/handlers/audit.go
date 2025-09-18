@@ -3,6 +3,7 @@ package handlers
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"math/rand"
 	"net/http"
 	"sort"
 	"time"
@@ -38,6 +39,8 @@ type banditTraceContext struct {
 	RequestID      string
 	Explain        map[string]string
 }
+
+var auditRand = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 func (h *Handler) recordDecisionTrace(in decisionTraceInput) {
 	if h.DecisionRecorder == nil {
@@ -128,6 +131,83 @@ func (h *Handler) recordDecisionTrace(in decisionTraceInput) {
 	}
 	if len(in.TraceData.CapsInfo) > 0 {
 		extras["caps_applied"] = true
+	}
+	includeRuleExtras := true
+	if h.RulesAuditSample <= 0 {
+		includeRuleExtras = false
+	} else if h.RulesAuditSample < 1 {
+		includeRuleExtras = auditRand.Float64() < h.RulesAuditSample
+	}
+	if includeRuleExtras && len(in.TraceData.RuleEvaluated) > 0 {
+		ids := make([]string, 0, len(in.TraceData.RuleEvaluated))
+		for _, id := range in.TraceData.RuleEvaluated {
+			ids = append(ids, id.String())
+		}
+		extras["rules_evaluated"] = ids
+	}
+	if includeRuleExtras && len(in.TraceData.RuleMatches) > 0 {
+		matches := make([]map[string]any, 0, len(in.TraceData.RuleMatches))
+		for _, match := range in.TraceData.RuleMatches {
+			entry := map[string]any{
+				"rule_id":     match.RuleID.String(),
+				"action":      string(match.Action),
+				"target_type": string(match.Target),
+				"item_ids":    append([]string(nil), match.ItemIDs...),
+			}
+			matches = append(matches, entry)
+		}
+		extras["rules_matched"] = matches
+	}
+	if includeRuleExtras && len(in.TraceData.RuleEffects) > 0 {
+		effects := make(map[string]map[string]any, len(in.TraceData.RuleEffects))
+		for id, eff := range in.TraceData.RuleEffects {
+			entry := map[string]any{
+				"blocked":     eff.Blocked,
+				"pinned":      eff.Pinned,
+				"boost_delta": eff.BoostDelta,
+			}
+			if len(eff.BlockRules) > 0 {
+				ruleIDs := make([]string, 0, len(eff.BlockRules))
+				for _, rid := range eff.BlockRules {
+					ruleIDs = append(ruleIDs, rid.String())
+				}
+				entry["block_rule_ids"] = ruleIDs
+			}
+			if len(eff.PinRules) > 0 {
+				ruleIDs := make([]string, 0, len(eff.PinRules))
+				for _, rid := range eff.PinRules {
+					ruleIDs = append(ruleIDs, rid.String())
+				}
+				entry["pin_rule_ids"] = ruleIDs
+			}
+			if len(eff.BoostRules) > 0 {
+				boost := make([]map[string]any, 0, len(eff.BoostRules))
+				for _, br := range eff.BoostRules {
+					boost = append(boost, map[string]any{
+						"rule_id": br.RuleID.String(),
+						"delta":   br.Delta,
+					})
+				}
+				entry["boost_rules"] = boost
+			}
+			effects[id] = entry
+		}
+		extras["rule_effects_per_item"] = effects
+	}
+	if includeRuleExtras && len(in.TraceData.RulePinned) > 0 {
+		pinned := make([]map[string]any, 0, len(in.TraceData.RulePinned))
+		for _, pin := range in.TraceData.RulePinned {
+			ruleIDs := make([]string, 0, len(pin.Rules))
+			for _, rid := range pin.Rules {
+				ruleIDs = append(ruleIDs, rid.String())
+			}
+			pinned = append(pinned, map[string]any{
+				"item_id":         pin.ItemID,
+				"from_candidates": pin.FromCandidates,
+				"rule_ids":        ruleIDs,
+			})
+		}
+		extras["rule_pinned_items"] = pinned
 	}
 
 	if len(extras) > 0 {

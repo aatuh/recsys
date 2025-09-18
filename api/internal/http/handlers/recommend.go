@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"recsys/internal/algorithm"
@@ -77,7 +78,8 @@ func (h *Handler) Recommend(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	applyOverrides(&config, req.Overrides)
-	engine := algorithm.NewEngine(config, h.Store)
+	algoReq.SegmentID = segmentID
+	engine := algorithm.NewEngine(config, h.Store, h.RulesManager)
 
 	// Get recommendations
 	algoResp, traceData, err := engine.Recommend(r.Context(), algoReq)
@@ -204,10 +206,20 @@ func (h *Handler) convertToAlgorithmRequest(r *http.Request, req handlerstypes.R
 		}
 	}
 
+	surface := ""
+	if req.Context != nil {
+		if val, ok := req.Context["surface"]; ok {
+			if s, ok := val.(string); ok {
+				surface = strings.TrimSpace(s)
+			}
+		}
+	}
+
 	return algorithm.Request{
 		OrgID:          orgID,
 		UserID:         req.UserID,
 		Namespace:      ns,
+		Surface:        surface,
 		K:              req.K,
 		Constraints:    constraints,
 		Blend:          blend,
@@ -363,6 +375,7 @@ func (h *Handler) baseAlgorithmConfig() algorithm.Config {
 		BrandTagPrefixes:    append([]string(nil), h.BrandTagPrefixes...),
 		CategoryTagPrefixes: append([]string(nil), h.CategoryTagPrefixes...),
 		PopularityFanout:    h.PopularityFanout,
+		RulesEnabled:        h.RulesManager != nil && h.RulesManager.Enabled(),
 	}
 }
 
@@ -519,6 +532,9 @@ func buildSegmentContextData(
 	requestData := map[string]any{
 		"namespace": req.Namespace,
 		"k":         req.K,
+	}
+	if req.Surface != "" {
+		requestData["surface"] = req.Surface
 	}
 	if req.Blend != nil {
 		requestData["blend"] = map[string]any{

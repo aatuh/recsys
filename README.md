@@ -30,6 +30,17 @@ users, items, and events. The service returns top-K recommendations and
   policy per surface and context, learning online from later rewards
   (e.g., click or purchase).
 
+- **Audit trail** allows listing recent decisions with filters for namespace,
+  time range, user hash, or request id. Fetch the full stored trace for a single
+  decision.
+
+- **Rule engine** allows you to create business rules that override the normal
+  recommendation algorithm. You can block certain items from appearing, pin
+  specific items to the top of results, or boost items with extra score. Rules
+  can be scoped to specific surfaces (like "homepage" or "product page") and
+  user segments, with optional time limits. The system includes a dry-run mode
+  to test which rules would apply to a set of items before making changes.
+
 ## Recommendation Algorithms Used
 
 These algorithms are used together in the recommendation pipeline.
@@ -629,6 +640,37 @@ you exploit the better‐measured mean.
   belief near 50% but with more initial confidence. Priors mainly affect early
   decisions.
 
+## Audit Trail
+
+The audit trail captures each recommendation decision so you can see
+what was shown, why items were ordered that way, and which inputs
+influenced the outcome. Each trace includes request metadata,
+effective configuration, candidate and score snapshots, any bandit
+choices, and per‑item reasons. Writing is asynchronous and can be
+sampled to limit overhead. Browse summaries with filters, then fetch a
+full trace for a single request to support debugging, compliance, and
+"show me exactly what the user saw" workflows.
+
+## Rule Engine
+
+The rule engine adds clear business controls on top of the ranking
+algorithm. You can block items from appearing, pin specific items to
+fixed positions, or boost items by increasing their score. Rules can
+be scoped by namespace and surface, limited to user segments, and
+scheduled with start/end times. During ranking, blocks remove
+candidates, boosts adjust scores, and pins can reserve positions. The
+ranker then finalizes the list with diversity and caps. A dry‑run mode
+shows which rules would fire for a given set of items so you can
+verify intent safely. Common uses include hiding out‑of‑stock or
+restricted items, promoting campaigns, curating hero slots, and
+enforcing merchandising policies.
+
+You can list existing rules and filter by namespace, surface, segment,
+status, action, or active window to find exactly what applies to a
+placement. You can update rules at any time. The dry‑run endpoint returns which
+rules would match for a given set of item IDs, including matched rule
+metadata and per‑item effects. It works without changing state.
+
 ## Configuration (Environment Variables)
 
 Put these in your service environment (see your `.env.example` files).
@@ -666,6 +708,23 @@ Put these in your service environment (see your `.env.example` files).
 | `CATEGORY_CAP`          | int ≥ 0        | Max items per category in the final top-K.      | `0` disables                    |
 | `RULE_EXCLUDE_EVENTS`   | bool           | Exclude items the user purchased recently.      | Requires `user_id`              |
 | `PURCHASED_WINDOW_DAYS` | float > 0      | Lookback for the exclude-purchased rule.        | Required if the rule is enabled |
+| `EXCLUDE_EVENT_TYPES`   | string (csv)   | Event type IDs to exclude when the rule is on.  | Comma-separated int16 values    |
+
+### Tag prefix vars
+
+| Variable                | Type / Range | What it does                            | Notes                                      |
+|-------------------------|--------------|-----------------------------------------|--------------------------------------------|
+| `BRAND_TAG_PREFIXES`    | string (csv) | Tag prefixes that denote brand tags.    | Example: `brand`. Lowercased; ':' ignored. |
+| `CATEGORY_TAG_PREFIXES` | string (csv) | Tag prefixes that denote category tags. | Example: `category,cat`.                   |
+
+### Rules engine vars
+
+| Variable              | Type / Range       | What it does                                      | Notes                             |
+|-----------------------|--------------------|---------------------------------------------------|-----------------------------------|
+| `RULES_ENABLE`        | bool               | Global kill‑switch for the rules engine.          | `false` disables rule evaluation. |
+| `RULES_CACHE_REFRESH` | Go duration string | Poll interval for reloading rules (e.g., `2s`).   |                                   |
+| `RULES_MAX_PIN_SLOTS` | int > 0            | Maximum number of pin slots allowed per response. |                                   |
+| `RULES_AUDIT_SAMPLE`  | float in [0,1]     | Sample rate for emitting rule evaluation audits.  |                                   |
 
 ### Light personalization vars
 

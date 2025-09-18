@@ -3,6 +3,7 @@ package algorithm
 import (
 	"strings"
 
+	"recsys/internal/rules"
 	"recsys/internal/types"
 
 	"github.com/google/uuid"
@@ -34,6 +35,8 @@ type Config struct {
 	BrandTagPrefixes    []string
 	CategoryTagPrefixes []string
 
+	RulesEnabled bool
+
 	// Popularity fanout
 	PopularityFanout int // Fanout for popularity candidates
 }
@@ -43,6 +46,8 @@ type Request struct {
 	OrgID          uuid.UUID
 	UserID         string
 	Namespace      string
+	Surface        string
+	SegmentID      string
 	K              int
 	Constraints    *types.PopConstraints
 	Blend          *BlendWeights
@@ -129,6 +134,10 @@ type TraceData struct {
 	IncludeReasons bool
 	ExplainLevel   ExplainLevel
 	ModelVersion   string
+	RuleMatches    []rules.Match
+	RuleEffects    map[string]rules.ItemEffect
+	RuleEvaluated  []uuid.UUID
+	RulePinned     []rules.PinnedItem
 }
 
 // SimilarItemsRequest represents a request for similar items

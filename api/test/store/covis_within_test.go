@@ -4,7 +4,7 @@ package store
 
 import (
 	"context"
-	"os"
+	"recsys/shared/util"
 	"testing"
 	"time"
 
@@ -14,13 +14,7 @@ import (
 
 func newTestPool2(t *testing.T) *pgxpool.Pool {
 	t.Helper()
-	url := os.Getenv("TEST_DATABASE_URL")
-	if url == "" {
-		url = os.Getenv("DATABASE_URL")
-	}
-	if url == "" {
-		t.Skip("no TEST_DATABASE_URL/DATABASE_URL; skipping")
-	}
+	url := util.MustGetEnv("DATABASE_URL")
 	ctx := context.Background()
 	pool, err := pgxpool.New(ctx, url)
 	if err != nil {

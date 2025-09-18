@@ -574,7 +574,7 @@ export function ExplainModal({
                 {sortedReasons.map((r, i) => (
                   <li key={`explain-${i}-${r}`}>
                     <strong>{toTitleWords(r)}</strong>:{" "}
-                    {REASON_HELP[r] || `System hint: ${  toTitleWords(r)}`}
+                    {REASON_HELP[r] || `System hint: ${toTitleWords(r)}`}
                   </li>
                 ))}
               </ul>
@@ -626,7 +626,8 @@ export function ExplainModal({
               </span>
               {personalization.raw?.profile_boost !== undefined && (
                 <span>
-                  profile_boost: {formatNumber(personalization.raw.profile_boost)}
+                  profile_boost:{" "}
+                  {formatNumber(personalization.raw.profile_boost)}
                 </span>
               )}
             </div>
@@ -699,11 +700,19 @@ function notesEqual(a: string[], b: string[]) {
   return true;
 }
 
-function describeCap(label: string, cap?: ExplainCapUsage | null): string | null {
+function describeCap(
+  label: string,
+  cap?: ExplainCapUsage | null
+): string | null {
   if (!cap) return null;
   const parts: string[] = [];
   parts.push(cap.applied ? "applied" : "not applied");
-  if (cap.count !== undefined && cap.count !== null && cap.limit !== undefined && cap.limit !== null) {
+  if (
+    cap.count !== undefined &&
+    cap.count !== null &&
+    cap.limit !== undefined &&
+    cap.limit !== null
+  ) {
     parts.push(`${cap.count}/${cap.limit}`);
   } else if (cap.limit !== undefined && cap.limit !== null) {
     parts.push(`limit ${cap.limit}`);

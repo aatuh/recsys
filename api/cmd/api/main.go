@@ -21,6 +21,7 @@ import (
 	"recsys/internal/http/handlers"
 	httpmiddleware "recsys/internal/http/middleware"
 	"recsys/internal/migrator"
+	"recsys/internal/rules"
 	"recsys/internal/store"
 	"recsys/shared/util"
 	"recsys/specs/endpoints"
@@ -167,6 +168,11 @@ func main() {
 
 	// v1 endpoints
 	st := store.New(pool)
+	rulesManager := rules.NewManager(st, rules.ManagerOptions{
+		RefreshInterval: cfg.RulesCacheRefresh,
+		MaxPinSlots:     cfg.RulesMaxPinSlots,
+		Enabled:         cfg.RulesEnabled,
+	})
 	decisionRecorder := audit.NewWriter(ctx, st, logger, audit.WriterConfig{
 		Enabled:           cfg.DecisionTraceEnabled,
 		QueueSize:         cfg.DecisionTraceQueueSize,
@@ -195,6 +201,8 @@ func main() {
 		ExcludeEventTypes:   cfg.ExcludeEventTypes,
 		BrandTagPrefixes:    cfg.BrandTagPrefixes,
 		CategoryTagPrefixes: cfg.CategoryTagPrefixes,
+		RulesManager:        rulesManager,
+		RulesAuditSample:    cfg.RulesAuditSample,
 		PurchasedWindowDays: cfg.PurchasedWindowDays,
 		ProfileWindowDays:   cfg.ProfileWindowDays,
 		ProfileBoost:        cfg.ProfileBoost,
@@ -243,6 +251,12 @@ func main() {
 	r.Post(endpoints.BanditDecide, hs.BanditDecide)
 	r.Post(endpoints.BanditReward, hs.BanditReward)
 	r.Post(endpoints.BanditRecommendations, hs.RecommendWithBandit)
+
+	// Rule engine admin endpoints
+	r.Post(endpoints.Rules, hs.RulesCreate)
+	r.Put(endpoints.RuleByID, hs.RulesUpdate)
+	r.Get(endpoints.Rules, hs.RulesList)
+	r.Post(endpoints.RulesDryRun, hs.RulesDryRun)
 
 	srv := &http.Server{
 		Addr:              ":" + serverCfg.Port,

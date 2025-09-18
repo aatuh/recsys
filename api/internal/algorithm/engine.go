@@ -4,8 +4,10 @@ import (
 	"context"
 	"math"
 	"sort"
+	"strings"
 	"time"
 
+	"recsys/internal/rules"
 	"recsys/internal/types"
 
 	"github.com/google/uuid"
@@ -32,15 +34,17 @@ const modelVersionBlend = "blend_v1"
 
 // Engine handles recommendation algorithm logic.
 type Engine struct {
-	config Config
-	store  types.RecAlgoStore
+	config       Config
+	store        types.RecAlgoStore
+	rulesManager *rules.Manager
 }
 
 // NewEngine creates a new recommendation engine.
-func NewEngine(config Config, store types.RecAlgoStore) *Engine {
+func NewEngine(config Config, store types.RecAlgoStore, rulesManager *rules.Manager) *Engine {
 	return &Engine{
-		config: config,
-		store:  store,
+		config:       config,
+		store:        store,
+		rulesManager: rulesManager,
 	}
 }
 
@@ -90,6 +94,15 @@ func (e *Engine) Recommend(
 	// Apply personalization boost.
 	e.applyPersonalizationBoost(ctx, candidateData, req)
 
+	// Apply rule engine adjustments before MMR/caps.
+	var ruleResult *rules.EvaluateResult
+	if e.rulesManager != nil && e.config.RulesEnabled {
+		ruleResult, err = e.applyRules(ctx, req, candidateData)
+		if err != nil {
+			return nil, nil, err
+		}
+	}
+
 	// Determine model version.
 	modelVersion := e.getModelVersion(weights)
 	kUsed := k
@@ -136,6 +149,7 @@ func (e *Engine) Recommend(
 		req.ExplainLevel,
 		weights,
 		reasonSink,
+		ruleResult,
 	)
 	if len(trace.Anchors) == 0 && candidateData.AnchorsFetched {
 		trace.Anchors = append(trace.Anchors, "(no_recent_activity)")
@@ -145,7 +159,66 @@ func (e *Engine) Recommend(
 	} else {
 		trace.Reasons = make(map[string][]string)
 	}
+	if ruleResult != nil {
+		if len(ruleResult.Matches) > 0 {
+			trace.RuleMatches = append([]rules.Match(nil), ruleResult.Matches...)
+		}
+		if len(ruleResult.ItemEffects) > 0 {
+			effects := make(map[string]rules.ItemEffect, len(ruleResult.ItemEffects))
+			for id, eff := range ruleResult.ItemEffects {
+				effects[id] = eff
+			}
+			trace.RuleEffects = effects
+		}
+		if len(ruleResult.EvaluatedRuleIDs) > 0 {
+			trace.RuleEvaluated = append([]uuid.UUID(nil), ruleResult.EvaluatedRuleIDs...)
+		}
+		if len(ruleResult.Pinned) > 0 {
+			trace.RulePinned = append([]rules.PinnedItem(nil), ruleResult.Pinned...)
+		}
+	}
 	return response, trace, nil
+}
+
+func (e *Engine) applyRules(
+	ctx context.Context,
+	req Request,
+	data *CandidateData,
+) (*rules.EvaluateResult, error) {
+	if e.rulesManager == nil || !e.config.RulesEnabled {
+		return nil, nil
+	}
+	surface := strings.TrimSpace(req.Surface)
+	if surface == "" {
+		surface = "default"
+	}
+	candidates := append([]types.ScoredItem(nil), data.Candidates...)
+	itemTags := make(map[string][]string, len(data.Tags))
+	for id, tags := range data.Tags {
+		itemTags[id] = append([]string(nil), tags.Tags...)
+	}
+
+	evalReq := rules.EvaluateRequest{
+		OrgID:               req.OrgID,
+		Namespace:           req.Namespace,
+		Surface:             surface,
+		SegmentID:           req.SegmentID,
+		Now:                 time.Now().UTC(),
+		Candidates:          candidates,
+		ItemTags:            itemTags,
+		BrandTagPrefixes:    e.config.BrandTagPrefixes,
+		CategoryTagPrefixes: e.config.CategoryTagPrefixes,
+	}
+
+	result, err := e.rulesManager.Evaluate(ctx, evalReq)
+	if err != nil {
+		return nil, err
+	}
+	if result == nil {
+		return nil, nil
+	}
+	data.Candidates = result.Candidates
+	return result, nil
 }
 
 // getPopularityCandidates fetches a popularity-based candidate pool.
@@ -613,6 +686,7 @@ func (e *Engine) shouldUseCaps() bool {
 }
 
 // buildResponse builds the final response.
+
 func (e *Engine) buildResponse(
 	data *CandidateData,
 	k int,
@@ -621,49 +695,97 @@ func (e *Engine) buildResponse(
 	explainLevel ExplainLevel,
 	weights BlendWeights,
 	reasonSink map[string][]string,
+	ruleResult *rules.EvaluateResult,
 ) *Response {
-	response := &Response{
-		ModelVersion: modelVersion,
-		Items:        make([]ScoredItem, 0, minInt(k, len(data.Candidates))),
+	var pinned []rules.PinnedItem
+	var ruleReasonTags map[string][]string
+	if ruleResult != nil {
+		pinned = ruleResult.Pinned
+		ruleReasonTags = ruleResult.ReasonTags
 	}
 
-	// Sort candidates by score in descending order (highest first)
-	// This ensures recommendations are returned in score order
+	estimated := len(data.Candidates) + len(pinned)
+	if estimated > k {
+		estimated = k
+	}
+	response := &Response{
+		ModelVersion: modelVersion,
+		Items:        make([]ScoredItem, 0, maxInt(estimated, 0)),
+	}
+
+	remaining := k
+
+	appendReasons := func(itemID string, base []string) []string {
+		combined := base
+		if len(ruleReasonTags) > 0 {
+			if extra, ok := ruleReasonTags[itemID]; ok && len(extra) > 0 {
+				combined = append(combined, extra...)
+			}
+		}
+		return deduplicateReasons(combined)
+	}
+
+	// Attach pinned items first.
+	for _, pin := range pinned {
+		if remaining <= 0 {
+			break
+		}
+		reasonsFull := appendReasons(pin.ItemID, e.buildReasons(pin.ItemID, true, weights, data))
+		if reasonSink != nil {
+			reasonSink[pin.ItemID] = append([]string(nil), reasonsFull...)
+		}
+		var reasons []string
+		if includeReasons {
+			reasons = append([]string(nil), reasonsFull...)
+		}
+		var explain *ExplainBlock
+		if explainLevel != ExplainLevelTags {
+			explain = e.buildExplain(pin.ItemID, weights, data, explainLevel)
+		}
+		score := pin.Score
+		response.Items = append(response.Items, ScoredItem{
+			ItemID:  pin.ItemID,
+			Score:   score,
+			Reasons: reasons,
+			Explain: explain,
+		})
+		remaining--
+	}
+
+	if remaining <= 0 {
+		return response
+	}
+
+	// Sort remaining candidates by score.
 	sortedCandidates := make([]types.ScoredItem, len(data.Candidates))
 	copy(sortedCandidates, data.Candidates)
-
-	// Sort by score descending (highest scores first)
 	sort.Slice(sortedCandidates, func(i, j int) bool {
 		return sortedCandidates[i].Score > sortedCandidates[j].Score
 	})
 
-	for i, candidate := range sortedCandidates {
-		if i >= k {
+	for _, candidate := range sortedCandidates {
+		if remaining <= 0 {
 			break
 		}
-
-		reasons := e.buildReasons(
-			candidate.ItemID, true, weights, data,
-		)
+		reasonsFull := appendReasons(candidate.ItemID, e.buildReasons(candidate.ItemID, true, weights, data))
 		if reasonSink != nil {
-			reasonCopy := append([]string(nil), reasons...)
-			reasonSink[candidate.ItemID] = reasonCopy
+			reasonSink[candidate.ItemID] = append([]string(nil), reasonsFull...)
 		}
-		if !includeReasons {
-			reasons = nil
+		var reasons []string
+		if includeReasons {
+			reasons = append([]string(nil), reasonsFull...)
 		}
-
 		var explain *ExplainBlock
 		if explainLevel != ExplainLevelTags {
 			explain = e.buildExplain(candidate.ItemID, weights, data, explainLevel)
 		}
-
 		response.Items = append(response.Items, ScoredItem{
 			ItemID:  candidate.ItemID,
 			Score:   candidate.Score,
 			Reasons: reasons,
 			Explain: explain,
 		})
+		remaining--
 	}
 
 	return response
