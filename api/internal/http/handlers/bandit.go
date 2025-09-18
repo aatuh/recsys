@@ -10,8 +10,8 @@ import (
 	"recsys/internal/algorithm"
 	"recsys/internal/bandit"
 	"recsys/internal/http/common"
-	"recsys/internal/http/types"
 	internaltypes "recsys/internal/types"
+	"recsys/specs/types"
 )
 
 // @Summary Upsert bandit policies

@@ -23,6 +23,7 @@ import (
 	"recsys/internal/migrator"
 	"recsys/internal/store"
 	"recsys/shared/util"
+	"recsys/specs/endpoints"
 	"recsys/swagger"
 
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -105,14 +106,14 @@ func main() {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
+	r.Get(endpoints.Health, func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{"status":"ok"}`))
 	})
 
 	// Swagger UI (generated with `make swag`)
-	r.Get("/docs", func(w http.ResponseWriter, r *http.Request) {
+	r.Get(endpoints.Docs, func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/docs/", http.StatusMovedPermanently)
 	})
 	r.Get("/docs/*", httpSwagger.Handler(
@@ -206,42 +207,42 @@ func main() {
 		DecisionRecorder:    decisionRecorder,
 		DecisionTraceSalt:   cfg.DecisionTraceSalt,
 	}
-	r.Post("/v1/items:upsert", hs.ItemsUpsert)
-	r.Post("/v1/users:upsert", hs.UsersUpsert)
-	r.Post("/v1/events:batch", hs.EventsBatch)
-	r.Post("/v1/recommendations", hs.Recommend)
-	r.Get("/v1/items/{item_id}/similar", hs.ItemSimilar)
-	r.Post("/v1/event-types:upsert", hs.EventTypesUpsert)
-	r.Get("/v1/event-types", hs.EventTypesList)
+	r.Post(endpoints.ItemsUpsert, hs.ItemsUpsert)
+	r.Post(endpoints.UsersUpsert, hs.UsersUpsert)
+	r.Post(endpoints.EventsBatch, hs.EventsBatch)
+	r.Post(endpoints.Recommendations, hs.Recommend)
+	r.Get(endpoints.ItemsSimilar, hs.ItemSimilar)
+	r.Post(endpoints.EventTypesUpsert, hs.EventTypesUpsert)
+	r.Get(endpoints.EventTypes, hs.EventTypesList)
 
 	// Data management endpoints
-	r.Get("/v1/users", hs.ListUsers)
-	r.Get("/v1/items", hs.ListItems)
-	r.Get("/v1/events", hs.ListEvents)
-	r.Post("/v1/users:delete", hs.DeleteUsers)
-	r.Post("/v1/items:delete", hs.DeleteItems)
-	r.Post("/v1/events:delete", hs.DeleteEvents)
+	r.Get(endpoints.UsersList, hs.ListUsers)
+	r.Get(endpoints.ItemsList, hs.ListItems)
+	r.Get(endpoints.EventsList, hs.ListEvents)
+	r.Post(endpoints.UsersDelete, hs.DeleteUsers)
+	r.Post(endpoints.ItemsDelete, hs.DeleteItems)
+	r.Post(endpoints.EventsDelete, hs.DeleteEvents)
 
 	// Segment profiles and segments
-	r.Get("/v1/segment-profiles", hs.SegmentProfilesList)
-	r.Post("/v1/segment-profiles:upsert", hs.SegmentProfilesUpsert)
-	r.Post("/v1/segment-profiles:delete", hs.SegmentProfilesDelete)
-	r.Get("/v1/segments", hs.SegmentsList)
-	r.Post("/v1/segments:upsert", hs.SegmentsUpsert)
-	r.Post("/v1/segments:delete", hs.SegmentsDelete)
-	r.Post("/v1/segments:dry-run", hs.SegmentsDryRun)
+	r.Get(endpoints.SegmentProfiles, hs.SegmentProfilesList)
+	r.Post(endpoints.SegmentProfilesUpsert, hs.SegmentProfilesUpsert)
+	r.Post(endpoints.SegmentProfilesDelete, hs.SegmentProfilesDelete)
+	r.Get(endpoints.Segments, hs.SegmentsList)
+	r.Post(endpoints.SegmentsUpsert, hs.SegmentsUpsert)
+	r.Post(endpoints.SegmentsDelete, hs.SegmentsDelete)
+	r.Post(endpoints.SegmentDryRun, hs.SegmentsDryRun)
 
 	// Audit endpoints
-	r.Get("/v1/audit/decisions", hs.AuditDecisionsList)
-	r.Get("/v1/audit/decisions/{decision_id}", hs.AuditDecisionGet)
-	r.Post("/v1/audit/search", hs.AuditDecisionsSearch)
+	r.Get(endpoints.AuditDecisions, hs.AuditDecisionsList)
+	r.Get(endpoints.AuditDecisionByID, hs.AuditDecisionGet)
+	r.Post(endpoints.AuditSearch, hs.AuditDecisionsSearch)
 
 	// Bandit endpoints
-	r.Post("/v1/bandit/policies:upsert", hs.BanditPoliciesUpsert)
-	r.Get("/v1/bandit/policies", hs.BanditPoliciesList)
-	r.Post("/v1/bandit/decide", hs.BanditDecide)
-	r.Post("/v1/bandit/reward", hs.BanditReward)
-	r.Post("/v1/bandit/recommendations", hs.RecommendWithBandit)
+	r.Post(endpoints.BanditPoliciesUpsert, hs.BanditPoliciesUpsert)
+	r.Get(endpoints.BanditPolicies, hs.BanditPoliciesList)
+	r.Post(endpoints.BanditDecide, hs.BanditDecide)
+	r.Post(endpoints.BanditReward, hs.BanditReward)
+	r.Post(endpoints.BanditRecommendations, hs.RecommendWithBandit)
 
 	srv := &http.Server{
 		Addr:              ":" + serverCfg.Port,

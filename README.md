@@ -343,6 +343,41 @@ Tiny example (3 items, tags)
   - Co‑visitation can still add context if the user has recent anchors.
   - Otherwise, popularity carries the result (still stable and explainable).
 
+## Explainability & Governance Features
+
+### "Why this recommendation?" explanations
+
+- Every recommendation API response can include an item-level `reasons` array
+  when `include_reasons=true`.
+- Structured explanations are available via the `explain_level` parameter
+  (`tags`, `numeric`, `full`). When requested, the API returns an `explain`
+  block that exposes blend contributions, personalization overlap, MMR details,
+  diversity caps, and the recent anchors used during scoring.
+- These signals are the same ones the ranker used, which makes it easy to
+  surface badges in the UI or to debug ranking behaviour during integrations.
+
+### Segment profiles & rules
+
+- You can use the API to upload segment profiles to define reusable weight
+  bundles (blend weights, MMR, caps, personalization settings, time windows).
+- Attach those profiles to audience segments with the API. Segments can match
+  users on traits, request context, or namespace-level rules. The active profile
+  is applied automatically during recommendation.
+- Dry running lets you test which profile a hypothetical user would receive.
+  This makes it straightforward to tailor ranking knobs for cohorts such as
+  "new", "returning", or "VIP" players without code changes.
+
+### Decision audit trail
+
+- Each recommendation can be persisted as a `rec_decisions` record containing
+  request metadata, effective configuration, pre/post ranking snapshots,
+  reasons, and optional bandit context.
+- Enable the writer via the `AUDIT_DECISIONS_*` environment variables; the async
+  worker batches inserts to avoid impacting request latency.
+- These traces power compliance reviews, post-mortems, and "show me exactly what
+  the user saw" workflows, using the same hashed identifiers described in the
+  audit configuration.
+
 ## Contextual Multi‑Armed Bandit
 
 A lightweight, online‑learning AI component that chooses which ranking

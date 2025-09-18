@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"recsys/internal/http/common"
-	"recsys/internal/http/types"
+	"recsys/specs/types"
 
 	"github.com/google/uuid"
 )

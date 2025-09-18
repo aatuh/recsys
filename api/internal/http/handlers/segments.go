@@ -7,8 +7,8 @@ import (
 
 	"recsys/internal/algorithm"
 	"recsys/internal/http/common"
-	handlerstypes "recsys/internal/http/types"
 	"recsys/internal/types"
+	handlerstypes "recsys/specs/types"
 )
 
 // SegmentProfilesList godoc

@@ -8,9 +8,9 @@ import (
 
 	"recsys/internal/audit"
 	"recsys/internal/http/common"
-	"recsys/internal/http/types"
 	"recsys/internal/store"
 	internaltypes "recsys/internal/types"
+	"recsys/specs/types"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"

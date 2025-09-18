@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"testing"
 
+	"recsys/specs/endpoints"
 	"recsys/test/shared"
 
 	"github.com/stretchr/testify/require"
@@ -19,7 +20,7 @@ func TestHandlers_IngestSmoke(t *testing.T) {
 	shared.MustHaveEventTypeDefaults(t, pool)
 
 	// items
-	client.DoRequestWithStatus(t, http.MethodPost, "/v1/items:upsert", map[string]any{
+	client.DoRequestWithStatus(t, http.MethodPost, endpoints.ItemsUpsert, map[string]any{
 		"namespace": "default",
 		"items": []map[string]any{
 			{"item_id": "i1", "available": true, "price": 12.5, "tags": []string{"t1"}},
@@ -28,13 +29,13 @@ func TestHandlers_IngestSmoke(t *testing.T) {
 	}, http.StatusAccepted)
 
 	// users
-	client.DoRequestWithStatus(t, http.MethodPost, "/v1/users:upsert", map[string]any{
+	client.DoRequestWithStatus(t, http.MethodPost, endpoints.UsersUpsert, map[string]any{
 		"namespace": "default",
 		"users":     []map[string]any{{"user_id": "u1"}, {"user_id": "u2"}},
 	}, http.StatusAccepted)
 
 	// events
-	client.DoRequestWithStatus(t, http.MethodPost, "/v1/events:batch", map[string]any{
+	client.DoRequestWithStatus(t, http.MethodPost, endpoints.EventsBatch, map[string]any{
 		"namespace": "default",
 		"events": []map[string]any{
 			{"user_id": "u1", "item_id": "i1", "type": 0, "value": 1},
@@ -43,7 +44,7 @@ func TestHandlers_IngestSmoke(t *testing.T) {
 	}, http.StatusAccepted)
 
 	// recommendations (current stub expected; update when real logic is wired)
-	body := client.DoRequestWithStatus(t, http.MethodPost, "/v1/recommendations", map[string]any{
+	body := client.DoRequestWithStatus(t, http.MethodPost, endpoints.Recommendations, map[string]any{
 		"user_id": "u1", "namespace": "default", "k": 5,
 	}, http.StatusOK)
 	var resp struct {

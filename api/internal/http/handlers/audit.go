@@ -9,8 +9,8 @@ import (
 
 	"recsys/internal/algorithm"
 	"recsys/internal/audit"
-	handlerstypes "recsys/internal/http/types"
 	"recsys/internal/types"
+	handlerstypes "recsys/specs/types"
 
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/google/uuid"

@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"recsys/internal/http/common"
-	handlerstypes "recsys/internal/http/types"
 	"recsys/internal/store"
+	handlerstypes "recsys/specs/types"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"

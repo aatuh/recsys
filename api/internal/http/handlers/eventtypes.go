@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"recsys/internal/http/common"
-	"recsys/internal/http/types"
 	"recsys/internal/store"
+	"recsys/specs/types"
 
 	"github.com/google/uuid"
 )

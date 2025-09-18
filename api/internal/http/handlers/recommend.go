@@ -10,9 +10,9 @@ import (
 
 	"recsys/internal/algorithm"
 	"recsys/internal/http/common"
-	handlerstypes "recsys/internal/http/types"
 	"recsys/internal/segments"
 	"recsys/internal/types"
+	handlerstypes "recsys/specs/types"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -113,7 +113,7 @@ func (h *Handler) Recommend(w http.ResponseWriter, r *http.Request) {
 // @Param        item_id  path  string  true  "Item ID"
 // @Param        namespace query string false "Namespace"  default(default)
 // @Param        k        query int     false "Top-K"  default(20)
-// @Success      200      {array}  internal_http_types.ScoredItem
+// @Success      200      {array}  types.ScoredItem
 // @Failure      400      {object} common.APIError
 // @Router       /v1/items/{item_id}/similar [get]
 func (h *Handler) ItemSimilar(w http.ResponseWriter, r *http.Request) {
