@@ -14,9 +14,9 @@ interface ProfileEditorProps {
   profileDescription: string;
   overrides: types_Overrides;
   onSave: (
-    name: string,
-    description: string,
-    overrides: types_Overrides
+    _name: string,
+    _description: string,
+    value: types_Overrides
   ) => void;
   onCancel: () => void;
   onClearField: (field: keyof types_Overrides) => void;
@@ -126,16 +126,6 @@ export function ProfileEditor({
     value: boolean
   ) => {
     setEditedOverrides({ ...editedOverrides, [key]: value });
-  };
-
-  const updateStringOverride = (key: keyof types_Overrides, value: string) => {
-    if (value === "") {
-      const newOverrides = { ...editedOverrides };
-      delete newOverrides[key];
-      setEditedOverrides(newOverrides);
-    } else {
-      setEditedOverrides({ ...editedOverrides, [key]: value });
-    }
   };
 
   const clearField = (key: keyof types_Overrides) => {

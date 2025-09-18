@@ -26,7 +26,7 @@ interface types_BanditPolicy {
 
 interface PolicyManagerProps {
   namespace: string;
-  onPoliciesChange?: (policies: types_BanditPolicy[]) => void;
+  onPoliciesChange?: (value: types_BanditPolicy[]) => void;
 }
 
 interface CustomPolicy {

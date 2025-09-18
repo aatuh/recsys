@@ -1,12 +1,5 @@
 import React, { useState, useCallback } from "react";
-import {
-  Section,
-  Row,
-  Label,
-  TextInput,
-  NumberInput,
-  Button,
-} from "./UIComponents";
+import { Row, Label, TextInput, NumberInput, Button } from "./UIComponents";
 
 interface EventStep {
   id: string;
@@ -48,7 +41,6 @@ export function EventSequenceBuilder({
   const [sequenceName, setSequenceName] = useState("");
   const [sequenceDescription, setSequenceDescription] = useState("");
   const [events, setEvents] = useState<EventStep[]>([]);
-  const [editingEvent, setEditingEvent] = useState<EventStep | null>(null);
 
   const addEvent = useCallback(() => {
     const newEvent: EventStep = {
@@ -120,20 +112,12 @@ export function EventSequenceBuilder({
       id: `custom_${Date.now()}`,
       name: sequenceName.trim(),
       description: sequenceDescription.trim(),
-      events: events.map(({ id, ...event }) => event), // Remove id from events
+      events: events.map(({ id: _id, ...event }) => event), // Remove id from events
     };
 
     onSaveSequence(sequence);
     onClose();
   }, [sequenceName, sequenceDescription, events, onSaveSequence, onClose]);
-
-  const getEventTypeName = useCallback(
-    (typeIndex: number) => {
-      const eventType = eventTypes.find((et) => et.index === typeIndex);
-      return eventType?.title || `Type ${typeIndex}`;
-    },
-    [eventTypes]
-  );
 
   return (
     <div

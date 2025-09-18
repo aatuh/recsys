@@ -6,9 +6,9 @@ import type { EventTypeConfig } from "../types";
 interface UserSessionViewProps {
   namespace: string;
   generatedUsers: string[];
-  setGeneratedUsers: (users: string[]) => void;
+  setGeneratedUsers: (value: string[]) => void;
   generatedItems: string[];
-  setGeneratedItems: (items: string[]) => void;
+  setGeneratedItems: (value: string[]) => void;
   eventTypes: EventTypeConfig[];
   blend: { pop: number; cooc: number; als: number };
   k: number;

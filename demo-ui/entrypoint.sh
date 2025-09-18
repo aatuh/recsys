@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-URL="${OPENAPI_URL:-http://recsys-api:8000/swagger/swagger.json}"
+URL="${OPENAPI_URL:-http://recsys-swagger:8080/swagger.json}"
 
 # Install deps once (mounted volume persists node_modules)
 if [ ! -d node_modules ]; then
@@ -9,8 +9,8 @@ if [ ! -d node_modules ]; then
   pnpm install --frozen-lockfile=false
 fi
 
-# Wait for API to expose swagger.json
-echo "Waiting for API schema at: $URL"
+# Wait for Swagger service to expose swagger.json
+echo "Waiting for Swagger schema at: $URL"
 for i in $(seq 1 60); do
   if curl -fsSL "$URL" >/dev/null 2>&1; then break; fi
   sleep 1

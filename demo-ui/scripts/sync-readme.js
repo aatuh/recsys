@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+/* eslint-disable no-console */
+
 /**
  * Sync README files from various directories to the demo-ui public folder
  * This script ensures the documentation in the demo UI is always up-to-date

@@ -11,8 +11,7 @@ export type ViewType =
 
 interface NavigationProps {
   activeView: ViewType;
-  onViewChange: (view: ViewType) => void;
-  apiBase: string;
+  onViewChange: (value: ViewType) => void;
   swaggerUrl: string;
   customChatGptUrl?: string;
   namespace: string;
@@ -21,7 +20,6 @@ interface NavigationProps {
 export function Navigation({
   activeView,
   onViewChange,
-  apiBase,
   swaggerUrl,
   customChatGptUrl,
   namespace,
@@ -248,17 +246,13 @@ export function Navigation({
             borderRadius: 4,
           }}
           onClick={() => {
-            window.open(`${swaggerUrl}/docs/`, "_blank", "noopener,noreferrer");
+            window.open(swaggerUrl, "_blank", "noopener,noreferrer");
           }}
           onMouseDown={(e) => {
             if (e.button === 1) {
               // Middle mouse button
               e.preventDefault();
-              window.open(
-                `${swaggerUrl}/docs/`,
-                "_blank",
-                "noopener,noreferrer"
-              );
+              window.open(swaggerUrl, "_blank", "noopener,noreferrer");
             }
           }}
           title="Middle-click to open in new tab"

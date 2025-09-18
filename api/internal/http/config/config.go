@@ -46,6 +46,15 @@ type Config struct {
 	DecisionTraceSampleDefault    float64
 	DecisionTraceNamespaceSamples map[string]float64
 	DecisionTraceSalt             string
+
+	LLMExplainEnabled bool
+	LLMProvider       string
+	LLMModelPrimary   string
+	LLMModelEscalate  string
+	LLMTimeout        time.Duration
+	LLMMaxTokens      int
+	LLMAPIKey         string
+	LLMBaseURL        string
 }
 
 func Load() (Config, error) {
@@ -306,6 +315,33 @@ func Load() (Config, error) {
 			return c, errors.New("AUDIT_DECISIONS_SALT must be non-empty")
 		}
 		c.DecisionTraceSalt = salt
+	}
+
+	c.LLMExplainEnabled = util.MustGetEnv("LLM_EXPLAIN_ENABLED") == "true"
+	c.LLMProvider = strings.TrimSpace(util.MustGetEnv("LLM_PROVIDER"))
+	c.LLMModelPrimary = strings.TrimSpace(util.MustGetEnv("LLM_MODEL_PRIMARY"))
+	c.LLMModelEscalate = strings.TrimSpace(util.MustGetEnv("LLM_MODEL_ESCALATE"))
+	c.LLMAPIKey = strings.TrimSpace(util.MustGetEnv("LLM_API_KEY"))
+	c.LLMBaseURL = strings.TrimSpace(util.MustGetEnv("LLM_BASE_URL"))
+
+	if timeoutStr := strings.TrimSpace(util.MustGetEnv("LLM_TIMEOUT")); timeoutStr != "" {
+		timeout, err := time.ParseDuration(timeoutStr)
+		if err != nil || timeout <= 0 {
+			return c, errors.New("LLM_TIMEOUT must be positive duration")
+		}
+		c.LLMTimeout = timeout
+	} else {
+		c.LLMTimeout = 6 * time.Second
+	}
+
+	if maxTokensStr := strings.TrimSpace(util.MustGetEnv("LLM_MAX_TOKENS")); maxTokensStr != "" {
+		maxTokens, err := strconv.Atoi(maxTokensStr)
+		if err != nil || maxTokens <= 0 {
+			return c, errors.New("LLM_MAX_TOKENS must be positive integer")
+		}
+		c.LLMMaxTokens = maxTokens
+	} else {
+		c.LLMMaxTokens = 1200
 	}
 
 	return c, nil

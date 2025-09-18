@@ -2,15 +2,13 @@ import {
   ConfigService,
   IngestionService,
   RankingService,
-} from "../lib/api-client";
-import type {
-  types_EventTypeConfigUpsertRequest,
-  types_UsersUpsertRequest,
-  types_ItemsUpsertRequest,
-  types_EventsBatchRequest,
-  types_RecommendRequest,
-  types_RecommendResponse,
-  types_Overrides,
+  type types_EventTypeConfigUpsertRequest,
+  type types_UsersUpsertRequest,
+  type types_ItemsUpsertRequest,
+  type types_EventsBatchRequest,
+  type types_RecommendRequest,
+  type types_RecommendResponse,
+  type types_Overrides,
 } from "../lib/api-client";
 
 /**
@@ -26,7 +24,7 @@ export async function upsertEventTypes(
     weight: number;
     halfLifeDays: number;
   }>,
-  append: (s: string) => void
+  append: (value: string) => void
 ) {
   const payload: types_EventTypeConfigUpsertRequest = {
     namespace,
@@ -45,7 +43,7 @@ export async function upsertEventTypes(
 export async function upsertUsers(
   namespace: string,
   users: any[],
-  append: (s: string) => void
+  append: (value: string) => void
 ) {
   const payload: types_UsersUpsertRequest = { namespace, users };
   await IngestionService.upsertUsers(payload);
@@ -55,7 +53,7 @@ export async function upsertUsers(
 export async function upsertItems(
   namespace: string,
   items: any[],
-  append: (s: string) => void
+  append: (value: string) => void
 ) {
   const payload: types_ItemsUpsertRequest = { namespace, items };
   await IngestionService.upsertItems(payload);
@@ -65,7 +63,7 @@ export async function upsertItems(
 export async function batchEvents(
   namespace: string,
   events: any[],
-  append: (s: string) => void
+  append: (value: string) => void
 ) {
   const payload: types_EventsBatchRequest = { namespace, events };
   await IngestionService.batchEvents(payload);
@@ -160,7 +158,7 @@ async function apiRequest<T>(
         const text = await response.text();
         errorMessage = text || errorMessage;
       }
-    } catch (e) {
+    } catch {
       // If we can't parse the error response, use the status
       errorMessage = `HTTP ${response.status}: ${response.statusText}`;
     }

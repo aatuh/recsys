@@ -8,7 +8,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0 --port 3000",
-    "codegen:api": "openapi --input http://localhost:8000/swagger/swagger.json --output src/lib/api-client --client fetch",
+    "codegen:api": "openapi --input ../swagger-service/public/swagger.json --output src/lib/api-client --client fetch",
     "typecheck": "tsc --noEmit",
     "sync:readme": "node scripts/sync-readme.js",
     "lint": "eslint . --ext .ts,.tsx",

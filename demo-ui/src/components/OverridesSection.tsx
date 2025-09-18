@@ -16,13 +16,13 @@ interface CustomProfile {
 
 interface OverridesSectionProps {
   overrides: types_Overrides | null;
-  setOverrides: (overrides: types_Overrides | null) => void;
+  setOverrides: (value: types_Overrides | null) => void;
   customProfiles: CustomProfile[];
-  setCustomProfiles: (profiles: CustomProfile[]) => void;
+  setCustomProfiles: (value: CustomProfile[]) => void;
   selectedProfileId: string | null;
-  setSelectedProfileId: (id: string | null) => void;
+  setSelectedProfileId: (value: string | null) => void;
   isEditingProfile: boolean;
-  setIsEditingProfile: (editing: boolean) => void;
+  setIsEditingProfile: (value: boolean) => void;
 }
 
 export function OverridesSection({
@@ -183,7 +183,7 @@ export function OverridesSection({
     setEditingProfile(null);
   };
 
-  const handleClearField = (field: keyof types_Overrides) => {
+  const handleClearField = (_field: keyof types_Overrides) => {
     // This will be handled by the ProfileEditor component
   };
 
@@ -473,7 +473,7 @@ export function OverridesSection({
                 }}
               >
                 {Object.entries(overrides)
-                  .filter(([_, value]) => value !== undefined && value !== null)
+                  .filter(([, value]) => value !== undefined && value !== null)
                   .map(([key, value]) => (
                     <div key={key} style={{ marginBottom: 4 }}>
                       <span style={{ color: "#666" }}>{key}:</span>{" "}

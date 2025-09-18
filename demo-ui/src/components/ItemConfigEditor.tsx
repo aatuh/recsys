@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Section,
   Row,
@@ -32,7 +32,6 @@ export interface ItemConfigEditorProps {
   priceRanges: PriceRange[];
   setPriceRanges: (ranges: PriceRange[]) => void;
   generatedItems: string[];
-  namespace: string;
   onUpdateItem: (itemId: string, updates: Record<string, any>) => Promise<void>;
 }
 
@@ -42,7 +41,6 @@ export function ItemConfigEditor({
   priceRanges,
   setPriceRanges,
   generatedItems,
-  namespace,
   onUpdateItem,
 }: ItemConfigEditorProps) {
   const [selectedItem, setSelectedItem] = useState("");

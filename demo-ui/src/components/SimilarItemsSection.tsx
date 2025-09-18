@@ -19,15 +19,15 @@ interface internal_http_types_ScoredItem {
 
 interface SimilarItemsSectionProps {
   simItemId: string;
-  setSimItemId: (itemId: string) => void;
+  setSimItemId: (value: string) => void;
   k: number;
-  setK: (k: number) => void;
+  setK: (value: number) => void;
   namespace: string;
   exampleItem: string;
   simOut: internal_http_types_ScoredItem[] | null;
-  setSimOut: (items: internal_http_types_ScoredItem[] | null) => void;
+  setSimOut: (value: internal_http_types_ScoredItem[] | null) => void;
   simLoading: boolean;
-  setSimLoading: (loading: boolean) => void;
+  setSimLoading: (value: boolean) => void;
 }
 
 export function SimilarItemsSection({

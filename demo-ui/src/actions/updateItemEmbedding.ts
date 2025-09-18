@@ -12,7 +12,7 @@ export async function updateItemEmbedding(
     price?: number;
     props?: Record<string, any>;
   },
-  log?: (s: string) => void
+  log?: (message: string) => void
 ) {
   const text = itemToText(item);
   log?.(`Embedding "${item.item_id}" from text: "${text}"`);
@@ -21,7 +21,7 @@ export async function updateItemEmbedding(
   await upsertItems(
     namespace,
     [{ item_id: item.item_id, embedding: vec }],
-    (s) => log?.(s)
+    (message) => log?.(message)
   );
   log?.(`✔ embedding upserted for ${item.item_id}`);
 }

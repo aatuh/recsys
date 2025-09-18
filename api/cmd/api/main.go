@@ -3,18 +3,15 @@ package main
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"log"
 	"net/http"
-	"os"
 	"os/signal"
 	"strings"
 	"syscall"
 	"time"
 
-	"gopkg.in/yaml.v2"
-
 	"recsys/internal/audit"
+	"recsys/internal/explain"
 	"recsys/internal/http/common"
 	"recsys/internal/http/config"
 	"recsys/internal/http/db"
@@ -25,9 +22,6 @@ import (
 	"recsys/internal/store"
 	"recsys/shared/util"
 	"recsys/specs/endpoints"
-	"recsys/swagger"
-
-	httpSwagger "github.com/swaggo/http-swagger"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -59,9 +53,6 @@ func main() {
 		panic(err)
 	}
 	debugCfg := common.LoadDebugConfig()
-
-	// Configure Swagger dynamically based on environment variables
-	configureSwagger(serverCfg)
 
 	// Inject debug config into common package
 	common.SetDebugConfig(debugCfg)
@@ -113,59 +104,6 @@ func main() {
 		_, _ = w.Write([]byte(`{"status":"ok"}`))
 	})
 
-	// Swagger UI (generated with `make swag`)
-	r.Get(endpoints.Docs, func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/docs/", http.StatusMovedPermanently)
-	})
-	r.Get("/docs/*", httpSwagger.Handler(
-		httpSwagger.URL("/swagger/swagger.json"),
-	))
-
-	// Serve swagger.json file dynamically
-	r.Get("/swagger/swagger.json", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		// Serve OpenAPI 3.0.3 for Swagger UI compatibility
-		doc, err := generateOpenAPIJSON(serverCfg, "3.0.3")
-		if err != nil {
-			http.Error(w, "Failed to generate swagger", http.StatusInternalServerError)
-			return
-		}
-		_, _ = w.Write(doc)
-	})
-
-	// Serve swagger.yaml file dynamically
-	r.Get("/swagger/swagger.yaml", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/x-yaml")
-		// Serve OpenAPI 3.0.3 for Swagger UI compatibility
-		doc, err := generateOpenAPIYAML(serverCfg, "3.0.3")
-		if err != nil {
-			http.Error(w, "Failed to generate swagger", http.StatusInternalServerError)
-			return
-		}
-		_, _ = w.Write(doc)
-	})
-
-	// OpenAPI 3.1.0 endpoints for external consumers
-	r.Get("/openapi.json", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		doc, err := generateOpenAPIJSON(serverCfg, "3.1.0")
-		if err != nil {
-			http.Error(w, "Failed to generate openapi", http.StatusInternalServerError)
-			return
-		}
-		_, _ = w.Write(doc)
-	})
-
-	r.Get("/openapi.yaml", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/x-yaml")
-		doc, err := generateOpenAPIYAML(serverCfg, "3.1.0")
-		if err != nil {
-			http.Error(w, "Failed to generate openapi", http.StatusInternalServerError)
-			return
-		}
-		_, _ = w.Write(doc)
-	})
-
 	// v1 endpoints
 	st := store.New(pool)
 	rulesManager := rules.NewManager(st, rules.ManagerOptions{
@@ -173,6 +111,35 @@ func main() {
 		MaxPinSlots:     cfg.RulesMaxPinSlots,
 		Enabled:         cfg.RulesEnabled,
 	})
+
+	explainService := &explain.Service{
+		Collector: &explain.Collector{Store: st},
+		Client:    explain.NullClient{},
+		Config: explain.Config{
+			Enabled:       cfg.LLMExplainEnabled,
+			Provider:      cfg.LLMProvider,
+			ModelPrimary:  cfg.LLMModelPrimary,
+			ModelEscalate: cfg.LLMModelEscalate,
+			Timeout:       cfg.LLMTimeout,
+			MaxTokens:     cfg.LLMMaxTokens,
+			CacheTTL:      30 * time.Minute,
+		},
+		Logger: logger,
+	}
+	if cfg.LLMExplainEnabled {
+		httpClient := &http.Client{Timeout: cfg.LLMTimeout}
+		if cfg.LLMTimeout <= 0 {
+			httpClient.Timeout = 6 * time.Second
+		}
+		if strings.EqualFold(cfg.LLMProvider, "openai") && cfg.LLMAPIKey != "" {
+			explainService.Client = &explain.OpenAIClient{
+				HTTP:    httpClient,
+				APIKey:  cfg.LLMAPIKey,
+				BaseURL: cfg.LLMBaseURL,
+				Logger:  logger,
+			}
+		}
+	}
 	decisionRecorder := audit.NewWriter(ctx, st, logger, audit.WriterConfig{
 		Enabled:           cfg.DecisionTraceEnabled,
 		QueueSize:         cfg.DecisionTraceQueueSize,
@@ -203,6 +170,7 @@ func main() {
 		CategoryTagPrefixes: cfg.CategoryTagPrefixes,
 		RulesManager:        rulesManager,
 		RulesAuditSample:    cfg.RulesAuditSample,
+		ExplainService:      explainService,
 		PurchasedWindowDays: cfg.PurchasedWindowDays,
 		ProfileWindowDays:   cfg.ProfileWindowDays,
 		ProfileBoost:        cfg.ProfileBoost,
@@ -258,6 +226,9 @@ func main() {
 	r.Get(endpoints.Rules, hs.RulesList)
 	r.Post(endpoints.RulesDryRun, hs.RulesDryRun)
 
+	// Explain endpoints
+	r.Post(endpoints.ExplainLLM, hs.ExplainLLM)
+
 	srv := &http.Server{
 		Addr:              ":" + serverCfg.Port,
 		Handler:           r,
@@ -281,23 +252,12 @@ func main() {
 }
 
 type ServerConfig struct {
-	Port           string
-	SwaggerHost    string
-	SwaggerSchemes []string
+	Port string
 }
 
 func LoadServerConfig() ServerConfig {
-	schemesStr := util.MustGetEnv("SWAGGER_SCHEMES")
-	schemes := strings.Split(schemesStr, ",")
-	// Trim whitespace from each scheme
-	for i, scheme := range schemes {
-		schemes[i] = strings.TrimSpace(scheme)
-	}
-
 	return ServerConfig{
-		Port:           util.MustGetEnv("API_PORT"),
-		SwaggerHost:    util.MustGetEnv("SWAGGER_HOST"),
-		SwaggerSchemes: schemes,
+		Port: util.MustGetEnv("API_PORT"),
 	}
 }
 
@@ -305,155 +265,4 @@ func pingDB(ctx context.Context, pool *pgxpool.Pool) error {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	return pool.Ping(ctx)
-}
-
-// configureSwagger sets the Swagger host, schemes, and server URL based on server configuration.
-func configureSwagger(cfg ServerConfig) {
-	swagger.SwaggerInfo.Host = cfg.SwaggerHost
-	swagger.SwaggerInfo.Schemes = cfg.SwaggerSchemes
-}
-
-func convertParametersToOpenAPI3(swaggerDoc map[string]interface{}) {
-	paths, ok := swaggerDoc["paths"].(map[string]interface{})
-	if !ok {
-		return
-	}
-
-	for _, pathItem := range paths {
-		pathItemMap, ok := pathItem.(map[string]interface{})
-		if !ok {
-			continue
-		}
-
-		for _, operation := range pathItemMap {
-			operationMap, ok := operation.(map[string]interface{})
-			if !ok {
-				continue
-			}
-
-			parameters, ok := operationMap["parameters"].([]interface{})
-			if !ok {
-				continue
-			}
-
-			var newParameters []interface{}
-			var requestBody map[string]interface{}
-
-			for _, param := range parameters {
-				paramMap, ok := param.(map[string]interface{})
-				if !ok {
-					continue
-				}
-
-				// Check if this is a body parameter (Swagger 2.0)
-				if paramIn, ok := paramMap["in"].(string); ok && paramIn == "body" {
-					// Convert body parameter to requestBody (OpenAPI 3.0+)
-					requestBody = map[string]interface{}{
-						"required": paramMap["required"],
-						"content": map[string]interface{}{
-							"application/json": map[string]interface{}{
-								"schema": paramMap["schema"],
-							},
-						},
-					}
-					if description, ok := paramMap["description"].(string); ok {
-						requestBody["description"] = description
-					}
-				} else {
-					// Keep non-body parameters as they are
-					newParameters = append(newParameters, param)
-				}
-			}
-
-			// Update the operation
-			if len(newParameters) > 0 {
-				operationMap["parameters"] = newParameters
-			} else {
-				delete(operationMap, "parameters")
-			}
-
-			if requestBody != nil {
-				operationMap["requestBody"] = requestBody
-			}
-		}
-	}
-}
-
-func generateOpenAPIJSON(cfg ServerConfig, version string) ([]byte, error) {
-	// Read the static swagger.json file
-	swaggerData, err := os.ReadFile("swagger/swagger.json")
-	if err != nil {
-		return nil, err
-	}
-
-	// Parse the JSON
-	var swaggerDoc map[string]interface{}
-	if err := json.Unmarshal(swaggerData, &swaggerDoc); err != nil {
-		return nil, err
-	}
-
-	if strings.HasPrefix(version, "3.") {
-		// Convert to OpenAPI 3.x format
-		swaggerDoc["openapi"] = version
-		delete(swaggerDoc, "swagger")
-		delete(swaggerDoc, "host")
-		delete(swaggerDoc, "basePath")
-		delete(swaggerDoc, "schemes")
-		convertParametersToOpenAPI3(swaggerDoc)
-	} else if version == "2.0" {
-		// Keep Swagger 2.0 and override host
-		swaggerDoc["swagger"] = "2.0"
-		swaggerDoc["host"] = cfg.SwaggerHost
-	}
-
-	// Add the servers section (OpenAPI 3.x; ignored by Swagger 2.0)
-	if len(cfg.SwaggerSchemes) > 0 {
-		serverURL := cfg.SwaggerSchemes[0] + "://" + cfg.SwaggerHost
-		swaggerDoc["servers"] = []map[string]interface{}{
-			{
-				"url":         serverURL,
-				"description": "API",
-			},
-		}
-	}
-
-	return json.MarshalIndent(swaggerDoc, "", "    ")
-}
-
-func generateOpenAPIYAML(cfg ServerConfig, version string) ([]byte, error) {
-	// Read the static swagger.yaml file
-	swaggerData, err := os.ReadFile("swagger/swagger.yaml")
-	if err != nil {
-		return nil, err
-	}
-
-	// Parse the YAML
-	var swaggerDoc map[string]interface{}
-	if err := yaml.Unmarshal(swaggerData, &swaggerDoc); err != nil {
-		return nil, err
-	}
-
-	if strings.HasPrefix(version, "3.") {
-		swaggerDoc["openapi"] = version
-		delete(swaggerDoc, "swagger")
-		delete(swaggerDoc, "host")
-		delete(swaggerDoc, "basePath")
-		delete(swaggerDoc, "schemes")
-		convertParametersToOpenAPI3(swaggerDoc)
-	} else if version == "2.0" {
-		swaggerDoc["swagger"] = "2.0"
-		swaggerDoc["host"] = cfg.SwaggerHost
-	}
-
-	if len(cfg.SwaggerSchemes) > 0 {
-		serverURL := cfg.SwaggerSchemes[0] + "://" + cfg.SwaggerHost
-		swaggerDoc["servers"] = []map[string]interface{}{
-			{
-				"url":         serverURL,
-				"description": "API",
-			},
-		}
-	}
-
-	return yaml.Marshal(swaggerDoc)
 }

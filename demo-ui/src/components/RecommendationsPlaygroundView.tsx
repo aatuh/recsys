@@ -5,7 +5,6 @@ import {
   SimilarItemsSection,
 } from "./";
 import { useViewState } from "../contexts/ViewStateContext";
-import type { internal_http_types_ScoredItem } from "../lib/api-client";
 
 interface RecommendationsPlaygroundViewProps {
   namespace: string;

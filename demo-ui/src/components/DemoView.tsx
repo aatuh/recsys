@@ -17,7 +17,7 @@ import type { EventTypeConfig } from "../types";
 
 interface DemoViewProps {
   namespace: string;
-  setNamespace: (namespace: string) => void;
+  setNamespace: (value: string) => void;
   apiBase: string;
 }
 
@@ -68,7 +68,7 @@ export function DemoView({ namespace, setNamespace, apiBase }: DemoViewProps) {
   /* Blend controls for recommendations */
   const [blend, setBlend] = useState({ pop: 1.0, cooc: 0.5, als: 0.0 });
   const [k, setK] = useState(20);
-  const [overrides, setOverrides] = useState<types_Overrides | null>(null);
+  const [overrides, _setOverrides] = useState<types_Overrides | null>(null);
 
   /* User trait configuration */
   const [traitConfigs, setTraitConfigs] = useState<TraitConfig[]>([

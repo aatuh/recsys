@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"recsys/internal/audit"
+	"recsys/internal/explain"
 	"recsys/internal/http/common"
 	"recsys/internal/rules"
 	"recsys/internal/store"
@@ -35,6 +36,7 @@ type Handler struct {
 	CategoryTagPrefixes   []string
 	RulesManager          *rules.Manager
 	RulesAuditSample      float64
+	ExplainService        *explain.Service
 	PurchasedWindowDays   float64
 	ProfileWindowDays     float64 // lookback for building profile; <=0 disables windowing
 	ProfileBoost          float64 // multiplier in [0, +inf). 0 disables personalization

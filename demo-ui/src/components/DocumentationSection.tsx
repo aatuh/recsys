@@ -80,7 +80,7 @@ export function DocumentationSection({ className }: DocumentationSectionProps) {
         '<h1 style="margin: 24px 0 16px 0; color: #1976d2;">$1</h1>'
       )
       // Lists
-      .replace(/^\- (.*$)/gim, '<li style="margin: 4px 0;">$1</li>')
+      .replace(/^- (.*$)/gim, '<li style="margin: 4px 0;">$1</li>')
       .replace(
         /(<li.*<\/li>)/s,
         '<ul style="margin: 8px 0; padding-left: 20px;">$1</ul>'

@@ -1,13 +1,10 @@
 import React, { useRef, useState } from "react";
 import { NamespaceSection, SeedDataSection } from "./";
 import { useViewState } from "../contexts/ViewStateContext";
-import type { TraitConfig } from "./UserTraitsEditor";
-import type { ItemConfig, PriceRange } from "./ItemConfigEditor";
-import type { EventTypeConfig } from "../types";
 
 interface NamespaceSeedViewProps {
   namespace: string;
-  setNamespace: (namespace: string) => void;
+  setNamespace: (value: string) => void;
   apiBase: string;
   setGeneratedUsers: (users: string[]) => void;
   setGeneratedItems: (items: string[]) => void;
@@ -123,10 +120,12 @@ export function NamespaceSeedView({
         }
         setGeneratedUsers={(users) => {
           generatedUsersRef.current = users;
+          setGeneratedUsers(users);
           setGlobalGeneratedUsers(users);
         }}
         setGeneratedItems={(items) => {
           generatedItemsRef.current = items;
+          setGeneratedItems(items);
           setGlobalGeneratedItems(items);
         }}
         traitConfigs={namespaceSeed.traitConfigs}

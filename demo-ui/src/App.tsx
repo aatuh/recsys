@@ -33,10 +33,10 @@ const API_BASE =
   (import.meta as any).env?.VITE_API_BASE_URL?.toString() || "/api";
 OpenAPI.BASE = API_BASE;
 
-// Configure Swagger UI URL (direct to API server, not through proxy)
+// Configure Swagger UI URL (served by the dedicated Swagger service)
 const SWAGGER_UI_URL =
   (import.meta as any).env?.VITE_SWAGGER_UI_URL?.toString() ||
-  "http://localhost:8000";
+  "http://localhost:8081";
 
 // Configure Custom ChatGPT URL
 const CUSTOM_CHATGPT_URL = (
@@ -88,7 +88,7 @@ export default function App() {
   const [generatedItems, setGeneratedItems] = useState<string[]>([]);
 
   // Shared configuration state
-  const [eventTypes, setEventTypes] = useState([
+  const [eventTypes, _setEventTypes] = useState([
     { id: "view", title: "View", index: 0, weight: 0.2, halfLifeDays: 30 },
     { id: "click", title: "Click", index: 1, weight: 0.7, halfLifeDays: 30 },
     {
@@ -106,8 +106,8 @@ export default function App() {
       halfLifeDays: 60,
     },
   ]);
-  const [blend, setBlend] = useState({ pop: 1.0, cooc: 0.5, als: 0.0 });
-  const [k, setK] = useState(20);
+  const [blend, _setBlend] = useState({ pop: 1.0, cooc: 0.5, als: 0.0 });
+  const [k, _setK] = useState(20);
 
   return (
     <ViewStateProvider>
@@ -115,7 +115,6 @@ export default function App() {
         <Navigation
           activeView={activeView}
           onViewChange={setActiveView}
-          apiBase={API_BASE}
           swaggerUrl={SWAGGER_UI_URL}
           customChatGptUrl={CUSTOM_CHATGPT_URL}
           namespace={namespace}

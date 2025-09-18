@@ -1,11 +1,7 @@
 import React, { useState } from "react";
-import { Section, Row, Label, Button } from "./UIComponents";
-import { BanditService } from "../lib/api-client";
+import { Section, Label, Button } from "./UIComponents";
+import { BanditService, type types_BanditRewardRequest } from "../lib/api-client";
 import { useViewState } from "../contexts/ViewStateContext";
-import type {
-  types_BanditRewardRequest,
-  types_BanditDecideResponse,
-} from "../lib/api-client";
 
 interface RewardEntry {
   id: string;

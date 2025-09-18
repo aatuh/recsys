@@ -686,10 +686,19 @@ Put these in your service environment (see your `.env.example` files).
 | `ORG_ID`                 | UUID         | Fallback org when a request header is absent. |       |
 | `MIGRATE_ON_START`       | bool         | Run database migrations on startup.           |       |
 | `MIGRATIONS_DIR`         | string       | Directory containing migration files.         |       |
-| `SWAGGER_HOST`           | string       | Host for Swagger documentation.               |       |
-| `SWAGGER_SCHEMES`        | string       | URL schemes for Swagger (`https`).            |       |
 | `CORS_ALLOWED_ORIGINS`   | string       | Comma-separated allowed CORS origins.         |       |
 | `CORS_ALLOW_CREDENTIALS` | bool         | Allow credentials in CORS requests.           |       |
+
+### Proxy vars
+
+| Variable          | Type / Range | What it does                                | Notes                                     |
+|-------------------|--------------|---------------------------------------------|-------------------------------------------|
+| `WEB_DOMAIN`      | string       | External domain for the demo UI.            | Used for self-signed mkcert certificates. |
+| `API_DOMAIN`      | string       | External domain for the API.                | Same mkcert flow as the web domain.       |
+| `SWAGGER_DOMAIN`  | string       | External domain for the Swagger UI service. | Optional; set to expose docs via proxy.   |
+| `WEB_BACKEND`     | host:port    | Upstream address for the demo UI container. | Defaults to `recsys-demo-ui:3000`.        |
+| `API_BACKEND`     | host:port    | Upstream address for the API container.     | Defaults to `recsys-api:8000`.            |
+| `SWAGGER_BACKEND` | host:port    | Upstream address for Swagger container.     | Defaults to `recsys-swagger:8080`.        |
 
 ### Windows, decay, and candidate fan-out vars
 
@@ -771,6 +780,22 @@ weights intuitive and the blend stable. Channels with no signal produce
 | `AUDIT_DECISIONS_FLUSH_INTERVAL`   | Go duration string | Max wait before flushing even if the batch is not full (e.g., `250ms`). | Tune for latency vs. throughput.                   |
 | `AUDIT_DECISIONS_SALT`             | string             | Secret salt mixed into the user hash stored in audits.                  | Rotate to invalidate old hashes; keep private.     |
 
+## Environment Flags for ExplainLLM
+
+To enable the LLM-powered RCA endpoint following environment variables:
+
+| Variable              | Type / Example   | Description                                       | Notes                             |
+|-----------------------|------------------|---------------------------------------------------|-----------------------------------|
+| `LLM_EXPLAIN_ENABLED` | `true` / `false` | Toggle the ExplainLLM feature.                    |                                   |
+| `LLM_PROVIDER`        | `openai`         | Provider identifier for LLM API.                  | Use `openai` for built-in client. |
+| `LLM_MODEL_PRIMARY`   | `o4-mini`        | Default model for ExplainLLM.                     |                                   |
+| `LLM_MODEL_ESCALATE`  | `o3`             | Fallback model for large fact packs.              |                                   |
+| `LLM_TIMEOUT`         | `6s`             | Request timeout (Go duration string).             | Example: `6s`                     |
+| `LLM_MAX_TOKENS`      | integer          | Maximum tokens to request from the model.         |                                   |
+| `LLM_API_KEY`         | string           | Provider API key (required if feature enabled).   | Keep secret.                      |
+| `LLM_BASE_URL`        | string (URL)     | Optional override for the Responses API endpoint. |                                   |
+
+
 ## Tuning Cheat-Sheet
 
 - Start with `alpha=1.0`, `beta=0.1`, `gamma=0.1`.
@@ -787,7 +812,7 @@ weights intuitive and the blend stable. Channels with no signal produce
 
 ## Explore
 
-- **Swagger UI**: open `/docs` when the service is running.
+- **Swagger UI**: served by the Swagger service (default http://localhost:8081 or https://docs.<your-domain>).
 - **Makefile**: see targets for dev, tests, and migrations.
 - **Demo UI**: Access the interactive demo with user traits editor at the demo UI URL.
 

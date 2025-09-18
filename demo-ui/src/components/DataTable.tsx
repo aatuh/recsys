@@ -1,6 +1,5 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { Button } from "./UIComponents";
-
 export interface Column<T> {
   key: keyof T | string;
   title: string;
@@ -26,8 +25,6 @@ export interface DataTableProps<T> {
   sortBy?: string;
   sortDirection?: "asc" | "desc";
   onSort?: (column: string, direction: "asc" | "desc") => void;
-  filters?: Record<string, any>;
-  onFilterChange?: (filters: Record<string, any>) => void;
   pagination?: {
     page: number;
     pageSize: number;
@@ -50,14 +47,10 @@ export function DataTable<T extends Record<string, any>>({
   sortBy,
   sortDirection,
   onSort,
-  filters = {},
-  onFilterChange,
   pagination,
   emptyMessage = "No data available",
   rowKey = (row) => row.id || row.user_id || row.item_id || JSON.stringify(row),
 }: DataTableProps<T>) {
-  const [localFilters, setLocalFilters] =
-    useState<Record<string, any>>(filters);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   const handleSort = (column: string) => {
@@ -91,12 +84,6 @@ export function DataTable<T extends Record<string, any>>({
     }
 
     onSelectionChange(newSelection);
-  };
-
-  const handleFilterChange = (column: string, value: any) => {
-    const newFilters = { ...localFilters, [column]: value };
-    setLocalFilters(newFilters);
-    onFilterChange?.(newFilters);
   };
 
   const toggleRowExpansion = (rowKey: string) => {
@@ -183,14 +170,6 @@ export function DataTable<T extends Record<string, any>>({
     }
 
     return stringValue;
-  };
-
-  const formatDate = (dateString: string) => {
-    try {
-      return new Date(dateString).toLocaleString();
-    } catch {
-      return dateString;
-    }
   };
 
   if (loading) {

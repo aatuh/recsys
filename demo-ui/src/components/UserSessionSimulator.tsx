@@ -4,7 +4,6 @@ import {
   Row,
   Label,
   TextInput,
-  NumberInput,
   Button,
   Code,
 } from "./UIComponents";
@@ -18,7 +17,7 @@ import {
   listUsers,
 } from "../services/apiService";
 import type { internal_http_types_ScoredItem } from "../lib/api-client";
-import { randChoice, randInt, iso, daysAgo } from "../utils/helpers";
+import { randChoice, iso } from "../utils/helpers";
 
 // Import types from context
 import type { UserEvent, EventSequence } from "../contexts/ViewStateContext";
@@ -26,9 +25,9 @@ import type { UserEvent, EventSequence } from "../contexts/ViewStateContext";
 interface UserSessionSimulatorProps {
   namespace: string;
   generatedUsers: string[];
-  setGeneratedUsers: (users: string[]) => void;
+  setGeneratedUsers: (value: string[]) => void;
   generatedItems: string[];
-  setGeneratedItems: (items: string[]) => void;
+  setGeneratedItems: (value: string[]) => void;
   eventTypes: Array<{
     id: string;
     title: string;
@@ -602,7 +601,7 @@ export function UserSessionSimulator({
   ];
 
   const historyData = useMemo((): HistoryDataEntry[] => {
-    return userSession.recommendationHistory.map((entry, index) => ({
+    return userSession.recommendationHistory.map((entry) => ({
       timestamp: entry.timestamp.toLocaleTimeString(),
       eventCount: entry.events.length,
       topRecommendation: entry.recommendations[0]?.item_id || "None",

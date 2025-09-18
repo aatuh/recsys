@@ -16,7 +16,7 @@ import (
 // @Tags         config
 // @Produce      json
 // @Param        namespace query string false "Namespace" default(default)
-// @Success      200 {object} handlerstypes.SegmentProfilesListResponse
+// @Success      200 {object} types.SegmentProfilesListResponse
 // @Failure      500 {object} common.APIError
 // @Router       /v1/segment-profiles [get]
 func (h *Handler) SegmentProfilesList(w http.ResponseWriter, r *http.Request) {
@@ -49,11 +49,12 @@ func (h *Handler) SegmentProfilesList(w http.ResponseWriter, r *http.Request) {
 // @Tags         config
 // @Accept       json
 // @Produce      json
-// @Param        payload body handlerstypes.SegmentProfilesUpsertRequest true "Profiles"
-// @Success      200 {object} handlerstypes.Ack
+// @Param        payload body types.SegmentProfilesUpsertRequest true "Profiles"
+// @Success      200 {object} types.Ack
 // @Failure      400 {object} common.APIError
 // @Failure      500 {object} common.APIError
 // @Router       /v1/segment-profiles:upsert [post]
+// @ID segmentProfilesUpsert
 func (h *Handler) SegmentProfilesUpsert(w http.ResponseWriter, r *http.Request) {
 	var req handlerstypes.SegmentProfilesUpsertRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -92,11 +93,12 @@ func (h *Handler) SegmentProfilesUpsert(w http.ResponseWriter, r *http.Request) 
 // @Tags         config
 // @Accept       json
 // @Produce      json
-// @Param        payload body handlerstypes.IDListRequest true "IDs"
-// @Success      200 {object} handlerstypes.Ack
+// @Param        payload body types.IDListRequest true "IDs"
+// @Success      200 {object} types.Ack
 // @Failure      400 {object} common.APIError
 // @Failure      500 {object} common.APIError
 // @Router       /v1/segment-profiles:delete [post]
+// @ID segmentProfilesDelete
 func (h *Handler) SegmentProfilesDelete(w http.ResponseWriter, r *http.Request) {
 	var req handlerstypes.IDListRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -126,7 +128,7 @@ func (h *Handler) SegmentProfilesDelete(w http.ResponseWriter, r *http.Request) 
 // @Tags         config
 // @Produce      json
 // @Param        namespace query string false "Namespace" default(default)
-// @Success      200 {object} handlerstypes.SegmentsListResponse
+// @Success      200 {object} types.SegmentsListResponse
 // @Failure      500 {object} common.APIError
 // @Router       /v1/segments [get]
 func (h *Handler) SegmentsList(w http.ResponseWriter, r *http.Request) {
@@ -159,11 +161,12 @@ func (h *Handler) SegmentsList(w http.ResponseWriter, r *http.Request) {
 // @Tags         config
 // @Accept       json
 // @Produce      json
-// @Param        payload body handlerstypes.SegmentsUpsertRequest true "Segment"
-// @Success      200 {object} handlerstypes.Ack
+// @Param        payload body types.SegmentsUpsertRequest true "Segment"
+// @Success      200 {object} types.Ack
 // @Failure      400 {object} common.APIError
 // @Failure      500 {object} common.APIError
 // @Router       /v1/segments:upsert [post]
+// @ID segmentsUpsert
 func (h *Handler) SegmentsUpsert(w http.ResponseWriter, r *http.Request) {
 	var req handlerstypes.SegmentsUpsertRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -220,11 +223,12 @@ func (h *Handler) SegmentsUpsert(w http.ResponseWriter, r *http.Request) {
 // @Tags         config
 // @Accept       json
 // @Produce      json
-// @Param        payload body handlerstypes.IDListRequest true "IDs"
-// @Success      200 {object} handlerstypes.Ack
+// @Param        payload body types.IDListRequest true "IDs"
+// @Success      200 {object} types.Ack
 // @Failure      400 {object} common.APIError
 // @Failure      500 {object} common.APIError
 // @Router       /v1/segments:delete [post]
+// @ID segmentsDelete
 func (h *Handler) SegmentsDelete(w http.ResponseWriter, r *http.Request) {
 	var req handlerstypes.IDListRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -254,11 +258,12 @@ func (h *Handler) SegmentsDelete(w http.ResponseWriter, r *http.Request) {
 // @Tags         config
 // @Accept       json
 // @Produce      json
-// @Param        payload body handlerstypes.SegmentDryRunRequest true "Dry run"
-// @Success      200 {object} handlerstypes.SegmentDryRunResponse
+// @Param        payload body types.SegmentDryRunRequest true "Dry run"
+// @Success      200 {object} types.SegmentDryRunResponse
 // @Failure      400 {object} common.APIError
 // @Failure      500 {object} common.APIError
 // @Router       /v1/segments:dry-run [post]
+// @ID segmentsDryRun
 func (h *Handler) SegmentsDryRun(w http.ResponseWriter, r *http.Request) {
 	var req handlerstypes.SegmentDryRunRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {

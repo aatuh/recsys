@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Section,
   Row,
@@ -22,17 +22,18 @@ export interface TraitConfig {
 
 export interface UserTraitsEditorProps {
   traitConfigs: TraitConfig[];
-  setTraitConfigs: (configs: TraitConfig[]) => void;
+  setTraitConfigs: (value: TraitConfig[]) => void;
   generatedUsers: string[];
-  namespace: string;
-  onUpdateUser: (userId: string, traits: Record<string, any>) => Promise<void>;
+  onUpdateUser: (
+    _userId: string,
+    _traits: Record<string, any>
+  ) => Promise<void>;
 }
 
 export function UserTraitsEditor({
   traitConfigs,
   setTraitConfigs,
   generatedUsers,
-  namespace,
   onUpdateUser,
 }: UserTraitsEditorProps) {
   const [selectedUser, setSelectedUser] = useState("");

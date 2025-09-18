@@ -41,7 +41,7 @@ type SegmentProfilesUpsertRequest struct {
 
 type SegmentRule struct {
 	RuleID      *int64          `json:"rule_id,omitempty"`
-	Rule        json.RawMessage `json:"rule"`
+	Rule        json.RawMessage `json:"rule" swaggertype:"object"`
 	Enabled     bool            `json:"enabled"`
 	Description string          `json:"description,omitempty"`
 }

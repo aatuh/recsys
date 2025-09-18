@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Section, Row, Label, NumberInput, Button, Code } from "./UIComponents";
+import { Row, Label, NumberInput, Button } from "./UIComponents";
 import type { EventTypeConfig } from "../types";
 
 interface EventTypeEditorProps {
@@ -12,7 +12,6 @@ export function EventTypeEditor({
   setEventTypes,
 }: EventTypeEditorProps) {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [newEventType, setNewEventType] = useState<Partial<EventTypeConfig>>({
     id: "",
     title: "",
@@ -328,7 +327,7 @@ export function EventTypeEditor({
             </p>
             {eventTypes
               .sort((a, b) => a.index - b.index)
-              .map((eventType, index) => (
+              .map((eventType, _index) => (
                 <div
                   key={eventType.id}
                   style={{

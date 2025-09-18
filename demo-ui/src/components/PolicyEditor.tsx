@@ -23,9 +23,9 @@ interface types_BanditPolicy {
 
 interface PolicyEditorProps {
   policy: types_BanditPolicy;
-  onSave: (policy: types_BanditPolicy) => void;
+  onSave: (value: types_BanditPolicy) => void;
   onCancel: () => void;
-  onCreateCustom: (policy: types_BanditPolicy) => void;
+  onCreateCustom: (value: types_BanditPolicy) => void;
 }
 
 export function PolicyEditor({

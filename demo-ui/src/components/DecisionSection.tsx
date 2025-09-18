@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from "react";
 import { Section, Row, Label, Button } from "./UIComponents";
-import { BanditService } from "../lib/api-client";
+import {
+  BanditService,
+  type types_BanditDecideRequest,
+  type types_BanditDecideResponse,
+  type types_BanditPolicy,
+} from "../lib/api-client";
 import {
   useViewState,
   type DecisionContext,
   type BanditDecisionEntry,
 } from "../contexts/ViewStateContext";
-import type {
-  types_BanditDecideRequest,
-  types_BanditDecideResponse,
-  types_BanditPolicy,
-} from "../lib/api-client";
 
 interface DecisionSectionProps {
   namespace: string;

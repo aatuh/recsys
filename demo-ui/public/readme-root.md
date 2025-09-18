@@ -30,6 +30,17 @@ users, items, and events. The service returns top-K recommendations and
   policy per surface and context, learning online from later rewards
   (e.g., click or purchase).
 
+- **Audit trail** allows listing recent decisions with filters for namespace,
+  time range, user hash, or request id. Fetch the full stored trace for a single
+  decision.
+
+- **Rule engine** allows you to create business rules that override the normal
+  recommendation algorithm. You can block certain items from appearing, pin
+  specific items to the top of results, or boost items with extra score. Rules
+  can be scoped to specific surfaces (like "homepage" or "product page") and
+  user segments, with optional time limits. The system includes a dry-run mode
+  to test which rules would apply to a set of items before making changes.
+
 ## Recommendation Algorithms Used
 
 These algorithms are used together in the recommendation pipeline.
@@ -343,6 +354,41 @@ Tiny example (3 items, tags)
   - Co‑visitation can still add context if the user has recent anchors.
   - Otherwise, popularity carries the result (still stable and explainable).
 
+## Explainability & Governance Features
+
+### "Why this recommendation?" explanations
+
+- Every recommendation API response can include an item-level `reasons` array
+  when `include_reasons=true`.
+- Structured explanations are available via the `explain_level` parameter
+  (`tags`, `numeric`, `full`). When requested, the API returns an `explain`
+  block that exposes blend contributions, personalization overlap, MMR details,
+  diversity caps, and the recent anchors used during scoring.
+- These signals are the same ones the ranker used, which makes it easy to
+  surface badges in the UI or to debug ranking behaviour during integrations.
+
+### Segment profiles & rules
+
+- You can use the API to upload segment profiles to define reusable weight
+  bundles (blend weights, MMR, caps, personalization settings, time windows).
+- Attach those profiles to audience segments with the API. Segments can match
+  users on traits, request context, or namespace-level rules. The active profile
+  is applied automatically during recommendation.
+- Dry running lets you test which profile a hypothetical user would receive.
+  This makes it straightforward to tailor ranking knobs for cohorts such as
+  "new", "returning", or "VIP" players without code changes.
+
+### Decision audit trail
+
+- Each recommendation can be persisted as a `rec_decisions` record containing
+  request metadata, effective configuration, pre/post ranking snapshots,
+  reasons, and optional bandit context.
+- Enable the writer via the `AUDIT_DECISIONS_*` environment variables; the async
+  worker batches inserts to avoid impacting request latency.
+- These traces power compliance reviews, post-mortems, and "show me exactly what
+  the user saw" workflows, using the same hashed identifiers described in the
+  audit configuration.
+
 ## Contextual Multi‑Armed Bandit
 
 A lightweight, online‑learning AI component that chooses which ranking
@@ -594,6 +640,37 @@ you exploit the better‐measured mean.
   belief near 50% but with more initial confidence. Priors mainly affect early
   decisions.
 
+## Audit Trail
+
+The audit trail captures each recommendation decision so you can see
+what was shown, why items were ordered that way, and which inputs
+influenced the outcome. Each trace includes request metadata,
+effective configuration, candidate and score snapshots, any bandit
+choices, and per‑item reasons. Writing is asynchronous and can be
+sampled to limit overhead. Browse summaries with filters, then fetch a
+full trace for a single request to support debugging, compliance, and
+"show me exactly what the user saw" workflows.
+
+## Rule Engine
+
+The rule engine adds clear business controls on top of the ranking
+algorithm. You can block items from appearing, pin specific items to
+fixed positions, or boost items by increasing their score. Rules can
+be scoped by namespace and surface, limited to user segments, and
+scheduled with start/end times. During ranking, blocks remove
+candidates, boosts adjust scores, and pins can reserve positions. The
+ranker then finalizes the list with diversity and caps. A dry‑run mode
+shows which rules would fire for a given set of items so you can
+verify intent safely. Common uses include hiding out‑of‑stock or
+restricted items, promoting campaigns, curating hero slots, and
+enforcing merchandising policies.
+
+You can list existing rules and filter by namespace, surface, segment,
+status, action, or active window to find exactly what applies to a
+placement. You can update rules at any time. The dry‑run endpoint returns which
+rules would match for a given set of item IDs, including matched rule
+metadata and per‑item effects. It works without changing state.
+
 ## Configuration (Environment Variables)
 
 Put these in your service environment (see your `.env.example` files).
@@ -609,10 +686,19 @@ Put these in your service environment (see your `.env.example` files).
 | `ORG_ID`                 | UUID         | Fallback org when a request header is absent. |       |
 | `MIGRATE_ON_START`       | bool         | Run database migrations on startup.           |       |
 | `MIGRATIONS_DIR`         | string       | Directory containing migration files.         |       |
-| `SWAGGER_HOST`           | string       | Host for Swagger documentation.               |       |
-| `SWAGGER_SCHEMES`        | string       | URL schemes for Swagger (`https`).            |       |
 | `CORS_ALLOWED_ORIGINS`   | string       | Comma-separated allowed CORS origins.         |       |
 | `CORS_ALLOW_CREDENTIALS` | bool         | Allow credentials in CORS requests.           |       |
+
+### Proxy vars
+
+| Variable           | Type / Range | What it does                                | Notes                                     |
+|--------------------|--------------|---------------------------------------------|-------------------------------------------|
+| `WEB_DOMAIN`       | string       | External domain for the demo UI.            | Used for self-signed mkcert certificates. |
+| `API_DOMAIN`       | string       | External domain for the API.                | Same mkcert flow as the web domain.       |
+| `SWAGGER_DOMAIN`   | string       | External domain for the Swagger UI service. | Optional; set to expose docs via proxy.   |
+| `WEB_BACKEND`      | host:port    | Upstream address for the demo UI container. | Defaults to `recsys-demo-ui:3000`.        |
+| `API_BACKEND`      | host:port    | Upstream address for the API container.     | Defaults to `recsys-api:8000`.            |
+| `SWAGGER_BACKEND`  | host:port    | Upstream address for Swagger container.     | Defaults to `recsys-swagger:8080`.        |
 
 ### Windows, decay, and candidate fan-out vars
 
@@ -631,6 +717,23 @@ Put these in your service environment (see your `.env.example` files).
 | `CATEGORY_CAP`          | int ≥ 0        | Max items per category in the final top-K.      | `0` disables                    |
 | `RULE_EXCLUDE_EVENTS`   | bool           | Exclude items the user purchased recently.      | Requires `user_id`              |
 | `PURCHASED_WINDOW_DAYS` | float > 0      | Lookback for the exclude-purchased rule.        | Required if the rule is enabled |
+| `EXCLUDE_EVENT_TYPES`   | string (csv)   | Event type IDs to exclude when the rule is on.  | Comma-separated int16 values    |
+
+### Tag prefix vars
+
+| Variable                | Type / Range | What it does                            | Notes                                      |
+|-------------------------|--------------|-----------------------------------------|--------------------------------------------|
+| `BRAND_TAG_PREFIXES`    | string (csv) | Tag prefixes that denote brand tags.    | Example: `brand`. Lowercased; ':' ignored. |
+| `CATEGORY_TAG_PREFIXES` | string (csv) | Tag prefixes that denote category tags. | Example: `category,cat`.                   |
+
+### Rules engine vars
+
+| Variable              | Type / Range       | What it does                                      | Notes                             |
+|-----------------------|--------------------|---------------------------------------------------|-----------------------------------|
+| `RULES_ENABLE`        | bool               | Global kill‑switch for the rules engine.          | `false` disables rule evaluation. |
+| `RULES_CACHE_REFRESH` | Go duration string | Poll interval for reloading rules (e.g., `2s`).   |                                   |
+| `RULES_MAX_PIN_SLOTS` | int > 0            | Maximum number of pin slots allowed per response. |                                   |
+| `RULES_AUDIT_SAMPLE`  | float in [0,1]     | Sample rate for emitting rule evaluation audits.  |                                   |
 
 ### Light personalization vars
 
@@ -665,6 +768,18 @@ weights intuitive and the blend stable. Channels with no signal produce
 |---------------|--------------|----------------------------------------------------|-------|
 | `BANDIT_ALGO` | string       | Multi-armed bandit algorithm (`thompson`, `ucb1`). |       |
 
+### Decision audit vars
+
+| Variable                           | Type / Range       | What it does                                                            | Notes                                              |
+|------------------------------------|--------------------|-------------------------------------------------------------------------|----------------------------------------------------|
+| `AUDIT_DECISIONS_ENABLED`          | bool               | Turns the decision-trace pipeline on/off.                               | When `false`, recommendations skip queuing traces. |
+| `AUDIT_DECISIONS_SAMPLE_DEFAULT`   | float in [0,1]     | Default sampling rate for namespaces when recording decisions.          | `1.0` = capture all requests.                      |
+| `AUDIT_DECISIONS_SAMPLE_OVERRIDES` | string (`ns=rate`) | Comma-separated per-namespace sampling overrides.                       | Example: `casino=1.0,vip=0.5`.                     |
+| `AUDIT_DECISIONS_QUEUE`            | int > 0            | Size of the in-memory queue feeding the async writer.                   | Increase for bursty traffic; consumes RAM.         |
+| `AUDIT_DECISIONS_BATCH`            | int > 0            | Maximum number of traces persisted per database batch insert.           | Larger batches reduce round-trips.                 |
+| `AUDIT_DECISIONS_FLUSH_INTERVAL`   | Go duration string | Max wait before flushing even if the batch is not full (e.g., `250ms`). | Tune for latency vs. throughput.                   |
+| `AUDIT_DECISIONS_SALT`             | string             | Secret salt mixed into the user hash stored in audits.                  | Rotate to invalidate old hashes; keep private.     |
+
 ## Tuning Cheat-Sheet
 
 - Start with `alpha=1.0`, `beta=0.1`, `gamma=0.1`.
@@ -681,7 +796,7 @@ weights intuitive and the blend stable. Channels with no signal produce
 
 ## Explore
 
-- **Swagger UI**: open `/docs` when the service is running.
+- **Swagger UI**: served by the Swagger service (default http://localhost:8081 or https://docs.<your-domain>).
 - **Makefile**: see targets for dev, tests, and migrations.
 - **Demo UI**: Access the interactive demo with user traits editor at the demo UI URL.
 
@@ -782,7 +897,7 @@ Typical entries include:
 - `personalization` (boost from tag profile overlap)
 - `diversity` (selected by MMR for novelty)
 - `cap_brand` / `cap_category` (caps enforced during selection)
-- `excluded_purchased` (item was filtered earlier due to rule)
+- `excluded_events` (item was filtered earlier due to rule)
 Not every reason appears on every item; only the applicable ones.
 
 **Signals**  

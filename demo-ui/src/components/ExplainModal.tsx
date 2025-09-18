@@ -145,7 +145,7 @@ function formatNumber(value: number | null | undefined, digits = 2) {
 
 function toTitleWords(s: string) {
   return s
-    .replace(/[_\-]+/g, " ")
+    .replace(/[_-]+/g, " ")
     .trim()
     .replace(/\s+/g, " ")
     .replace(/\b\w/g, (m) => m.toUpperCase());

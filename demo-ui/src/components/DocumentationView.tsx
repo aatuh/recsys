@@ -94,7 +94,7 @@ export function DocumentationView() {
         '<h6 style="margin: 8px 0 4px 0; color: #1976d2; font-size: 13px;">$1</h6>'
       )
       // Lists - improved handling to group consecutive list items
-      .replace(/^\- (.*$)/gim, '<li style="margin: 2px 0;">$1</li>')
+      .replace(/^- (.*$)/gim, '<li style="margin: 2px 0;">$1</li>')
       .replace(
         /(<li[^>]*>.*<\/li>)(\s*<li[^>]*>.*<\/li>)*/gs,
         '<ul style="margin: 8px 0; padding-left: 20px;">$&</ul>'
@@ -113,7 +113,7 @@ export function DocumentationView() {
       )
       // Tables - must be processed before line breaks
       .replace(
-        /^(\|.*\|)\n(\|[\s\-\|]+\|)\n((?:\|.*\|\n?)*)/gm,
+        /^(\|.*\|)\n(\|[\s|-]+\|)\n((?:\|.*\|\n?)*)/gm,
         (match, header, separator, rows) => {
           const headerCells = header
             .split("|")

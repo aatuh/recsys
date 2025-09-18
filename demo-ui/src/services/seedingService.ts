@@ -164,9 +164,9 @@ export async function handleSeed(
   brands: string[],
   tags: string[],
   eventTypes: EventTypeConfig[],
-  append: (s: string) => void,
-  setGeneratedUsers: (users: string[]) => void,
-  setGeneratedItems: (items: string[]) => void,
+  append: (value: string) => void,
+  setGeneratedUsers: (value: string[]) => void,
+  setGeneratedItems: (value: string[]) => void,
   traitConfigs: TraitConfig[] = [],
   itemConfigs: ItemConfig[] = [],
   priceRanges: PriceRange[] = []

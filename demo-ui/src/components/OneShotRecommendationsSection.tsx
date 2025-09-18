@@ -1,14 +1,11 @@
 import React, { useState, useMemo } from "react";
 import { Section, Row, Label, Button } from "./UIComponents";
-import { RankingService } from "../lib/api-client";
-import { useViewState } from "../contexts/ViewStateContext";
-import type { BanditDecisionEntry } from "../contexts/ViewStateContext";
-import type {
-  types_RecommendWithBanditRequest,
-  types_RecommendWithBanditResponse,
-  types_BanditPolicy,
-  internal_http_types_ScoredItem,
+import {
+  RankingService,
+  type types_RecommendWithBanditRequest,
+  type types_BanditPolicy,
 } from "../lib/api-client";
+import { useViewState, type BanditDecisionEntry } from "../contexts/ViewStateContext";
 
 interface OneShotRecommendationsSectionProps {
   namespace: string;

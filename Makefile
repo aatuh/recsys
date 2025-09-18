@@ -7,7 +7,8 @@ help: ## Show this help message
 codegen: ## Generate code
 	@echo "🔄 Generating code..."
 	@cd api && make swag
-	@sleep 1 # wait for generated swagger to be ready
+	@cp api/swagger/swagger.json swagger-service/public/swagger.json
+	@cp api/swagger/swagger.yaml swagger-service/public/swagger.yaml
 	@cd demo-ui && pnpm run codegen:api && pnpm run sync:readme
 	@echo "🔄 Code generated successfully"
 

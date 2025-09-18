@@ -118,6 +118,25 @@ type RecommendResponse struct {
 	ProfileID    string       `json:"profile_id,omitempty" example:"vip-high-novelty"`
 }
 
+type ExplainLLMRequest struct {
+	TargetType string `json:"target_type"`
+	TargetID   string `json:"target_id"`
+	Namespace  string `json:"namespace"`
+	Surface    string `json:"surface"`
+	SegmentID  string `json:"segment_id,omitempty"`
+	From       string `json:"from"`
+	To         string `json:"to"`
+	Question   string `json:"question,omitempty"`
+}
+
+type ExplainLLMResponse struct {
+	Markdown string         `json:"markdown"`
+	Facts    map[string]any `json:"facts"`
+	Cache    string         `json:"cache"`
+	Model    string         `json:"model"`
+	Warnings []string       `json:"warnings,omitempty"`
+}
+
 // Explanation types
 
 type ExplainBlendContribution struct {

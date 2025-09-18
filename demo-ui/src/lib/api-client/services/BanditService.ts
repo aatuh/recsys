@@ -2,38 +2,40 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { definitions_types_BanditDecideRequest } from '../models/definitions_types_BanditDecideRequest';
-import type { definitions_types_BanditPoliciesUpsertRequest } from '../models/definitions_types_BanditPoliciesUpsertRequest';
-import type { definitions_types_BanditRewardRequest } from '../models/definitions_types_BanditRewardRequest';
+import type { types_Ack } from '../models/types_Ack';
+import type { types_BanditDecideRequest } from '../models/types_BanditDecideRequest';
+import type { types_BanditDecideResponse } from '../models/types_BanditDecideResponse';
+import type { types_BanditPoliciesUpsertRequest } from '../models/types_BanditPoliciesUpsertRequest';
+import type { types_BanditPolicy } from '../models/types_BanditPolicy';
+import type { types_BanditRewardRequest } from '../models/types_BanditRewardRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class BanditService {
     /**
      * Decide best policy for this request context
-     * @param requestBody Decision request
-     * @returns any OK
+     * @param payload Decision request
+     * @returns types_BanditDecideResponse OK
      * @throws ApiError
      */
     public static postV1BanditDecide(
-        requestBody: definitions_types_BanditDecideRequest,
-    ): CancelablePromise<any> {
+        payload: types_BanditDecideRequest,
+    ): CancelablePromise<types_BanditDecideResponse> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/v1/bandit/decide',
-            body: requestBody,
-            mediaType: 'application/json',
+            body: payload,
         });
     }
     /**
      * List all bandit policies (active and inactive)
      * @param namespace Namespace
-     * @returns any OK
+     * @returns types_BanditPolicy OK
      * @throws ApiError
      */
     public static getV1BanditPolicies(
-        namespace: any,
-    ): CancelablePromise<any> {
+        namespace: string,
+    ): CancelablePromise<Array<types_BanditPolicy>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/v1/bandit/policies',
@@ -44,34 +46,32 @@ export class BanditService {
     }
     /**
      * Upsert bandit policies
-     * @param requestBody Policies
-     * @returns any Accepted
+     * @param payload Policies
+     * @returns types_Ack Accepted
      * @throws ApiError
      */
     public static upsertBanditPolicies(
-        requestBody: definitions_types_BanditPoliciesUpsertRequest,
-    ): CancelablePromise<any> {
+        payload: types_BanditPoliciesUpsertRequest,
+    ): CancelablePromise<types_Ack> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/v1/bandit/policies:upsert',
-            body: requestBody,
-            mediaType: 'application/json',
+            body: payload,
         });
     }
     /**
      * Report binary reward for a previous decision
-     * @param requestBody Reward request
-     * @returns any Accepted
+     * @param payload Reward request
+     * @returns types_Ack Accepted
      * @throws ApiError
      */
     public static postV1BanditReward(
-        requestBody: definitions_types_BanditRewardRequest,
-    ): CancelablePromise<any> {
+        payload: types_BanditRewardRequest,
+    ): CancelablePromise<types_Ack> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/v1/bandit/reward',
-            body: requestBody,
-            mediaType: 'application/json',
+            body: payload,
         });
     }
 }

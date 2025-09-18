@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Section, Button, Code } from "./UIComponents";
+import { Section, Button } from "./UIComponents";
 import { DataTable, Column } from "./DataTable";
 import { useViewState } from "../contexts/ViewStateContext";
 import {

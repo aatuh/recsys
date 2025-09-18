@@ -3,7 +3,7 @@ import { Section, Row, Label, TextInput } from "./UIComponents";
 
 interface NamespaceSectionProps {
   namespace: string;
-  setNamespace: (namespace: string) => void;
+  setNamespace: (value: string) => void;
   apiBase: string;
 }
 

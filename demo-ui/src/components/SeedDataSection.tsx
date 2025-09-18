@@ -1,43 +1,47 @@
 import React, { useState } from "react";
 import { Section, Row, Label, NumberInput, Button, Code } from "./UIComponents";
 import { handleSeed } from "../services/seedingService";
-import type { TraitConfig } from "./UserTraitsEditor";
-import { UserTraitsEditor } from "./UserTraitsEditor";
-import type { ItemConfig, PriceRange } from "./ItemConfigEditor";
-import { ItemConfigEditor } from "./ItemConfigEditor";
+import { UserTraitsEditor, type TraitConfig } from "./UserTraitsEditor";
+import { ItemConfigEditor, type ItemConfig, type PriceRange } from "./ItemConfigEditor";
 import { EventTypeEditor } from "./EventTypeEditor";
 import type { EventTypeConfig } from "../types";
 
 interface SeedDataSectionProps {
   userCount: number;
-  setUserCount: (count: number) => void;
+  setUserCount: (value: number) => void;
   userStartIndex: number;
-  setUserStartIndex: (index: number) => void;
+  setUserStartIndex: (value: number) => void;
   itemCount: number;
-  setItemCount: (count: number) => void;
+  setItemCount: (value: number) => void;
   minEventsPerUser: number;
-  setMinEventsPerUser: (count: number) => void;
+  setMinEventsPerUser: (value: number) => void;
   maxEventsPerUser: number;
-  setMaxEventsPerUser: (count: number) => void;
+  setMaxEventsPerUser: (value: number) => void;
   eventTypes: EventTypeConfig[];
-  setEventTypes: (eventTypes: EventTypeConfig[]) => void;
+  setEventTypes: (value: EventTypeConfig[]) => void;
   namespace: string;
   brands: string[];
   tags: string[];
   log: string;
   setLog: React.Dispatch<React.SetStateAction<string>>;
-  setGeneratedUsers: (users: string[]) => void;
-  setGeneratedItems: (items: string[]) => void;
+  setGeneratedUsers: (value: string[]) => void;
+  setGeneratedItems: (value: string[]) => void;
   traitConfigs: TraitConfig[];
-  setTraitConfigs: (configs: TraitConfig[]) => void;
+  setTraitConfigs: (value: TraitConfig[]) => void;
   itemConfigs: ItemConfig[];
-  setItemConfigs: (configs: ItemConfig[]) => void;
+  setItemConfigs: (value: ItemConfig[]) => void;
   priceRanges: PriceRange[];
-  setPriceRanges: (ranges: PriceRange[]) => void;
+  setPriceRanges: (value: PriceRange[]) => void;
   generatedUsers: string[];
   generatedItems: string[];
-  onUpdateUser: (userId: string, traits: Record<string, any>) => Promise<void>;
-  onUpdateItem: (itemId: string, updates: Record<string, any>) => Promise<void>;
+  onUpdateUser: (
+    _userId: string,
+    _traits: Record<string, any>
+  ) => Promise<void>;
+  onUpdateItem: (
+    _itemId: string,
+    _updates: Record<string, any>
+  ) => Promise<void>;
 }
 
 export function SeedDataSection({
@@ -315,7 +319,6 @@ export function SeedDataSection({
               traitConfigs={traitConfigs}
               setTraitConfigs={setTraitConfigs}
               generatedUsers={generatedUsers}
-              namespace={namespace}
               onUpdateUser={onUpdateUser}
             />
           </div>
@@ -393,7 +396,6 @@ export function SeedDataSection({
               priceRanges={priceRanges}
               setPriceRanges={setPriceRanges}
               generatedItems={generatedItems}
-              namespace={namespace}
               onUpdateItem={onUpdateItem}
             />
           </div>

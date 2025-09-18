@@ -2,25 +2,23 @@
 
 An HTTP API for ingesting activity and asking for recommendations.
 
-## What It Does
-
-- **Ingest** items, users, events using **opaque IDs** (you keep the mapping).
-- **Recommend** top‑K items using **time‑decayed popularity** (v1).
-- **Similar items** via **co‑visitation**.
-- **Per‑tenant config** for event types, weights, and optional per‑type
-  half‑life.
-
-## Endpoints (core)
+## API Endpoints
 
 Open **Swagger** at **`/docs`** to inspect schemas and try requests.
 
-## How It Works
+### Rule engine (admin)
 
-- **Popularity**: sum of (`event_weight` × half‑life decay × optional `value`)
-  per item.
-  - Weights & (optional) per‑type half‑life come from tenant overrides, falling
-    back to global defaults.
-- **Co‑visitation**: count recent co‑occurring items by the same users.
+- `GET /v1/admin/rules` — list merchandising rules with optional filters.
+- `POST /v1/admin/rules` — create a rule (`BLOCK`, `PIN`, `BOOST`).
+- `PUT /v1/admin/rules/{rule_id}` — update an existing rule.
+- `POST /v1/admin/rules/dry-run` — preview matched rules and effects without
+  mutating state.
+
+### Explain RCA
+
+- `POST /v1/explain/llm` — generate a markdown RCA report using curated facts
+  and the configured LLM; response includes both the human-readable summary and
+  the facts pack used.
 
 ## Development
 

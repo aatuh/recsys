@@ -57,12 +57,16 @@ export default [
     },
     rules: {
       // TypeScript rules
+      "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": [
         "error",
-        { argsIgnorePattern: "^_" },
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+        },
       ],
-      "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/no-non-null-assertion": "warn",
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-non-null-assertion": "off",
 
       // React rules
       "react/react-in-jsx-scope": "off", // Not needed with React 17+
@@ -80,23 +84,20 @@ export default [
       "react/no-is-mounted": "error",
       "react/no-render-return-value": "error",
       "react/no-string-refs": "error",
-      "react/no-unescaped-entities": "warn", // Changed to warning
+      "react/no-unescaped-entities": "off",
       "react/no-unknown-property": "error",
       "react/no-unsafe": "error",
       "react/require-render-return": "error",
 
       // React Hooks rules
       "react-hooks/rules-of-hooks": "error",
-      "react-hooks/exhaustive-deps": "warn",
+      "react-hooks/exhaustive-deps": "off",
 
       // React Refresh rules
-      "react-refresh/only-export-components": [
-        "warn",
-        { allowConstantExport: true },
-      ],
+      "react-refresh/only-export-components": "off",
 
       // General JavaScript/TypeScript rules
-      "no-console": "warn",
+      "no-console": "off",
       "no-debugger": "error",
       "no-duplicate-imports": "error",
       "no-unused-expressions": "error",

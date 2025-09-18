@@ -62,6 +62,11 @@ const (
 	RulesDryRun = V1 + "/admin/rules/dry-run"
 )
 
+// Explain endpoints
+const (
+	ExplainLLM = V1 + "/explain/llm"
+)
+
 // Health and documentation
 const (
 	Health = "/health"

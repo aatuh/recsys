@@ -145,7 +145,7 @@ export function Td(props: { children: React.ReactNode; mono?: boolean }) {
 export interface ResultsTableProps {
   items: any[] | null;
   showExplain?: boolean;
-  onExplain?: (item: any) => void;
+  onExplain?: (value: any) => void;
 }
 
 export function ResultsTable(props: ResultsTableProps) {

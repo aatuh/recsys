@@ -85,6 +85,8 @@ services:
     depends_on:
       api:
         condition: service_started
+      swagger:
+        condition: service_started
     env_file:
       - ./demo-ui/.env
     ports:
@@ -93,6 +95,18 @@ services:
       - ./demo-ui:/app
       - demo_node_modules:/app/node_modules
     command: ["/bin/sh", "-c", "/app/entrypoint.sh"]
+
+  swagger:
+    container_name: recsys-swagger
+    build:
+      context: ./swagger-service
+      dockerfile: Dockerfile
+    volumes:
+      - ./swagger-service/public:/usr/share/nginx/html:ro
+    ports:
+      - "8081:8080"
+    depends_on:
+      - api
 
   adminer:
     image: adminer:latest
@@ -109,12 +123,14 @@ services:
     volumes:
       - mkcert_ca:/root/.local/share/mkcert
       - caddy_certs:/certs
+      - ./proxy/entrypoint.sh:/entrypoint.sh:ro
     ports:
       - "443:443"
       - "80:80"
     depends_on:
       - api
       - demo
+      - swagger
 
 volumes:
   db_data:

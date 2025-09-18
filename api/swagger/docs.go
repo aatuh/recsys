@@ -406,6 +406,51 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/explain/llm": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "explain"
+                ],
+                "summary": "Generate RCA explanation via LLM",
+                "parameters": [
+                    {
+                        "description": "Explain request",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.ExplainLLMRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.ExplainLLMResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/items": {
             "get": {
                 "description": "Get a paginated list of items with optional filtering by item_id, date range, etc.",
@@ -513,7 +558,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/internal_http_types.ScoredItem"
+                                "$ref": "#/definitions/specs_types.ScoredItem"
                             }
                         }
                     },
@@ -640,6 +685,304 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/segment-profiles": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "config"
+                ],
+                "summary": "List segment profiles",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "default",
+                        "description": "Namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.SegmentProfilesListResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/segment-profiles:delete": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "config"
+                ],
+                "summary": "Delete segment profiles",
+                "operationId": "segmentProfilesDelete",
+                "parameters": [
+                    {
+                        "description": "IDs",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.IDListRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.Ack"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/segment-profiles:upsert": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "config"
+                ],
+                "summary": "Upsert segment profiles",
+                "operationId": "segmentProfilesUpsert",
+                "parameters": [
+                    {
+                        "description": "Profiles",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.SegmentProfilesUpsertRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.Ack"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/segments": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "config"
+                ],
+                "summary": "List segments with rules",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "default",
+                        "description": "Namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.SegmentsListResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/segments:delete": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "config"
+                ],
+                "summary": "Delete segments",
+                "operationId": "segmentsDelete",
+                "parameters": [
+                    {
+                        "description": "IDs",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.IDListRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.Ack"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/segments:dry-run": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "config"
+                ],
+                "summary": "Simulate segment selection for context",
+                "operationId": "segmentsDryRun",
+                "parameters": [
+                    {
+                        "description": "Dry run",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.SegmentDryRunRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.SegmentDryRunResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/segments:upsert": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "config"
+                ],
+                "summary": "Upsert a segment and its rules",
+                "operationId": "segmentsUpsert",
+                "parameters": [
+                    {
+                        "description": "Segment",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.SegmentsUpsertRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.Ack"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/common.APIError"
                         }
@@ -817,7 +1160,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_http_types.ScoredItem": {
+        "specs_types.ScoredItem": {
             "type": "object",
             "properties": {
                 "explain": {
@@ -836,6 +1179,135 @@ const docTemplate = `{
                 "score": {
                     "type": "number",
                     "example": 0.87
+                }
+            }
+        },
+        "specs_types.Segment": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "priority": {
+                    "type": "integer"
+                },
+                "profile_id": {
+                    "type": "string"
+                },
+                "rules": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/specs_types.SegmentRule"
+                    }
+                },
+                "segment_id": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "specs_types.SegmentProfile": {
+            "type": "object",
+            "properties": {
+                "blend_alpha": {
+                    "type": "number"
+                },
+                "blend_beta": {
+                    "type": "number"
+                },
+                "blend_gamma": {
+                    "type": "number"
+                },
+                "brand_cap": {
+                    "type": "integer"
+                },
+                "brand_tag_prefixes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "category_cap": {
+                    "type": "integer"
+                },
+                "category_tag_prefixes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "co_vis_window_days": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "exclude_event_types": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "half_life_days": {
+                    "type": "number"
+                },
+                "mmr_lambda": {
+                    "type": "number"
+                },
+                "popularity_fanout": {
+                    "type": "integer"
+                },
+                "profile_boost": {
+                    "type": "number"
+                },
+                "profile_id": {
+                    "type": "string"
+                },
+                "profile_top_n": {
+                    "type": "integer"
+                },
+                "profile_window_days": {
+                    "type": "number"
+                },
+                "purchased_window_days": {
+                    "type": "integer"
+                },
+                "rule_exclude_events": {
+                    "type": "boolean"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "specs_types.SegmentRule": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "rule": {
+                    "type": "object"
+                },
+                "rule_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -1245,6 +1717,59 @@ const docTemplate = `{
                 }
             }
         },
+        "types.ExplainLLMRequest": {
+            "type": "object",
+            "properties": {
+                "from": {
+                    "type": "string"
+                },
+                "namespace": {
+                    "type": "string"
+                },
+                "question": {
+                    "type": "string"
+                },
+                "segment_id": {
+                    "type": "string"
+                },
+                "surface": {
+                    "type": "string"
+                },
+                "target_id": {
+                    "type": "string"
+                },
+                "target_type": {
+                    "type": "string"
+                },
+                "to": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.ExplainLLMResponse": {
+            "type": "object",
+            "properties": {
+                "cache": {
+                    "type": "string"
+                },
+                "facts": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "markdown": {
+                    "type": "string"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "warnings": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "types.ExplainMMR": {
             "type": "object",
             "properties": {
@@ -1284,6 +1809,20 @@ const docTemplate = `{
             "properties": {
                 "profile_boost": {
                     "type": "number"
+                }
+            }
+        },
+        "types.IDListRequest": {
+            "type": "object",
+            "properties": {
+                "ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "namespace": {
+                    "type": "string"
                 }
             }
         },
@@ -1463,6 +2002,10 @@ const docTemplate = `{
                 "constraints": {
                     "$ref": "#/definitions/types.RecommendConstraints"
                 },
+                "context": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
                 "explain_level": {
                     "type": "string",
                     "enum": [
@@ -1499,12 +2042,20 @@ const docTemplate = `{
                 "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/internal_http_types.ScoredItem"
+                        "$ref": "#/definitions/specs_types.ScoredItem"
                     }
                 },
                 "model_version": {
                     "type": "string",
                     "example": "pop_2025-09-07_01"
+                },
+                "profile_id": {
+                    "type": "string",
+                    "example": "vip-high-novelty"
+                },
+                "segment_id": {
+                    "type": "string",
+                    "example": "vip"
                 }
             }
         },
@@ -1589,12 +2140,109 @@ const docTemplate = `{
                 "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/internal_http_types.ScoredItem"
+                        "$ref": "#/definitions/specs_types.ScoredItem"
                     }
                 },
                 "model_version": {
                     "type": "string",
                     "example": "pop_2025-09-07_01"
+                },
+                "profile_id": {
+                    "type": "string",
+                    "example": "vip-high-novelty"
+                },
+                "segment_id": {
+                    "type": "string",
+                    "example": "vip"
+                }
+            }
+        },
+        "types.SegmentDryRunRequest": {
+            "type": "object",
+            "properties": {
+                "context": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "namespace": {
+                    "type": "string"
+                },
+                "traits": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.SegmentDryRunResponse": {
+            "type": "object",
+            "properties": {
+                "matched": {
+                    "type": "boolean"
+                },
+                "matched_rule_id": {
+                    "type": "integer"
+                },
+                "profile_id": {
+                    "type": "string"
+                },
+                "segment_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.SegmentProfilesListResponse": {
+            "type": "object",
+            "properties": {
+                "namespace": {
+                    "type": "string"
+                },
+                "profiles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/specs_types.SegmentProfile"
+                    }
+                }
+            }
+        },
+        "types.SegmentProfilesUpsertRequest": {
+            "type": "object",
+            "properties": {
+                "namespace": {
+                    "type": "string"
+                },
+                "profiles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/specs_types.SegmentProfile"
+                    }
+                }
+            }
+        },
+        "types.SegmentsListResponse": {
+            "type": "object",
+            "properties": {
+                "namespace": {
+                    "type": "string"
+                },
+                "segments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/specs_types.Segment"
+                    }
+                }
+            }
+        },
+        "types.SegmentsUpsertRequest": {
+            "type": "object",
+            "properties": {
+                "namespace": {
+                    "type": "string"
+                },
+                "segment": {
+                    "$ref": "#/definitions/specs_types.Segment"
                 }
             }
         },
