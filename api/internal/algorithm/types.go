@@ -117,6 +117,20 @@ type CandidateData struct {
 	CapsInfo          map[string]CapsExplain
 }
 
+// TraceData aggregates algorithm internals for audit logging.
+type TraceData struct {
+	K              int
+	CandidatesPre  []types.ScoredItem
+	MMRInfo        map[string]MMRExplain
+	CapsInfo       map[string]CapsExplain
+	Anchors        []string
+	Boosted        map[string]bool
+	Reasons        map[string][]string
+	IncludeReasons bool
+	ExplainLevel   ExplainLevel
+	ModelVersion   string
+}
+
 // SimilarItemsRequest represents a request for similar items
 type SimilarItemsRequest struct {
 	OrgID     uuid.UUID

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+	"time"
 
 	"recsys/internal/algorithm"
 	"recsys/internal/bandit"
@@ -214,6 +215,7 @@ func (h *Handler) BanditReward(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} types.RecommendWithBanditResponse
 // @Router /v1/bandit/recommendations [post]
 func (h *Handler) RecommendWithBandit(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
 	var req types.RecommendWithBanditRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		common.HttpError(w, r, err, http.StatusBadRequest)
@@ -288,7 +290,7 @@ func (h *Handler) RecommendWithBandit(w http.ResponseWriter, r *http.Request) {
 	// If not found, fall back to env-based defaults already in cfg.
 
 	engine := algorithm.NewEngine(cfg, h.Store)
-	algoResp, err := engine.Recommend(r.Context(), algoReq)
+	algoResp, traceData, err := engine.Recommend(r.Context(), algoReq)
 	if err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)
 		return
@@ -303,6 +305,33 @@ func (h *Handler) RecommendWithBandit(w http.ResponseWriter, r *http.Request) {
 		BanditExplain:     dec.Explain,
 	}
 	_ = json.NewEncoder(w).Encode(out)
+
+	var banditCtx *banditTraceContext
+	if dec.PolicyID != "" {
+		banditCtx = &banditTraceContext{
+			ChosenPolicyID: dec.PolicyID,
+			Algorithm:      string(dec.Algorithm),
+			BucketKey:      dec.BucketKey,
+			Explore:        dec.Explore,
+			Explain:        dec.Explain,
+		}
+		if v := req.Context["request_id"]; v != "" {
+			banditCtx.RequestID = v
+		}
+	}
+
+	h.recordDecisionTrace(decisionTraceInput{
+		Request:      r,
+		HTTPRequest:  req.RecommendRequest,
+		AlgoRequest:  algoReq,
+		Config:       cfg,
+		AlgoResponse: algoResp,
+		HTTPResponse: out.RecommendResponse,
+		TraceData:    traceData,
+		Duration:     time.Since(start),
+		Surface:      req.Surface,
+		Bandit:       banditCtx,
+	})
 }
 
 // banditAlgoOverride overrides the algorithm if provided.

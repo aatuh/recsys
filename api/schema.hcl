@@ -518,3 +518,87 @@ table "bandit_rewards_log" {
     columns = [column.org_id, column.namespace, column.surface, column.bucket_key]
   }
 }
+
+table "rec_decisions" {
+  schema = schema.public
+  column "decision_id" {
+    type = uuid
+    null = false
+  }
+  column "org_id" {
+    type = uuid
+    null = false
+  }
+  column "ts" {
+    type = timestamptz
+    null = false
+    default = sql("now()")
+  }
+  column "namespace" {
+    type = text
+    null = false
+  }
+  column "surface" {
+    type = text
+    null = true
+  }
+  column "request_id" {
+    type = text
+    null = true
+  }
+  column "user_hash" {
+    type = text
+    null = true
+  }
+  column "k" {
+    type = int
+    null = true
+  }
+  column "constraints" {
+    type = jsonb
+    null = true
+  }
+  column "effective_config" {
+    type = jsonb
+    null = false
+  }
+  column "bandit" {
+    type = jsonb
+    null = true
+  }
+  column "candidates_pre" {
+    type = jsonb
+    null = false
+  }
+  column "final_items" {
+    type = jsonb
+    null = false
+  }
+  column "mmr_info" {
+    type = jsonb
+    null = true
+  }
+  column "caps" {
+    type = jsonb
+    null = true
+  }
+  column "extras" {
+    type = jsonb
+    null = true
+  }
+  primary_key {
+    columns = [column.decision_id]
+  }
+  index "idx_recdec_ns_ts" {
+    columns = [column.namespace, column.ts]
+  }
+  index "idx_recdec_org_ns_ts" {
+    columns = [column.org_id, column.namespace, column.ts]
+  }
+  index "idx_recdec_req" {
+    columns = [column.request_id]
+  }
+  index "idx_recdec_user_ts" {
+    columns = [column.user_hash, column.ts]
+  }
+}

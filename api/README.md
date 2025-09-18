@@ -9,10 +9,19 @@ An HTTP API for ingesting activity and asking for recommendations.
 - **Similar items** via **co‑visitation**.
 - **Per‑tenant config** for event types, weights, and optional per‑type
   half‑life.
+- **Audit trail** that captures each recommendation decision for compliance and
+  debugging.
 
 ## Endpoints (core)
 
 Open **Swagger** at **`/docs`** to inspect schemas and try requests.
+
+### Audit trail
+
+- `GET /v1/audit/decisions` — list recent decisions with filters for namespace,
+  time range, user hash, or request id.
+- `GET /v1/audit/decisions/{decision_id}` — fetch the full stored trace for a
+  single decision.
 
 ## How It Works
 

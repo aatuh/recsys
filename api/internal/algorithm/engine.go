@@ -47,7 +47,7 @@ func NewEngine(config Config, store types.RecAlgoStore) *Engine {
 // Recommend generates recommendations using the blended scoring approach.
 func (e *Engine) Recommend(
 	ctx context.Context, req Request,
-) (*Response, error) {
+) (*Response, *TraceData, error) {
 	// Set defaults.
 	k := req.K
 	if k <= 0 {
@@ -59,19 +59,19 @@ func (e *Engine) Recommend(
 		ctx, req.OrgID, req.Namespace, k, req.Constraints,
 	)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Apply exclusions.
 	candidates, err = e.applyExclusions(ctx, candidates, req)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Get tags for all candidates.
 	tags, err := e.getCandidateTags(ctx, candidates, req)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Get blend weights.
@@ -80,7 +80,7 @@ func (e *Engine) Recommend(
 	// Gather co-visitation and embedding signals.
 	candidateData, err := e.gatherSignals(ctx, candidates, req, weights)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	candidateData.Tags = tags
 
@@ -92,6 +92,8 @@ func (e *Engine) Recommend(
 
 	// Determine model version.
 	modelVersion := e.getModelVersion(weights)
+	kUsed := k
+	candidatesPre := copyScoredItems(candidateData.Candidates)
 
 	// Apply MMR and caps if needed.
 	if e.shouldUseMMR() || e.shouldUseCaps() {
@@ -114,10 +116,36 @@ func (e *Engine) Recommend(
 		}
 	}
 
-	// Build response.
-	return e.buildResponse(
-		candidateData, k, modelVersion, req.IncludeReasons, req.ExplainLevel, weights,
-	), nil
+	trace := &TraceData{
+		K:              kUsed,
+		CandidatesPre:  candidatesPre,
+		MMRInfo:        copyMMRInfo(candidateData.MMRInfo),
+		CapsInfo:       copyCapsInfo(candidateData.CapsInfo),
+		Anchors:        append([]string(nil), candidateData.Anchors...),
+		Boosted:        copyBoolMap(candidateData.Boosted),
+		IncludeReasons: req.IncludeReasons,
+		ExplainLevel:   req.ExplainLevel,
+		ModelVersion:   modelVersion,
+	}
+	reasonSink := make(map[string][]string)
+	response := e.buildResponse(
+		candidateData,
+		kUsed,
+		modelVersion,
+		req.IncludeReasons,
+		req.ExplainLevel,
+		weights,
+		reasonSink,
+	)
+	if len(trace.Anchors) == 0 && candidateData.AnchorsFetched {
+		trace.Anchors = append(trace.Anchors, "(no_recent_activity)")
+	}
+	if len(reasonSink) > 0 {
+		trace.Reasons = reasonSink
+	} else {
+		trace.Reasons = make(map[string][]string)
+	}
+	return response, trace, nil
 }
 
 // getPopularityCandidates fetches a popularity-based candidate pool.
@@ -592,6 +620,7 @@ func (e *Engine) buildResponse(
 	includeReasons bool,
 	explainLevel ExplainLevel,
 	weights BlendWeights,
+	reasonSink map[string][]string,
 ) *Response {
 	response := &Response{
 		ModelVersion: modelVersion,
@@ -614,8 +643,15 @@ func (e *Engine) buildResponse(
 		}
 
 		reasons := e.buildReasons(
-			candidate.ItemID, includeReasons, weights, data,
+			candidate.ItemID, true, weights, data,
 		)
+		if reasonSink != nil {
+			reasonCopy := append([]string(nil), reasons...)
+			reasonSink[candidate.ItemID] = reasonCopy
+		}
+		if !includeReasons {
+			reasons = nil
+		}
 
 		var explain *ExplainBlock
 		if explainLevel != ExplainLevelTags {
@@ -800,6 +836,67 @@ func (e *Engine) buildExplain(
 	}
 
 	return explain
+}
+
+func copyScoredItems(items []types.ScoredItem) []types.ScoredItem {
+	if len(items) == 0 {
+		return nil
+	}
+	out := make([]types.ScoredItem, len(items))
+	copy(out, items)
+	return out
+}
+
+func copyMMRInfo(src map[string]MMRExplain) map[string]MMRExplain {
+	if len(src) == 0 {
+		return nil
+	}
+	out := make(map[string]MMRExplain, len(src))
+	for k, v := range src {
+		out[k] = v
+	}
+	return out
+}
+
+func copyCapsInfo(src map[string]CapsExplain) map[string]CapsExplain {
+	if len(src) == 0 {
+		return nil
+	}
+	out := make(map[string]CapsExplain, len(src))
+	for k, v := range src {
+		out[k] = CapsExplain{
+			Brand:    copyCapUsage(v.Brand),
+			Category: copyCapUsage(v.Category),
+		}
+	}
+	return out
+}
+
+func copyCapUsage(src *CapUsage) *CapUsage {
+	if src == nil {
+		return nil
+	}
+	usage := &CapUsage{Applied: src.Applied, Value: src.Value}
+	if src.Limit != nil {
+		limit := *src.Limit
+		usage.Limit = &limit
+	}
+	if src.Count != nil {
+		count := *src.Count
+		usage.Count = &count
+	}
+	return usage
+}
+
+func copyBoolMap(src map[string]bool) map[string]bool {
+	if len(src) == 0 {
+		return nil
+	}
+	out := make(map[string]bool, len(src))
+	for k, v := range src {
+		out[k] = v
+	}
+	return out
 }
 
 // maxInt returns the maximum of two integers.

@@ -14,6 +14,7 @@ import (
 
 	"gopkg.in/yaml.v2"
 
+	"recsys/internal/audit"
 	"recsys/internal/http/common"
 	"recsys/internal/http/config"
 	"recsys/internal/http/db"
@@ -165,6 +166,21 @@ func main() {
 
 	// v1 endpoints
 	st := store.New(pool)
+	decisionRecorder := audit.NewWriter(ctx, st, logger, audit.WriterConfig{
+		Enabled:           cfg.DecisionTraceEnabled,
+		QueueSize:         cfg.DecisionTraceQueueSize,
+		BatchSize:         cfg.DecisionTraceBatchSize,
+		FlushInterval:     cfg.DecisionTraceFlushInterval,
+		SampleDefaultRate: cfg.DecisionTraceSampleDefault,
+		NamespaceRates:    cfg.DecisionTraceNamespaceSamples,
+	})
+	defer func() {
+		closeCtx, cancelClose := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancelClose()
+		if err := decisionRecorder.Close(closeCtx); err != nil && err != context.DeadlineExceeded {
+			logger.Warn("decision recorder close", zap.Error(err))
+		}
+	}()
 	hs := &handlers.Handler{
 		Store:               st,
 		DefaultOrg:          cfg.DefaultOrgID,
@@ -186,6 +202,9 @@ func main() {
 		BlendBeta:           cfg.BlendBeta,
 		BlendGamma:          cfg.BlendGamma,
 		BanditAlgo:          cfg.BanditAlgo,
+		Logger:              logger,
+		DecisionRecorder:    decisionRecorder,
+		DecisionTraceSalt:   cfg.DecisionTraceSalt,
 	}
 	r.Post("/v1/items:upsert", hs.ItemsUpsert)
 	r.Post("/v1/users:upsert", hs.UsersUpsert)
@@ -211,6 +230,11 @@ func main() {
 	r.Post("/v1/segments:upsert", hs.SegmentsUpsert)
 	r.Post("/v1/segments:delete", hs.SegmentsDelete)
 	r.Post("/v1/segments:dry-run", hs.SegmentsDryRun)
+
+	// Audit endpoints
+	r.Get("/v1/audit/decisions", hs.AuditDecisionsList)
+	r.Get("/v1/audit/decisions/{decision_id}", hs.AuditDecisionGet)
+	r.Post("/v1/audit/search", hs.AuditDecisionsSearch)
 
 	// Bandit endpoints
 	r.Post("/v1/bandit/policies:upsert", hs.BanditPoliciesUpsert)

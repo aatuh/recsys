@@ -49,6 +49,7 @@ func MustOrgID(t *testing.T) uuid.UUID {
 func CleanTables(t *testing.T, pool *pgxpool.Pool) {
 	t.Helper()
 	_, err := pool.Exec(context.Background(), `
+TRUNCATE TABLE rec_decisions;
 TRUNCATE TABLE events, items, users RESTART IDENTITY;
 TRUNCATE TABLE event_type_config;`)
 	require.NoError(t, err)
@@ -107,6 +108,7 @@ func (tc *TestClient) DoRequest(t *testing.T, method, path string, body any) (*h
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}
+	req.Header.Set("X-Org-ID", MustOrgID(t).String())
 
 	resp, err := tc.Client.Do(req)
 	require.NoError(t, err)
@@ -137,6 +139,7 @@ func (tc *TestClient) DoRawRequest(t *testing.T, method, path string, body io.Re
 	require.NoError(t, err)
 
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Org-ID", MustOrgID(t).String())
 
 	resp, err := tc.Client.Do(req)
 	require.NoError(t, err)

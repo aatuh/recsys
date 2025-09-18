@@ -3,40 +3,47 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"sync"
 	"time"
 
+	"recsys/internal/audit"
 	"recsys/internal/http/common"
 	"recsys/internal/http/types"
 	"recsys/internal/store"
 	internaltypes "recsys/internal/types"
 
 	"github.com/google/uuid"
+	"go.uber.org/zap"
 )
 
 // Keep in sync with store.EmbeddingDims.
 const embeddingDims = 384
 
 type Handler struct {
-	Store               *store.Store
-	DefaultOrg          uuid.UUID
-	HalfLifeDays        float64
-	CoVisWindowDays     float64
-	PopularityFanout    int
-	MMRLambda           float64
-	BrandCap            int
-	CategoryCap         int
-	RuleExcludeEvents   bool
-	ExcludeEventTypes   []int16
-	BrandTagPrefixes    []string
-	CategoryTagPrefixes []string
-	PurchasedWindowDays float64
-	ProfileWindowDays   float64 // lookback for building profile; <=0 disables windowing
-	ProfileBoost        float64 // multiplier in [0, +inf). 0 disables personalization
-	ProfileTopNTags     int     // limit of profile tags considered
-	BlendAlpha          float64
-	BlendBeta           float64
-	BlendGamma          float64
-	BanditAlgo          internaltypes.Algorithm
+	Store                 *store.Store
+	DefaultOrg            uuid.UUID
+	HalfLifeDays          float64
+	CoVisWindowDays       float64
+	PopularityFanout      int
+	MMRLambda             float64
+	BrandCap              int
+	CategoryCap           int
+	RuleExcludeEvents     bool
+	ExcludeEventTypes     []int16
+	BrandTagPrefixes      []string
+	CategoryTagPrefixes   []string
+	PurchasedWindowDays   float64
+	ProfileWindowDays     float64 // lookback for building profile; <=0 disables windowing
+	ProfileBoost          float64 // multiplier in [0, +inf). 0 disables personalization
+	ProfileTopNTags       int     // limit of profile tags considered
+	BlendAlpha            float64
+	BlendBeta             float64
+	BlendGamma            float64
+	BanditAlgo            internaltypes.Algorithm
+	Logger                *zap.Logger
+	DecisionRecorder      audit.Recorder
+	DecisionTraceSalt     string
+	auditRecorderWarnOnce sync.Once
 }
 
 // ItemsUpsert godoc

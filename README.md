@@ -665,6 +665,18 @@ weights intuitive and the blend stable. Channels with no signal produce
 |---------------|--------------|----------------------------------------------------|-------|
 | `BANDIT_ALGO` | string       | Multi-armed bandit algorithm (`thompson`, `ucb1`). |       |
 
+### Decision audit vars
+
+| Variable                           | Type / Range       | What it does                                                            | Notes                                              |
+|------------------------------------|--------------------|-------------------------------------------------------------------------|----------------------------------------------------|
+| `AUDIT_DECISIONS_ENABLED`          | bool               | Turns the decision-trace pipeline on/off.                               | When `false`, recommendations skip queuing traces. |
+| `AUDIT_DECISIONS_SAMPLE_DEFAULT`   | float in [0,1]     | Default sampling rate for namespaces when recording decisions.          | `1.0` = capture all requests.                      |
+| `AUDIT_DECISIONS_SAMPLE_OVERRIDES` | string (`ns=rate`) | Comma-separated per-namespace sampling overrides.                       | Example: `casino=1.0,vip=0.5`.                     |
+| `AUDIT_DECISIONS_QUEUE`            | int > 0            | Size of the in-memory queue feeding the async writer.                   | Increase for bursty traffic; consumes RAM.         |
+| `AUDIT_DECISIONS_BATCH`            | int > 0            | Maximum number of traces persisted per database batch insert.           | Larger batches reduce round-trips.                 |
+| `AUDIT_DECISIONS_FLUSH_INTERVAL`   | Go duration string | Max wait before flushing even if the batch is not full (e.g., `250ms`). | Tune for latency vs. throughput.                   |
+| `AUDIT_DECISIONS_SALT`             | string             | Secret salt mixed into the user hash stored in audits.                  | Rotate to invalidate old hashes; keep private.     |
+
 ## Tuning Cheat-Sheet
 
 - Start with `alpha=1.0`, `beta=0.1`, `gamma=0.1`.

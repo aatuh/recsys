@@ -2,8 +2,10 @@ package config
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"recsys/internal/types"
 	"recsys/shared/util"
@@ -32,6 +34,14 @@ type Config struct {
 	BlendBeta           float64
 	BlendGamma          float64
 	BanditAlgo          types.Algorithm
+
+	DecisionTraceEnabled          bool
+	DecisionTraceQueueSize        int
+	DecisionTraceBatchSize        int
+	DecisionTraceFlushInterval    time.Duration
+	DecisionTraceSampleDefault    float64
+	DecisionTraceNamespaceSamples map[string]float64
+	DecisionTraceSalt             string
 }
 
 func Load() (Config, error) {
@@ -195,6 +205,68 @@ func Load() (Config, error) {
 		c.BanditAlgo = types.AlgorithmUCB1
 	default:
 		return c, errors.New("BANDIT_ALGO must be 'thompson' or 'ucb1'")
+	}
+
+	c.DecisionTraceEnabled = util.MustGetEnv("AUDIT_DECISIONS_ENABLED") == "true"
+	if c.DecisionTraceEnabled {
+		defaultRate, err := strconv.ParseFloat(util.MustGetEnv("AUDIT_DECISIONS_SAMPLE_DEFAULT"), 64)
+		if err != nil || defaultRate < 0 || defaultRate > 1 {
+			return c, errors.New("AUDIT_DECISIONS_SAMPLE_DEFAULT must be between 0 and 1")
+		}
+		c.DecisionTraceSampleDefault = defaultRate
+
+		queueSize, err := strconv.Atoi(util.MustGetEnv("AUDIT_DECISIONS_QUEUE"))
+		if err != nil || queueSize <= 0 {
+			return c, errors.New("AUDIT_DECISIONS_QUEUE must be a positive integer")
+		}
+		c.DecisionTraceQueueSize = queueSize
+
+		batchSize, err := strconv.Atoi(util.MustGetEnv("AUDIT_DECISIONS_BATCH"))
+		if err != nil || batchSize <= 0 {
+			return c, errors.New("AUDIT_DECISIONS_BATCH must be a positive integer")
+		}
+		c.DecisionTraceBatchSize = batchSize
+
+		flushStr := util.MustGetEnv("AUDIT_DECISIONS_FLUSH_INTERVAL")
+		flushDur, err := time.ParseDuration(strings.TrimSpace(flushStr))
+		if err != nil || flushDur <= 0 {
+			return c, errors.New("AUDIT_DECISIONS_FLUSH_INTERVAL must be a positive duration (e.g. 250ms)")
+		}
+		c.DecisionTraceFlushInterval = flushDur
+
+		rawOverrides := strings.TrimSpace(util.MustGetEnv("AUDIT_DECISIONS_SAMPLE_OVERRIDES"))
+		if rawOverrides != "-" {
+			overrides := make(map[string]float64)
+			parts := strings.Split(rawOverrides, ",")
+			for _, part := range parts {
+				part = strings.TrimSpace(part)
+				if part == "" {
+					continue
+				}
+				kv := strings.SplitN(part, "=", 2)
+				if len(kv) != 2 {
+					return c, fmt.Errorf("AUDIT_DECISIONS_SAMPLE_OVERRIDES entry %q must be namespace=rate", part)
+				}
+				ns := strings.TrimSpace(kv[0])
+				if ns == "" {
+					return c, errors.New("AUDIT_DECISIONS_SAMPLE_OVERRIDES namespace cannot be empty")
+				}
+				val, err := strconv.ParseFloat(strings.TrimSpace(kv[1]), 64)
+				if err != nil || val < 0 || val > 1 {
+					return c, fmt.Errorf("AUDIT_DECISIONS_SAMPLE_OVERRIDES invalid rate for namespace %q", ns)
+				}
+				overrides[ns] = val
+			}
+			if len(overrides) > 0 {
+				c.DecisionTraceNamespaceSamples = overrides
+			}
+		}
+
+		salt := strings.TrimSpace(util.MustGetEnv("AUDIT_DECISIONS_SALT"))
+		if salt == "" {
+			return c, errors.New("AUDIT_DECISIONS_SALT must be non-empty")
+		}
+		c.DecisionTraceSalt = salt
 	}
 
 	return c, nil

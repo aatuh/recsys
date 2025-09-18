@@ -40,6 +40,7 @@ func (e *CreatedAfterParseError) Unwrap() error {
 // @Failure      400      {object}  common.APIError
 // @Router       /v1/recommendations [post]
 func (h *Handler) Recommend(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
 	var req handlerstypes.RecommendRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		common.HttpError(w, r, err, http.StatusBadRequest)
@@ -79,7 +80,7 @@ func (h *Handler) Recommend(w http.ResponseWriter, r *http.Request) {
 	engine := algorithm.NewEngine(config, h.Store)
 
 	// Get recommendations
-	algoResp, err := engine.Recommend(r.Context(), algoReq)
+	algoResp, traceData, err := engine.Recommend(r.Context(), algoReq)
 	if err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)
 		return
@@ -92,6 +93,17 @@ func (h *Handler) Recommend(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(httpResp)
+
+	h.recordDecisionTrace(decisionTraceInput{
+		Request:      r,
+		HTTPRequest:  req,
+		AlgoRequest:  algoReq,
+		Config:       config,
+		AlgoResponse: algoResp,
+		HTTPResponse: httpResp,
+		TraceData:    traceData,
+		Duration:     time.Since(start),
+	})
 }
 
 // ItemSimilar godoc
