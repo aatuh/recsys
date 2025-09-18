@@ -7,19 +7,20 @@ import (
 	"recsys/internal/types"
 )
 
+// MMRReRankWithMetadata performs MMR re-ranking and returns per-item metadata.
+func MMRReRankWithMetadata(
+	candidates []types.ScoredItem,
+	tags map[string]types.ItemTags,
+	k int,
+	lambda float64,
+	brandCap, categoryCap int,
+) ([]types.ScoredItem, map[string]MMRExplain, map[string]CapsExplain) {
+	return mmrReRankInternal(candidates, tags, k, lambda, brandCap, categoryCap)
+}
+
 // MMRReRank performs MMR (Maximal Marginal Relevance) re-ranking on candidate
-// items using tag overlap as a similarity proxy. It also enforces
-// brand/category caps.
-//
-// Parameters:
-//   - candidates: Items to re-rank
-//   - tags: Item tags for diversity calculation
-//   - k: Number of items to select
-//   - lambda: MMR balance (0=diversity, 1=relevance)
-//   - brandCap: Max items per brand (0=disabled)
-//   - categoryCap: Max items per category (0=disabled)
-//
-// Returns: Re-ranked items up to k items
+// items using tag overlap as a similarity proxy. It also enforces brand/category
+// caps but discards metadata for compatibility.
 func MMRReRank(
 	candidates []types.ScoredItem,
 	tags map[string]types.ItemTags,
@@ -27,14 +28,28 @@ func MMRReRank(
 	lambda float64,
 	brandCap, categoryCap int,
 ) []types.ScoredItem {
+	items, _, _ := mmrReRankInternal(candidates, tags, k, lambda, brandCap, categoryCap)
+	return items
+}
+
+func mmrReRankInternal(
+	candidates []types.ScoredItem,
+	tags map[string]types.ItemTags,
+	k int,
+	lambda float64,
+	brandCap, categoryCap int,
+) ([]types.ScoredItem, map[string]MMRExplain, map[string]CapsExplain) {
 	if k <= 0 {
 		k = 1
 	}
 
 	out := make([]types.ScoredItem, 0, minInt(k, len(candidates)))
 	if len(candidates) == 0 {
-		return out
+		return out, map[string]MMRExplain{}, map[string]CapsExplain{}
 	}
+
+	mmrInfo := make(map[string]MMRExplain)
+	capsInfo := make(map[string]CapsExplain)
 
 	// Precompute normalized scores.
 	maxScore := 0.0
@@ -52,11 +67,14 @@ func MMRReRank(
 	selected := make(map[string]struct{})
 
 	remainingCands := append([]types.ScoredItem(nil), candidates...)
+	rank := 0
 
 	// Greedy MMR with deterministic tie-break by initial order.
 	for len(out) < k && len(remainingCands) > 0 {
 		bestMMR := math.Inf(-1)
 		bestIdx := -1
+		bestMaxSim := 0.0
+		bestNorm := 0.0
 
 		// Iterate over the remaining candidates and find the best MMR score.
 		for i, candidate := range remainingCands {
@@ -78,7 +96,6 @@ func MMRReRank(
 			// Calculate diversity term: max similarity to already selected.
 			maxSim := 0.0
 			if len(selected) > 0 {
-				// Iterate over the selected items and calculate similarity.
 				for selectedID := range selected {
 					sim := jaccard(tagSets[itemId], tagSets[selectedID])
 					if sim > maxSim {
@@ -87,16 +104,14 @@ func MMRReRank(
 				}
 			}
 
-			// MMR score. The first round will pick the highest score ("best")
-			// item without similarity penalty. From the second pick onward,
-			// each candidate is penalized by how similar it is to anything
-			// already selected.
-			score := lambda*normScore(candidate.Score, maxScore) - // relevance
-				(1.0-lambda)*maxSim // diversity
+			norm := normScore(candidate.Score, maxScore)
+			score := lambda*norm - (1.0-lambda)*maxSim
 
 			if score > bestMMR {
 				bestMMR = score
 				bestIdx = i
+				bestMaxSim = maxSim
+				bestNorm = norm
 			}
 		}
 
@@ -108,6 +123,44 @@ func MMRReRank(
 		pick := remainingCands[bestIdx]
 		out = append(out, pick)
 		selected[pick.ItemID] = struct{}{}
+		rank++
+
+		mmrInfo[pick.ItemID] = MMRExplain{
+			Lambda:        lambda,
+			MaxSimilarity: bestMaxSim,
+			Penalty:       (1.0 - lambda) * bestMaxSim,
+			Relevance:     lambda * bestNorm,
+			Rank:          rank,
+		}
+
+		capsExplain := CapsExplain{}
+		if brandCap > 0 {
+			usage := &CapUsage{Applied: false}
+			if brand := brandMap[pick.ItemID]; brand != "" {
+				usage.Applied = true
+				count := brandCount[brand] + 1
+				limit := brandCap
+				usage.Count = &count
+				usage.Limit = &limit
+				usage.Value = brand
+			}
+			capsExplain.Brand = usage
+		}
+		if categoryCap > 0 {
+			usage := &CapUsage{Applied: false}
+			if category := categoryMap[pick.ItemID]; category != "" {
+				usage.Applied = true
+				count := categoryCount[category] + 1
+				limit := categoryCap
+				usage.Count = &count
+				usage.Limit = &limit
+				usage.Value = category
+			}
+			capsExplain.Category = usage
+		}
+		if capsExplain.Brand != nil || capsExplain.Category != nil {
+			capsInfo[pick.ItemID] = capsExplain
+		}
 
 		// Update counts.
 		if brand := brandMap[pick.ItemID]; brand != "" {
@@ -123,7 +176,7 @@ func MMRReRank(
 		)
 	}
 
-	return out
+	return out, mmrInfo, capsInfo
 }
 
 // normScore normalizes a score to [0, 1].

@@ -79,11 +79,14 @@ export async function recommend(
   blendVal: { pop: number; cooc: number; als: number },
   overrides?: types_Overrides | null
 ): Promise<types_RecommendResponse> {
-  const payload: types_RecommendRequest = {
+  const payload: types_RecommendRequest & {
+    explain_level?: "tags" | "numeric" | "full";
+  } = {
     user_id: userId,
     namespace,
     k: kVal,
     include_reasons: true,
+    explain_level: "numeric",
     constraints: {},
     blend: blendVal,
     overrides: overrides || undefined,

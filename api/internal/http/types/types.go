@@ -88,17 +88,80 @@ type RecommendRequest struct {
 	Blend          *RecommendBlend       `json:"blend,omitempty"`
 	Overrides      *Overrides            `json:"overrides,omitempty"`
 	IncludeReasons bool                  `json:"include_reasons,omitempty" example:"true"`
+	ExplainLevel   string                `json:"explain_level,omitempty" example:"numeric" enums:"tags,numeric,full"`
 }
 
 type ScoredItem struct {
-	ItemID  string   `json:"item_id" example:"i_101"`
-	Score   float64  `json:"score" example:"0.87"`
-	Reasons []string `json:"reasons,omitempty"`
+	ItemID  string        `json:"item_id" example:"i_101"`
+	Score   float64       `json:"score" example:"0.87"`
+	Reasons []string      `json:"reasons,omitempty"`
+	Explain *ExplainBlock `json:"explain,omitempty"`
 }
 
 type RecommendResponse struct {
 	ModelVersion string       `json:"model_version" example:"pop_2025-09-07_01"`
 	Items        []ScoredItem `json:"items"`
+}
+
+type ExplainBlendContribution struct {
+	Pop  float64 `json:"pop,omitempty"`
+	Cooc float64 `json:"cooc,omitempty"`
+	Emb  float64 `json:"emb,omitempty"`
+}
+
+type ExplainBlendRaw struct {
+	Pop  float64 `json:"pop,omitempty"`
+	Cooc float64 `json:"cooc,omitempty"`
+	Emb  float64 `json:"emb,omitempty"`
+}
+
+type ExplainBlend struct {
+	Alpha         float64                  `json:"alpha,omitempty"`
+	Beta          float64                  `json:"beta,omitempty"`
+	Gamma         float64                  `json:"gamma,omitempty"`
+	PopNorm       float64                  `json:"pop_norm,omitempty"`
+	CoocNorm      float64                  `json:"cooc_norm,omitempty"`
+	EmbNorm       float64                  `json:"emb_norm,omitempty"`
+	Contributions ExplainBlendContribution `json:"contrib"`
+	Raw           *ExplainBlendRaw         `json:"raw,omitempty"`
+}
+
+type ExplainPersonalizationRaw struct {
+	ProfileBoost float64 `json:"profile_boost,omitempty"`
+}
+
+type ExplainPersonalization struct {
+	Overlap         float64                    `json:"overlap,omitempty"`
+	BoostMultiplier float64                    `json:"boost_multiplier,omitempty"`
+	Raw             *ExplainPersonalizationRaw `json:"raw,omitempty"`
+}
+
+type ExplainMMR struct {
+	Lambda        float64 `json:"lambda,omitempty"`
+	MaxSimilarity float64 `json:"max_sim,omitempty"`
+	Penalty       float64 `json:"penalty,omitempty"`
+	Relevance     float64 `json:"relevance,omitempty"`
+	Rank          int     `json:"rank,omitempty"`
+}
+
+type ExplainCapUsage struct {
+	Applied bool   `json:"applied"`
+	Limit   *int   `json:"limit,omitempty"`
+	Count   *int   `json:"count,omitempty"`
+	Value   string `json:"value,omitempty"`
+}
+
+type ExplainCaps struct {
+	Brand    *ExplainCapUsage `json:"brand,omitempty"`
+	Category *ExplainCapUsage `json:"category,omitempty"`
+}
+
+type ExplainBlock struct {
+	Blend           *ExplainBlend           `json:"blend,omitempty"`
+	Personalization *ExplainPersonalization `json:"personalization,omitempty"`
+	MMR             *ExplainMMR             `json:"mmr,omitempty"`
+	Caps            *ExplainCaps            `json:"caps,omitempty"`
+	Anchors         []string                `json:"anchors,omitempty"`
 }
 
 type EventTypeConfig struct {

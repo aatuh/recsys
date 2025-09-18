@@ -184,6 +184,7 @@ func (h *Handler) convertToAlgorithmRequest(r *http.Request, req handlerstypes.R
 		Constraints:    constraints,
 		Blend:          blend,
 		IncludeReasons: req.IncludeReasons,
+		ExplainLevel:   algorithm.NormalizeExplainLevel(req.ExplainLevel),
 	}, nil
 }
 
@@ -191,10 +192,15 @@ func (h *Handler) convertToAlgorithmRequest(r *http.Request, req handlerstypes.R
 func (h *Handler) convertToHTTPResponse(algoResp *algorithm.Response) handlerstypes.RecommendResponse {
 	items := make([]handlerstypes.ScoredItem, 0, len(algoResp.Items))
 	for _, item := range algoResp.Items {
+		var explain *handlerstypes.ExplainBlock
+		if item.Explain != nil {
+			explain = mapExplainBlock(item.Explain)
+		}
 		items = append(items, handlerstypes.ScoredItem{
 			ItemID:  item.ItemID,
 			Score:   item.Score,
 			Reasons: item.Reasons,
+			Explain: explain,
 		})
 	}
 
@@ -202,6 +208,110 @@ func (h *Handler) convertToHTTPResponse(algoResp *algorithm.Response) handlersty
 		ModelVersion: algoResp.ModelVersion,
 		Items:        items,
 	}
+}
+
+// api/internal/http/handlers/recommend.go
+
+func mapExplainBlock(src *algorithm.ExplainBlock) *handlerstypes.ExplainBlock {
+	if src == nil {
+		return nil
+	}
+
+	dst := &handlerstypes.ExplainBlock{}
+
+	if src.Blend != nil {
+		dst.Blend = &handlerstypes.ExplainBlend{
+			Alpha:    src.Blend.Alpha,
+			Beta:     src.Blend.Beta,
+			Gamma:    src.Blend.Gamma,
+			PopNorm:  src.Blend.PopNorm,
+			CoocNorm: src.Blend.CoocNorm,
+			EmbNorm:  src.Blend.EmbNorm,
+			Contributions: handlerstypes.ExplainBlendContribution{
+				Pop:  src.Blend.Contributions.Pop,
+				Cooc: src.Blend.Contributions.Cooc,
+				Emb:  src.Blend.Contributions.Emb,
+			},
+		}
+		if src.Blend.Raw != nil {
+			dst.Blend.Raw = &handlerstypes.ExplainBlendRaw{
+				Pop:  src.Blend.Raw.Pop,
+				Cooc: src.Blend.Raw.Cooc,
+				Emb:  src.Blend.Raw.Emb,
+			}
+		}
+	}
+
+	if src.Personalization != nil {
+		dst.Personalization = &handlerstypes.ExplainPersonalization{
+			Overlap:         src.Personalization.Overlap,
+			BoostMultiplier: src.Personalization.BoostMultiplier,
+			Raw: func() *handlerstypes.ExplainPersonalizationRaw {
+				if src.Personalization.Raw == nil {
+					return nil
+				}
+				return &handlerstypes.ExplainPersonalizationRaw{
+					ProfileBoost: src.Personalization.Raw.ProfileBoost,
+				}
+			}(),
+		}
+	}
+
+	if src.MMR != nil {
+		dst.MMR = &handlerstypes.ExplainMMR{
+			Lambda:        src.MMR.Lambda,
+			MaxSimilarity: src.MMR.MaxSimilarity,
+			Penalty:       src.MMR.Penalty,
+			Relevance:     src.MMR.Relevance,
+			Rank:          src.MMR.Rank,
+		}
+	}
+
+	if src.Caps != nil {
+		c := &handlerstypes.ExplainCaps{}
+		if src.Caps.Brand != nil {
+			c.Brand = mapCapUsage(src.Caps.Brand)
+		}
+		if src.Caps.Category != nil {
+			c.Category = mapCapUsage(src.Caps.Category)
+		}
+		if c.Brand != nil || c.Category != nil {
+			dst.Caps = c
+		}
+	}
+
+	// IMPORTANT: copy anchors; add placeholder defensively if empty.
+	if len(src.Anchors) > 0 {
+		dst.Anchors = append([]string(nil), src.Anchors...)
+	} else {
+		dst.Anchors = []string{"(no_recent_activity)"}
+	}
+
+	// Only drop the block if truly empty and no anchors.
+	if dst.Blend == nil && dst.Personalization == nil &&
+		dst.MMR == nil && dst.Caps == nil && len(dst.Anchors) == 0 {
+		return nil
+	}
+	return dst
+}
+
+func mapCapUsage(src *algorithm.CapUsage) *handlerstypes.ExplainCapUsage {
+	if src == nil {
+		return nil
+	}
+	usage := &handlerstypes.ExplainCapUsage{
+		Applied: src.Applied,
+		Value:   src.Value,
+	}
+	if src.Limit != nil {
+		limit := *src.Limit
+		usage.Limit = &limit
+	}
+	if src.Count != nil {
+		count := *src.Count
+		usage.Count = &count
+	}
+	return usage
 }
 
 // getAlgorithmConfig creates algorithm configuration from handler config and overrides

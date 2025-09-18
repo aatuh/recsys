@@ -820,6 +820,9 @@ const docTemplate = `{
         "internal_http_types.ScoredItem": {
             "type": "object",
             "properties": {
+                "explain": {
+                    "$ref": "#/definitions/types.ExplainBlock"
+                },
                 "item_id": {
                     "type": "string",
                     "example": "i_101"
@@ -1134,6 +1137,156 @@ const docTemplate = `{
                 }
             }
         },
+        "types.ExplainBlend": {
+            "type": "object",
+            "properties": {
+                "alpha": {
+                    "type": "number"
+                },
+                "beta": {
+                    "type": "number"
+                },
+                "contrib": {
+                    "$ref": "#/definitions/types.ExplainBlendContribution"
+                },
+                "cooc_norm": {
+                    "type": "number"
+                },
+                "emb_norm": {
+                    "type": "number"
+                },
+                "gamma": {
+                    "type": "number"
+                },
+                "pop_norm": {
+                    "type": "number"
+                },
+                "raw": {
+                    "$ref": "#/definitions/types.ExplainBlendRaw"
+                }
+            }
+        },
+        "types.ExplainBlendContribution": {
+            "type": "object",
+            "properties": {
+                "cooc": {
+                    "type": "number"
+                },
+                "emb": {
+                    "type": "number"
+                },
+                "pop": {
+                    "type": "number"
+                }
+            }
+        },
+        "types.ExplainBlendRaw": {
+            "type": "object",
+            "properties": {
+                "cooc": {
+                    "type": "number"
+                },
+                "emb": {
+                    "type": "number"
+                },
+                "pop": {
+                    "type": "number"
+                }
+            }
+        },
+        "types.ExplainBlock": {
+            "type": "object",
+            "properties": {
+                "anchors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "blend": {
+                    "$ref": "#/definitions/types.ExplainBlend"
+                },
+                "caps": {
+                    "$ref": "#/definitions/types.ExplainCaps"
+                },
+                "mmr": {
+                    "$ref": "#/definitions/types.ExplainMMR"
+                },
+                "personalization": {
+                    "$ref": "#/definitions/types.ExplainPersonalization"
+                }
+            }
+        },
+        "types.ExplainCapUsage": {
+            "type": "object",
+            "properties": {
+                "applied": {
+                    "type": "boolean"
+                },
+                "count": {
+                    "type": "integer"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.ExplainCaps": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "$ref": "#/definitions/types.ExplainCapUsage"
+                },
+                "category": {
+                    "$ref": "#/definitions/types.ExplainCapUsage"
+                }
+            }
+        },
+        "types.ExplainMMR": {
+            "type": "object",
+            "properties": {
+                "lambda": {
+                    "type": "number"
+                },
+                "max_sim": {
+                    "type": "number"
+                },
+                "penalty": {
+                    "type": "number"
+                },
+                "rank": {
+                    "type": "integer"
+                },
+                "relevance": {
+                    "type": "number"
+                }
+            }
+        },
+        "types.ExplainPersonalization": {
+            "type": "object",
+            "properties": {
+                "boost_multiplier": {
+                    "type": "number"
+                },
+                "overlap": {
+                    "type": "number"
+                },
+                "raw": {
+                    "$ref": "#/definitions/types.ExplainPersonalizationRaw"
+                }
+            }
+        },
+        "types.ExplainPersonalizationRaw": {
+            "type": "object",
+            "properties": {
+                "profile_boost": {
+                    "type": "number"
+                }
+            }
+        },
         "types.Item": {
             "type": "object",
             "properties": {
@@ -1310,6 +1463,15 @@ const docTemplate = `{
                 "constraints": {
                     "$ref": "#/definitions/types.RecommendConstraints"
                 },
+                "explain_level": {
+                    "type": "string",
+                    "enum": [
+                        "tags",
+                        "numeric",
+                        "full"
+                    ],
+                    "example": "numeric"
+                },
                 "include_reasons": {
                     "type": "boolean",
                     "example": true
@@ -1369,6 +1531,15 @@ const docTemplate = `{
                     "additionalProperties": {
                         "type": "string"
                     }
+                },
+                "explain_level": {
+                    "type": "string",
+                    "enum": [
+                        "tags",
+                        "numeric",
+                        "full"
+                    ],
+                    "example": "numeric"
                 },
                 "include_reasons": {
                     "type": "boolean",

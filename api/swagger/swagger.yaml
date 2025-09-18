@@ -14,6 +14,8 @@ definitions:
     type: object
   internal_http_types.ScoredItem:
     properties:
+      explain:
+        $ref: '#/definitions/types.ExplainBlock'
       item_id:
         example: i_101
         type: string
@@ -225,6 +227,103 @@ definitions:
         example: default
         type: string
     type: object
+  types.ExplainBlend:
+    properties:
+      alpha:
+        type: number
+      beta:
+        type: number
+      contrib:
+        $ref: '#/definitions/types.ExplainBlendContribution'
+      cooc_norm:
+        type: number
+      emb_norm:
+        type: number
+      gamma:
+        type: number
+      pop_norm:
+        type: number
+      raw:
+        $ref: '#/definitions/types.ExplainBlendRaw'
+    type: object
+  types.ExplainBlendContribution:
+    properties:
+      cooc:
+        type: number
+      emb:
+        type: number
+      pop:
+        type: number
+    type: object
+  types.ExplainBlendRaw:
+    properties:
+      cooc:
+        type: number
+      emb:
+        type: number
+      pop:
+        type: number
+    type: object
+  types.ExplainBlock:
+    properties:
+      anchors:
+        items:
+          type: string
+        type: array
+      blend:
+        $ref: '#/definitions/types.ExplainBlend'
+      caps:
+        $ref: '#/definitions/types.ExplainCaps'
+      mmr:
+        $ref: '#/definitions/types.ExplainMMR'
+      personalization:
+        $ref: '#/definitions/types.ExplainPersonalization'
+    type: object
+  types.ExplainCapUsage:
+    properties:
+      applied:
+        type: boolean
+      count:
+        type: integer
+      limit:
+        type: integer
+      value:
+        type: string
+    type: object
+  types.ExplainCaps:
+    properties:
+      brand:
+        $ref: '#/definitions/types.ExplainCapUsage'
+      category:
+        $ref: '#/definitions/types.ExplainCapUsage'
+    type: object
+  types.ExplainMMR:
+    properties:
+      lambda:
+        type: number
+      max_sim:
+        type: number
+      penalty:
+        type: number
+      rank:
+        type: integer
+      relevance:
+        type: number
+    type: object
+  types.ExplainPersonalization:
+    properties:
+      boost_multiplier:
+        type: number
+      overlap:
+        type: number
+      raw:
+        $ref: '#/definitions/types.ExplainPersonalizationRaw'
+    type: object
+  types.ExplainPersonalizationRaw:
+    properties:
+      profile_boost:
+        type: number
+    type: object
   types.Item:
     properties:
       available:
@@ -347,6 +446,13 @@ definitions:
         $ref: '#/definitions/types.RecommendBlend'
       constraints:
         $ref: '#/definitions/types.RecommendConstraints'
+      explain_level:
+        enum:
+        - tags
+        - numeric
+        - full
+        example: numeric
+        type: string
       include_reasons:
         example: true
         type: boolean
@@ -388,6 +494,13 @@ definitions:
         additionalProperties:
           type: string
         type: object
+      explain_level:
+        enum:
+        - tags
+        - numeric
+        - full
+        example: numeric
+        type: string
       include_reasons:
         example: true
         type: boolean

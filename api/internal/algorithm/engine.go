@@ -95,7 +95,7 @@ func (e *Engine) Recommend(
 
 	// Apply MMR and caps if needed.
 	if e.shouldUseMMR() || e.shouldUseCaps() {
-		candidateData.Candidates = MMRReRank(
+		reRanked, mmrInfo, capsInfo := MMRReRankWithMetadata(
 			candidateData.Candidates,
 			candidateData.Tags,
 			k,
@@ -103,11 +103,18 @@ func (e *Engine) Recommend(
 			e.config.BrandCap,
 			e.config.CategoryCap,
 		)
+		candidateData.Candidates = reRanked
+		for id, info := range mmrInfo {
+			candidateData.MMRInfo[id] = info
+		}
+		for id, caps := range capsInfo {
+			candidateData.CapsInfo[id] = caps
+		}
 	}
 
 	// Build response.
 	return e.buildResponse(
-		candidateData, k, modelVersion, req.IncludeReasons, weights,
+		candidateData, k, modelVersion, req.IncludeReasons, req.ExplainLevel, weights,
 	), nil
 }
 
@@ -251,43 +258,80 @@ func (e *Engine) gatherSignals(
 	weights BlendWeights,
 ) (*CandidateData, error) {
 	data := &CandidateData{
-		Candidates: candidates,
-		CoocScores: make(map[string]float64),
-		EmbScores:  make(map[string]float64),
-		UsedCooc:   make(map[string]bool),
-		UsedEmb:    make(map[string]bool),
-		Boosted:    make(map[string]bool),
+		Candidates:        candidates,
+		CoocScores:        make(map[string]float64),
+		EmbScores:         make(map[string]float64),
+		UsedCooc:          make(map[string]bool),
+		UsedEmb:           make(map[string]bool),
+		Boosted:           make(map[string]bool),
+		PopNorm:           make(map[string]float64),
+		CoocNorm:          make(map[string]float64),
+		EmbNorm:           make(map[string]float64),
+		PopRaw:            make(map[string]float64),
+		CoocRaw:           make(map[string]float64),
+		EmbRaw:            make(map[string]float64),
+		ProfileOverlap:    make(map[string]float64),
+		ProfileMultiplier: make(map[string]float64),
+		MMRInfo:           make(map[string]MMRExplain),
+		CapsInfo:          make(map[string]CapsExplain),
 	}
 
 	// Build candidate set for quick lookup.
 	candSet := make(map[string]struct{}, len(candidates))
-	for _, candidate := range candidates {
-		candSet[candidate.ItemID] = struct{}{}
+	for _, c := range candidates {
+		candSet[c.ItemID] = struct{}{}
 	}
 
-	// Only gather signals if user ID is provided and weights are non-zero.
-	if req.UserID == "" || (weights.Cooc == 0 && weights.ALS == 0) {
+	// Only gather signals if we have a user.
+	if req.UserID == "" {
 		return data, nil
 	}
 
-	// Get recent anchors.
+	// Recent anchors (views/purchases/etc.) for the user.
 	anchors, err := e.getRecentAnchors(ctx, req)
-	if err != nil || len(anchors) == 0 {
+	if err != nil {
+		// Be resilient: still return a response with placeholders.
+		data.AnchorsFetched = true
+		data.Anchors = []string{"(no_recent_activity)"}
+		return data, nil
+	}
+	data.AnchorsFetched = true
+
+	if len(anchors) == 0 {
+		// Explicit placeholder when there is no history.
+		data.Anchors = []string{"(no_recent_activity)"}
 		return data, nil
 	}
 
-	// Gather co-visitation signals.
+	// Deduplicate and keep order.
+	seen := make(map[string]struct{}, len(anchors))
+	for _, a := range anchors {
+		if a == "" {
+			continue
+		}
+		if _, ok := seen[a]; ok {
+			continue
+		}
+		seen[a] = struct{}{}
+		data.Anchors = append(data.Anchors, a)
+	}
+
+	// If we don’t use co-vis or embedding, we’re done (anchors are still useful
+	// for explain).
+	if weights.Cooc == 0 && weights.ALS == 0 {
+		return data, nil
+	}
+
+	// Co-vis signals.
 	if weights.Cooc > 0 {
-		err = e.gatherCoVisitationSignals(ctx, data, req, anchors, candSet)
-		if err != nil {
+		if err := e.gatherCoVisitationSignals(ctx, data, req, data.Anchors, candSet); err != nil {
 			return nil, err
 		}
 	}
 
-	// Gather embedding signals.
+	// Embedding signals.
 	if weights.ALS > 0 {
-		err = e.gatherEmbeddingSignals(ctx, data, req, anchors, candSet)
-		if err != nil {
+		if err := e.gatherEmbeddingSignals(ctx, data, req, data.Anchors, candSet); err != nil {
 			return nil, err
 		}
 	}
@@ -440,24 +484,34 @@ func (e *Engine) applyBlendedScoringWithWeights(
 	for i := range data.Candidates {
 		id := data.Candidates[i].ItemID
 
+		popRaw := data.Candidates[i].Score
 		popNorm := 0.0
 		if maxPop > 0 {
-			popNorm = data.Candidates[i].Score / maxPop
+			popNorm = popRaw / maxPop
 		}
 
+		coocRaw := data.CoocScores[id]
 		coocNorm := 0.0
 		if maxCooc > 0 {
-			coocNorm = data.CoocScores[id] / maxCooc
+			coocNorm = coocRaw / maxCooc
 		}
 
+		embRaw := data.EmbScores[id]
 		embNorm := 0.0
 		if maxEmb > 0 {
-			embNorm = data.EmbScores[id] / maxEmb
+			embNorm = embRaw / maxEmb
 		}
 
 		blended := weights.Pop*popNorm +
 			weights.Cooc*coocNorm +
 			weights.ALS*embNorm
+
+		data.PopNorm[id] = popNorm
+		data.CoocNorm[id] = coocNorm
+		data.EmbNorm[id] = embNorm
+		data.PopRaw[id] = popRaw
+		data.CoocRaw[id] = coocRaw
+		data.EmbRaw[id] = embRaw
 
 		data.Candidates[i].Score = blended
 	}
@@ -500,8 +554,11 @@ func (e *Engine) applyPersonalizationBoost(
 		}
 
 		if overlap > 0 {
-			data.Candidates[i].Score *= (1.0 + e.config.ProfileBoost*overlap)
+			multiplier := 1.0 + e.config.ProfileBoost*overlap
+			data.Candidates[i].Score *= multiplier
 			data.Boosted[itemId] = true
+			data.ProfileOverlap[itemId] = overlap
+			data.ProfileMultiplier[itemId] = multiplier
 		}
 	}
 }
@@ -530,6 +587,7 @@ func (e *Engine) buildResponse(
 	k int,
 	modelVersion string,
 	includeReasons bool,
+	explainLevel ExplainLevel,
 	weights BlendWeights,
 ) *Response {
 	response := &Response{
@@ -556,10 +614,16 @@ func (e *Engine) buildResponse(
 			candidate.ItemID, includeReasons, weights, data,
 		)
 
+		var explain *ExplainBlock
+		if explainLevel != ExplainLevelTags {
+			explain = e.buildExplain(candidate.ItemID, weights, data, explainLevel)
+		}
+
 		response.Items = append(response.Items, ScoredItem{
 			ItemID:  candidate.ItemID,
 			Score:   candidate.Score,
 			Reasons: reasons,
+			Explain: explain,
 		})
 	}
 
@@ -600,6 +664,139 @@ func (e *Engine) buildReasons(
 	}
 
 	return deduplicateReasons(reasons)
+}
+
+// buildExplain builds the structured explanation block for a scored item.
+func (e *Engine) buildExplain(
+	itemID string,
+	weights BlendWeights,
+	data *CandidateData,
+	level ExplainLevel,
+) *ExplainBlock {
+	explain := &ExplainBlock{}
+
+	// Always carry anchors (or a placeholder for non-tags explain levels).
+	if len(data.Anchors) > 0 {
+		explain.Anchors = append([]string(nil), data.Anchors...)
+	} else if level != ExplainLevelTags {
+		explain.Anchors = []string{"(no_recent_activity)"}
+	}
+
+	if weights.Pop > 0 || weights.Cooc > 0 || weights.ALS > 0 {
+		blend := &BlendExplain{
+			Alpha:    weights.Pop,
+			Beta:     weights.Cooc,
+			Gamma:    weights.ALS,
+			PopNorm:  data.PopNorm[itemID],
+			CoocNorm: data.CoocNorm[itemID],
+			EmbNorm:  data.EmbNorm[itemID],
+			Contributions: BlendContribution{
+				Pop:  weights.Pop * data.PopNorm[itemID],
+				Cooc: weights.Cooc * data.CoocNorm[itemID],
+				Emb:  weights.ALS * data.EmbNorm[itemID],
+			},
+		}
+		if level == ExplainLevelFull {
+			blend.Raw = &BlendRaw{
+				Pop:  data.PopRaw[itemID],
+				Cooc: data.CoocRaw[itemID],
+				Emb:  data.EmbRaw[itemID],
+			}
+		}
+		explain.Blend = blend
+	}
+
+	if overlap, ok := data.ProfileOverlap[itemID]; ok {
+		multiplier := data.ProfileMultiplier[itemID]
+		pers := &PersonalizationExplain{
+			Overlap:         overlap,
+			BoostMultiplier: multiplier,
+		}
+		if level == ExplainLevelFull {
+			pers.Raw = &PersonalizationExplainRaw{
+				ProfileBoost: e.config.ProfileBoost,
+			}
+		}
+		explain.Personalization = pers
+	}
+
+	if info, ok := data.MMRInfo[itemID]; ok {
+		mmr := MMRExplain{
+			Lambda:        info.Lambda,
+			MaxSimilarity: info.MaxSimilarity,
+			Penalty:       info.Penalty,
+		}
+		if level == ExplainLevelFull {
+			mmr.Relevance = info.Relevance
+			mmr.Rank = info.Rank
+		}
+		explain.MMR = &mmr
+	} else if level == ExplainLevelFull && e.shouldUseMMR() {
+		mmr := MMRExplain{
+			Lambda: e.config.MMRLambda,
+		}
+		explain.MMR = &mmr
+	}
+
+	if caps, ok := data.CapsInfo[itemID]; ok {
+		capsOut := &CapsExplain{}
+		if caps.Brand != nil {
+			usage := &CapUsage{Applied: caps.Brand.Applied}
+			if level == ExplainLevelFull {
+				if caps.Brand.Value != "" {
+					usage.Value = caps.Brand.Value
+				}
+				if caps.Brand.Count != nil {
+					count := *caps.Brand.Count
+					usage.Count = &count
+				}
+				if caps.Brand.Limit != nil {
+					limit := *caps.Brand.Limit
+					usage.Limit = &limit
+				}
+			}
+			capsOut.Brand = usage
+		}
+		if caps.Category != nil {
+			usage := &CapUsage{Applied: caps.Category.Applied}
+			if level == ExplainLevelFull {
+				if caps.Category.Value != "" {
+					usage.Value = caps.Category.Value
+				}
+				if caps.Category.Count != nil {
+					count := *caps.Category.Count
+					usage.Count = &count
+				}
+				if caps.Category.Limit != nil {
+					limit := *caps.Category.Limit
+					usage.Limit = &limit
+				}
+			}
+			capsOut.Category = usage
+		}
+		if capsOut.Brand != nil || capsOut.Category != nil {
+			explain.Caps = capsOut
+		}
+	} else if level == ExplainLevelFull && e.shouldUseCaps() {
+		capsOut := &CapsExplain{}
+		if e.config.BrandCap > 0 {
+			limit := e.config.BrandCap
+			capsOut.Brand = &CapUsage{Applied: false, Limit: &limit}
+		}
+		if e.config.CategoryCap > 0 {
+			limit := e.config.CategoryCap
+			capsOut.Category = &CapUsage{Applied: false, Limit: &limit}
+		}
+		if capsOut.Brand != nil || capsOut.Category != nil {
+			explain.Caps = capsOut
+		}
+	}
+
+	if explain.Blend == nil && explain.Personalization == nil && explain.MMR == nil && explain.Caps == nil && len(explain.Anchors) == 0 {
+		return nil
+	}
+
+	return explain
 }
 
 // maxInt returns the maximum of two integers.

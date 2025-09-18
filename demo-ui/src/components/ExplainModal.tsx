@@ -3,6 +3,61 @@ import type { internal_http_types_ScoredItem } from "../lib/api-client";
 
 type Blend = { pop: number; cooc: number; als: number };
 
+type ExplainBlend = {
+  alpha?: number;
+  beta?: number;
+  gamma?: number;
+  pop_norm?: number;
+  cooc_norm?: number;
+  emb_norm?: number;
+  contrib?: {
+    pop?: number;
+    cooc?: number;
+    emb?: number;
+  };
+  raw?: {
+    pop?: number;
+    cooc?: number;
+    emb?: number;
+  };
+};
+
+type ExplainPersonalization = {
+  overlap?: number;
+  boost_multiplier?: number;
+  raw?: {
+    profile_boost?: number;
+  };
+};
+
+type ExplainMMR = {
+  lambda?: number;
+  max_sim?: number;
+  penalty?: number;
+  relevance?: number;
+  rank?: number;
+};
+
+type ExplainCapUsage = {
+  applied?: boolean;
+  limit?: number | null;
+  count?: number | null;
+  value?: string | null;
+};
+
+type ExplainCaps = {
+  brand?: ExplainCapUsage | null;
+  category?: ExplainCapUsage | null;
+};
+
+type ExplainBlock = {
+  blend?: ExplainBlend | null;
+  personalization?: ExplainPersonalization | null;
+  mmr?: ExplainMMR | null;
+  caps?: ExplainCaps | null;
+  anchors?: string[] | null;
+};
+
 interface ExplainModalProps {
   open: boolean;
   item: internal_http_types_ScoredItem | null;
@@ -32,6 +87,8 @@ const REASON_HELP: Record<string, string> = {
     "bought similar things).",
   personalization:
     "This item is similar to your inferred preferences (embedding match).",
+  diversity:
+    "MMR and caps ensured a balanced mix, preventing one brand or category from dominating.",
 };
 
 /**
@@ -77,6 +134,13 @@ function parseReasons(reasons: string[] | undefined): {
 
 function pct(n: number) {
   return `${Math.round(n * 100)}%`;
+}
+
+function formatNumber(value: number | null | undefined, digits = 2) {
+  if (value === undefined || value === null || Number.isNaN(value)) {
+    return "—";
+  }
+  return Number(value).toFixed(digits);
 }
 
 function toTitleWords(s: string) {
@@ -140,43 +204,104 @@ export function ExplainModal({
     shares,
     anchors,
     notes,
-    hasExtracted,
+    usingExplainShares,
     isNotesDuplicate,
     sortedReasons,
+    explainBlock,
+    contributions,
+    blendWeights,
+    blendNorms,
+    rawSignals,
   } = useMemo(() => {
+    const explain = (item as { explain?: ExplainBlock | null } | null)?.explain;
     const parsed = parseReasons(item?.reasons);
-    const b = { ...blend };
 
-    const hasNums =
-      parsed.contrib.pop !== undefined ||
-      parsed.contrib.cooc !== undefined ||
-      parsed.contrib.als !== undefined;
+    const safe = (n: number | undefined | null): number =>
+      typeof n === "number" && Number.isFinite(n) ? n : 0;
 
-    const raw = {
-      pop: parsed.contrib.pop ?? 0,
-      cooc: parsed.contrib.cooc ?? 0,
-      als: parsed.contrib.als ?? 0,
-    };
+    const fallbackBlend = { ...blend };
 
-    const weighted = hasNums
-      ? {
-          pop: raw.pop * b.pop,
-          cooc: raw.cooc * b.cooc,
-          als: raw.als * b.als,
-        }
-      : { pop: b.pop, cooc: b.cooc, als: b.als };
+    const blendWeights = {
+      pop: safe(explain?.blend?.alpha ?? fallbackBlend.pop),
+      cooc: safe(explain?.blend?.beta ?? fallbackBlend.cooc),
+      als: safe(explain?.blend?.gamma ?? fallbackBlend.als),
+    } satisfies Blend;
 
-    const sum = weighted.pop + weighted.cooc + weighted.als || 1;
-    const norm = {
-      pop: weighted.pop / sum,
-      cooc: weighted.cooc / sum,
-      als: weighted.als / sum,
-    };
+    const blendNorms = {
+      pop: safe(explain?.blend?.pop_norm),
+      cooc: safe(explain?.blend?.cooc_norm),
+      als: safe(explain?.blend?.emb_norm),
+    } satisfies Blend;
+
+    let contributions: Blend = { pop: 0, cooc: 0, als: 0 };
+    let usingExplainShares = false;
+
+    const contribFromExplain = {
+      pop: safe(explain?.blend?.contrib?.pop),
+      cooc: safe(explain?.blend?.contrib?.cooc),
+      als: safe(explain?.blend?.contrib?.emb),
+    } satisfies Blend;
+    const contribExplainSum =
+      contribFromExplain.pop + contribFromExplain.cooc + contribFromExplain.als;
+
+    if (contribExplainSum > 0) {
+      contributions = contribFromExplain;
+      usingExplainShares = true;
+    }
+
+    if (!usingExplainShares) {
+      const normBased = {
+        pop: blendWeights.pop * blendNorms.pop,
+        cooc: blendWeights.cooc * blendNorms.cooc,
+        als: blendWeights.als * blendNorms.als,
+      } satisfies Blend;
+      const normSum = normBased.pop + normBased.cooc + normBased.als;
+      if (normSum > 0) {
+        contributions = normBased;
+        usingExplainShares = Boolean(explain?.blend);
+      }
+    }
+
+    if (
+      !usingExplainShares &&
+      (parsed.contrib.pop !== undefined ||
+        parsed.contrib.cooc !== undefined ||
+        parsed.contrib.als !== undefined)
+    ) {
+      contributions = {
+        pop: safe(parsed.contrib.pop),
+        cooc: safe(parsed.contrib.cooc),
+        als: safe(parsed.contrib.als),
+      };
+    }
+
+    if (
+      contributions.pop === 0 &&
+      contributions.cooc === 0 &&
+      contributions.als === 0
+    ) {
+      contributions = { ...blendWeights };
+    }
+
+    const sum =
+      contributions.pop + contributions.cooc + contributions.als ||
+      blendWeights.pop + blendWeights.cooc + blendWeights.als ||
+      1;
+
+    const shares = {
+      pop: sum > 0 ? contributions.pop / sum : 0,
+      cooc: sum > 0 ? contributions.cooc / sum : 0,
+      als: sum > 0 ? contributions.als / sum : 0,
+    } satisfies Blend;
+
+    const anchorSource = (explain?.anchors ?? parsed.anchors ?? []).filter(
+      (a): a is string => Boolean(a)
+    );
+    const anchors = Array.from(new Set(anchorSource));
 
     const reasons = item?.reasons ?? [];
     const dup = notesEqual(reasons, parsed.notes) && reasons.length > 0;
 
-    /* Keep reasons in a stable, readable order. */
     const order = ["recent_popularity", "co_visitation", "personalization"];
     const sorted = [...reasons].sort((a, b2) => {
       const ia = order.indexOf(a);
@@ -188,16 +313,52 @@ export function ExplainModal({
     });
 
     return {
-      shares: norm,
-      anchors: parsed.anchors,
+      shares,
+      contributions,
+      anchors,
       notes: parsed.notes,
-      hasExtracted: hasNums,
+      usingExplainShares,
       isNotesDuplicate: dup,
       sortedReasons: sorted,
+      explainBlock: explain ?? null,
+      blendWeights,
+      blendNorms,
+      rawSignals: explain?.blend?.raw ?? null,
     };
   }, [item, blend]);
 
   if (!open || !item) return null;
+
+  const personalization = explainBlock?.personalization ?? null;
+  const mmr = explainBlock?.mmr ?? null;
+  const caps = explainBlock?.caps ?? null;
+  const hasNorms =
+    blendNorms.pop > 0 || blendNorms.cooc > 0 || blendNorms.als > 0;
+  const hasRawSignals = Boolean(
+    rawSignals &&
+      (rawSignals.pop !== undefined ||
+        rawSignals.cooc !== undefined ||
+        rawSignals.emb !== undefined)
+  );
+  const boostMultiplier = personalization?.boost_multiplier ?? 1;
+  const boostDelta = (boostMultiplier - 1) * 100;
+  const boostPercentText =
+    Math.abs(boostDelta) > 0.01
+      ? ` (${boostDelta >= 0 ? "+" : ""}${boostDelta.toFixed(1)}%)`
+      : "";
+  const showMmr =
+    !!mmr &&
+    (mmr.lambda !== undefined ||
+      mmr.penalty !== undefined ||
+      mmr.max_sim !== undefined ||
+      mmr.relevance !== undefined ||
+      mmr.rank !== undefined);
+  const capSummaries = caps
+    ? [
+        describeCap("Brand", caps.brand),
+        describeCap("Category", caps.category),
+      ].filter((entry): entry is string => Boolean(entry))
+    : [];
 
   return (
     <div
@@ -276,15 +437,81 @@ export function ExplainModal({
             <span title={TERM_HELP.pop}>pop: {pct(shares.pop)}</span>
             <span title={TERM_HELP.cooc}>cooc: {pct(shares.cooc)}</span>
             <span title={TERM_HELP.als}>als: {pct(shares.als)}</span>
-            {!hasExtracted && (
-              <span style={{ color: "#9c27b0" }}>
-                (Based on current blend only. The API did not include per-item
-                numeric attributions for this result, so these shares are
-                estimated from the UI blend and will look the same for other
-                items.)
-              </span>
-            )}
           </div>
+          <div
+            style={{
+              display: "flex",
+              gap: 12,
+              marginTop: 6,
+              color: "#555",
+              flexWrap: "wrap",
+            }}
+          >
+            <span>contrib pop: {formatNumber(contributions.pop)}</span>
+            <span>contrib cooc: {formatNumber(contributions.cooc)}</span>
+            <span>contrib als: {formatNumber(contributions.als)}</span>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              gap: 12,
+              marginTop: 6,
+              color: "#555",
+              flexWrap: "wrap",
+            }}
+          >
+            <span title="Alpha (popularity weight)">
+              α: {formatNumber(blendWeights.pop)}
+            </span>
+            <span title="Beta (co-visitation weight)">
+              β: {formatNumber(blendWeights.cooc)}
+            </span>
+            <span title="Gamma (embedding weight)">
+              γ: {formatNumber(blendWeights.als)}
+            </span>
+          </div>
+          {hasNorms && (
+            <div
+              style={{
+                display: "flex",
+                gap: 12,
+                marginTop: 6,
+                color: "#555",
+                flexWrap: "wrap",
+              }}
+            >
+              <span>pop_norm: {formatNumber(blendNorms.pop)}</span>
+              <span>cooc_norm: {formatNumber(blendNorms.cooc)}</span>
+              <span>emb_norm: {formatNumber(blendNorms.als)}</span>
+            </div>
+          )}
+          {hasRawSignals && (
+            <div
+              style={{
+                display: "flex",
+                gap: 12,
+                marginTop: 6,
+                color: "#555",
+                flexWrap: "wrap",
+              }}
+            >
+              <span>raw pop: {formatNumber(rawSignals?.pop)}</span>
+              <span>raw cooc: {formatNumber(rawSignals?.cooc)}</span>
+              <span>raw emb: {formatNumber(rawSignals?.emb)}</span>
+            </div>
+          )}
+          {!usingExplainShares && (
+            <span
+              style={{
+                color: "#9c27b0",
+                display: "block",
+                marginTop: 6,
+              }}
+            >
+              Per-item explain data was not returned, so these shares fall back
+              to the current blend weights.
+            </span>
+          )}
 
           {/* Mini glossary for plain-English meaning. */}
           <ul
@@ -379,6 +606,74 @@ export function ExplainModal({
           </div>
         )}
 
+        {personalization && (
+          <div style={{ marginBottom: 10 }}>
+            <div style={{ marginBottom: 6, fontWeight: 600 }}>
+              Personalization boost
+            </div>
+            <div
+              style={{
+                display: "flex",
+                gap: 12,
+                flexWrap: "wrap",
+                color: "#555",
+              }}
+            >
+              <span>overlap: {pct(personalization.overlap ?? 0)}</span>
+              <span>
+                boost: ×{formatNumber(boostMultiplier, 2)}
+                {boostPercentText}
+              </span>
+              {personalization.raw?.profile_boost !== undefined && (
+                <span>
+                  profile_boost: {formatNumber(personalization.raw.profile_boost)}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+
+        {showMmr && mmr && (
+          <div style={{ marginBottom: 10 }}>
+            <div style={{ marginBottom: 6, fontWeight: 600 }}>
+              Diversity (MMR)
+            </div>
+            <div
+              style={{
+                display: "flex",
+                gap: 12,
+                flexWrap: "wrap",
+                color: "#555",
+              }}
+            >
+              {mmr.lambda !== undefined && (
+                <span>λ: {formatNumber(mmr.lambda)}</span>
+              )}
+              {mmr.penalty !== undefined && (
+                <span>penalty: {formatNumber(mmr.penalty)}</span>
+              )}
+              {mmr.max_sim !== undefined && (
+                <span>max_sim: {formatNumber(mmr.max_sim)}</span>
+              )}
+              {mmr.relevance !== undefined && (
+                <span>relevance: {formatNumber(mmr.relevance)}</span>
+              )}
+              {mmr.rank !== undefined && <span>pick order: {mmr.rank}</span>}
+            </div>
+          </div>
+        )}
+
+        {capSummaries.length > 0 && (
+          <div style={{ marginBottom: 10 }}>
+            <div style={{ marginBottom: 6, fontWeight: 600 }}>Caps</div>
+            <ul style={{ margin: 0, paddingLeft: 18, color: "#555" }}>
+              {capSummaries.map((summary) => (
+                <li key={summary}>{summary}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         {!isNotesDuplicate && notes.length > 0 && (
           <div style={{ marginBottom: 8 }}>
             <div style={{ marginBottom: 6, fontWeight: 600 }}>Notes</div>
@@ -402,4 +697,19 @@ function notesEqual(a: string[], b: string[]) {
   if (sa.size !== sb.size) return false;
   for (const x of sa) if (!sb.has(x)) return false;
   return true;
+}
+
+function describeCap(label: string, cap?: ExplainCapUsage | null): string | null {
+  if (!cap) return null;
+  const parts: string[] = [];
+  parts.push(cap.applied ? "applied" : "not applied");
+  if (cap.count !== undefined && cap.count !== null && cap.limit !== undefined && cap.limit !== null) {
+    parts.push(`${cap.count}/${cap.limit}`);
+  } else if (cap.limit !== undefined && cap.limit !== null) {
+    parts.push(`limit ${cap.limit}`);
+  }
+  if (cap.value) {
+    parts.push(cap.value);
+  }
+  return `${label}: ${parts.join(", ")}`;
 }
