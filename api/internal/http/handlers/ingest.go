@@ -17,24 +17,26 @@ import (
 const embeddingDims = 384
 
 type Handler struct {
-	Store                *store.Store
-	DefaultOrg           uuid.UUID
-	HalfLifeDays         float64
-	CoVisWindowDays      float64
-	PopularityFanout     int
-	MMRLambda            float64
-	BrandCap             int
-	CategoryCap          int
-	RuleExcludePurchased bool
-	ExcludeEventTypes    []int16
-	PurchasedWindowDays  float64
-	ProfileWindowDays    float64 // lookback for building profile; <=0 disables windowing
-	ProfileBoost         float64 // multiplier in [0, +inf). 0 disables personalization
-	ProfileTopNTags      int     // limit of profile tags considered
-	BlendAlpha           float64
-	BlendBeta            float64
-	BlendGamma           float64
-	BanditAlgo           internaltypes.Algorithm
+	Store               *store.Store
+	DefaultOrg          uuid.UUID
+	HalfLifeDays        float64
+	CoVisWindowDays     float64
+	PopularityFanout    int
+	MMRLambda           float64
+	BrandCap            int
+	CategoryCap         int
+	RuleExcludeEvents   bool
+	ExcludeEventTypes   []int16
+	BrandTagPrefixes    []string
+	CategoryTagPrefixes []string
+	PurchasedWindowDays float64
+	ProfileWindowDays   float64 // lookback for building profile; <=0 disables windowing
+	ProfileBoost        float64 // multiplier in [0, +inf). 0 disables personalization
+	ProfileTopNTags     int     // limit of profile tags considered
+	BlendAlpha          float64
+	BlendBeta           float64
+	BlendGamma          float64
+	BanditAlgo          internaltypes.Algorithm
 }
 
 // ItemsUpsert godoc

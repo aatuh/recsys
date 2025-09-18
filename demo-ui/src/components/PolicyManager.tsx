@@ -17,7 +17,7 @@ interface types_BanditPolicy {
   brand_cap?: number;
   category_cap?: number;
   profile_boost?: number;
-  rule_exclude_purchased?: boolean;
+  rule_exclude_events?: boolean;
   half_life_days?: number;
   co_vis_window_days?: number;
   popularity_fanout?: number;
@@ -69,7 +69,7 @@ export function PolicyManager({
       brand_cap: profile.overrides.brand_cap || 0,
       category_cap: profile.overrides.category_cap || 0,
       profile_boost: profile.overrides.profile_boost || 0.0,
-      rule_exclude_purchased: profile.overrides.rule_exclude_purchased || false,
+      rule_exclude_events: profile.overrides.rule_exclude_events || false,
       half_life_days: profile.overrides.popularity_halflife_days || 0.0,
       co_vis_window_days: profile.overrides.covis_window_days || 0,
       popularity_fanout: profile.overrides.popularity_fanout || 0,
@@ -221,7 +221,7 @@ export function PolicyManager({
       brand_cap: 0,
       category_cap: 0,
       profile_boost: 0.0,
-      rule_exclude_purchased: false,
+      rule_exclude_events: false,
       half_life_days: 0.0,
       co_vis_window_days: 0,
       popularity_fanout: 0,

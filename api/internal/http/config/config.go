@@ -12,29 +12,49 @@ import (
 )
 
 type Config struct {
-	DatabaseURL          string
-	DefaultOrgID         uuid.UUID
-	HalfLifeDays         float64 // popularity decay half-life
-	CoVisWindowDays      float64 // default co-vis window (e.g., 30)
-	PopularityFanout     int     // optional prefilter cap for popularity
-	MMRLambda            float64 // 0..1; 0 disables MMR
-	BrandCap             int     // max items per brand:* tag; 0 disables
-	CategoryCap          int     // max items per category:* or cat:* tag; 0 disables
-	RuleExcludePurchased bool    // if true, exclude user's purchased items
-	ExcludeEventTypes    []int16 // event types excluded from recommendations when rule enabled
-	PurchasedWindowDays  float64 // lookback window for purchases (days)
-	ProfileWindowDays    float64 // lookback for building profile; <=0 disables windowing
-	ProfileBoost         float64 // multiplier in [0, +inf). 0 disables personalization
-	ProfileTopNTags      int     // limit of profile tags considered
-	BlendAlpha           float64
-	BlendBeta            float64
-	BlendGamma           float64
-	BanditAlgo           types.Algorithm
+	DatabaseURL         string
+	DefaultOrgID        uuid.UUID
+	HalfLifeDays        float64 // popularity decay half-life
+	CoVisWindowDays     float64 // default co-vis window (e.g., 30)
+	PopularityFanout    int     // optional prefilter cap for popularity
+	MMRLambda           float64 // 0..1; 0 disables MMR
+	BrandCap            int     // max items per brand:* tag; 0 disables
+	CategoryCap         int     // max items per category:* or cat:* tag; 0 disables
+	RuleExcludeEvents   bool    // if true, exclude user's recent events
+	ExcludeEventTypes   []int16 // event types excluded from recommendations when rule enabled
+	BrandTagPrefixes    []string
+	CategoryTagPrefixes []string
+	PurchasedWindowDays float64 // lookback window for purchases (days)
+	ProfileWindowDays   float64 // lookback for building profile; <=0 disables windowing
+	ProfileBoost        float64 // multiplier in [0, +inf). 0 disables personalization
+	ProfileTopNTags     int     // limit of profile tags considered
+	BlendAlpha          float64
+	BlendBeta           float64
+	BlendGamma          float64
+	BanditAlgo          types.Algorithm
 }
 
 func Load() (Config, error) {
 	var c Config
 	c.DatabaseURL = util.MustGetEnv("DATABASE_URL")
+	parsePrefixes := func(raw string) []string {
+		parts := strings.Split(raw, ",")
+		out := make([]string, 0, len(parts))
+		seen := make(map[string]struct{})
+		for _, p := range parts {
+			trimmed := strings.ToLower(strings.TrimSpace(p))
+			trimmed = strings.TrimSuffix(trimmed, ":")
+			if trimmed == "" {
+				continue
+			}
+			if _, ok := seen[trimmed]; ok {
+				continue
+			}
+			seen[trimmed] = struct{}{}
+			out = append(out, trimmed)
+		}
+		return out
+	}
 
 	org := util.MustGetEnv("ORG_ID")
 	id, err := uuid.Parse(org)
@@ -83,8 +103,19 @@ func Load() (Config, error) {
 	}
 	c.CategoryCap = iv
 
+	if prefixes := parsePrefixes(util.MustGetEnv("BRAND_TAG_PREFIXES")); len(prefixes) > 0 {
+		c.BrandTagPrefixes = prefixes
+	} else {
+		return c, errors.New("BRAND_TAG_PREFIXES must include at least one prefix")
+	}
+	if prefixes := parsePrefixes(util.MustGetEnv("CATEGORY_TAG_PREFIXES")); len(prefixes) > 0 {
+		c.CategoryTagPrefixes = prefixes
+	} else {
+		return c, errors.New("CATEGORY_TAG_PREFIXES must include at least one prefix")
+	}
+
 	// Business rule: exclude purchased items in a window.
-	c.RuleExcludePurchased = util.MustGetEnv("RULE_EXCLUDE_PURCHASED") == "true"
+	c.RuleExcludeEvents = util.MustGetEnv("RULE_EXCLUDE_EVENTS") == "true"
 	rawTypes := util.MustGetEnv("EXCLUDE_EVENT_TYPES")
 	parts := strings.Split(rawTypes, ",")
 	c.ExcludeEventTypes = make([]int16, 0, len(parts))

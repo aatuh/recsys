@@ -47,7 +47,7 @@ const OVERRIDE_FIELDS = [
     type: "number" as const,
   },
   {
-    key: "rule_exclude_purchased" as const,
+    key: "rule_exclude_events" as const,
     label: "Exclude Purchased",
     type: "boolean" as const,
   },

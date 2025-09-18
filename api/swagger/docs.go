@@ -961,7 +961,7 @@ const docTemplate = `{
                 "profile_boost": {
                     "type": "number"
                 },
-                "rule_exclude_purchased": {
+                "rule_exclude_events": {
                     "type": "boolean"
                 }
             }
@@ -1401,7 +1401,7 @@ const docTemplate = `{
                 "purchased_window_days": {
                     "type": "integer"
                 },
-                "rule_exclude_purchased": {
+                "rule_exclude_events": {
                     "type": "boolean"
                 }
             }

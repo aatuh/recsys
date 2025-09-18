@@ -95,13 +95,15 @@ func (e *Engine) Recommend(
 
 	// Apply MMR and caps if needed.
 	if e.shouldUseMMR() || e.shouldUseCaps() {
-		reRanked, mmrInfo, capsInfo := MMRReRankWithMetadata(
+		reRanked, mmrInfo, capsInfo := mmrReRankInternal(
 			candidateData.Candidates,
 			candidateData.Tags,
 			k,
 			e.config.MMRLambda,
 			e.config.BrandCap,
 			e.config.CategoryCap,
+			e.config.BrandTagPrefixes,
+			e.config.CategoryTagPrefixes,
 		)
 		candidateData.Candidates = reRanked
 		for id, info := range mmrInfo {
@@ -183,7 +185,7 @@ func (e *Engine) excludeRecentEventItems(
 	req Request,
 	exclude map[string]struct{},
 ) (map[string]struct{}, error) {
-	if !e.config.RuleExcludePurchased || req.UserID == "" {
+	if !e.config.RuleExcludeEvents || req.UserID == "" {
 		return exclude, nil
 	}
 

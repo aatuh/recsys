@@ -69,7 +69,7 @@ type Overrides struct {
 	MMRLambda              *float64 `json:"mmr_lambda,omitempty"`
 	BrandCap               *int     `json:"brand_cap,omitempty"`
 	CategoryCap            *int     `json:"category_cap,omitempty"`
-	RuleExcludePurchased   *bool    `json:"rule_exclude_purchased,omitempty"`
+	RuleExcludeEvents      *bool    `json:"rule_exclude_events,omitempty"`
 	PurchasedWindowDays    *int     `json:"purchased_window_days,omitempty"`
 	ProfileWindowDays      *int     `json:"profile_window_days,omitempty"`
 	ProfileBoost           *float64 `json:"profile_boost,omitempty"`

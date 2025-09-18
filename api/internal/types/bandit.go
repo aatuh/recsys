@@ -51,11 +51,11 @@ type PolicyConfig struct {
 	CategoryCap int     `json:"category_cap"`
 
 	// Personalization and filtering parameters
-	ProfileBoost         float64 `json:"profile_boost"`
-	RuleExcludePurchased bool    `json:"rule_exclude_purchased"`
-	HalfLifeDays         float64 `json:"half_life_days"`
-	CoVisWindowDays      int     `json:"co_vis_window_days"`
-	PopularityFanout     int     `json:"popularity_fanout"`
+	ProfileBoost      float64 `json:"profile_boost"`
+	RuleExcludeEvents bool    `json:"rule_exclude_events"`
+	HalfLifeDays      float64 `json:"half_life_days"`
+	CoVisWindowDays   int     `json:"co_vis_window_days"`
+	PopularityFanout  int     `json:"popularity_fanout"`
 
 	// Free-form field for notes.
 	Notes string `json:"notes,omitempty"`

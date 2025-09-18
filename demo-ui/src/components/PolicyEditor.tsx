@@ -14,7 +14,7 @@ interface types_BanditPolicy {
   brand_cap?: number;
   category_cap?: number;
   profile_boost?: number;
-  rule_exclude_purchased?: boolean;
+  rule_exclude_events?: boolean;
   half_life_days?: number;
   co_vis_window_days?: number;
   popularity_fanout?: number;
@@ -82,7 +82,7 @@ export function PolicyEditor({
       case "co_vis_window_days":
       case "popularity_fanout":
         return 0;
-      case "rule_exclude_purchased":
+      case "rule_exclude_events":
         return false;
       case "notes":
         return "";
@@ -763,10 +763,10 @@ export function PolicyEditor({
                   >
                     <input
                       type="checkbox"
-                      checked={editedPolicy.rule_exclude_purchased || false}
+                      checked={editedPolicy.rule_exclude_events || false}
                       onChange={(e) =>
                         handleFieldChange(
-                          "rule_exclude_purchased",
+                          "rule_exclude_events",
                           e.target.checked
                         )
                       }

@@ -3,6 +3,7 @@ package algorithm
 import (
 	"math"
 	"reflect"
+	"strings"
 	"testing"
 
 	"recsys/internal/types"
@@ -115,6 +116,41 @@ func TestCaps_Enforced(t *testing.T) {
 		if n > 1 {
 			t.Fatalf("category cap violated: %s=%d", c, n)
 		}
+	}
+}
+
+func TestCaps_CustomPrefixes(t *testing.T) {
+	meta := map[string]types.ItemTags{
+		"X": {ItemID: "X", Tags: []string{"maker:acme", "genre:rpg"}},
+		"Y": {ItemID: "Y", Tags: []string{"maker:acme", "genre:action"}},
+		"Z": {ItemID: "Z", Tags: []string{"maker:bravo", "genre:rpg"}},
+	}
+	cands := []types.ScoredItem{
+		{ItemID: "X", Score: 1.0},
+		{ItemID: "Y", Score: 0.9},
+		{ItemID: "Z", Score: 0.8},
+	}
+
+	got, _, _ := mmrReRankInternal(
+		cands,
+		meta,
+		3,
+		0.5,
+		1,
+		0,
+		[]string{"maker"},
+		defaultCategoryTagPrefixes,
+	)
+	acmeCount := 0
+	for _, it := range got {
+		for _, tag := range meta[it.ItemID].Tags {
+			if strings.HasPrefix(tag, "maker:acme") {
+				acmeCount++
+			}
+		}
+	}
+	if acmeCount > 1 {
+		t.Fatalf("maker prefix cap not enforced: got %v", ids(got))
 	}
 }
 

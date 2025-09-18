@@ -26,11 +26,13 @@ type Config struct {
 	CategoryCap int     // Max items per category (0=disabled)
 
 	// Windows and constraints
-	HalfLifeDays         float64 // Popularity half-life
-	CoVisWindowDays      int     // Co-visitation window
-	PurchasedWindowDays  int     // Exclude purchased window
-	RuleExcludePurchased bool    // Whether to exclude purchased items
-	ExcludeEventTypes    []int16 // Event types to exclude when filtering user history
+	HalfLifeDays        float64 // Popularity half-life
+	CoVisWindowDays     int     // Co-visitation window
+	PurchasedWindowDays int     // Exclude purchased window
+	RuleExcludeEvents   bool    // Whether to exclude purchased items
+	ExcludeEventTypes   []int16 // Event types to exclude when filtering user history
+	BrandTagPrefixes    []string
+	CategoryTagPrefixes []string
 
 	// Popularity fanout
 	PopularityFanout int // Fanout for popularity candidates

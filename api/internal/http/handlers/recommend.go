@@ -319,21 +319,23 @@ func (h *Handler) getAlgorithmConfig(
 	overrides *handlerstypes.Overrides,
 ) (algorithm.Config, error) {
 	config := algorithm.Config{
-		BlendAlpha:           h.BlendAlpha,
-		BlendBeta:            h.BlendBeta,
-		BlendGamma:           h.BlendGamma,
-		ProfileBoost:         h.ProfileBoost,
-		ProfileWindowDays:    h.ProfileWindowDays,
-		ProfileTopNTags:      h.ProfileTopNTags,
-		MMRLambda:            h.MMRLambda,
-		BrandCap:             h.BrandCap,
-		CategoryCap:          h.CategoryCap,
-		HalfLifeDays:         h.HalfLifeDays,
-		CoVisWindowDays:      int(h.CoVisWindowDays),
-		PurchasedWindowDays:  int(h.PurchasedWindowDays),
-		RuleExcludePurchased: h.RuleExcludePurchased,
-		ExcludeEventTypes:    h.ExcludeEventTypes,
-		PopularityFanout:     h.PopularityFanout,
+		BlendAlpha:          h.BlendAlpha,
+		BlendBeta:           h.BlendBeta,
+		BlendGamma:          h.BlendGamma,
+		ProfileBoost:        h.ProfileBoost,
+		ProfileWindowDays:   h.ProfileWindowDays,
+		ProfileTopNTags:     h.ProfileTopNTags,
+		MMRLambda:           h.MMRLambda,
+		BrandCap:            h.BrandCap,
+		CategoryCap:         h.CategoryCap,
+		HalfLifeDays:        h.HalfLifeDays,
+		CoVisWindowDays:     int(h.CoVisWindowDays),
+		PurchasedWindowDays: int(h.PurchasedWindowDays),
+		RuleExcludeEvents:   h.RuleExcludeEvents,
+		ExcludeEventTypes:   h.ExcludeEventTypes,
+		BrandTagPrefixes:    h.BrandTagPrefixes,
+		CategoryTagPrefixes: h.CategoryTagPrefixes,
+		PopularityFanout:    h.PopularityFanout,
 	}
 
 	// Apply overrides if provided
@@ -374,8 +376,8 @@ func (h *Handler) getAlgorithmConfig(
 		if overrides.PurchasedWindowDays != nil {
 			config.PurchasedWindowDays = *overrides.PurchasedWindowDays
 		}
-		if overrides.RuleExcludePurchased != nil {
-			config.RuleExcludePurchased = *overrides.RuleExcludePurchased
+		if overrides.RuleExcludeEvents != nil {
+			config.RuleExcludeEvents = *overrides.RuleExcludeEvents
 		}
 		if overrides.PopularityFanout != nil {
 			config.PopularityFanout = *overrides.PopularityFanout

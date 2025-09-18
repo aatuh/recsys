@@ -624,13 +624,13 @@ Put these in your service environment (see your `.env.example` files).
 
 ### Diversity & business rule vars
 
-| Variable                 | Type / Range   | What it does                                    | Notes                           |
-|--------------------------|----------------|-------------------------------------------------|---------------------------------|
-| `MMR_LAMBDA`             | float in [0,1] | MMR trade-off: 1.0 = relevance, 0.0 = diversity | Set `0` to disable              |
-| `BRAND_CAP`              | int ≥ 0        | Max items per brand in the final top-K.         | `0` disables                    |
-| `CATEGORY_CAP`           | int ≥ 0        | Max items per category in the final top-K.      | `0` disables                    |
-| `RULE_EXCLUDE_PURCHASED` | bool           | Exclude items the user purchased recently.      | Requires `user_id`              |
-| `PURCHASED_WINDOW_DAYS`  | float > 0      | Lookback for the exclude-purchased rule.        | Required if the rule is enabled |
+| Variable                | Type / Range   | What it does                                    | Notes                           |
+|-------------------------|----------------|-------------------------------------------------|---------------------------------|
+| `MMR_LAMBDA`            | float in [0,1] | MMR trade-off: 1.0 = relevance, 0.0 = diversity | Set `0` to disable              |
+| `BRAND_CAP`             | int ≥ 0        | Max items per brand in the final top-K.         | `0` disables                    |
+| `CATEGORY_CAP`          | int ≥ 0        | Max items per category in the final top-K.      | `0` disables                    |
+| `RULE_EXCLUDE_EVENTS`   | bool           | Exclude items the user purchased recently.      | Requires `user_id`              |
+| `PURCHASED_WINDOW_DAYS` | float > 0      | Lookback for the exclude-purchased rule.        | Required if the rule is enabled |
 
 ### Light personalization vars
 

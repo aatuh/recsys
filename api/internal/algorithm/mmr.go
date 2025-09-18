@@ -7,6 +7,11 @@ import (
 	"recsys/internal/types"
 )
 
+var (
+	defaultBrandTagPrefixes    = []string{"brand"}
+	defaultCategoryTagPrefixes = []string{"category", "cat"}
+)
+
 // MMRReRankWithMetadata performs MMR re-ranking and returns per-item metadata.
 func MMRReRankWithMetadata(
 	candidates []types.ScoredItem,
@@ -15,12 +20,22 @@ func MMRReRankWithMetadata(
 	lambda float64,
 	brandCap, categoryCap int,
 ) ([]types.ScoredItem, map[string]MMRExplain, map[string]CapsExplain) {
-	return mmrReRankInternal(candidates, tags, k, lambda, brandCap, categoryCap)
+	return mmrReRankInternal(
+		candidates,
+		tags,
+		k,
+		lambda,
+		brandCap,
+		categoryCap,
+		defaultBrandTagPrefixes,
+		defaultCategoryTagPrefixes,
+	)
 }
 
 // MMRReRank performs MMR (Maximal Marginal Relevance) re-ranking on candidate
 // items using tag overlap as a similarity proxy. It also enforces brand/category
 // caps but discards metadata for compatibility.
+
 func MMRReRank(
 	candidates []types.ScoredItem,
 	tags map[string]types.ItemTags,
@@ -28,7 +43,16 @@ func MMRReRank(
 	lambda float64,
 	brandCap, categoryCap int,
 ) []types.ScoredItem {
-	items, _, _ := mmrReRankInternal(candidates, tags, k, lambda, brandCap, categoryCap)
+	items, _, _ := mmrReRankInternal(
+		candidates,
+		tags,
+		k,
+		lambda,
+		brandCap,
+		categoryCap,
+		defaultBrandTagPrefixes,
+		defaultCategoryTagPrefixes,
+	)
 	return items
 }
 
@@ -38,6 +62,7 @@ func mmrReRankInternal(
 	k int,
 	lambda float64,
 	brandCap, categoryCap int,
+	brandTagPrefixes, categoryTagPrefixes []string,
 ) ([]types.ScoredItem, map[string]MMRExplain, map[string]CapsExplain) {
 	if k <= 0 {
 		k = 1
@@ -59,7 +84,7 @@ func mmrReRankInternal(
 		}
 	}
 	// Prepare metadata for efficient lookup.
-	tagSets, brandMap, categoryMap := prepareTags(tags)
+	tagSets, brandValues, categoryValues := prepareTags(tags, brandTagPrefixes, categoryTagPrefixes)
 
 	// Track counts for caps.
 	brandCount := make(map[string]int)
@@ -83,8 +108,8 @@ func mmrReRankInternal(
 			// Enforce caps.
 			if !canSelectWithCaps(
 				itemId,
-				brandMap,
-				categoryMap,
+				brandValues,
+				categoryValues,
 				brandCount,
 				categoryCount,
 				brandCap,
@@ -136,25 +161,29 @@ func mmrReRankInternal(
 		capsExplain := CapsExplain{}
 		if brandCap > 0 {
 			usage := &CapUsage{Applied: false}
-			if brand := brandMap[pick.ItemID]; brand != "" {
+			if brands := brandValues[pick.ItemID]; len(brands) > 0 {
 				usage.Applied = true
-				count := brandCount[brand] + 1
 				limit := brandCap
-				usage.Count = &count
 				usage.Limit = &limit
-				usage.Value = brand
+				usage.Value = strings.Join(brands, ",")
+				if len(brands) == 1 {
+					count := brandCount[brands[0]] + 1
+					usage.Count = &count
+				}
 			}
 			capsExplain.Brand = usage
 		}
 		if categoryCap > 0 {
 			usage := &CapUsage{Applied: false}
-			if category := categoryMap[pick.ItemID]; category != "" {
+			if categories := categoryValues[pick.ItemID]; len(categories) > 0 {
 				usage.Applied = true
-				count := categoryCount[category] + 1
 				limit := categoryCap
-				usage.Count = &count
 				usage.Limit = &limit
-				usage.Value = category
+				usage.Value = strings.Join(categories, ",")
+				if len(categories) == 1 {
+					count := categoryCount[categories[0]] + 1
+					usage.Count = &count
+				}
 			}
 			capsExplain.Category = usage
 		}
@@ -163,10 +192,10 @@ func mmrReRankInternal(
 		}
 
 		// Update counts.
-		if brand := brandMap[pick.ItemID]; brand != "" {
+		for _, brand := range brandValues[pick.ItemID] {
 			brandCount[brand]++
 		}
-		if category := categoryMap[pick.ItemID]; category != "" {
+		for _, category := range categoryValues[pick.ItemID] {
 			categoryCount[category]++
 		}
 
@@ -187,71 +216,119 @@ func normScore(score float64, maxScore float64) float64 {
 	return score / maxScore
 }
 
-// prepareTags extracts tag sets, brand, and category mappings from tags.
-func prepareTags(tags map[string]types.ItemTags) (
+// prepareTags extracts tag sets and structured tag values (brand/category) using
+// configurable prefixes. Returned structured maps contain normalized values per
+// item and may hold multiple entries when the data includes duplicates.
+func prepareTags(
+	tags map[string]types.ItemTags,
+	brandPrefixes, categoryPrefixes []string,
+) (
 	map[string]map[string]struct{},
-	map[string]string,
-	map[string]string,
+	map[string][]string,
+	map[string][]string,
 ) {
-	tagSets := make(map[string]map[string]struct{})
-	brandMap := make(map[string]string)
-	categoryMap := make(map[string]string)
+	toMatchers := func(prefixes []string) []string {
+		if len(prefixes) == 0 {
+			return nil
+		}
+		seen := make(map[string]struct{}, len(prefixes))
+		out := make([]string, 0, len(prefixes))
+		for _, raw := range prefixes {
+			trimmed := strings.ToLower(strings.TrimSpace(raw))
+			trimmed = strings.TrimSuffix(trimmed, ":")
+			if trimmed == "" {
+				continue
+			}
+			if _, ok := seen[trimmed]; ok {
+				continue
+			}
+			seen[trimmed] = struct{}{}
+			out = append(out, trimmed+":")
+		}
+		return out
+	}
 
-	for itemId, itemTags := range tags {
+	matchStructured := func(tag string, matchers []string) (string, bool) {
+		for _, prefix := range matchers {
+			if strings.HasPrefix(tag, prefix) {
+				val := strings.TrimSpace(tag[len(prefix):])
+				if val != "" {
+					return val, true
+				}
+			}
+		}
+		return "", false
+	}
+
+	appendUnique := func(dst map[string][]string, itemID, value string) {
+		slice := dst[itemID]
+		for _, existing := range slice {
+			if existing == value {
+				return
+			}
+		}
+		dst[itemID] = append(slice, value)
+	}
+
+	brandMatchers := toMatchers(brandPrefixes)
+	categoryMatchers := toMatchers(categoryPrefixes)
+	tagSets := make(map[string]map[string]struct{})
+	brandValues := make(map[string][]string)
+	categoryValues := make(map[string][]string)
+
+	for itemID, itemTags := range tags {
 		if len(itemTags.Tags) == 0 {
 			continue
 		}
 
 		tagSet := make(map[string]struct{})
-
 		for _, tag := range itemTags.Tags {
 			lowerTag := strings.ToLower(strings.TrimSpace(tag))
-
-			switch {
-			case strings.HasPrefix(lowerTag, "brand:"):
-				brandMap[itemId] = strings.TrimSpace(lowerTag[len("brand:"):])
-			case strings.HasPrefix(lowerTag, "category:"):
-				categoryMap[itemId] = strings.TrimSpace(lowerTag[len("category:"):])
-			case strings.HasPrefix(lowerTag, "cat:"):
-				if _, ok := categoryMap[itemId]; !ok {
-					categoryMap[itemId] = strings.TrimSpace(lowerTag[len("cat:"):])
-				}
-			default:
-				if lowerTag != "" {
-					tagSet[lowerTag] = struct{}{}
-				}
+			if lowerTag == "" {
+				continue
 			}
+
+			if val, ok := matchStructured(lowerTag, brandMatchers); ok {
+				appendUnique(brandValues, itemID, val)
+				continue
+			}
+			if val, ok := matchStructured(lowerTag, categoryMatchers); ok {
+				appendUnique(categoryValues, itemID, val)
+				continue
+			}
+
+			tagSet[lowerTag] = struct{}{}
 		}
 
 		if len(tagSet) > 0 {
-			tagSets[itemId] = tagSet
+			tagSets[itemID] = tagSet
 		}
 	}
 
-	return tagSets, brandMap, categoryMap
+	return tagSets, brandValues, categoryValues
 }
 
 // canSelectWithCaps checks if an item can be selected given the current caps.
 func canSelectWithCaps(
 	itemId string,
-	brandMap, categoryMap map[string]string,
+	brandValues, categoryValues map[string][]string,
 	brandCount, categoryCount map[string]int,
 	brandCap int,
 	categoryCap int,
 ) bool {
 	if brandCap > 0 {
-		// Check if the brand count is greater than or equal to the brand cap.
-		if brand := brandMap[itemId]; brand != "" &&
-			brandCount[brand] >= brandCap {
-			return false
+		for _, brand := range brandValues[itemId] {
+			if brandCount[brand] >= brandCap {
+				return false
+			}
 		}
 	}
 
 	if categoryCap > 0 {
-		// Check if the cat count is greater than or equal to the cat cap.
-		if category := categoryMap[itemId]; category != "" &&
-			categoryCount[category] >= categoryCap {
-			return false
+		for _, category := range categoryValues[itemId] {
+			if categoryCount[category] >= categoryCap {
+				return false
+			}
 		}
 	}
 

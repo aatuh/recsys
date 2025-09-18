@@ -1,21 +1,21 @@
 package types
 
 type BanditPolicy struct {
-	PolicyID             string  `json:"policy_id"`
-	Name                 string  `json:"name"`
-	Active               bool    `json:"active"`
-	BlendAlpha           float64 `json:"blend_alpha"`
-	BlendBeta            float64 `json:"blend_beta"`
-	BlendGamma           float64 `json:"blend_gamma"`
-	MMRLambda            float64 `json:"mmr_lambda"`
-	BrandCap             int     `json:"brand_cap"`
-	CategoryCap          int     `json:"category_cap"`
-	ProfileBoost         float64 `json:"profile_boost"`
-	RuleExcludePurchased bool    `json:"rule_exclude_purchased"`
-	HalfLifeDays         float64 `json:"half_life_days"`
-	CoVisWindowDays      int     `json:"co_vis_window_days"`
-	PopularityFanout     int     `json:"popularity_fanout"`
-	Notes                string  `json:"notes,omitempty"`
+	PolicyID          string  `json:"policy_id"`
+	Name              string  `json:"name"`
+	Active            bool    `json:"active"`
+	BlendAlpha        float64 `json:"blend_alpha"`
+	BlendBeta         float64 `json:"blend_beta"`
+	BlendGamma        float64 `json:"blend_gamma"`
+	MMRLambda         float64 `json:"mmr_lambda"`
+	BrandCap          int     `json:"brand_cap"`
+	CategoryCap       int     `json:"category_cap"`
+	ProfileBoost      float64 `json:"profile_boost"`
+	RuleExcludeEvents bool    `json:"rule_exclude_events"`
+	HalfLifeDays      float64 `json:"half_life_days"`
+	CoVisWindowDays   int     `json:"co_vis_window_days"`
+	PopularityFanout  int     `json:"popularity_fanout"`
+	Notes             string  `json:"notes,omitempty"`
 }
 
 type BanditPoliciesUpsertRequest struct {
