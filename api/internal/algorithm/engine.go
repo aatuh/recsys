@@ -159,9 +159,9 @@ func (e *Engine) applyExclusions(
 		}
 	}
 
-	// Add purchased exclusions if enabled.
+	// Add exclusions from configured user events if enabled.
 	var err error
-	exclude, err = e.excludePurchasedItems(ctx, req, exclude)
+	exclude, err = e.excludeRecentEventItems(ctx, req, exclude)
 	if err != nil {
 		return nil, err
 	}
@@ -177,8 +177,8 @@ func (e *Engine) applyExclusions(
 	return filtered, nil
 }
 
-// excludePurchasedItems excludes purchased items from the candidate set.
-func (e *Engine) excludePurchasedItems(
+// excludeRecentEventItems excludes items linked to configured user events.
+func (e *Engine) excludeRecentEventItems(
 	ctx context.Context,
 	req Request,
 	exclude map[string]struct{},
@@ -190,12 +190,13 @@ func (e *Engine) excludePurchasedItems(
 	// Exclude purchased items in a time window.
 	lookback := time.Duration(e.config.PurchasedWindowDays*24.0) * time.Hour
 	since := time.Now().UTC().Add(-lookback)
-	bought, err := e.store.ListUserPurchasedSince(
+	bought, err := e.store.ListUserEventsSince(
 		ctx,
 		req.OrgID,
 		req.Namespace,
 		req.UserID,
 		since,
+		e.config.ExcludeEventTypes,
 	)
 	if err != nil {
 		return nil, err

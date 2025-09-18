@@ -21,6 +21,7 @@ type Config struct {
 	BrandCap             int     // max items per brand:* tag; 0 disables
 	CategoryCap          int     // max items per category:* or cat:* tag; 0 disables
 	RuleExcludePurchased bool    // if true, exclude user's purchased items
+	ExcludeEventTypes    []int16 // event types excluded from recommendations when rule enabled
 	PurchasedWindowDays  float64 // lookback window for purchases (days)
 	ProfileWindowDays    float64 // lookback for building profile; <=0 disables windowing
 	ProfileBoost         float64 // multiplier in [0, +inf). 0 disables personalization
@@ -84,6 +85,23 @@ func Load() (Config, error) {
 
 	// Business rule: exclude purchased items in a window.
 	c.RuleExcludePurchased = util.MustGetEnv("RULE_EXCLUDE_PURCHASED") == "true"
+	rawTypes := util.MustGetEnv("EXCLUDE_EVENT_TYPES")
+	parts := strings.Split(rawTypes, ",")
+	c.ExcludeEventTypes = make([]int16, 0, len(parts))
+	for _, p := range parts {
+		p = strings.TrimSpace(p)
+		if p == "" {
+			continue
+		}
+		iv, err := strconv.Atoi(p)
+		if err != nil || iv < -32768 || iv > 32767 {
+			return c, errors.New("EXCLUDE_EVENT_TYPES must be a comma-separated list of valid int16 values")
+		}
+		c.ExcludeEventTypes = append(c.ExcludeEventTypes, int16(iv))
+	}
+	if len(c.ExcludeEventTypes) == 0 {
+		c.ExcludeEventTypes = nil
+	}
 
 	fv, err = strconv.ParseFloat(util.MustGetEnv("PURCHASED_WINDOW_DAYS"), 64)
 	if err != nil || fv <= 0 {

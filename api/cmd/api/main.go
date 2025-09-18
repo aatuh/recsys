@@ -175,6 +175,7 @@ func main() {
 		BrandCap:             cfg.BrandCap,
 		CategoryCap:          cfg.CategoryCap,
 		RuleExcludePurchased: cfg.RuleExcludePurchased,
+		ExcludeEventTypes:    cfg.ExcludeEventTypes,
 		PurchasedWindowDays:  cfg.PurchasedWindowDays,
 		ProfileWindowDays:    cfg.ProfileWindowDays,
 		ProfileBoost:         cfg.ProfileBoost,

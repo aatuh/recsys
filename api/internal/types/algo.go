@@ -54,14 +54,15 @@ type RecAlgoStore interface {
 		itemIDs []string,
 	) (map[string]ItemTags, error)
 
-	// ListUserPurchasedSince returns distinct item IDs the user purchased
-	// on/after the timestamp. Order is not guaranteed.
-	ListUserPurchasedSince(
+	// ListUserEventsSince returns distinct item IDs for the user's events
+	// on/after the timestamp filtered by event types. Order is not guaranteed.
+	ListUserEventsSince(
 		ctx context.Context,
 		orgID uuid.UUID,
 		ns string,
 		userID string,
 		since time.Time,
+		eventTypes []int16,
 	) ([]string, error)
 
 	// User history

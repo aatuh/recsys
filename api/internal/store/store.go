@@ -78,8 +78,8 @@ var eventTypeConfigEffectiveSQL string
 //go:embed queries/items_tags.sql
 var itemsTagsSQL string
 
-//go:embed queries/user_purchased_since.sql
-var userPurchasedSinceSQL string
+//go:embed queries/user_events_since.sql
+var userEventsSinceSQL string
 
 func (s *Store) UpsertItems(
 	ctx context.Context,
@@ -314,16 +314,24 @@ func (s *Store) ListItemsTags(
 	return out, rows.Err()
 }
 
-// ListUserPurchasedSince returns distinct item IDs the user purchased on/after
-// the given timestamp. We consider type=3 as "purchase".
-func (s *Store) ListUserPurchasedSince(
+// ListUserEventsSince returns distinct item IDs for the user's events on/after
+// the given timestamp, filtered by the provided event types
+// (nil or empty means any).
+func (s *Store) ListUserEventsSince(
 	ctx context.Context,
 	orgID uuid.UUID,
 	ns string,
 	userID string,
 	since time.Time,
+	eventTypes []int16,
 ) ([]string, error) {
-	rows, err := s.Pool.Query(ctx, userPurchasedSinceSQL, orgID, ns, userID, since)
+	var evParam any
+	if len(eventTypes) > 0 {
+		evParam = eventTypes
+	}
+	rows, err := s.Pool.Query(
+		ctx, userEventsSinceSQL, orgID, ns, userID, since, evParam,
+	)
 	if err != nil {
 		return nil, err
 	}

@@ -30,6 +30,7 @@ type Config struct {
 	CoVisWindowDays      int     // Co-visitation window
 	PurchasedWindowDays  int     // Exclude purchased window
 	RuleExcludePurchased bool    // Whether to exclude purchased items
+	ExcludeEventTypes    []int16 // Event types to exclude when filtering user history
 
 	// Popularity fanout
 	PopularityFanout int // Fanout for popularity candidates

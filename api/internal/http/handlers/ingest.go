@@ -26,6 +26,7 @@ type Handler struct {
 	BrandCap             int
 	CategoryCap          int
 	RuleExcludePurchased bool
+	ExcludeEventTypes    []int16
 	PurchasedWindowDays  float64
 	ProfileWindowDays    float64 // lookback for building profile; <=0 disables windowing
 	ProfileBoost         float64 // multiplier in [0, +inf). 0 disables personalization

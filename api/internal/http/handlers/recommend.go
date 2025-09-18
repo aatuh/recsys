@@ -332,6 +332,7 @@ func (h *Handler) getAlgorithmConfig(
 		CoVisWindowDays:      int(h.CoVisWindowDays),
 		PurchasedWindowDays:  int(h.PurchasedWindowDays),
 		RuleExcludePurchased: h.RuleExcludePurchased,
+		ExcludeEventTypes:    h.ExcludeEventTypes,
 		PopularityFanout:     h.PopularityFanout,
 	}
 
