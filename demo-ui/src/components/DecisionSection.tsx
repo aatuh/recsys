@@ -1,15 +1,18 @@
+import React, { useState } from "react";
 import { Section, Row, Label, Button } from "./UIComponents";
 import {
   BanditService,
   type types_BanditDecideRequest,
   type types_BanditDecideResponse,
   type types_BanditPolicy,
+  AuditService,
 } from "../lib/api-client";
 import {
   useViewState,
   type DecisionContext,
   type BanditDecisionEntry,
 } from "../contexts/ViewStateContext";
+import { DecisionTraceDrawer } from "./DecisionTraceDrawer";
 
 interface DecisionSectionProps {
   namespace: string;
@@ -21,6 +24,12 @@ export function DecisionSection({
   availablePolicies,
 }: DecisionSectionProps) {
   const { banditPlayground, setBanditPlayground } = useViewState();
+
+  // Decision trace drawer state
+  const [showDecisionTrace, setShowDecisionTrace] = useState(false);
+  const [currentDecisionId, setCurrentDecisionId] = useState<string | null>(
+    null
+  );
 
   // Use context state instead of local state
   const {
@@ -221,6 +230,54 @@ export function DecisionSection({
   const isExploration = (chosenPolicyId: string) => {
     const empiricalBest = getEmpiricalBestPolicy();
     return empiricalBest && chosenPolicyId !== empiricalBest.policy_id;
+  };
+
+  const ensureRequestId = (): string => {
+    if (requestId && requestId.trim() !== "") return requestId;
+    const rid = `req_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    setRequestId(rid);
+    return rid;
+  };
+
+  const handleViewDecisionTrace = async () => {
+    try {
+      const rid = ensureRequestId();
+      // poll the audit list for this request_id (most recent)
+      const maxAttempts = 6;
+      const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
+      let found: string | null = null;
+      for (let i = 0; i < maxAttempts; i++) {
+        const list = await AuditService.getV1AuditDecisions(
+          namespace,
+          undefined,
+          undefined,
+          undefined,
+          rid,
+          1
+        );
+        const dec = list.decisions?.[0];
+        if (dec?.decision_id) {
+          found = dec.decision_id;
+          break;
+        }
+        await delay(250 * (i + 1));
+      }
+      if (found) {
+        setCurrentDecisionId(found);
+        setShowDecisionTrace(true);
+      } else {
+        setError(
+          "Decision trace not yet available. Try again in a moment (async write)."
+        );
+      }
+    } catch {
+      setError("Failed to load decision trace index");
+    }
+  };
+
+  const handleCloseDecisionTrace = () => {
+    setShowDecisionTrace(false);
+    setCurrentDecisionId(null);
   };
 
   return (
@@ -519,6 +576,23 @@ export function DecisionSection({
               <div
                 style={{ display: "flex", flexDirection: "column", gap: 12 }}
               >
+                {/* View Decision Trace Button */}
+                <div style={{ marginBottom: 8 }}>
+                  <Button
+                    onClick={handleViewDecisionTrace}
+                    style={{
+                      backgroundColor: "#007acc",
+                      color: "white",
+                      border: "none",
+                      padding: "8px 16px",
+                      borderRadius: 4,
+                      cursor: "pointer",
+                      fontSize: 14,
+                    }}
+                  >
+                    View Decision Trace
+                  </Button>
+                </div>
                 <div
                   style={{
                     backgroundColor: "#f8f9fa",
@@ -702,6 +776,14 @@ export function DecisionSection({
           </div>
         )}
       </div>
+
+      {/* Decision Trace Drawer */}
+      <DecisionTraceDrawer
+        isOpen={showDecisionTrace}
+        onClose={handleCloseDecisionTrace}
+        decisionId={currentDecisionId}
+        namespace={namespace}
+      />
     </Section>
   );
 }

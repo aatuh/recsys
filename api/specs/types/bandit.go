@@ -58,6 +58,7 @@ type RecommendWithBanditRequest struct {
 	Context            map[string]string `json:"context"`
 	CandidatePolicyIDs []string          `json:"candidate_policy_ids,omitempty"`
 	Algorithm          string            `json:"algorithm,omitempty"`
+	RequestID          string            `json:"request_id,omitempty"`
 }
 
 type RecommendWithBanditResponse struct {
@@ -67,4 +68,5 @@ type RecommendWithBanditResponse struct {
 	BanditBucket   string            `json:"bandit_bucket"`
 	Explore        bool              `json:"explore"`
 	BanditExplain  map[string]string `json:"bandit_explain"`
+	RequestID      string            `json:"request_id,omitempty"`
 }

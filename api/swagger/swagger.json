@@ -12,6 +12,149 @@
     "host": "localhost:8000",
     "basePath": "/",
     "paths": {
+        "/v1/audit/decisions": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "audit"
+                ],
+                "summary": "List decision traces with optional filters",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Namespace",
+                        "name": "namespace",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "From timestamp (RFC3339)",
+                        "name": "from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "To timestamp (RFC3339)",
+                        "name": "to",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "User hash",
+                        "name": "user_hash",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Request ID",
+                        "name": "request_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.AuditDecisionListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/audit/decisions/{decision_id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "audit"
+                ],
+                "summary": "Get full decision trace by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Decision ID",
+                        "name": "decision_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.AuditDecisionDetail"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/audit/search": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "audit"
+                ],
+                "summary": "Search decision traces with advanced filters",
+                "parameters": [
+                    {
+                        "description": "Search request",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.AuditDecisionsSearchRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.AuditDecisionListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/bandit/decide": {
             "post": {
                 "consumes": [
@@ -1316,6 +1459,323 @@
                 }
             }
         },
+        "types.AuditDecisionDetail": {
+            "type": "object",
+            "properties": {
+                "bandit": {
+                    "$ref": "#/definitions/types.AuditTraceBandit"
+                },
+                "candidates_pre": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.AuditTraceCandidate"
+                    }
+                },
+                "caps": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/types.AuditTraceCap"
+                    }
+                },
+                "constraints": {
+                    "$ref": "#/definitions/types.AuditTraceConstraints"
+                },
+                "decision_id": {
+                    "type": "string"
+                },
+                "effective_config": {
+                    "$ref": "#/definitions/types.AuditTraceConfig"
+                },
+                "extras": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "final_items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.AuditTraceFinalItem"
+                    }
+                },
+                "k": {
+                    "type": "integer"
+                },
+                "mmr_info": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.AuditTraceMMR"
+                    }
+                },
+                "namespace": {
+                    "type": "string"
+                },
+                "org_id": {
+                    "type": "string"
+                },
+                "request_id": {
+                    "type": "string"
+                },
+                "surface": {
+                    "type": "string"
+                },
+                "ts": {
+                    "type": "string"
+                },
+                "user_hash": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.AuditDecisionListResponse": {
+            "type": "object",
+            "properties": {
+                "decisions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.AuditDecisionSummary"
+                    }
+                }
+            }
+        },
+        "types.AuditDecisionSummary": {
+            "type": "object",
+            "properties": {
+                "decision_id": {
+                    "type": "string"
+                },
+                "extras": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "final_items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.AuditTraceFinalItem"
+                    }
+                },
+                "k": {
+                    "type": "integer"
+                },
+                "namespace": {
+                    "type": "string"
+                },
+                "request_id": {
+                    "type": "string"
+                },
+                "surface": {
+                    "type": "string"
+                },
+                "ts": {
+                    "type": "string"
+                },
+                "user_hash": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.AuditDecisionsSearchRequest": {
+            "type": "object",
+            "properties": {
+                "from": {
+                    "type": "string"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "namespace": {
+                    "type": "string"
+                },
+                "request_id": {
+                    "type": "string"
+                },
+                "to": {
+                    "type": "string"
+                },
+                "user_hash": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.AuditTraceBandit": {
+            "type": "object",
+            "properties": {
+                "algorithm": {
+                    "type": "string"
+                },
+                "bucket_key": {
+                    "type": "string"
+                },
+                "chosen_policy_id": {
+                    "type": "string"
+                },
+                "explain": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "explore": {
+                    "type": "boolean"
+                },
+                "request_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.AuditTraceCandidate": {
+            "type": "object",
+            "properties": {
+                "item_id": {
+                    "type": "string"
+                },
+                "score": {
+                    "type": "number"
+                }
+            }
+        },
+        "types.AuditTraceCap": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "$ref": "#/definitions/types.AuditTraceCapUsage"
+                },
+                "category": {
+                    "$ref": "#/definitions/types.AuditTraceCapUsage"
+                }
+            }
+        },
+        "types.AuditTraceCapUsage": {
+            "type": "object",
+            "properties": {
+                "applied": {
+                    "type": "boolean"
+                },
+                "count": {
+                    "type": "integer"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.AuditTraceConfig": {
+            "type": "object",
+            "properties": {
+                "alpha": {
+                    "type": "number"
+                },
+                "beta": {
+                    "type": "number"
+                },
+                "brand_cap": {
+                    "type": "integer"
+                },
+                "category_cap": {
+                    "type": "integer"
+                },
+                "co_vis_window_days": {
+                    "type": "integer"
+                },
+                "gamma": {
+                    "type": "number"
+                },
+                "half_life_days": {
+                    "type": "number"
+                },
+                "mmr_lambda": {
+                    "type": "number"
+                },
+                "popularity_fanout": {
+                    "type": "integer"
+                },
+                "profile_boost": {
+                    "type": "number"
+                },
+                "profile_top_n": {
+                    "type": "integer"
+                },
+                "profile_window_days": {
+                    "type": "number"
+                },
+                "purchased_window_days": {
+                    "type": "integer"
+                },
+                "rule_exclude_events": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "types.AuditTraceConstraints": {
+            "type": "object",
+            "properties": {
+                "created_after": {
+                    "type": "string"
+                },
+                "exclude_item_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "include_tags_any": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "price_between": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                }
+            }
+        },
+        "types.AuditTraceFinalItem": {
+            "type": "object",
+            "properties": {
+                "item_id": {
+                    "type": "string"
+                },
+                "reasons": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "score": {
+                    "type": "number"
+                }
+            }
+        },
+        "types.AuditTraceMMR": {
+            "type": "object",
+            "properties": {
+                "brand_cap_hit": {
+                    "type": "boolean"
+                },
+                "category_cap_hit": {
+                    "type": "boolean"
+                },
+                "item_id": {
+                    "type": "string"
+                },
+                "max_sim": {
+                    "type": "number"
+                },
+                "penalty": {
+                    "type": "number"
+                },
+                "pick_index": {
+                    "type": "integer"
+                },
+                "relevance": {
+                    "type": "number"
+                }
+            }
+        },
         "types.BanditDecideRequest": {
             "type": "object",
             "properties": {
@@ -2104,6 +2564,9 @@
                 "overrides": {
                     "$ref": "#/definitions/types.Overrides"
                 },
+                "request_id": {
+                    "type": "string"
+                },
                 "surface": {
                     "type": "string"
                 },
@@ -2147,6 +2610,9 @@
                 "profile_id": {
                     "type": "string",
                     "example": "vip-high-novelty"
+                },
+                "request_id": {
+                    "type": "string"
                 },
                 "segment_id": {
                     "type": "string",

@@ -12,6 +12,7 @@ export type types_RecommendWithBanditResponse = {
     items?: Array<specs_types_ScoredItem>;
     model_version?: string;
     profile_id?: string;
+    request_id?: string;
     segment_id?: string;
 };
 

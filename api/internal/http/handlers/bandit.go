@@ -303,6 +303,7 @@ func (h *Handler) RecommendWithBandit(w http.ResponseWriter, r *http.Request) {
 		BanditBucket:      dec.BucketKey,
 		Explore:           dec.Explore,
 		BanditExplain:     dec.Explain,
+		RequestID:         req.RequestID,
 	}
 	_ = json.NewEncoder(w).Encode(out)
 
@@ -315,7 +316,9 @@ func (h *Handler) RecommendWithBandit(w http.ResponseWriter, r *http.Request) {
 			Explore:        dec.Explore,
 			Explain:        dec.Explain,
 		}
-		if v := req.Context["request_id"]; v != "" {
+		if req.RequestID != "" {
+			banditCtx.RequestID = req.RequestID
+		} else if v := req.Context["request_id"]; v != "" {
 			banditCtx.RequestID = v
 		}
 	}

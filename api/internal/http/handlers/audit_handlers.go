@@ -20,6 +20,18 @@ import (
 )
 
 // AuditDecisionsList returns recent decision traces metadata.
+// @Summary      List decision traces with optional filters
+// @Tags         audit
+// @Produce      json
+// @Param        namespace query string true "Namespace"
+// @Param        from query string false "From timestamp (RFC3339)"
+// @Param        to query string false "To timestamp (RFC3339)"
+// @Param        user_hash query string false "User hash"
+// @Param        request_id query string false "Request ID"
+// @Param        limit query int false "Limit"
+// @Success      200 {object} types.AuditDecisionListResponse
+// @Failure      400 {object} common.APIError
+// @Router       /v1/audit/decisions [get]
 func (h *Handler) AuditDecisionsList(w http.ResponseWriter, r *http.Request) {
 	ns := r.URL.Query().Get("namespace")
 	if ns == "" {
@@ -52,6 +64,14 @@ func (h *Handler) AuditDecisionsList(w http.ResponseWriter, r *http.Request) {
 }
 
 // AuditDecisionsSearch accepts a JSON payload to filter decision traces.
+// @Summary      Search decision traces with advanced filters
+// @Tags         audit
+// @Accept       json
+// @Produce      json
+// @Param        payload body types.AuditDecisionsSearchRequest true "Search request"
+// @Success      200 {object} types.AuditDecisionListResponse
+// @Failure      400 {object} common.APIError
+// @Router       /v1/audit/search [post]
 func (h *Handler) AuditDecisionsSearch(w http.ResponseWriter, r *http.Request) {
 	var req handlerstypes.AuditDecisionsSearchRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -85,6 +105,14 @@ func (h *Handler) AuditDecisionsSearch(w http.ResponseWriter, r *http.Request) {
 }
 
 // AuditDecisionGet returns the full trace for a decision id.
+// @Summary      Get full decision trace by ID
+// @Tags         audit
+// @Produce      json
+// @Param        decision_id path string true "Decision ID"
+// @Success      200 {object} types.AuditDecisionDetail
+// @Failure      400 {object} common.APIError
+// @Failure      404 {object} common.APIError
+// @Router       /v1/audit/decisions/{decision_id} [get]
 func (h *Handler) AuditDecisionGet(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "decision_id")
 	decisionID, err := uuid.Parse(idStr)

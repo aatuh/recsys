@@ -4,8 +4,13 @@ import {
   RankingService,
   type types_RecommendWithBanditRequest,
   type types_BanditPolicy,
+  AuditService,
 } from "../lib/api-client";
-import { useViewState, type BanditDecisionEntry } from "../contexts/ViewStateContext";
+import {
+  useViewState,
+  type BanditDecisionEntry,
+} from "../contexts/ViewStateContext";
+import { DecisionTraceDrawer } from "./DecisionTraceDrawer";
 
 interface OneShotRecommendationsSectionProps {
   namespace: string;
@@ -32,6 +37,11 @@ export function OneShotRecommendationsSection({
   const [userId, setUserId] = useState("");
   const [k, setK] = useState(20);
   const [includeReasons, setIncludeReasons] = useState(true);
+  const [lastRequestId, setLastRequestId] = useState<string | null>(null);
+  const [showDecisionTrace, setShowDecisionTrace] = useState(false);
+  const [currentDecisionId, setCurrentDecisionId] = useState<string | null>(
+    null
+  );
 
   // Use context state for recommendations
   const { recommendationResult, recommendationLoading, recommendationError } =
@@ -48,6 +58,11 @@ export function OneShotRecommendationsSection({
     }));
 
     try {
+      const reqId = `req_${Date.now()}_${Math.random()
+        .toString(36)
+        .slice(2, 8)}`;
+      setLastRequestId(reqId);
+
       const request: types_RecommendWithBanditRequest = {
         namespace,
         surface,
@@ -57,6 +72,7 @@ export function OneShotRecommendationsSection({
         algorithm,
         k,
         include_reasons: includeReasons,
+        request_id: reqId,
       };
 
       console.log("Getting bandit recommendations with request:", request);
@@ -137,6 +153,59 @@ export function OneShotRecommendationsSection({
       setBanditPlayground((prev) => ({
         ...prev,
         recommendationLoading: false,
+      }));
+    }
+  };
+
+  const handleViewDecisionTrace = async () => {
+    if (!lastRequestId) return;
+    const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    const maxAttempts = 6;
+    try {
+      let found: string | null = null;
+      for (let i = 0; i < maxAttempts; i++) {
+        // Try by request_id first
+        const list = await AuditService.getV1AuditDecisions(
+          namespace,
+          undefined,
+          undefined,
+          undefined,
+          lastRequestId,
+          1
+        );
+        let dec = list.decisions?.[0];
+        if (!dec) {
+          // Fallback: most recent decision in namespace
+          const fallback = await AuditService.getV1AuditDecisions(
+            namespace,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            1
+          );
+          dec = fallback.decisions?.[0];
+        }
+        if (dec?.decision_id) {
+          found = dec.decision_id;
+          break;
+        }
+        await delay(250 * (i + 1));
+      }
+      if (found) {
+        setCurrentDecisionId(found);
+        setShowDecisionTrace(true);
+      } else {
+        setBanditPlayground((prev) => ({
+          ...prev,
+          recommendationError:
+            "Decision trace not yet available. Try again in a moment.",
+        }));
+      }
+    } catch {
+      setBanditPlayground((prev) => ({
+        ...prev,
+        recommendationError: "Failed to load decision trace index",
       }));
     }
   };
@@ -281,6 +350,25 @@ export function OneShotRecommendationsSection({
               <div
                 style={{ display: "flex", flexDirection: "column", gap: 16 }}
               >
+                {/* Decision Trace Viewer */}
+                <div>
+                  <Button
+                    onClick={handleViewDecisionTrace}
+                    disabled={!lastRequestId}
+                    style={{
+                      backgroundColor: lastRequestId ? "#007acc" : "#ccc",
+                      color: "white",
+                      border: "none",
+                      padding: "8px 16px",
+                      borderRadius: 4,
+                      cursor: lastRequestId ? "pointer" : "not-allowed",
+                      fontSize: 14,
+                      alignSelf: "flex-start",
+                    }}
+                  >
+                    View Decision Trace
+                  </Button>
+                </div>
                 {/* Policy Information */}
                 <div
                   style={{
@@ -623,6 +711,14 @@ export function OneShotRecommendationsSection({
           </div>
         )}
       </div>
+
+      {/* Decision Trace Drawer */}
+      <DecisionTraceDrawer
+        isOpen={showDecisionTrace}
+        onClose={() => setShowDecisionTrace(false)}
+        decisionId={currentDecisionId}
+        namespace={namespace}
+      />
     </Section>
   );
 }

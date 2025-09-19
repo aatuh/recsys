@@ -25,6 +25,7 @@ export * from "./BanditPlaygroundView";
 export * from "./PolicyManager";
 export * from "./PolicyEditor";
 export * from "./DecisionSection";
+export * from "./DecisionTraceDrawer";
 export * from "./OneShotRecommendationsSection";
 export * from "./RewardFeedbackSection";
 export * from "./BanditDashboards";

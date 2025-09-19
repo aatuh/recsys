@@ -85,7 +85,10 @@ func (h *Handler) recordDecisionTrace(in decisionTraceInput) {
 		},
 	}
 
-	if reqID := middleware.GetReqID(in.Request.Context()); reqID != "" {
+	// Prefer bandit/request context request_id if available; fall back to req id
+	if in.Bandit != nil && in.Bandit.RequestID != "" {
+		trace.RequestID = in.Bandit.RequestID
+	} else if reqID := middleware.GetReqID(in.Request.Context()); reqID != "" {
 		trace.RequestID = reqID
 	}
 	if hash := hashUser(namespace, in.AlgoRequest.UserID, h.DecisionTraceSalt); hash != "" {

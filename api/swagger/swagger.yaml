@@ -117,6 +117,214 @@ definitions:
       status:
         type: string
     type: object
+  types.AuditDecisionDetail:
+    properties:
+      bandit:
+        $ref: '#/definitions/types.AuditTraceBandit'
+      candidates_pre:
+        items:
+          $ref: '#/definitions/types.AuditTraceCandidate'
+        type: array
+      caps:
+        additionalProperties:
+          $ref: '#/definitions/types.AuditTraceCap'
+        type: object
+      constraints:
+        $ref: '#/definitions/types.AuditTraceConstraints'
+      decision_id:
+        type: string
+      effective_config:
+        $ref: '#/definitions/types.AuditTraceConfig'
+      extras:
+        additionalProperties: {}
+        type: object
+      final_items:
+        items:
+          $ref: '#/definitions/types.AuditTraceFinalItem'
+        type: array
+      k:
+        type: integer
+      mmr_info:
+        items:
+          $ref: '#/definitions/types.AuditTraceMMR'
+        type: array
+      namespace:
+        type: string
+      org_id:
+        type: string
+      request_id:
+        type: string
+      surface:
+        type: string
+      ts:
+        type: string
+      user_hash:
+        type: string
+    type: object
+  types.AuditDecisionListResponse:
+    properties:
+      decisions:
+        items:
+          $ref: '#/definitions/types.AuditDecisionSummary'
+        type: array
+    type: object
+  types.AuditDecisionSummary:
+    properties:
+      decision_id:
+        type: string
+      extras:
+        additionalProperties: {}
+        type: object
+      final_items:
+        items:
+          $ref: '#/definitions/types.AuditTraceFinalItem'
+        type: array
+      k:
+        type: integer
+      namespace:
+        type: string
+      request_id:
+        type: string
+      surface:
+        type: string
+      ts:
+        type: string
+      user_hash:
+        type: string
+    type: object
+  types.AuditDecisionsSearchRequest:
+    properties:
+      from:
+        type: string
+      limit:
+        type: integer
+      namespace:
+        type: string
+      request_id:
+        type: string
+      to:
+        type: string
+      user_hash:
+        type: string
+    type: object
+  types.AuditTraceBandit:
+    properties:
+      algorithm:
+        type: string
+      bucket_key:
+        type: string
+      chosen_policy_id:
+        type: string
+      explain:
+        additionalProperties:
+          type: string
+        type: object
+      explore:
+        type: boolean
+      request_id:
+        type: string
+    type: object
+  types.AuditTraceCandidate:
+    properties:
+      item_id:
+        type: string
+      score:
+        type: number
+    type: object
+  types.AuditTraceCap:
+    properties:
+      brand:
+        $ref: '#/definitions/types.AuditTraceCapUsage'
+      category:
+        $ref: '#/definitions/types.AuditTraceCapUsage'
+    type: object
+  types.AuditTraceCapUsage:
+    properties:
+      applied:
+        type: boolean
+      count:
+        type: integer
+      limit:
+        type: integer
+      value:
+        type: string
+    type: object
+  types.AuditTraceConfig:
+    properties:
+      alpha:
+        type: number
+      beta:
+        type: number
+      brand_cap:
+        type: integer
+      category_cap:
+        type: integer
+      co_vis_window_days:
+        type: integer
+      gamma:
+        type: number
+      half_life_days:
+        type: number
+      mmr_lambda:
+        type: number
+      popularity_fanout:
+        type: integer
+      profile_boost:
+        type: number
+      profile_top_n:
+        type: integer
+      profile_window_days:
+        type: number
+      purchased_window_days:
+        type: integer
+      rule_exclude_events:
+        type: boolean
+    type: object
+  types.AuditTraceConstraints:
+    properties:
+      created_after:
+        type: string
+      exclude_item_ids:
+        items:
+          type: string
+        type: array
+      include_tags_any:
+        items:
+          type: string
+        type: array
+      price_between:
+        items:
+          type: number
+        type: array
+    type: object
+  types.AuditTraceFinalItem:
+    properties:
+      item_id:
+        type: string
+      reasons:
+        items:
+          type: string
+        type: array
+      score:
+        type: number
+    type: object
+  types.AuditTraceMMR:
+    properties:
+      brand_cap_hit:
+        type: boolean
+      category_cap_hit:
+        type: boolean
+      item_id:
+        type: string
+      max_sim:
+        type: number
+      penalty:
+        type: number
+      pick_index:
+        type: integer
+      relevance:
+        type: number
+    type: object
   types.BanditDecideRequest:
     properties:
       algorithm:
@@ -650,6 +858,8 @@ definitions:
         type: string
       overrides:
         $ref: '#/definitions/types.Overrides'
+      request_id:
+        type: string
       surface:
         type: string
       user_id:
@@ -679,6 +889,8 @@ definitions:
         type: string
       profile_id:
         example: vip-high-novelty
+        type: string
+      request_id:
         type: string
       segment_id:
         example: vip
@@ -766,6 +978,99 @@ info:
   title: Recsys API
   version: 0.0.1
 paths:
+  /v1/audit/decisions:
+    get:
+      parameters:
+      - description: Namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: From timestamp (RFC3339)
+        in: query
+        name: from
+        type: string
+      - description: To timestamp (RFC3339)
+        in: query
+        name: to
+        type: string
+      - description: User hash
+        in: query
+        name: user_hash
+        type: string
+      - description: Request ID
+        in: query
+        name: request_id
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.AuditDecisionListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.APIError'
+      summary: List decision traces with optional filters
+      tags:
+      - audit
+  /v1/audit/decisions/{decision_id}:
+    get:
+      parameters:
+      - description: Decision ID
+        in: path
+        name: decision_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.AuditDecisionDetail'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.APIError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.APIError'
+      summary: Get full decision trace by ID
+      tags:
+      - audit
+  /v1/audit/search:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Search request
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.AuditDecisionsSearchRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.AuditDecisionListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.APIError'
+      summary: Search decision traces with advanced filters
+      tags:
+      - audit
   /v1/bandit/decide:
     post:
       consumes:

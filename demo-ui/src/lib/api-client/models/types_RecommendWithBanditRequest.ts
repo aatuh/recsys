@@ -16,6 +16,7 @@ export type types_RecommendWithBanditRequest = {
     'k'?: number;
     namespace?: string;
     overrides?: types_Overrides;
+    request_id?: string;
     surface?: string;
     user_id?: string;
 };

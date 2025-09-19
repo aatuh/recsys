@@ -13,6 +13,18 @@ export type { specs_types_Segment } from './models/specs_types_Segment';
 export type { specs_types_SegmentProfile } from './models/specs_types_SegmentProfile';
 export type { specs_types_SegmentRule } from './models/specs_types_SegmentRule';
 export type { types_Ack } from './models/types_Ack';
+export type { types_AuditDecisionDetail } from './models/types_AuditDecisionDetail';
+export type { types_AuditDecisionListResponse } from './models/types_AuditDecisionListResponse';
+export type { types_AuditDecisionsSearchRequest } from './models/types_AuditDecisionsSearchRequest';
+export type { types_AuditDecisionSummary } from './models/types_AuditDecisionSummary';
+export type { types_AuditTraceBandit } from './models/types_AuditTraceBandit';
+export type { types_AuditTraceCandidate } from './models/types_AuditTraceCandidate';
+export type { types_AuditTraceCap } from './models/types_AuditTraceCap';
+export type { types_AuditTraceCapUsage } from './models/types_AuditTraceCapUsage';
+export type { types_AuditTraceConfig } from './models/types_AuditTraceConfig';
+export type { types_AuditTraceConstraints } from './models/types_AuditTraceConstraints';
+export type { types_AuditTraceFinalItem } from './models/types_AuditTraceFinalItem';
+export type { types_AuditTraceMMR } from './models/types_AuditTraceMMR';
 export type { types_BanditDecideRequest } from './models/types_BanditDecideRequest';
 export type { types_BanditDecideResponse } from './models/types_BanditDecideResponse';
 export type { types_BanditPoliciesUpsertRequest } from './models/types_BanditPoliciesUpsertRequest';
@@ -56,6 +68,7 @@ export type { types_SegmentsUpsertRequest } from './models/types_SegmentsUpsertR
 export type { types_User } from './models/types_User';
 export type { types_UsersUpsertRequest } from './models/types_UsersUpsertRequest';
 
+export { AuditService } from './services/AuditService';
 export { BanditService } from './services/BanditService';
 export { ConfigService } from './services/ConfigService';
 export { DataManagementService } from './services/DataManagementService';
