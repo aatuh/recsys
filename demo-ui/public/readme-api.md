@@ -18,7 +18,7 @@ Open **Swagger** at **`/docs`** to inspect schemas and try requests.
 
 - `POST /v1/explain/llm` — generate a markdown RCA report using curated facts
   and the configured LLM; response includes both the human-readable summary and
-  the facts pack used.
+  the facts pack used (requires `LLM_EXPLAIN_ENABLED=true` and `LLM_API_KEY`).
 
 ## Development
 

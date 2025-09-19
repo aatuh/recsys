@@ -6,14 +6,17 @@ import {
   listUsers,
   listItems,
   listEvents,
+  listSegments,
   deleteUsers,
   deleteItems,
   deleteEvents,
+  deleteSegments,
   fetchAllDataForTables,
   type ListParams,
   type DeleteParams,
   type ListResponse,
 } from "../services/apiService";
+import { ConfigService } from "../lib/api-client";
 import { updateItemEmbedding } from "../actions/updateItemEmbedding";
 import {
   downloadJsonFile,
@@ -25,7 +28,7 @@ interface DataManagementSectionProps {
   namespace: string;
 }
 
-type DataType = "users" | "items" | "events";
+type DataType = "users" | "items" | "events" | "segments";
 
 interface FilterState {
   user_id: string;
@@ -33,6 +36,8 @@ interface FilterState {
   event_type: string;
   created_after: string;
   created_before: string;
+  segment_id: string;
+  profile_id: string;
 }
 
 const initialFilters: FilterState = {
@@ -41,6 +46,8 @@ const initialFilters: FilterState = {
   event_type: "",
   created_after: "",
   created_before: "",
+  segment_id: "",
+  profile_id: "",
 };
 
 export function DataManagementSection({
@@ -212,6 +219,37 @@ export function DataManagementSection({
             render: createJsonRenderer("Event Metadata", 20),
           },
         ];
+      case "segments":
+        return [
+          {
+            key: "segment_id",
+            title: "Segment ID",
+            width: "150px",
+            sortable: true,
+          },
+          { key: "name", title: "Name", width: "200px", sortable: true },
+          { key: "description", title: "Description", width: "250px" },
+          {
+            key: "priority",
+            title: "Priority",
+            width: "80px",
+            align: "center",
+          },
+          { key: "active", title: "Active", width: "80px", align: "center" },
+          { key: "profile_id", title: "Profile ID", width: "150px" },
+          {
+            key: "rules",
+            title: "Rules",
+            width: "200px",
+            render: createJsonRenderer("Rules"),
+          },
+          {
+            key: "created_at",
+            title: "Created",
+            width: "150px",
+            sortable: true,
+          },
+        ];
       default:
         return [];
     }
@@ -255,6 +293,9 @@ export function DataManagementSection({
         case "events":
           response = await listEvents(params);
           break;
+        case "segments":
+          response = await listSegments(params);
+          break;
         default:
           throw new Error("Invalid data type");
       }
@@ -297,14 +338,30 @@ export function DataManagementSection({
       const params: DeleteParams = { namespace };
 
       // If deleting selected only, we need to get the IDs and delete them individually
-      // For now, we'll delete all and let the user filter first
       if (selectedOnly && dataManagement.selectedRows.size > 0) {
-        // TODO: Implement individual deletion by ID
-        alert(
-          "Individual deletion not yet implemented. Please use filters to narrow down your selection."
-        );
-        setLoading(false);
-        return;
+        if (dataManagement.dataType === "segments") {
+          // For segments, we need to delete by specific IDs
+          const selectedSegmentIds = Array.from(dataManagement.selectedRows);
+          await ConfigService.segmentsDelete({
+            namespace: params.namespace,
+            ids: selectedSegmentIds,
+          });
+
+          alert(
+            `Successfully deleted ${selectedSegmentIds.length} selected segments`
+          );
+          setDataManagement((prev) => ({ ...prev, selectedRows: new Set() }));
+          loadData();
+          setLoading(false);
+          return;
+        } else {
+          // TODO: Implement individual deletion by ID for other data types
+          alert(
+            "Individual deletion not yet implemented for this data type. Please use filters to narrow down your selection."
+          );
+          setLoading(false);
+          return;
+        }
       }
 
       // Add filters for targeted deletion
@@ -329,6 +386,9 @@ export function DataManagementSection({
           break;
         case "events":
           response = await deleteEvents(params);
+          break;
+        case "segments":
+          response = await deleteSegments(params);
           break;
         default:
           throw new Error("Invalid data type");
@@ -543,6 +603,7 @@ Are you sure you want to continue?`;
         users: 0,
         items: 0,
         events: 0,
+        segments: 0,
       };
 
       // Delete users
@@ -569,7 +630,19 @@ Are you sure you want to continue?`;
         console.warn("Failed to delete events:", err);
       }
 
-      const totalDeleted = results.users + results.items + results.events;
+      // Delete segments
+      try {
+        const segmentResult = await deleteSegments(params);
+        results.segments = segmentResult.deleted_count;
+      } catch (err: any) {
+        console.warn("Failed to delete segments:", err);
+      }
+
+      const totalDeleted =
+        results.users +
+        results.items +
+        results.events +
+        (results.segments || 0);
 
       alert(`✅ Successfully destroyed all data in namespace "${namespace}"!
 
@@ -577,6 +650,7 @@ Deleted:
 • ${results.users} users
 • ${results.items} items
 • ${results.events} events
+• ${results.segments || 0} segments
 
 Total: ${totalDeleted} records deleted`);
 
@@ -670,27 +744,29 @@ Total: ${totalDeleted} records deleted`);
             Data Type:
           </label>
           <div style={{ display: "flex", gap: "8px" }}>
-            {(["users", "items", "events"] as DataType[]).map((type) => (
-              <Button
-                key={type}
-                onClick={() => {
-                  setDataManagement((prev) => ({
-                    ...prev,
-                    dataType: type,
-                    selectedRows: new Set(),
-                    pagination: { ...prev.pagination, page: 1 },
-                  }));
-                }}
-                style={{
-                  backgroundColor:
-                    dataManagement.dataType === type ? "#e3f2fd" : "#f5f5f5",
-                  color: dataManagement.dataType === type ? "1565c0" : "#666",
-                  textTransform: "capitalize",
-                }}
-              >
-                {type}
-              </Button>
-            ))}
+            {(["users", "items", "events", "segments"] as DataType[]).map(
+              (type) => (
+                <Button
+                  key={type}
+                  onClick={() => {
+                    setDataManagement((prev) => ({
+                      ...prev,
+                      dataType: type,
+                      selectedRows: new Set(),
+                      pagination: { ...prev.pagination, page: 1 },
+                    }));
+                  }}
+                  style={{
+                    backgroundColor:
+                      dataManagement.dataType === type ? "#e3f2fd" : "#f5f5f5",
+                    color: dataManagement.dataType === type ? "1565c0" : "#666",
+                    textTransform: "capitalize",
+                  }}
+                >
+                  {type}
+                </Button>
+              )
+            )}
           </div>
         </div>
 
@@ -968,38 +1044,40 @@ Total: ${totalDeleted} records deleted`);
               Select tables to export:
             </label>
             <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-              {(["users", "items", "events"] as const).map((table) => (
-                <label
-                  key={table}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    cursor: "pointer",
-                    fontSize: "12px",
-                  }}
-                >
-                  <input
-                    type="checkbox"
-                    checked={dataManagement.selectedExportTables.includes(
-                      table
-                    )}
-                    onChange={(e) => {
-                      const newTables = e.target.checked
-                        ? [...dataManagement.selectedExportTables, table]
-                        : dataManagement.selectedExportTables.filter(
-                            (t) => t !== table
-                          );
-                      setDataManagement((prev) => ({
-                        ...prev,
-                        selectedExportTables: newTables,
-                      }));
+              {(["users", "items", "events", "segments"] as const).map(
+                (table) => (
+                  <label
+                    key={table}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      cursor: "pointer",
+                      fontSize: "12px",
                     }}
-                    style={{ cursor: "pointer" }}
-                  />
-                  <span style={{ textTransform: "capitalize" }}>{table}</span>
-                </label>
-              ))}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={dataManagement.selectedExportTables.includes(
+                        table
+                      )}
+                      onChange={(e) => {
+                        const newTables = e.target.checked
+                          ? [...dataManagement.selectedExportTables, table]
+                          : dataManagement.selectedExportTables.filter(
+                              (t) => t !== table
+                            );
+                        setDataManagement((prev) => ({
+                          ...prev,
+                          selectedExportTables: newTables,
+                        }));
+                      }}
+                      style={{ cursor: "pointer" }}
+                    />
+                    <span style={{ textTransform: "capitalize" }}>{table}</span>
+                  </label>
+                )
+              )}
             </div>
           </div>
 
@@ -1074,7 +1152,7 @@ Total: ${totalDeleted} records deleted`);
               border: "1px solid #e0e0e0",
               fontSize: "12px",
             }}
-            title="Permanently delete ALL users, items, and events in this namespace"
+            title="Permanently delete ALL users, items, events, and segments in this namespace"
           >
             {loading ? "Destroying..." : "Clear All Data"}
           </Button>

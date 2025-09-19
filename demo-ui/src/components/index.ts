@@ -29,3 +29,7 @@ export * from "./OneShotRecommendationsSection";
 export * from "./RewardFeedbackSection";
 export * from "./BanditDashboards";
 export * from "./PrivacyPolicyView";
+export * from "./SegmentDryRunTool";
+export * from "./SegmentProfileEditor";
+export * from "./SegmentProfileBadge";
+export * from "./SegmentsSection";

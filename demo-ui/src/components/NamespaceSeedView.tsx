@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import { NamespaceSection, SeedDataSection } from "./";
+import { SegmentSeedSection } from "./SegmentSeedSection";
 import { useViewState } from "../contexts/ViewStateContext";
 
 interface NamespaceSeedViewProps {
@@ -144,6 +145,16 @@ export function NamespaceSeedView({
         generatedItems={generatedItems}
         onUpdateUser={handleUpdateUser}
         onUpdateItem={handleUpdateItem}
+      />
+
+      <SegmentSeedSection
+        namespace={namespace}
+        onLog={(message) =>
+          setNamespaceSeed((prev) => ({
+            ...prev,
+            log: prev.log ? `${prev.log}\n${message}` : message,
+          }))
+        }
       />
     </div>
   );

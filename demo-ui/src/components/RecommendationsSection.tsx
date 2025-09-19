@@ -15,6 +15,7 @@ import type {
   types_Overrides,
 } from "../lib/api-client";
 import { ExplainModal } from "./ExplainModal";
+import { SegmentProfileBadge } from "./SegmentProfileBadge";
 
 interface RecommendationsSectionProps {
   recUserId: string;
@@ -30,6 +31,7 @@ interface RecommendationsSectionProps {
   recLoading: boolean;
   setRecLoading: (loading: boolean) => void;
   overrides: types_Overrides | null;
+  recResponse?: types_RecommendResponse | null;
 }
 
 export function RecommendationsSection({
@@ -46,15 +48,19 @@ export function RecommendationsSection({
   recLoading,
   setRecLoading,
   overrides,
+  recResponse: _recResponse,
 }: RecommendationsSectionProps) {
   const [explainItem, setExplainItem] = useState<specs_types_ScoredItem | null>(
     null
   );
+  const [lastResponse, setLastResponse] =
+    useState<types_RecommendResponse | null>(null);
 
   async function runRecommend() {
     const id = recUserId || exampleUser;
     setRecLoading(true);
     setRecOut(null);
+    setLastResponse(null);
     try {
       const r: types_RecommendResponse = await recommend(
         id,
@@ -64,6 +70,7 @@ export function RecommendationsSection({
         overrides
       );
       setRecOut(r.items ?? []);
+      setLastResponse(r);
     } catch (e: any) {
       setRecOut([{ item_id: `Error: ${e.message}`, score: 0 }]);
     } finally {
@@ -126,6 +133,16 @@ export function RecommendationsSection({
       <Button onClick={runRecommend} disabled={recLoading}>
         {recLoading ? "Running..." : "Get recommendations"}
       </Button>
+
+      {/* Show segment/profile badges if available */}
+      {(lastResponse?.segment_id || lastResponse?.profile_id) && (
+        <div style={{ marginTop: 12, marginBottom: 8 }}>
+          <SegmentProfileBadge
+            segmentId={lastResponse.segment_id}
+            profileId={lastResponse.profile_id}
+          />
+        </div>
+      )}
 
       <div style={{ height: 8 }} />
       <ResultsTable

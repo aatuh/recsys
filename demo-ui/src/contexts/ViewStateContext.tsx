@@ -93,10 +93,21 @@ interface RecommendationsPlaygroundState {
   }>;
   selectedProfileId: string | null;
   isEditingProfile: boolean;
+  // Segment dry-run state
+  segmentDryRun: {
+    userId: string;
+    surface: string;
+    device: string;
+    locale: string;
+    userTier: string;
+    region: string;
+    customTraits: string;
+    customContext: string;
+  };
 }
 
 interface DataManagementState {
-  dataType: "users" | "items" | "events";
+  dataType: "users" | "items" | "events" | "segments";
   selectedRows: Set<string>;
   filters: {
     user_id: string;
@@ -104,6 +115,8 @@ interface DataManagementState {
     event_type: string;
     created_after: string;
     created_before: string;
+    segment_id: string;
+    profile_id: string;
   };
   sortBy: string;
   sortDirection: "asc" | "desc";
@@ -236,6 +249,16 @@ const initialNamespaceSeedState: NamespaceSeedState = {
   ],
   traitConfigs: [
     {
+      key: "tier",
+      probability: 1.0,
+      values: [
+        { value: "free", probability: 0.4 },
+        { value: "basic", probability: 0.3 },
+        { value: "premium", probability: 0.1 },
+        { value: "VIP", probability: 0.2 },
+      ],
+    },
+    {
       key: "plan",
       probability: 1.0,
       values: [
@@ -310,6 +333,16 @@ const initialRecommendationsPlaygroundState: RecommendationsPlaygroundState = {
   customProfiles: [],
   selectedProfileId: null,
   isEditingProfile: false,
+  segmentDryRun: {
+    userId: "",
+    surface: "homepage",
+    device: "mobile",
+    locale: "en-US",
+    userTier: "",
+    region: "",
+    customTraits: "",
+    customContext: "",
+  },
 };
 
 const initialDataManagementState: DataManagementState = {
@@ -321,6 +354,8 @@ const initialDataManagementState: DataManagementState = {
     event_type: "",
     created_after: "",
     created_before: "",
+    segment_id: "",
+    profile_id: "",
   },
   sortBy: "",
   sortDirection: "desc",

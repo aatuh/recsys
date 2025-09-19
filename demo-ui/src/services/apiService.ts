@@ -2,13 +2,15 @@ import {
   ConfigService,
   IngestionService,
   RankingService,
+  types_RecommendRequest,
   type types_EventTypeConfigUpsertRequest,
   type types_UsersUpsertRequest,
   type types_ItemsUpsertRequest,
   type types_EventsBatchRequest,
-  type types_RecommendRequest,
   type types_RecommendResponse,
   type types_Overrides,
+  type types_SegmentsListResponse,
+  type types_SegmentProfilesListResponse,
 } from "../lib/api-client";
 
 /**
@@ -77,17 +79,15 @@ export async function recommend(
   blendVal: { pop: number; cooc: number; als: number },
   overrides?: types_Overrides | null
 ): Promise<types_RecommendResponse> {
-  const payload: types_RecommendRequest & {
-    explain_level?: "tags" | "numeric" | "full";
-  } = {
+  const payload: types_RecommendRequest = {
     user_id: userId,
     namespace,
     k: kVal,
     include_reasons: true,
-    explain_level: "numeric",
+    explain_level: types_RecommendRequest.explain_level.NUMERIC,
     constraints: {},
     blend: blendVal,
-    overrides: overrides || undefined,
+    overrides: overrides ?? undefined,
   };
   return RankingService.postV1Recommendations(payload);
 }
@@ -246,7 +246,7 @@ export async function deleteEvents(
  * Fetches all data for a specific table type with pagination
  */
 export async function fetchAllData(
-  dataType: "users" | "items" | "events",
+  dataType: "users" | "items" | "events" | "segments",
   params: Omit<ListParams, "limit" | "offset">
 ): Promise<any[]> {
   const allData: any[] = [];
@@ -270,6 +270,9 @@ export async function fetchAllData(
         break;
       case "events":
         response = await listEvents(batchParams);
+        break;
+      case "segments":
+        response = await listSegments(batchParams);
         break;
       default:
         throw new Error("Invalid data type");
@@ -300,11 +303,14 @@ export async function fetchAllDataForTables(
     event_type: string;
     created_after: string;
     created_before: string;
+    segment_id: string;
+    profile_id: string;
   }
 ): Promise<{
   users?: any[];
   items?: any[];
   events?: any[];
+  segments?: any[];
 }> {
   const baseParams = {
     namespace,
@@ -319,6 +325,7 @@ export async function fetchAllDataForTables(
     users?: any[];
     items?: any[];
     events?: any[];
+    segments?: any[];
   } = {};
 
   // Fetch data for each selected table in parallel
@@ -333,9 +340,131 @@ export async function fetchAllDataForTables(
       case "events":
         result.events = await fetchAllData("events", baseParams);
         break;
+      case "segments":
+        result.segments = await fetchAllData("segments", baseParams);
+        break;
     }
   });
 
   await Promise.all(promises);
   return result;
+}
+
+// Segment API functions
+export async function listSegments(params: ListParams): Promise<ListResponse> {
+  const response: types_SegmentsListResponse =
+    await ConfigService.getV1Segments(params.namespace || "default");
+
+  return {
+    items: response.segments || [],
+    total: response.segments?.length || 0,
+    limit: 0,
+    offset: 0,
+    has_more: false,
+  };
+}
+
+export async function listSegmentProfiles(
+  params: ListParams
+): Promise<ListResponse> {
+  const response: types_SegmentProfilesListResponse =
+    await ConfigService.getV1SegmentProfiles(params.namespace || "default");
+
+  return {
+    items: response.profiles || [],
+    total: response.profiles?.length || 0,
+    limit: 0,
+    offset: 0,
+    has_more: false,
+  };
+}
+
+export async function deleteSegments(
+  params: DeleteParams
+): Promise<{ deleted_count: number }> {
+  // The segment deletion API requires specific IDs, not filtering
+  // So we need to get all segments first, then delete them by ID
+  
+  // Get all segments in the namespace
+  const segmentsResponse = await listSegments({ namespace: params.namespace });
+  let segmentsToDelete = segmentsResponse.items;
+  
+  // Apply filters to determine which segments to delete
+  if (params.user_id || params.item_id || params.event_type || 
+      params.created_after || params.created_before) {
+    // For segments, we can't filter by user_id, item_id, or event_type
+    // We can only filter by creation date if the segment has those fields
+    segmentsToDelete = segmentsToDelete.filter((segment: any) => {
+      if (params.created_after && segment.created_at) {
+        const segmentDate = new Date(segment.created_at);
+        const filterDate = new Date(params.created_after);
+        if (segmentDate < filterDate) return false;
+      }
+      if (params.created_before && segment.created_at) {
+        const segmentDate = new Date(segment.created_at);
+        const filterDate = new Date(params.created_before);
+        if (segmentDate > filterDate) return false;
+      }
+      return true;
+    });
+  }
+  
+  if (segmentsToDelete.length === 0) {
+    return { deleted_count: 0 };
+  }
+  
+  // Extract segment IDs
+  const segmentIds = segmentsToDelete.map((segment: any) => segment.segment_id);
+  
+  // Delete segments using the ConfigService
+  await ConfigService.segmentsDelete({
+    namespace: params.namespace,
+    ids: segmentIds,
+  });
+  
+  return { deleted_count: segmentIds.length };
+}
+
+export async function deleteSegmentProfiles(
+  params: DeleteParams
+): Promise<{ deleted_count: number }> {
+  // The segment profile deletion API requires specific IDs, not filtering
+  // So we need to get all segment profiles first, then delete them by ID
+  
+  // Get all segment profiles in the namespace
+  const profilesResponse = await listSegmentProfiles({ namespace: params.namespace });
+  let profilesToDelete = profilesResponse.items;
+  
+  // Apply filters to determine which profiles to delete
+  if (params.created_after || params.created_before) {
+    // We can only filter by creation date if the profile has those fields
+    profilesToDelete = profilesToDelete.filter((profile: any) => {
+      if (params.created_after && profile.created_at) {
+        const profileDate = new Date(profile.created_at);
+        const filterDate = new Date(params.created_after);
+        if (profileDate < filterDate) return false;
+      }
+      if (params.created_before && profile.created_at) {
+        const profileDate = new Date(profile.created_at);
+        const filterDate = new Date(params.created_before);
+        if (profileDate > filterDate) return false;
+      }
+      return true;
+    });
+  }
+  
+  if (profilesToDelete.length === 0) {
+    return { deleted_count: 0 };
+  }
+  
+  // Extract profile IDs
+  const profileIds = profilesToDelete.map((profile: any) => profile.profile_id);
+  
+  // Delete segment profiles using the ConfigService
+  await ConfigService.segmentProfilesDelete({
+    namespace: params.namespace,
+    ids: profileIds,
+  });
+  
+  return { deleted_count: profileIds.length };
 }
