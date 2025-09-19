@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import type {
-  internal_http_types_ScoredItem,
+  specs_types_ScoredItem,
   types_Overrides,
 } from "../lib/api-client";
 import {
@@ -157,15 +157,11 @@ export function DemoView({ namespace, setNamespace, apiBase }: DemoViewProps) {
   /* --------------- UI state for playground --------------- */
 
   const [recUserId, setRecUserId] = useState("");
-  const [recOut, setRecOut] = useState<internal_http_types_ScoredItem[] | null>(
-    null
-  );
+  const [recOut, setRecOut] = useState<specs_types_ScoredItem[] | null>(null);
   const [recLoading, setRecLoading] = useState(false);
 
   const [simItemId, setSimItemId] = useState("");
-  const [simOut, setSimOut] = useState<internal_http_types_ScoredItem[] | null>(
-    null
-  );
+  const [simOut, setSimOut] = useState<specs_types_ScoredItem[] | null>(null);
   const [simLoading, setSimLoading] = useState(false);
 
   /* User traits update handler */

@@ -1,12 +1,5 @@
 import React, { useEffect, useCallback, useMemo } from "react";
-import {
-  Section,
-  Row,
-  Label,
-  TextInput,
-  Button,
-  Code,
-} from "./UIComponents";
+import { Section, Row, Label, TextInput, Button, Code } from "./UIComponents";
 import { DataTable, Column } from "./DataTable";
 import { EventSequenceBuilder } from "./EventSequenceBuilder";
 import { UserJourneyVisualization } from "./UserJourneyVisualization";
@@ -16,7 +9,7 @@ import {
   listItems,
   listUsers,
 } from "../services/apiService";
-import type { internal_http_types_ScoredItem } from "../lib/api-client";
+import type { specs_types_ScoredItem } from "../lib/api-client";
 import { randChoice, iso } from "../utils/helpers";
 
 // Import types from context
@@ -40,11 +33,11 @@ interface UserSessionSimulatorProps {
   userSession: {
     selectedUserId: string;
     userEvents: UserEvent[];
-    currentRecommendations: internal_http_types_ScoredItem[] | null;
+    currentRecommendations: specs_types_ScoredItem[] | null;
     recommendationHistory: Array<{
       timestamp: Date;
       events: UserEvent[];
-      recommendations: internal_http_types_ScoredItem[];
+      recommendations: specs_types_ScoredItem[];
     }>;
     isSimulating: boolean;
     selectedSequence: string;
@@ -62,11 +55,11 @@ interface UserSessionSimulatorProps {
     React.SetStateAction<{
       selectedUserId: string;
       userEvents: UserEvent[];
-      currentRecommendations: internal_http_types_ScoredItem[] | null;
+      currentRecommendations: specs_types_ScoredItem[] | null;
       recommendationHistory: Array<{
         timestamp: Date;
         events: UserEvent[];
-        recommendations: internal_http_types_ScoredItem[];
+        recommendations: specs_types_ScoredItem[];
       }>;
       isSimulating: boolean;
       selectedSequence: string;

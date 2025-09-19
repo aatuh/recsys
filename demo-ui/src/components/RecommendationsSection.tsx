@@ -10,7 +10,7 @@ import {
 } from "./UIComponents";
 import { recommend } from "../services/apiService";
 import type {
-  internal_http_types_ScoredItem,
+  specs_types_ScoredItem,
   types_RecommendResponse,
   types_Overrides,
 } from "../lib/api-client";
@@ -25,8 +25,8 @@ interface RecommendationsSectionProps {
   setBlend: (blend: { pop: number; cooc: number; als: number }) => void;
   namespace: string;
   exampleUser: string;
-  recOut: internal_http_types_ScoredItem[] | null;
-  setRecOut: (items: internal_http_types_ScoredItem[] | null) => void;
+  recOut: specs_types_ScoredItem[] | null;
+  setRecOut: (items: specs_types_ScoredItem[] | null) => void;
   recLoading: boolean;
   setRecLoading: (loading: boolean) => void;
   overrides: types_Overrides | null;
@@ -47,8 +47,9 @@ export function RecommendationsSection({
   setRecLoading,
   overrides,
 }: RecommendationsSectionProps) {
-  const [explainItem, setExplainItem] =
-    useState<internal_http_types_ScoredItem | null>(null);
+  const [explainItem, setExplainItem] = useState<specs_types_ScoredItem | null>(
+    null
+  );
 
   async function runRecommend() {
     const id = recUserId || exampleUser;
@@ -131,6 +132,7 @@ export function RecommendationsSection({
         items={recOut}
         showExplain
         onExplain={(it) => setExplainItem(it)}
+        blend={blend}
       />
 
       <ExplainModal

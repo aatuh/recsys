@@ -10,12 +10,7 @@ import {
 } from "./UIComponents";
 import { similar } from "../services/apiService";
 
-// Define ScoredItem type locally since it's not exported from api-client
-interface internal_http_types_ScoredItem {
-  item_id: string;
-  score: number;
-  reasons?: string[];
-}
+import type { specs_types_ScoredItem } from "../lib/api-client";
 
 interface SimilarItemsSectionProps {
   simItemId: string;
@@ -24,8 +19,8 @@ interface SimilarItemsSectionProps {
   setK: (value: number) => void;
   namespace: string;
   exampleItem: string;
-  simOut: internal_http_types_ScoredItem[] | null;
-  setSimOut: (value: internal_http_types_ScoredItem[] | null) => void;
+  simOut: specs_types_ScoredItem[] | null;
+  setSimOut: (value: specs_types_ScoredItem[] | null) => void;
   simLoading: boolean;
   setSimLoading: (value: boolean) => void;
 }

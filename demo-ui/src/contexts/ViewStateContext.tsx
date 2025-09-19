@@ -3,7 +3,7 @@ import type { EventTypeConfig } from "../types";
 import type { TraitConfig } from "../components/UserTraitsEditor";
 import type { ItemConfig, PriceRange } from "../components/ItemConfigEditor";
 import type {
-  internal_http_types_ScoredItem,
+  specs_types_ScoredItem,
   types_Overrides,
   types_BanditDecideResponse,
   types_RecommendWithBanditResponse,
@@ -79,10 +79,10 @@ interface RecommendationsPlaygroundState {
   blend: { pop: number; cooc: number; als: number };
   k: number;
   recUserId: string;
-  recOut: internal_http_types_ScoredItem[] | null;
+  recOut: specs_types_ScoredItem[] | null;
   recLoading: boolean;
   simItemId: string;
-  simOut: internal_http_types_ScoredItem[] | null;
+  simOut: specs_types_ScoredItem[] | null;
   simLoading: boolean;
   overrides: types_Overrides | null;
   customProfiles: Array<{
@@ -130,11 +130,11 @@ interface DataManagementState {
 interface UserSessionState {
   selectedUserId: string;
   userEvents: UserEvent[];
-  currentRecommendations: internal_http_types_ScoredItem[] | null;
+  currentRecommendations: specs_types_ScoredItem[] | null;
   recommendationHistory: Array<{
     timestamp: Date;
     events: UserEvent[];
-    recommendations: internal_http_types_ScoredItem[];
+    recommendations: specs_types_ScoredItem[];
   }>;
   isSimulating: boolean;
   selectedSequence: string;

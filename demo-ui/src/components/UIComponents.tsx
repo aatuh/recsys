@@ -1,4 +1,9 @@
 import React from "react";
+import {
+  deriveExplainData,
+  summarizeContributions,
+  type BlendTriplet,
+} from "../utils/explain";
 
 export function Section(props: { title: string; children: React.ReactNode }) {
   return (
@@ -146,10 +151,11 @@ export interface ResultsTableProps {
   items: any[] | null;
   showExplain?: boolean;
   onExplain?: (value: any) => void;
+  blend?: BlendTriplet;
 }
 
 export function ResultsTable(props: ResultsTableProps) {
-  const { items, showExplain = false, onExplain } = props;
+  const { items, showExplain = false, onExplain, blend } = props;
   if (!items) return null;
 
   return (
@@ -171,25 +177,55 @@ export function ResultsTable(props: ResultsTableProps) {
           </tr>
         </thead>
         <tbody>
-          {items.map((it, i) => (
-            <tr key={`${it.item_id}-${i}`}>
-              <Td>{i + 1}</Td>
-              <Td mono>{it.item_id}</Td>
-              <Td>{it.score?.toFixed(6)}</Td>
-              <Td>{(it.reasons ?? []).join(", ")}</Td>
-              {showExplain && (
-                <Td>
-                  <Button
-                    onClick={() => onExplain && onExplain(it)}
-                    title="Explain"
-                    style={{ padding: "4px 8px" }}
-                  >
-                    Why?
-                  </Button>
-                </Td>
-              )}
-            </tr>
-          ))}
+          {items.map((it, i) => {
+            const explainData =
+              showExplain && onExplain && blend
+                ? deriveExplainData(it, blend)
+                : null;
+            const pillText = explainData
+              ? summarizeContributions(explainData.contributions)
+              : null;
+
+            return (
+              <tr key={`${it.item_id}-${i}`}>
+                <Td>{i + 1}</Td>
+                <Td mono>{it.item_id}</Td>
+                <Td>{it.score?.toFixed(6)}</Td>
+                <Td>{(it.reasons ?? []).join(", ")}</Td>
+                {showExplain && (
+                  <Td>
+                    {explainData ? (
+                      <button
+                        type="button"
+                        onClick={() => onExplain?.(it)}
+                        title="View structured explain"
+                        style={{
+                          border: "1px solid #cbd5f5",
+                          background: "#f1f5f9",
+                          borderRadius: 999,
+                          padding: "2px 8px",
+                          fontSize: 12,
+                          cursor: "pointer",
+                          fontFamily: "monospace",
+                          color: "#0f172a",
+                        }}
+                      >
+                        {pillText}
+                      </button>
+                    ) : (
+                      <Button
+                        onClick={() => onExplain && onExplain(it)}
+                        title="Explain"
+                        style={{ padding: "4px 8px" }}
+                      >
+                        Why?
+                      </Button>
+                    )}
+                  </Td>
+                )}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
