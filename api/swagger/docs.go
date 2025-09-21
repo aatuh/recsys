@@ -1300,6 +1300,9 @@ const docTemplate = `{
                 },
                 "message": {
                     "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
                 }
             }
         },

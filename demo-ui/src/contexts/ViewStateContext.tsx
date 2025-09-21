@@ -1,7 +1,10 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import type { EventTypeConfig } from "../types";
-import type { TraitConfig } from "../components/UserTraitsEditor";
-import type { ItemConfig, PriceRange } from "../components/ItemConfigEditor";
+import type { TraitConfig } from "../components/sections/UserTraitsEditor";
+import type {
+  ItemConfig,
+  PriceRange,
+} from "../components/sections/ItemConfigEditor";
 import type {
   specs_types_ScoredItem,
   types_Overrides,

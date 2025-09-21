@@ -13,8 +13,11 @@ import {
   upsertItems,
   batchEvents,
 } from "./apiService";
-import type { TraitConfig } from "../components/UserTraitsEditor";
-import type { ItemConfig, PriceRange } from "../components/ItemConfigEditor";
+import type { TraitConfig } from "../components/sections/UserTraitsEditor";
+import type {
+  ItemConfig,
+  PriceRange,
+} from "../components/sections/ItemConfigEditor";
 import type { EventTypeConfig } from "../types";
 
 /**

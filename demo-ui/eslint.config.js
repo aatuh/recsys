@@ -47,6 +47,7 @@ export default [
         HTMLButtonElement: "readonly",
         HTMLTextAreaElement: "readonly",
         HTMLSelectElement: "readonly",
+        HTMLStyleElement: "readonly",
       },
     },
     plugins: {

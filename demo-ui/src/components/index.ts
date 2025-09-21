@@ -1,38 +1,38 @@
-export * from "./UIComponents";
-export * from "./NamespaceSection";
-export * from "./SeedDataSection";
-export * from "./RecommendationsSection";
-export * from "./OverridesSection";
-export * from "./ProfileEditor";
-export * from "./SimilarItemsSection";
-export * from "./UserTraitsEditor";
-export * from "./ItemConfigEditor";
-export * from "./EventTypeEditor";
-export * from "./DataTable";
-export * from "./DataManagementSection";
-export * from "./UserSessionSimulator";
-export * from "./EventSequenceBuilder";
-export * from "./UserJourneyVisualization";
-export * from "./DocumentationSection";
+// Primitives - Basic UI components
+export * from "./primitives";
+
+// Sections - Reusable domain sections
+export * from "./sections/NamespaceSection";
+export * from "./sections/SeedDataSection";
+export * from "./sections/RecommendationsSection";
+export * from "./sections/OverridesSection";
+export * from "./sections/ProfileEditor";
+export * from "./sections/SimilarItemsSection";
+export * from "./sections/UserTraitsEditor";
+export * from "./sections/ItemConfigEditor";
+export * from "./sections/EventTypeEditor";
+export * from "./sections/DataManagementSection";
+export * from "./sections/UserSessionSimulator";
+export * from "./sections/EventSequenceBuilder";
+export * from "./sections/UserJourneyVisualization";
+export * from "./sections/DocumentationSection";
+export * from "./sections/PolicyManager";
+export * from "./sections/PolicyEditor";
+export * from "./sections/DecisionSection";
+export * from "./sections/OneShotRecommendationsSection";
+export * from "./sections/RewardFeedbackSection";
+export * from "./sections/BanditDashboards";
+export * from "./sections/SegmentDryRunTool";
+export * from "./sections/SegmentProfileEditor";
+export * from "./sections/SegmentsSection";
+export * from "./sections/RulesPanel";
+
+// Views - Full-page views
+export * from "./views";
+
+// Navigation - Special case, stays at root level
 export * from "./Navigation";
-export * from "./DocumentationView";
-export * from "./DemoView";
-export * from "./NamespaceSeedView";
-export * from "./RecommendationsPlaygroundView";
-export * from "./UserSessionView";
-export * from "./DataManagementView";
-export * from "./BanditPlaygroundView";
-export * from "./PolicyManager";
-export * from "./PolicyEditor";
-export * from "./DecisionSection";
-export * from "./DecisionTraceDrawer";
-export * from "./OneShotRecommendationsSection";
-export * from "./RewardFeedbackSection";
-export * from "./BanditDashboards";
-export * from "./PrivacyPolicyView";
-export * from "./SegmentDryRunTool";
-export * from "./SegmentProfileEditor";
-export * from "./SegmentProfileBadge";
-export * from "./SegmentsSection";
-export * from "./RulesPanel";
-export * from "./RulesView";
+
+// Rules - Specialized components
+export * from "./rules/RuleFormModal";
+export * from "./rules/RuleDryRunModal";

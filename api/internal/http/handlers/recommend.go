@@ -44,7 +44,7 @@ func (h *Handler) Recommend(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	var req handlerstypes.RecommendRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		common.HttpError(w, r, err, http.StatusBadRequest)
+		common.HttpErrorWithLogger(w, r, err, http.StatusBadRequest, h.Logger)
 		return
 	}
 
@@ -60,7 +60,7 @@ func (h *Handler) Recommend(w http.ResponseWriter, r *http.Request) {
 			)
 			return
 		}
-		common.HttpError(w, r, err, http.StatusBadRequest)
+		common.HttpErrorWithLogger(w, r, err, http.StatusBadRequest, h.Logger)
 		return
 	}
 
@@ -68,7 +68,7 @@ func (h *Handler) Recommend(w http.ResponseWriter, r *http.Request) {
 	config := h.baseAlgorithmConfig()
 	segmentProfile, segmentID, profileID, _, err := h.selectSegmentProfile(r.Context(), algoReq, req, nil)
 	if err != nil {
-		common.HttpError(w, r, err, http.StatusInternalServerError)
+		common.HttpErrorWithLogger(w, r, err, http.StatusInternalServerError, h.Logger)
 		return
 	}
 	if segmentProfile != nil {
@@ -84,7 +84,7 @@ func (h *Handler) Recommend(w http.ResponseWriter, r *http.Request) {
 	// Get recommendations
 	algoResp, traceData, err := engine.Recommend(r.Context(), algoReq)
 	if err != nil {
-		common.HttpError(w, r, err, http.StatusInternalServerError)
+		common.HttpErrorWithLogger(w, r, err, http.StatusInternalServerError, h.Logger)
 		return
 	}
 	algoResp.SegmentID = segmentID

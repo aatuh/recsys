@@ -2,6 +2,7 @@ import {
   ConfigService,
   IngestionService,
   RankingService,
+  DataManagementService,
   types_RecommendRequest,
   type types_EventTypeConfigUpsertRequest,
   type types_UsersUpsertRequest,
@@ -11,7 +12,10 @@ import {
   type types_Overrides,
   type types_SegmentsListResponse,
   type types_SegmentProfilesListResponse,
+  type types_ListResponse,
+  type types_DeleteRequest,
 } from "../lib/api-client";
+import { config } from "../config";
 
 /**
  * API service functions for the RecSys demo UI application.
@@ -132,112 +136,100 @@ export interface DeleteResponse {
   message: string;
 }
 
-const API_BASE =
-  (import.meta as any).env?.VITE_API_BASE_URL?.toString() || "/api";
+const _API_BASE = config.apiBase; // reserved for future use
 
-async function apiRequest<T>(
-  url: string,
-  options: RequestInit = {}
-): Promise<T> {
-  const response = await fetch(`${API_BASE}${url}`, {
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-    ...options,
-  });
-
-  if (!response.ok) {
-    let errorMessage = `HTTP ${response.status}`;
-    try {
-      const contentType = response.headers.get("Content-Type");
-      if (contentType && contentType.includes("application/json")) {
-        const error = await response.json();
-        errorMessage = error.message || errorMessage;
-      } else {
-        const text = await response.text();
-        errorMessage = text || errorMessage;
-      }
-    } catch {
-      // If we can't parse the error response, use the status
-      errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-    }
-    throw new Error(errorMessage);
-  }
-
-  return response.json();
-}
+// Prefer generated client for listing/deleting entities
 
 export async function listUsers(params: ListParams): Promise<ListResponse> {
-  const searchParams = new URLSearchParams();
-  searchParams.set("namespace", params.namespace);
-  if (params.limit) searchParams.set("limit", params.limit.toString());
-  if (params.offset) searchParams.set("offset", params.offset.toString());
-  if (params.user_id) searchParams.set("user_id", params.user_id);
-  if (params.created_after)
-    searchParams.set("created_after", params.created_after);
-  if (params.created_before)
-    searchParams.set("created_before", params.created_before);
-
-  return apiRequest<ListResponse>(`/v1/users?${searchParams.toString()}`);
+  const res: types_ListResponse = await DataManagementService.listUsers(
+    params.namespace,
+    params.limit,
+    params.offset,
+    params.user_id,
+    params.created_after,
+    params.created_before
+  );
+  return {
+    items: res.items || [],
+    total: res.total || 0,
+    limit: res.limit || params.limit || 0,
+    offset: res.offset || params.offset || 0,
+    has_more: Boolean(res.has_more),
+    next_offset: res.next_offset,
+  };
 }
 
 export async function listItems(params: ListParams): Promise<ListResponse> {
-  const searchParams = new URLSearchParams();
-  searchParams.set("namespace", params.namespace);
-  if (params.limit) searchParams.set("limit", params.limit.toString());
-  if (params.offset) searchParams.set("offset", params.offset.toString());
-  if (params.item_id) searchParams.set("item_id", params.item_id);
-  if (params.created_after)
-    searchParams.set("created_after", params.created_after);
-  if (params.created_before)
-    searchParams.set("created_before", params.created_before);
-
-  return apiRequest<ListResponse>(`/v1/items?${searchParams.toString()}`);
+  const res: types_ListResponse = await DataManagementService.listItems(
+    params.namespace,
+    params.limit,
+    params.offset,
+    params.item_id,
+    params.created_after,
+    params.created_before
+  );
+  return {
+    items: res.items || [],
+    total: res.total || 0,
+    limit: res.limit || params.limit || 0,
+    offset: res.offset || params.offset || 0,
+    has_more: Boolean(res.has_more),
+    next_offset: res.next_offset,
+  };
 }
 
 export async function listEvents(params: ListParams): Promise<ListResponse> {
-  const searchParams = new URLSearchParams();
-  searchParams.set("namespace", params.namespace);
-  if (params.limit) searchParams.set("limit", params.limit.toString());
-  if (params.offset) searchParams.set("offset", params.offset.toString());
-  if (params.user_id) searchParams.set("user_id", params.user_id);
-  if (params.item_id) searchParams.set("item_id", params.item_id);
-  if (params.event_type !== undefined)
-    searchParams.set("event_type", params.event_type.toString());
-  if (params.created_after)
-    searchParams.set("created_after", params.created_after);
-  if (params.created_before)
-    searchParams.set("created_before", params.created_before);
-
-  return apiRequest<ListResponse>(`/v1/events?${searchParams.toString()}`);
+  const res: types_ListResponse = await DataManagementService.listEvents(
+    params.namespace,
+    params.limit,
+    params.offset,
+    params.user_id,
+    params.item_id,
+    params.event_type,
+    params.created_after,
+    params.created_before
+  );
+  return {
+    items: res.items || [],
+    total: res.total || 0,
+    limit: res.limit || params.limit || 0,
+    offset: res.offset || params.offset || 0,
+    has_more: Boolean(res.has_more),
+    next_offset: res.next_offset,
+  };
 }
 
 export async function deleteUsers(
   params: DeleteParams
 ): Promise<DeleteResponse> {
-  return apiRequest<DeleteResponse>("/v1/users:delete", {
-    method: "POST",
-    body: JSON.stringify(params),
-  });
+  const payload: types_DeleteRequest = params;
+  const res = await DataManagementService.deleteUsers(payload);
+  return {
+    deleted_count: res.deleted_count ?? 0,
+    message: res.message ?? "",
+  };
 }
 
 export async function deleteItems(
   params: DeleteParams
 ): Promise<DeleteResponse> {
-  return apiRequest<DeleteResponse>("/v1/items:delete", {
-    method: "POST",
-    body: JSON.stringify(params),
-  });
+  const payload: types_DeleteRequest = params;
+  const res = await DataManagementService.deleteItems(payload);
+  return {
+    deleted_count: res.deleted_count ?? 0,
+    message: res.message ?? "",
+  };
 }
 
 export async function deleteEvents(
   params: DeleteParams
 ): Promise<DeleteResponse> {
-  return apiRequest<DeleteResponse>("/v1/events:delete", {
-    method: "POST",
-    body: JSON.stringify(params),
-  });
+  const payload: types_DeleteRequest = params;
+  const res = await DataManagementService.deleteEvents(payload);
+  return {
+    deleted_count: res.deleted_count ?? 0,
+    message: res.message ?? "",
+  };
 }
 
 // Export API methods
@@ -384,14 +376,19 @@ export async function deleteSegments(
 ): Promise<{ deleted_count: number }> {
   // The segment deletion API requires specific IDs, not filtering
   // So we need to get all segments first, then delete them by ID
-  
+
   // Get all segments in the namespace
   const segmentsResponse = await listSegments({ namespace: params.namespace });
   let segmentsToDelete = segmentsResponse.items;
-  
+
   // Apply filters to determine which segments to delete
-  if (params.user_id || params.item_id || params.event_type || 
-      params.created_after || params.created_before) {
+  if (
+    params.user_id ||
+    params.item_id ||
+    params.event_type ||
+    params.created_after ||
+    params.created_before
+  ) {
     // For segments, we can't filter by user_id, item_id, or event_type
     // We can only filter by creation date if the segment has those fields
     segmentsToDelete = segmentsToDelete.filter((segment: any) => {
@@ -408,20 +405,20 @@ export async function deleteSegments(
       return true;
     });
   }
-  
+
   if (segmentsToDelete.length === 0) {
     return { deleted_count: 0 };
   }
-  
+
   // Extract segment IDs
   const segmentIds = segmentsToDelete.map((segment: any) => segment.segment_id);
-  
+
   // Delete segments using the ConfigService
   await ConfigService.segmentsDelete({
     namespace: params.namespace,
     ids: segmentIds,
   });
-  
+
   return { deleted_count: segmentIds.length };
 }
 
@@ -430,11 +427,13 @@ export async function deleteSegmentProfiles(
 ): Promise<{ deleted_count: number }> {
   // The segment profile deletion API requires specific IDs, not filtering
   // So we need to get all segment profiles first, then delete them by ID
-  
+
   // Get all segment profiles in the namespace
-  const profilesResponse = await listSegmentProfiles({ namespace: params.namespace });
+  const profilesResponse = await listSegmentProfiles({
+    namespace: params.namespace,
+  });
   let profilesToDelete = profilesResponse.items;
-  
+
   // Apply filters to determine which profiles to delete
   if (params.created_after || params.created_before) {
     // We can only filter by creation date if the profile has those fields
@@ -452,19 +451,19 @@ export async function deleteSegmentProfiles(
       return true;
     });
   }
-  
+
   if (profilesToDelete.length === 0) {
     return { deleted_count: 0 };
   }
-  
+
   // Extract profile IDs
   const profileIds = profilesToDelete.map((profile: any) => profile.profile_id);
-  
+
   // Delete segment profiles using the ConfigService
   await ConfigService.segmentProfilesDelete({
     namespace: params.namespace,
     ids: profileIds,
   });
-  
+
   return { deleted_count: profileIds.length };
 }

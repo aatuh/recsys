@@ -1,4 +1,4 @@
-.PHONY: help codegen dev build test
+.PHONY: help codegen dev build test lint fmt typecheck uilint uitypecheck
 
 help: ## Show this help message
 	@echo "Available targets:"
@@ -27,3 +27,15 @@ build: ## Build all services
 test: ## Run tests
 	@echo "🧪 Running tests..."
 	@cd api && make test
+
+lint: ## Lint API and UI
+	@echo "🔍 Linting UI..."
+	@cd demo-ui && pnpm run lint
+
+fmt: ## Format UI (eslint --fix)
+	@echo "🧼 Formatting UI..."
+	@cd demo-ui && pnpm run lint:fix || true
+
+typecheck: ## Typecheck UI
+	@echo "🔎 Typechecking UI..."
+	@cd demo-ui && pnpm run typecheck

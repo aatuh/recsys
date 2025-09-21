@@ -7,5 +7,6 @@ export type common_APIError = {
     details?: Record<string, any>;
     error?: string;
     message?: string;
+    timestamp?: string;
 };
 

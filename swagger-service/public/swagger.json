@@ -1297,6 +1297,9 @@
                 },
                 "message": {
                     "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
                 }
             }
         },

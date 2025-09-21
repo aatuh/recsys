@@ -91,6 +91,13 @@ func main() {
 	r.Use(httpmiddleware.JSONRecovererWithLogger(logger))
 	r.Use(httpmiddleware.ErrorLogger(logger))
 
+	// Initialize error metrics
+	errorMetrics := httpmiddleware.NewErrorMetrics()
+	r.Use(httpmiddleware.ErrorMetricsMiddleware(errorMetrics))
+
+	// Start error metrics logging
+	go httpmiddleware.LogErrorMetrics(logger, errorMetrics, 5*time.Minute)
+
 	// Global OPTIONS fallback to prevent 405 on unmatched preflights.
 	// The CORS middleware should handle most cases, but this ensures any
 	// path still returns 204 for OPTIONS.

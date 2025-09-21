@@ -1,5 +1,62 @@
 # RecSys Demo UI
 
+A lightweight React + Vite UI for exploring the RecSys API. Provides seeding,
+recommendations, bandit playground, rules, segments, and data management.
+
+## Quick start
+
+```bash
+pnpm install
+pnpm dev
+```
+
+Open http://localhost:3000.
+
+## Configuration
+
+Config is centralized in `src/config.ts`. It reads environment variables from
+Vite at build/runtime:
+
+- `VITE_API_BASE_URL` (default: `/api`)
+- `VITE_SWAGGER_UI_URL` (default: `http://localhost:8081`)
+- `VITE_CUSTOM_CHATGPT_URL` (optional)
+
+Do not read envs directly in feature code; inject via `config`.
+
+## Project layout (UI)
+
+- `src/ui/` shared UI (design tokens, globals, AppShell, Toast)
+- `src/components/` views and sections
+  - `rules/` split modal components for rules
+- `src/hooks/` reusable hooks (`useQuerySync`, `useAsync`)
+- `src/services/` API adapters (wrap generated client)
+- `src/lib/api-client/` generated OpenAPI client (do not edit)
+
+## Conventions
+
+- Use design tokens from `src/ui/tokens.ts` for spacing, colors, and typography
+- Keep long-running or external calls in `services/`; views should stay thin
+- Use `useAsync` for async flows and surface toasts via `useToast`
+- Sync shareable state with `useQuerySync`; persist with `storageKey`
+
+## Scripts
+
+```bash
+pnpm lint           # eslint
+pnpm lint:fix       # eslint --fix
+pnpm typecheck      # tsc --noEmit
+pnpm build          # vite build
+pnpm preview        # vite preview
+pnpm codegen:api    # regenerate OpenAPI client from swagger.json
+```
+
+## Notes
+
+- This UI strives for consistency and clarity; avoid ad-hoc inline styles.
+- Prefer generated client services over manual fetch.
+
+# RecSys Demo UI
+
 The demo UI includes several powerful features for testing and exploring the recommendation system.
 
 ## User Traits Editor

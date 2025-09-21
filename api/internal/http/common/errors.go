@@ -4,10 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"runtime"
+	"time"
 
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 	"github.com/jackc/pgx/v5/pgconn"
+	"go.uber.org/zap"
 )
 
 type APIError struct {
@@ -15,12 +18,57 @@ type APIError struct {
 	Message       string         `json:"message,omitempty"`
 	Details       map[string]any `json:"details,omitempty"`
 	CorrelationID string         `json:"correlation_id,omitempty"`
+	Timestamp     time.Time      `json:"timestamp,omitempty"`
 	httpStatus    int            `json:"-"`
 	debugMsg      string         `json:"-"`
+	stackTrace    string         `json:"-"`
+}
+
+// ErrorContext provides additional context for error logging
+type ErrorContext struct {
+	UserID    string
+	OrgID     string
+	RequestID string
+	Path      string
+	Method    string
+	UserAgent string
+	IP        string
 }
 
 func NewAPIError(code, msg string, status int) APIError {
-	return APIError{Code: code, Message: msg, httpStatus: status}
+	return APIError{
+		Code:       code,
+		Message:    msg,
+		httpStatus: status,
+		Timestamp:  time.Now().UTC(),
+	}
+}
+
+// NewAPIErrorWithContext creates an API error with additional context
+func NewAPIErrorWithContext(code, msg string, status int, ctx ErrorContext) APIError {
+	ae := NewAPIError(code, msg, status)
+	ae.CorrelationID = ctx.RequestID
+	return ae
+}
+
+// WithStackTrace adds stack trace to error for debugging
+func (ae APIError) WithStackTrace() APIError {
+	buf := make([]byte, 1024)
+	for {
+		n := runtime.Stack(buf, false)
+		if n < len(buf) {
+			ae.stackTrace = string(buf[:n])
+			break
+		}
+		buf = make([]byte, 2*len(buf))
+	}
+	return ae
+}
+
+// WithDebugMessage adds debug message to error
+func (ae APIError) WithDebugMessage(msg string) APIError {
+	ae.debugMsg = msg
+	return ae
 }
 
 func BadRequest(w http.ResponseWriter, r *http.Request, code, msg string, details map[string]any) {
@@ -48,6 +96,64 @@ func HttpError(w http.ResponseWriter, r *http.Request, err error, fallback int) 
 	if ae.httpStatus == 0 {
 		ae.httpStatus = fallback
 	}
+
+	// Add request context
+	ae.CorrelationID = middleware.GetReqID(r.Context())
+
+	// For 5xx errors, add stack trace in debug mode
+	if ae.httpStatus >= 500 && isDebug() {
+		ae = ae.WithStackTrace()
+	}
+
+	writeJSON(w, r, ae)
+}
+
+// HttpErrorWithLogger logs the error with structured logging
+func HttpErrorWithLogger(w http.ResponseWriter, r *http.Request, err error, fallback int, logger *zap.Logger) {
+	ae := mapError(err)
+	if ae.httpStatus == 0 {
+		ae.httpStatus = fallback
+	}
+
+	// Add request context
+	ae.CorrelationID = middleware.GetReqID(r.Context())
+
+	// Log the error with context
+	logFields := []zap.Field{
+		zap.String("error_code", ae.Code),
+		zap.String("error_message", ae.Message),
+		zap.Int("http_status", ae.httpStatus),
+		zap.String("req_id", ae.CorrelationID),
+		zap.String("method", r.Method),
+		zap.String("path", r.URL.Path),
+		zap.String("user_agent", r.UserAgent()),
+		zap.String("remote_addr", r.RemoteAddr),
+	}
+
+	if orgID := r.Header.Get("X-Org-ID"); orgID != "" {
+		logFields = append(logFields, zap.String("org_id", orgID))
+	}
+
+	if ae.debugMsg != "" {
+		logFields = append(logFields, zap.String("debug_msg", ae.debugMsg))
+	}
+
+	if ae.Details != nil {
+		logFields = append(logFields, zap.Any("error_details", ae.Details))
+	}
+
+	// Use appropriate log level
+	if ae.httpStatus >= 500 {
+		logger.Error("http server error", append(logFields, zap.Error(err))...)
+	} else {
+		logger.Warn("http client error", append(logFields, zap.Error(err))...)
+	}
+
+	// For 5xx errors, add stack trace in debug mode
+	if ae.httpStatus >= 500 && isDebug() {
+		ae = ae.WithStackTrace()
+	}
+
 	writeJSON(w, r, ae)
 }
 
@@ -124,12 +230,20 @@ func writeJSON(w http.ResponseWriter, r *http.Request, ae APIError) {
 			ae.CorrelationID = rid
 		}
 	}
-	if isDebug() && ae.debugMsg != "" {
+
+	// Add debug information in debug mode
+	if isDebug() {
 		if ae.Details == nil {
 			ae.Details = map[string]any{}
 		}
-		ae.Details["debug"] = ae.debugMsg
+		if ae.debugMsg != "" {
+			ae.Details["debug"] = ae.debugMsg
+		}
+		if ae.stackTrace != "" {
+			ae.Details["stack_trace"] = ae.stackTrace
+		}
 	}
+
 	status := ae.httpStatus
 	if status == 0 {
 		status = http.StatusInternalServerError

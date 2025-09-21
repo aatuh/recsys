@@ -65,7 +65,7 @@ type Handler struct {
 func (h *Handler) ItemsUpsert(w http.ResponseWriter, r *http.Request) {
 	var req types.ItemsUpsertRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		common.HttpError(w, r, err, http.StatusBadRequest)
+		common.HttpErrorWithLogger(w, r, err, http.StatusBadRequest, h.Logger)
 		return
 	}
 	orgID := h.DefaultOrg
@@ -104,7 +104,7 @@ func (h *Handler) ItemsUpsert(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := h.Store.UpsertItems(r.Context(), orgID, req.Namespace, batch); err != nil {
-		common.HttpError(w, r, err, http.StatusInternalServerError)
+		common.HttpErrorWithLogger(w, r, err, http.StatusInternalServerError, h.Logger)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -125,7 +125,7 @@ func (h *Handler) ItemsUpsert(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) UsersUpsert(w http.ResponseWriter, r *http.Request) {
 	var req types.UsersUpsertRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		common.HttpError(w, r, err, http.StatusBadRequest)
+		common.HttpErrorWithLogger(w, r, err, http.StatusBadRequest, h.Logger)
 		return
 	}
 	orgID := h.DefaultOrg
@@ -139,7 +139,7 @@ func (h *Handler) UsersUpsert(w http.ResponseWriter, r *http.Request) {
 		batch = append(batch, store.UserUpsert{UserID: u.UserID, Traits: u.Traits})
 	}
 	if err := h.Store.UpsertUsers(r.Context(), orgID, req.Namespace, batch); err != nil {
-		common.HttpError(w, r, err, http.StatusInternalServerError)
+		common.HttpErrorWithLogger(w, r, err, http.StatusInternalServerError, h.Logger)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -160,7 +160,7 @@ func (h *Handler) UsersUpsert(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) EventsBatch(w http.ResponseWriter, r *http.Request) {
 	var req types.EventsBatchRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		common.HttpError(w, r, err, http.StatusBadRequest)
+		common.HttpErrorWithLogger(w, r, err, http.StatusBadRequest, h.Logger)
 		return
 	}
 	orgID := h.DefaultOrg
@@ -175,7 +175,7 @@ func (h *Handler) EventsBatch(w http.ResponseWriter, r *http.Request) {
 		if e.TS != "" {
 			pt, err := time.Parse(time.RFC3339, e.TS)
 			if err != nil {
-				common.HttpError(w, r, err, http.StatusBadRequest)
+				common.HttpErrorWithLogger(w, r, err, http.StatusBadRequest, h.Logger)
 				return
 			}
 			t = pt
@@ -184,7 +184,7 @@ func (h *Handler) EventsBatch(w http.ResponseWriter, r *http.Request) {
 			UserID: e.UserID, ItemID: e.ItemID, Type: e.Type, Value: e.Value, TS: t, Meta: e.Meta, SourceEventID: e.SourceEventID})
 	}
 	if err := h.Store.InsertEvents(r.Context(), orgID, req.Namespace, batch); err != nil {
-		common.HttpError(w, r, err, http.StatusInternalServerError)
+		common.HttpErrorWithLogger(w, r, err, http.StatusInternalServerError, h.Logger)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")

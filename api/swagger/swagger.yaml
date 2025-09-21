@@ -11,6 +11,8 @@ definitions:
         type: string
       message:
         type: string
+      timestamp:
+        type: string
     type: object
   specs_types.ScoredItem:
     properties:

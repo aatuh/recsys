@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { OpenAPI } from "./lib/api-client";
+import { useState } from "react";
 import {
   Navigation,
   NamespaceSeedView,
@@ -10,8 +9,14 @@ import {
   RulesView,
   DocumentationView,
   PrivacyPolicyView,
+  ExplainLLMView,
 } from "./components";
+import { config } from "./config";
+import { AppShell, ErrorBoundary } from "./ui/AppShell";
+import "./ui/global.css";
+import { useQuerySync } from "./hooks/useQuerySync";
 import { ViewStateProvider } from "./contexts/ViewStateContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import type { ViewType } from "./components/Navigation";
 
 /**
@@ -29,60 +34,34 @@ import type { ViewType } from "./components/Navigation";
  * - Uses generated API client with proper operation IDs.
  */
 
-// Configure API base URL at runtime
-const API_BASE =
-  (import.meta as any).env?.VITE_API_BASE_URL?.toString() || "/api";
-OpenAPI.BASE = API_BASE;
-
-// Configure Swagger UI URL (served by the dedicated Swagger service)
-const SWAGGER_UI_URL =
-  (import.meta as any).env?.VITE_SWAGGER_UI_URL?.toString() ||
-  "http://localhost:8081";
-
-// Configure Custom ChatGPT URL
-const CUSTOM_CHATGPT_URL = (
-  import.meta as any
-).env?.VITE_CUSTOM_CHATGPT_URL?.toString();
+// Centralized configuration is in ./config
 
 /* --------------- App component --------------- */
 
 export default function App() {
-  const [activeView, setActiveView] = useState<ViewType>("namespace-seed");
-  const [namespace, setNamespace] = useState("default");
-
-  // Handle URL parameters for view state
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const viewParam = urlParams.get("view") as ViewType;
-    const namespaceParam = urlParams.get("namespace");
-
-    if (
-      viewParam &&
-      [
-        "namespace-seed",
-        "recommendations-playground",
-        "bandit-playground",
-        "user-session",
-        "data-management",
-        "documentation",
-        "privacy-policy",
-      ].includes(viewParam)
-    ) {
-      setActiveView(viewParam);
-    }
-
-    if (namespaceParam) {
-      setNamespace(namespaceParam);
-    }
-  }, []);
-
-  // Update URL when view or namespace changes
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    url.searchParams.set("view", activeView);
-    url.searchParams.set("namespace", namespace);
-    window.history.replaceState({}, "", url.toString());
-  }, [activeView, namespace]);
+  const validViews: readonly ViewType[] = [
+    "namespace-seed",
+    "recommendations-playground",
+    "bandit-playground",
+    "user-session",
+    "data-management",
+    "rules",
+    "documentation",
+    "explain-llm",
+    "privacy-policy",
+  ];
+  const [activeView, setActiveView] = useQuerySync<ViewType>(
+    "view",
+    "namespace-seed",
+    validViews,
+    { storageKey: "recsys-active-view" }
+  );
+  const [namespace, setNamespace] = useQuerySync<string>(
+    "namespace",
+    "default",
+    undefined,
+    { storageKey: "recsys-namespace" }
+  );
 
   // Shared state for generated data that needs to be passed between views
   const [generatedUsers, setGeneratedUsers] = useState<string[]>([]);
@@ -111,64 +90,78 @@ export default function App() {
   const [k, _setK] = useState(20);
 
   return (
-    <ViewStateProvider>
-      <div style={{ fontFamily: "system-ui, sans-serif" }}>
-        <Navigation
-          activeView={activeView}
-          onViewChange={setActiveView}
-          swaggerUrl={SWAGGER_UI_URL}
-          customChatGptUrl={CUSTOM_CHATGPT_URL}
-          namespace={namespace}
-        />
+    <ThemeProvider>
+      <ViewStateProvider>
+        <ErrorBoundary>
+          {/* Skip link for screen readers */}
+          <a href="#main-content" className="skip-link">
+            Skip to main content
+          </a>
+          <AppShell
+            header={
+              <Navigation
+                activeView={activeView}
+                onViewChange={setActiveView}
+                swaggerUrl={config.swaggerUiUrl}
+                customChatGptUrl={config.customChatGptUrl}
+                namespace={namespace}
+              />
+            }
+          >
+            {activeView === "namespace-seed" && (
+              <NamespaceSeedView
+                namespace={namespace}
+                setNamespace={setNamespace}
+                apiBase={config.apiBase}
+                setGeneratedUsers={setGeneratedUsers}
+                setGeneratedItems={setGeneratedItems}
+              />
+            )}
 
-        {activeView === "namespace-seed" && (
-          <NamespaceSeedView
-            namespace={namespace}
-            setNamespace={setNamespace}
-            apiBase={API_BASE}
-            setGeneratedUsers={setGeneratedUsers}
-            setGeneratedItems={setGeneratedItems}
-          />
-        )}
+            {activeView === "recommendations-playground" && (
+              <RecommendationsPlaygroundView
+                namespace={namespace}
+                generatedUsers={generatedUsers}
+                generatedItems={generatedItems}
+              />
+            )}
 
-        {activeView === "recommendations-playground" && (
-          <RecommendationsPlaygroundView
-            namespace={namespace}
-            generatedUsers={generatedUsers}
-            generatedItems={generatedItems}
-          />
-        )}
+            {activeView === "bandit-playground" && (
+              <BanditPlaygroundView
+                namespace={namespace}
+                generatedUsers={generatedUsers}
+              />
+            )}
 
-        {activeView === "bandit-playground" && (
-          <BanditPlaygroundView
-            namespace={namespace}
-            generatedUsers={generatedUsers}
-          />
-        )}
+            {activeView === "user-session" && (
+              <UserSessionView
+                namespace={namespace}
+                generatedUsers={generatedUsers}
+                setGeneratedUsers={setGeneratedUsers}
+                generatedItems={generatedItems}
+                setGeneratedItems={setGeneratedItems}
+                eventTypes={eventTypes}
+                blend={blend}
+                k={k}
+              />
+            )}
 
-        {activeView === "user-session" && (
-          <UserSessionView
-            namespace={namespace}
-            generatedUsers={generatedUsers}
-            setGeneratedUsers={setGeneratedUsers}
-            generatedItems={generatedItems}
-            setGeneratedItems={setGeneratedItems}
-            eventTypes={eventTypes}
-            blend={blend}
-            k={k}
-          />
-        )}
+            {activeView === "data-management" && (
+              <DataManagementView namespace={namespace} />
+            )}
 
-        {activeView === "data-management" && (
-          <DataManagementView namespace={namespace} />
-        )}
+            {activeView === "rules" && <RulesView namespace={namespace} />}
 
-        {activeView === "rules" && <RulesView namespace={namespace} />}
+            {activeView === "documentation" && <DocumentationView />}
 
-        {activeView === "documentation" && <DocumentationView />}
+            {activeView === "explain-llm" && (
+              <ExplainLLMView namespace={namespace} />
+            )}
 
-        {activeView === "privacy-policy" && <PrivacyPolicyView />}
-      </div>
-    </ViewStateProvider>
+            {activeView === "privacy-policy" && <PrivacyPolicyView />}
+          </AppShell>
+        </ErrorBoundary>
+      </ViewStateProvider>
+    </ThemeProvider>
   );
 }
