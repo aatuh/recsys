@@ -158,6 +158,44 @@ export function ResultsTable(props: ResultsTableProps) {
   const { items, showExplain = false, onExplain, blend } = props;
   if (!items) return null;
 
+  // Helper function to detect rule-related reasons
+  const getRuleDecorations = (reasons: string[]) => {
+    const decorations = [];
+
+    for (const reason of reasons) {
+      if (reason.startsWith("rule.pin")) {
+        decorations.push({
+          type: "pinned",
+          icon: "⭐",
+          label: "Pinned",
+          color: "#ffc107",
+          backgroundColor: "#fff3cd",
+        });
+      } else if (reason.startsWith("rule.block")) {
+        decorations.push({
+          type: "blocked",
+          icon: "🚫",
+          label: "Blocked",
+          color: "#dc3545",
+          backgroundColor: "#f8d7da",
+        });
+      } else if (reason.startsWith("rule.boost")) {
+        const boostMatch = reason.match(/rule\.boost:([+-]?\d*\.?\d+)/);
+        if (boostMatch) {
+          decorations.push({
+            type: "boosted",
+            icon: "⬆️",
+            label: `+${boostMatch[1]}`,
+            color: "#28a745",
+            backgroundColor: "#d4edda",
+          });
+        }
+      }
+    }
+
+    return decorations;
+  };
+
   return (
     <div style={{ overflowX: "auto" }}>
       <table
@@ -186,12 +224,114 @@ export function ResultsTable(props: ResultsTableProps) {
               ? summarizeContributions(explainData.contributions)
               : null;
 
+            const ruleDecorations = getRuleDecorations(it.reasons ?? []);
+            const isPinned = ruleDecorations.some((d) => d.type === "pinned");
+            const isBlocked = ruleDecorations.some((d) => d.type === "blocked");
+
             return (
-              <tr key={`${it.item_id}-${i}`}>
-                <Td>{i + 1}</Td>
+              <tr
+                key={`${it.item_id}-${i}`}
+                style={{
+                  backgroundColor: isPinned
+                    ? "#fff3cd"
+                    : isBlocked
+                    ? "#f8d7da"
+                    : undefined,
+                  borderLeft: isPinned
+                    ? "4px solid #ffc107"
+                    : isBlocked
+                    ? "4px solid #dc3545"
+                    : undefined,
+                }}
+              >
+                <Td>
+                  <div
+                    style={{ display: "flex", alignItems: "center", gap: 8 }}
+                  >
+                    <span>{i + 1}</span>
+                    {isPinned && (
+                      <span style={{ fontSize: "16px" }} title="Pinned item">
+                        ⭐
+                      </span>
+                    )}
+                    {isBlocked && (
+                      <span style={{ fontSize: "16px" }} title="Blocked item">
+                        🚫
+                      </span>
+                    )}
+                  </div>
+                </Td>
                 <Td mono>{it.item_id}</Td>
-                <Td>{it.score?.toFixed(6)}</Td>
-                <Td>{(it.reasons ?? []).join(", ")}</Td>
+                <Td>
+                  <div
+                    style={{ display: "flex", alignItems: "center", gap: 8 }}
+                  >
+                    <span>{it.score?.toFixed(6)}</span>
+                    {ruleDecorations
+                      .filter((d) => d.type === "boosted")
+                      .map((decoration, idx) => (
+                        <span
+                          key={idx}
+                          style={{
+                            backgroundColor: decoration.backgroundColor,
+                            color: decoration.color,
+                            padding: "2px 6px",
+                            borderRadius: 4,
+                            fontSize: "11px",
+                            fontWeight: "bold",
+                            border: `1px solid ${decoration.color}`,
+                          }}
+                          title={`Boosted by rule: ${decoration.label}`}
+                        >
+                          {decoration.label}
+                        </span>
+                      ))}
+                  </div>
+                </Td>
+                <Td>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: 4,
+                      alignItems: "center",
+                    }}
+                  >
+                    {(it.reasons ?? []).map((reason, idx) => {
+                      const decoration = ruleDecorations.find((d) =>
+                        reason.includes(d.type)
+                      );
+                      if (decoration) {
+                        return (
+                          <span
+                            key={idx}
+                            style={{
+                              backgroundColor: decoration.backgroundColor,
+                              color: decoration.color,
+                              padding: "2px 6px",
+                              borderRadius: 4,
+                              fontSize: "11px",
+                              fontWeight: "bold",
+                              border: `1px solid ${decoration.color}`,
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 4,
+                            }}
+                            title={`Rule effect: ${reason}`}
+                          >
+                            <span>{decoration.icon}</span>
+                            <span>{decoration.label}</span>
+                          </span>
+                        );
+                      }
+                      return (
+                        <span key={idx} style={{ fontSize: "12px" }}>
+                          {reason}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </Td>
                 {showExplain && (
                   <Td>
                     {explainData ? (

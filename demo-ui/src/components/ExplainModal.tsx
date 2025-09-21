@@ -289,11 +289,47 @@ export function ExplainModal({
           <section style={{ marginBottom: 16 }}>
             <div style={{ marginBottom: 4, fontWeight: 600 }}>Reason tags</div>
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              {sortedReasons.map((reason) => (
-                <Chip key={`reason-${reason}`} title={describeReason(reason)}>
-                  {reason}
-                </Chip>
-              ))}
+              {sortedReasons.map((reason) => {
+                // Check if this is a rule-related reason
+                const isRuleReason = reason.startsWith("rule.");
+                let chipStyle = {};
+                let chipContent = reason;
+
+                if (isRuleReason) {
+                  if (reason.startsWith("rule.pin")) {
+                    chipStyle = {
+                      backgroundColor: "#fff3cd",
+                      color: "#856404",
+                      border: "1px solid #ffc107",
+                    };
+                    chipContent = `⭐ ${reason}`;
+                  } else if (reason.startsWith("rule.block")) {
+                    chipStyle = {
+                      backgroundColor: "#f8d7da",
+                      color: "#721c24",
+                      border: "1px solid #dc3545",
+                    };
+                    chipContent = `🚫 ${reason}`;
+                  } else if (reason.startsWith("rule.boost")) {
+                    chipStyle = {
+                      backgroundColor: "#d4edda",
+                      color: "#155724",
+                      border: "1px solid #28a745",
+                    };
+                    chipContent = `⬆️ ${reason}`;
+                  }
+                }
+
+                return (
+                  <Chip
+                    key={`reason-${reason}`}
+                    title={describeReason(reason)}
+                    style={chipStyle}
+                  >
+                    {chipContent}
+                  </Chip>
+                );
+              })}
             </div>
             <ul
               style={{
@@ -309,6 +345,103 @@ export function ExplainModal({
                 </li>
               ))}
             </ul>
+          </section>
+        )}
+
+        {/* Rule Effects Section */}
+        {sortedReasons.some((r) => r.startsWith("rule.")) && (
+          <section style={{ marginBottom: 16 }}>
+            <div style={{ marginBottom: 8, fontWeight: 600, color: "#0f172a" }}>
+              Rule Engine Effects
+            </div>
+            <div
+              style={{
+                backgroundColor: "#f8f9fa",
+                border: "1px solid #e9ecef",
+                borderRadius: 6,
+                padding: 12,
+              }}
+            >
+              {sortedReasons
+                .filter((r) => r.startsWith("rule."))
+                .map((reason) => {
+                  if (reason.startsWith("rule.pin")) {
+                    return (
+                      <div
+                        key={reason}
+                        style={{
+                          marginBottom: 8,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                        }}
+                      >
+                        <span style={{ fontSize: "16px" }}>⭐</span>
+                        <div>
+                          <strong style={{ color: "#856404" }}>
+                            Pinned Item
+                          </strong>
+                          <div style={{ fontSize: "12px", color: "#6c757d" }}>
+                            This item was pinned to the top of the results by a
+                            rule.
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  } else if (reason.startsWith("rule.block")) {
+                    return (
+                      <div
+                        key={reason}
+                        style={{
+                          marginBottom: 8,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                        }}
+                      >
+                        <span style={{ fontSize: "16px" }}>🚫</span>
+                        <div>
+                          <strong style={{ color: "#721c24" }}>
+                            Blocked Item
+                          </strong>
+                          <div style={{ fontSize: "12px", color: "#6c757d" }}>
+                            This item was blocked from appearing in results by a
+                            rule.
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  } else if (reason.startsWith("rule.boost")) {
+                    const boostMatch = reason.match(
+                      /rule\.boost:([+-]?\d*\.?\d+)/
+                    );
+                    const boostValue = boostMatch ? boostMatch[1] : "unknown";
+                    return (
+                      <div
+                        key={reason}
+                        style={{
+                          marginBottom: 8,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                        }}
+                      >
+                        <span style={{ fontSize: "16px" }}>⬆️</span>
+                        <div>
+                          <strong style={{ color: "#155724" }}>
+                            Boosted Score
+                          </strong>
+                          <div style={{ fontSize: "12px", color: "#6c757d" }}>
+                            This item's score was boosted by +{boostValue} by a
+                            rule.
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                })}
+            </div>
           </section>
         )}
 
@@ -396,9 +529,11 @@ function BlendRow(props: {
 function Chip({
   children,
   title,
+  style,
 }: {
   children: React.ReactNode;
   title?: string;
+  style?: React.CSSProperties;
 }) {
   return (
     <span
@@ -410,6 +545,7 @@ function Chip({
         fontSize: 12,
         color: "#0f172a",
         border: "1px solid #cbd5f5",
+        ...style,
       }}
     >
       {children}

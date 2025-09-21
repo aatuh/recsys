@@ -6,6 +6,7 @@ export type ViewType =
   | "bandit-playground"
   | "user-session"
   | "data-management"
+  | "rules"
   | "documentation"
   | "privacy-policy";
 
@@ -167,6 +168,24 @@ export function Navigation({
             title="Middle-click to open in new tab"
           >
             Data Management
+          </Button>
+          <Button
+            type="button"
+            onClick={() => onViewChange("rules")}
+            onMouseDown={(e) => handleMouseDown("rules", e)}
+            style={{
+              padding: "8px 16px",
+              fontSize: 14,
+              backgroundColor: activeView === "rules" ? "#1976d2" : "#fff",
+              color: activeView === "rules" ? "#fff" : "#666",
+              border: "1px solid #ddd",
+              borderRadius: 6,
+              cursor: "pointer",
+              fontWeight: activeView === "rules" ? 600 : 400,
+            }}
+            title="Middle-click to open in new tab"
+          >
+            Rules Engine
           </Button>
           <Button
             type="button"

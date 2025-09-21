@@ -272,6 +272,337 @@ export function DecisionTraceDrawer({
             </div>
           </div>
 
+          {/* Rules Information */}
+          {trace.extras &&
+            (trace.extras.rules_evaluated ||
+              trace.extras.rules_matched ||
+              trace.extras.rule_effects_per_item) && (
+              <div>
+                <h3
+                  style={{
+                    margin: "0 0 8px 0",
+                    fontSize: "14px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Rule Engine
+                </h3>
+                <div
+                  style={{
+                    backgroundColor: "#fff3cd",
+                    border: "1px solid #ffc107",
+                    borderRadius: "4px",
+                    padding: "12px",
+                  }}
+                >
+                  {/* Rules Evaluated Counter */}
+                  {trace.extras.rules_evaluated && (
+                    <div style={{ marginBottom: 12 }}>
+                      <div
+                        style={{
+                          fontSize: "12px",
+                          fontWeight: "bold",
+                          marginBottom: 4,
+                        }}
+                      >
+                        Rules Evaluated:{" "}
+                        {Array.isArray(trace.extras.rules_evaluated)
+                          ? trace.extras.rules_evaluated.length
+                          : trace.extras.rules_evaluated}
+                      </div>
+                      {Array.isArray(trace.extras.rules_evaluated) &&
+                        trace.extras.rules_evaluated.length > 0 && (
+                          <div style={{ fontSize: "11px", color: "#666" }}>
+                            Rule IDs: {trace.extras.rules_evaluated.join(", ")}
+                          </div>
+                        )}
+                    </div>
+                  )}
+
+                  {/* Rules Matched */}
+                  {trace.extras.rules_matched &&
+                    Array.isArray(trace.extras.rules_matched) &&
+                    trace.extras.rules_matched.length > 0 && (
+                      <div style={{ marginBottom: 12 }}>
+                        <div
+                          style={{
+                            fontSize: "12px",
+                            fontWeight: "bold",
+                            marginBottom: 4,
+                          }}
+                        >
+                          Rules Matched ({trace.extras.rules_matched.length})
+                        </div>
+                        <div style={{ overflowX: "auto" }}>
+                          <table
+                            style={{
+                              borderCollapse: "collapse",
+                              width: "100%",
+                              fontSize: "11px",
+                            }}
+                          >
+                            <thead>
+                              <tr>
+                                <th
+                                  style={{
+                                    border: "1px solid #ddd",
+                                    padding: "4px",
+                                    backgroundColor: "#f8f9fa",
+                                  }}
+                                >
+                                  Rule ID
+                                </th>
+                                <th
+                                  style={{
+                                    border: "1px solid #ddd",
+                                    padding: "4px",
+                                    backgroundColor: "#f8f9fa",
+                                  }}
+                                >
+                                  Action
+                                </th>
+                                <th
+                                  style={{
+                                    border: "1px solid #ddd",
+                                    padding: "4px",
+                                    backgroundColor: "#f8f9fa",
+                                  }}
+                                >
+                                  Target
+                                </th>
+                                <th
+                                  style={{
+                                    border: "1px solid #ddd",
+                                    padding: "4px",
+                                    backgroundColor: "#f8f9fa",
+                                  }}
+                                >
+                                  Affected Items
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {trace.extras.rules_matched.map(
+                                (rule: any, index: number) => (
+                                  <tr key={index}>
+                                    <td
+                                      style={{
+                                        border: "1px solid #ddd",
+                                        padding: "4px",
+                                      }}
+                                    >
+                                      <code style={{ fontSize: "10px" }}>
+                                        {rule.rule_id}
+                                      </code>
+                                    </td>
+                                    <td
+                                      style={{
+                                        border: "1px solid #ddd",
+                                        padding: "4px",
+                                      }}
+                                    >
+                                      <span
+                                        style={{
+                                          backgroundColor:
+                                            rule.action === "BLOCK"
+                                              ? "#dc3545"
+                                              : rule.action === "PIN"
+                                              ? "#ffc107"
+                                              : "#28a745",
+                                          color: "white",
+                                          padding: "2px 6px",
+                                          borderRadius: 3,
+                                          fontSize: "10px",
+                                          fontWeight: "bold",
+                                        }}
+                                      >
+                                        {rule.action}
+                                      </span>
+                                    </td>
+                                    <td
+                                      style={{
+                                        border: "1px solid #ddd",
+                                        padding: "4px",
+                                      }}
+                                    >
+                                      <div style={{ fontSize: "10px" }}>
+                                        <strong>{rule.target_type}:</strong>{" "}
+                                        {rule.target_key ||
+                                          rule.item_ids?.join(", ")}
+                                      </div>
+                                      {rule.boost_value && (
+                                        <div
+                                          style={{
+                                            fontSize: "10px",
+                                            color: "#28a745",
+                                          }}
+                                        >
+                                          +{rule.boost_value}
+                                        </div>
+                                      )}
+                                    </td>
+                                    <td
+                                      style={{
+                                        border: "1px solid #ddd",
+                                        padding: "4px",
+                                        fontSize: "10px",
+                                      }}
+                                    >
+                                      {rule.affected_item_ids?.join(", ") ||
+                                        "None"}
+                                    </td>
+                                  </tr>
+                                )
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+
+                  {/* Rule Effects Per Item */}
+                  {trace.extras.rule_effects_per_item && (
+                    <div>
+                      <div
+                        style={{
+                          fontSize: "12px",
+                          fontWeight: "bold",
+                          marginBottom: 4,
+                        }}
+                      >
+                        Rule Effects Per Item
+                      </div>
+                      <div style={{ overflowX: "auto" }}>
+                        <table
+                          style={{
+                            borderCollapse: "collapse",
+                            width: "100%",
+                            fontSize: "11px",
+                          }}
+                        >
+                          <thead>
+                            <tr>
+                              <th
+                                style={{
+                                  border: "1px solid #ddd",
+                                  padding: "4px",
+                                  backgroundColor: "#f8f9fa",
+                                }}
+                              >
+                                Item ID
+                              </th>
+                              <th
+                                style={{
+                                  border: "1px solid #ddd",
+                                  padding: "4px",
+                                  backgroundColor: "#f8f9fa",
+                                }}
+                              >
+                                Blocked
+                              </th>
+                              <th
+                                style={{
+                                  border: "1px solid #ddd",
+                                  padding: "4px",
+                                  backgroundColor: "#f8f9fa",
+                                }}
+                              >
+                                Pinned
+                              </th>
+                              <th
+                                style={{
+                                  border: "1px solid #ddd",
+                                  padding: "4px",
+                                  backgroundColor: "#f8f9fa",
+                                }}
+                              >
+                                Boost Delta
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {Object.entries(
+                              trace.extras.rule_effects_per_item
+                            ).map(([itemId, effect]: [string, any]) => (
+                              <tr key={itemId}>
+                                <td
+                                  style={{
+                                    border: "1px solid #ddd",
+                                    padding: "4px",
+                                  }}
+                                >
+                                  <code style={{ fontSize: "10px" }}>
+                                    {itemId}
+                                  </code>
+                                </td>
+                                <td
+                                  style={{
+                                    border: "1px solid #ddd",
+                                    padding: "4px",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  <span
+                                    style={{
+                                      color: effect.blocked
+                                        ? "#dc3545"
+                                        : "#28a745",
+                                    }}
+                                  >
+                                    {effect.blocked ? "✓" : "✗"}
+                                  </span>
+                                </td>
+                                <td
+                                  style={{
+                                    border: "1px solid #ddd",
+                                    padding: "4px",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  <span
+                                    style={{
+                                      color: effect.pinned
+                                        ? "#ffc107"
+                                        : "#6c757d",
+                                    }}
+                                  >
+                                    {effect.pinned ? "✓" : "✗"}
+                                  </span>
+                                </td>
+                                <td
+                                  style={{
+                                    border: "1px solid #ddd",
+                                    padding: "4px",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  {effect.boost_delta !== 0 ? (
+                                    <span
+                                      style={{
+                                        color:
+                                          effect.boost_delta > 0
+                                            ? "#28a745"
+                                            : "#dc3545",
+                                      }}
+                                    >
+                                      {effect.boost_delta > 0 ? "+" : ""}
+                                      {effect.boost_delta}
+                                    </span>
+                                  ) : (
+                                    "0"
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
           {/* Effective Config */}
           <div>
             <h3

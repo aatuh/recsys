@@ -596,96 +596,249 @@ export function OneShotRecommendationsSection({
                         gap: 8,
                       }}
                     >
-                      {recommendationResult.items.map((item, index) => (
-                        <div
-                          key={item.item_id}
-                          style={{
-                            border: "1px solid #ddd",
-                            borderRadius: 4,
-                            padding: 12,
-                            backgroundColor: "#fff",
-                          }}
-                        >
+                      {recommendationResult.items.map((item, index) => {
+                        // Helper function to detect rule-related reasons
+                        const getRuleDecorations = (reasons: any) => {
+                          const decorations = [];
+                          const reasonStrings = Array.isArray(reasons)
+                            ? reasons
+                            : Object.values(reasons || {});
+
+                          for (const reason of reasonStrings) {
+                            const reasonStr = String(reason);
+                            if (reasonStr.startsWith("rule.pin")) {
+                              decorations.push({
+                                type: "pinned",
+                                icon: "⭐",
+                                label: "Pinned",
+                                color: "#ffc107",
+                                backgroundColor: "#fff3cd",
+                              });
+                            } else if (reasonStr.startsWith("rule.block")) {
+                              decorations.push({
+                                type: "blocked",
+                                icon: "🚫",
+                                label: "Blocked",
+                                color: "#dc3545",
+                                backgroundColor: "#f8d7da",
+                              });
+                            } else if (reasonStr.startsWith("rule.boost")) {
+                              const boostMatch = reasonStr.match(
+                                /rule\.boost:([+-]?\d*\.?\d+)/
+                              );
+                              if (boostMatch) {
+                                decorations.push({
+                                  type: "boosted",
+                                  icon: "⬆️",
+                                  label: `+${boostMatch[1]}`,
+                                  color: "#28a745",
+                                  backgroundColor: "#d4edda",
+                                });
+                              }
+                            }
+                          }
+
+                          return decorations;
+                        };
+
+                        const ruleDecorations = getRuleDecorations(
+                          item.reasons
+                        );
+                        const isPinned = ruleDecorations.some(
+                          (d) => d.type === "pinned"
+                        );
+                        const isBlocked = ruleDecorations.some(
+                          (d) => d.type === "blocked"
+                        );
+
+                        return (
                           <div
+                            key={item.item_id}
                             style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "flex-start",
-                              marginBottom: 8,
+                              border: "1px solid #ddd",
+                              borderRadius: 4,
+                              padding: 12,
+                              backgroundColor: isPinned
+                                ? "#fff3cd"
+                                : isBlocked
+                                ? "#f8d7da"
+                                : "#fff",
+                              borderLeft: isPinned
+                                ? "4px solid #ffc107"
+                                : isBlocked
+                                ? "4px solid #dc3545"
+                                : undefined,
                             }}
                           >
-                            <div>
-                              <div
-                                style={{
-                                  fontSize: 14,
-                                  fontWeight: "bold",
-                                  marginBottom: 4,
-                                }}
-                              >
-                                #{index + 1} {item.item_id}
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "flex-start",
+                                marginBottom: 8,
+                              }}
+                            >
+                              <div>
+                                <div
+                                  style={{
+                                    fontSize: 14,
+                                    fontWeight: "bold",
+                                    marginBottom: 4,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 8,
+                                  }}
+                                >
+                                  <span>
+                                    #{index + 1} {item.item_id}
+                                  </span>
+                                  {isPinned && (
+                                    <span
+                                      style={{ fontSize: "16px" }}
+                                      title="Pinned item"
+                                    >
+                                      ⭐
+                                    </span>
+                                  )}
+                                  {isBlocked && (
+                                    <span
+                                      style={{ fontSize: "16px" }}
+                                      title="Blocked item"
+                                    >
+                                      🚫
+                                    </span>
+                                  )}
+                                </div>
+                                <div
+                                  style={{
+                                    fontSize: 12,
+                                    color: "#666",
+                                    marginBottom: 4,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 8,
+                                  }}
+                                >
+                                  <span>
+                                    Score: {item.score?.toFixed(4) || "N/A"}
+                                  </span>
+                                  {ruleDecorations
+                                    .filter((d) => d.type === "boosted")
+                                    .map((decoration, idx) => (
+                                      <span
+                                        key={idx}
+                                        style={{
+                                          backgroundColor:
+                                            decoration.backgroundColor,
+                                          color: decoration.color,
+                                          padding: "2px 6px",
+                                          borderRadius: 4,
+                                          fontSize: "10px",
+                                          fontWeight: "bold",
+                                          border: `1px solid ${decoration.color}`,
+                                        }}
+                                        title={`Boosted by rule: ${decoration.label}`}
+                                      >
+                                        {decoration.label}
+                                      </span>
+                                    ))}
+                                </div>
                               </div>
                               <div
                                 style={{
                                   fontSize: 12,
                                   color: "#666",
-                                  marginBottom: 4,
+                                  textAlign: "right",
                                 }}
-                              >
-                                Score: {item.score?.toFixed(4) || "N/A"}
-                              </div>
+                              ></div>
                             </div>
-                            <div
-                              style={{
-                                fontSize: 12,
-                                color: "#666",
-                                textAlign: "right",
-                              }}
-                            ></div>
-                          </div>
 
-                          {/* Ranking Reasons */}
-                          {item.reasons &&
-                            Object.keys(item.reasons).length > 0 && (
-                              <div
-                                style={{
-                                  marginTop: 8,
-                                  padding: 8,
-                                  backgroundColor: "#f8f9fa",
-                                  borderRadius: 4,
-                                  border: "1px solid #e9ecef",
-                                }}
-                              >
+                            {/* Ranking Reasons */}
+                            {item.reasons &&
+                              Object.keys(item.reasons).length > 0 && (
                                 <div
                                   style={{
-                                    fontSize: 11,
-                                    fontWeight: "bold",
-                                    marginBottom: 4,
-                                    color: "#495057",
+                                    marginTop: 8,
+                                    padding: 8,
+                                    backgroundColor: "#f8f9fa",
+                                    borderRadius: 4,
+                                    border: "1px solid #e9ecef",
                                   }}
                                 >
-                                  Ranking Reasons:
+                                  <div
+                                    style={{
+                                      fontSize: 11,
+                                      fontWeight: "bold",
+                                      marginBottom: 4,
+                                      color: "#495057",
+                                    }}
+                                  >
+                                    Ranking Reasons:
+                                  </div>
+                                  <div
+                                    style={{
+                                      fontSize: 11,
+                                      fontFamily: "monospace",
+                                    }}
+                                  >
+                                    {Object.entries(item.reasons).map(
+                                      ([key, value]) => {
+                                        const reasonStr = String(value);
+                                        const decoration = ruleDecorations.find(
+                                          (d) => reasonStr.includes(d.type)
+                                        );
+
+                                        if (decoration) {
+                                          return (
+                                            <div
+                                              key={key}
+                                              style={{
+                                                marginBottom: 2,
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: 4,
+                                              }}
+                                            >
+                                              <strong>{key}:</strong>
+                                              <span
+                                                style={{
+                                                  backgroundColor:
+                                                    decoration.backgroundColor,
+                                                  color: decoration.color,
+                                                  padding: "2px 6px",
+                                                  borderRadius: 4,
+                                                  fontSize: "10px",
+                                                  fontWeight: "bold",
+                                                  border: `1px solid ${decoration.color}`,
+                                                  display: "flex",
+                                                  alignItems: "center",
+                                                  gap: 4,
+                                                }}
+                                                title={`Rule effect: ${reasonStr}`}
+                                              >
+                                                <span>{decoration.icon}</span>
+                                                <span>{decoration.label}</span>
+                                              </span>
+                                            </div>
+                                          );
+                                        }
+
+                                        return (
+                                          <div
+                                            key={key}
+                                            style={{ marginBottom: 2 }}
+                                          >
+                                            <strong>{key}:</strong> {value}
+                                          </div>
+                                        );
+                                      }
+                                    )}
+                                  </div>
                                 </div>
-                                <div
-                                  style={{
-                                    fontSize: 11,
-                                    fontFamily: "monospace",
-                                  }}
-                                >
-                                  {Object.entries(item.reasons).map(
-                                    ([key, value]) => (
-                                      <div
-                                        key={key}
-                                        style={{ marginBottom: 2 }}
-                                      >
-                                        <strong>{key}:</strong> {value}
-                                      </div>
-                                    )
-                                  )}
-                                </div>
-                              </div>
-                            )}
-                        </div>
-                      ))}
+                              )}
+                          </div>
+                        );
+                      })}
                     </div>
                   ) : (
                     <div

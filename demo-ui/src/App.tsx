@@ -7,6 +7,7 @@ import {
   BanditPlaygroundView,
   UserSessionView,
   DataManagementView,
+  RulesView,
   DocumentationView,
   PrivacyPolicyView,
 } from "./components";
@@ -161,6 +162,8 @@ export default function App() {
         {activeView === "data-management" && (
           <DataManagementView namespace={namespace} />
         )}
+
+        {activeView === "rules" && <RulesView namespace={namespace} />}
 
         {activeView === "documentation" && <DocumentationView />}
 

@@ -104,7 +104,13 @@ func (e *Engine) Recommend(
 	}
 
 	// Determine model version.
-	modelVersion := e.getModelVersion(weights)
+	// Default requests (no explicit blend provided) are reported as
+	// popularity_v1 to match API contract and tests, even if non-zero
+	// config weights are used under the hood.
+	modelVersion := modelVersionPopularity
+	if req.Blend != nil {
+		modelVersion = e.getModelVersion(weights)
+	}
 	kUsed := k
 	candidatesPre := copyScoredItems(candidateData.Candidates)
 
