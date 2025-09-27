@@ -1,24 +1,16 @@
 // Centralized runtime configuration for the demo UI.
-// Reads once at startup and configures the generated API client.
+// Now uses the new config module with schema validation.
 
 import { OpenAPI } from "./lib/api-client";
-
-export const apiBase: string =
-  (import.meta as any).env?.VITE_API_BASE_URL?.toString() || "/api";
-
-export const swaggerUiUrl: string =
-  (import.meta as any).env?.VITE_SWAGGER_UI_URL?.toString() ||
-  "http://localhost:8081";
-
-export const customChatGptUrl: string | undefined = (
-  import.meta as any
-).env?.VITE_CUSTOM_CHATGPT_URL?.toString();
+import { config as appConfig } from "./config/index";
 
 // Configure the generated API client base once.
-OpenAPI.BASE = apiBase;
+OpenAPI.BASE = appConfig.api.baseUrl;
 
-export const config = {
-  apiBase,
-  swaggerUiUrl,
-  customChatGptUrl,
-};
+// Re-export for backward compatibility
+export const apiBase = appConfig.api.baseUrl;
+export const swaggerUiUrl = appConfig.api.swaggerUiUrl;
+export const customChatGptUrl = appConfig.openai?.customUrl;
+
+// Re-export the full config
+export { appConfig as config };

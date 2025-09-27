@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "../primitives/UIComponents";
+import { SafeMarkdown } from "../SafeMarkdown";
 import { color, radius, spacing, text } from "../../ui/tokens";
 
 interface ReadmeContent {
@@ -55,113 +56,7 @@ export function DocumentationView() {
     fetchReadme(activeTab);
   }, [activeTab]);
 
-  const renderMarkdown = (content: string) => {
-    // Enhanced markdown rendering - convert markdown to HTML
-    const html = content
-      // Horizontal rules (---) - must be processed first
-      .replace(
-        /^---$/gm,
-        '<hr style="border: none; border-top: 1px solid #e0e0e0; margin: 16px 0;">'
-      )
-      // Code blocks first (to avoid conflicts with other patterns)
-      .replace(
-        /```([\s\S]*?)```/g,
-        '<pre style="background: #f5f5f5; padding: 12px; border-radius: 4px; overflow-x: auto; margin: 8px 0;"><code>$1</code></pre>'
-      )
-      // Headers - handle all levels including #### and deeper
-      .replace(
-        /^#### (.*$)/gim,
-        '<h4 style="margin: 12px 0 6px 0; color: #1976d2; font-size: 16px;">$1</h4>'
-      )
-      .replace(
-        /^### (.*$)/gim,
-        '<h3 style="margin: 16px 0 8px 0; color: #1976d2; font-size: 18px;">$1</h3>'
-      )
-      .replace(
-        /^## (.*$)/gim,
-        '<h2 style="margin: 20px 0 12px 0; color: #1976d2; border-bottom: 1px solid #e0e0e0; padding-bottom: 4px; font-size: 20px;">$1</h2>'
-      )
-      .replace(
-        /^# (.*$)/gim,
-        '<h1 style="margin: 24px 0 16px 0; color: #1976d2; font-size: 24px;">$1</h1>'
-      )
-      // Handle deeper header levels (####, #####, ######)
-      .replace(
-        /^##### (.*$)/gim,
-        '<h5 style="margin: 10px 0 5px 0; color: #1976d2; font-size: 14px;">$1</h5>'
-      )
-      .replace(
-        /^###### (.*$)/gim,
-        '<h6 style="margin: 8px 0 4px 0; color: #1976d2; font-size: 13px;">$1</h6>'
-      )
-      // Lists - improved handling to group consecutive list items
-      .replace(/^- (.*$)/gim, '<li style="margin: 2px 0;">$1</li>')
-      .replace(
-        /(<li[^>]*>.*<\/li>)(\s*<li[^>]*>.*<\/li>)*/gs,
-        '<ul style="margin: 8px 0; padding-left: 20px;">$&</ul>'
-      )
-      // Bold
-      .replace(
-        /\*\*(.*?)\*\*/g,
-        '<strong style="font-weight: 600;">$1</strong>'
-      )
-      // Italic
-      .replace(/\*(.*?)\*/g, "<em>$1</em>")
-      // Inline code
-      .replace(
-        /`(.*?)`/g,
-        '<code style="background: #f0f0f0; padding: 2px 4px; border-radius: 3px; font-family: monospace;">$1</code>'
-      )
-      // Tables - must be processed before line breaks
-      .replace(
-        /^(\|.*\|)\n(\|[\s|-]+\|)\n((?:\|.*\|\n?)*)/gm,
-        (match, header, separator, rows) => {
-          const headerCells = header
-            .split("|")
-            .slice(1, -1)
-            .map(
-              (cell: string) =>
-                `<th style="padding: 8px 12px; text-align: left; border-bottom: 2px solid #e0e0e0; font-weight: 600;">${cell.trim()}</th>`
-            )
-            .join("");
-
-          const rowLines = rows
-            .trim()
-            .split("\n")
-            .filter((line: string) => line.trim());
-          const tableRows = rowLines
-            .map((row: string) => {
-              const cells = row
-                .split("|")
-                .slice(1, -1)
-                .map(
-                  (cell: string) =>
-                    `<td style="padding: 8px 12px; border-bottom: 1px solid #f0f0f0;">${cell.trim()}</td>`
-                )
-                .join("");
-              return `<tr>${cells}</tr>`;
-            })
-            .join("");
-
-          return `<table style="border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 14px;">
-            <thead><tr>${headerCells}</tr></thead>
-            <tbody>${tableRows}</tbody>
-          </table>`;
-        }
-      )
-      // Links
-      .replace(
-        /\[([^\]]+)\]\(([^)]+)\)/g,
-        '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: #1976d2; text-decoration: none;">$1</a>'
-      )
-      // Line breaks - handle multiple consecutive line breaks better
-      .replace(/\n\n+/g, '</p><p style="margin: 8px 0;">')
-      .replace(/\n/g, "<br>")
-      // Wrap in paragraph
-      .replace(/^(.*)$/, '<p style="margin: 8px 0;">$1</p>');
-
-    return html;
-  };
+  // Removed renderMarkdown function - now using SafeMarkdown component
 
   return (
     <div style={{ padding: spacing.xl, fontFamily: "system-ui, sans-serif" }}>
@@ -329,10 +224,15 @@ export function DocumentationView() {
                   color: "#333",
                   fontSize: 14,
                 }}
-                dangerouslySetInnerHTML={{
-                  __html: renderMarkdown(readmeContent.content),
-                }}
-              />
+              >
+                <SafeMarkdown
+                  content={readmeContent.content}
+                  allowHtml={false}
+                  allowLinks={true}
+                  allowImages={true}
+                  allowCode={true}
+                />
+              </div>
             </div>
           )}
         </div>

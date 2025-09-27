@@ -36,3 +36,19 @@ export * from "./Navigation";
 // Rules - Specialized components
 export * from "./rules/RuleFormModal";
 export * from "./rules/RuleDryRunModal";
+
+// Feature components
+export * from "./FeatureFlagsPanel";
+export * from "./SessionManager";
+export * from "./AppErrorBoundary";
+export * from "./GuardedRoute";
+export * from "./Toast";
+
+// Example components
+export * from "./examples/DiExample";
+export * from "./examples/HttpClientExample";
+export * from "./examples/StorageExample";
+export * from "./examples/ErrorHandlingExample";
+export * from "./examples/EmbeddingsExample";
+export * from "./examples/QueryExample";
+export * from "./examples/SafeMarkdownExample";

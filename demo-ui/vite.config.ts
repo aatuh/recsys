@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-const apiTarget = process.env.VITE_API_HOST;
+const apiTarget = process.env.VITE_API_HOST || "http://localhost:8081";
 const isVitest =
   process.env.VITEST === "true" || process.env.NODE_ENV === "test";
 
@@ -12,7 +12,8 @@ const getAllowedHosts = (): string[] => {
     if (isVitest) {
       return ["localhost"];
     }
-    throw new Error("VITE_ALLOWED_HOSTS is not set");
+    // Default allowed hosts for Docker/development
+    return ["localhost", "0.0.0.0", "127.0.0.1"];
   }
   return allowedHosts.split(",").map((host) => host.trim());
 };

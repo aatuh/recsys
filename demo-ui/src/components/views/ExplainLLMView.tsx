@@ -5,6 +5,7 @@ import {
   type types_ExplainLLMResponse,
 } from "../../lib/api-client";
 import { Button, Section, Label, TextInput } from "../primitives/UIComponents";
+import { SafeMarkdown } from "../SafeMarkdown";
 
 type TargetType = "item" | "banner" | "surface" | "segment";
 
@@ -84,53 +85,7 @@ export function ExplainLLMView({ namespace }: ExplainLLMViewProps) {
     }
   };
 
-  const renderMarkdown = (md?: string) => {
-    if (!md) return null;
-    // Simple markdown to HTML similar to DocumentationView
-    const html = md
-      .replace(
-        /```([\s\S]*?)```/g,
-        '<pre style="background: #f5f5f5; padding: 12px; border-radius: 4px; overflow-x: auto; margin: 8px 0;"><code>$1</code></pre>'
-      )
-      .replace(
-        /^#### (.*$)/gim,
-        '<h4 style="margin: 12px 0 6px 0; color: #1976d2;">$1</h4>'
-      )
-      .replace(
-        /^### (.*$)/gim,
-        '<h3 style="margin: 16px 0 8px 0; color: #1976d2;">$1</h3>'
-      )
-      .replace(
-        /^## (.*$)/gim,
-        '<h2 style="margin: 20px 0 12px 0; color: #1976d2; border-bottom: 1px solid #e0e0e0; padding-bottom: 4px;">$1</h2>'
-      )
-      .replace(
-        /^# (.*$)/gim,
-        '<h1 style="margin: 24px 0 16px 0; color: #1976d2;">$1</h1>'
-      )
-      .replace(/^- (.*$)/gim, '<li style="margin: 2px 0;">$1</li>')
-      .replace(
-        /(<li[^>]*>.*<\/li>)(\s*<li[^>]*>.*<\/li>)*/gs,
-        '<ul style="margin: 8px 0; padding-left: 20px;">$&</ul>'
-      )
-      .replace(
-        /\*\*(.*?)\*\*/g,
-        '<strong style="font-weight: 600;">$1</strong>'
-      )
-      .replace(/\*(.*?)\*/g, "<em>$1</em>")
-      .replace(
-        /`(.*?)`/g,
-        '<code style="background: #f0f0f0; padding: 2px 4px; border-radius: 3px; font-family: monospace;">$1</code>'
-      )
-      .replace(
-        /\[([^\]]+)\]\(([^)]+)\)/g,
-        '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: #1976d2; text-decoration: none;">$1</a>'
-      )
-      .replace(/\n\n+/g, '</p><p style="margin: 8px 0;">')
-      .replace(/\n/g, "<br>")
-      .replace(/^(.*)$/, '<p style="margin: 8px 0;">$1</p>');
-    return <div dangerouslySetInnerHTML={{ __html: html }} />;
-  };
+  // Removed renderMarkdown function - now using SafeMarkdown component
 
   const extractSections = (md?: string) => {
     if (!md) return null;
@@ -413,7 +368,13 @@ export function ExplainLLMView({ namespace }: ExplainLLMViewProps) {
                         background: "#fff",
                       }}
                     >
-                      {renderMarkdown(response.markdown)}
+                      <SafeMarkdown
+                        content={response.markdown || ""}
+                        allowHtml={false}
+                        allowLinks={true}
+                        allowImages={true}
+                        allowCode={true}
+                      />
                     </div>
                   );
                 }
@@ -445,7 +406,13 @@ export function ExplainLLMView({ namespace }: ExplainLLMViewProps) {
                           >
                             {name}
                           </h3>
-                          {renderMarkdown(sections[name])}
+                          <SafeMarkdown
+                            content={sections[name] || ""}
+                            allowHtml={false}
+                            allowLinks={true}
+                            allowImages={true}
+                            allowCode={true}
+                          />
                         </div>
                       ) : null
                     )}

@@ -48,6 +48,12 @@ export default [
         HTMLTextAreaElement: "readonly",
         HTMLSelectElement: "readonly",
         HTMLStyleElement: "readonly",
+        // Additional globals
+        AbortController: "readonly",
+        AbortSignal: "readonly",
+        process: "readonly",
+        require: "readonly",
+        queryClient: "readonly",
       },
     },
     plugins: {

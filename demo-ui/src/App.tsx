@@ -14,9 +14,16 @@ import {
 import { config } from "./config";
 import { AppShell, ErrorBoundary } from "./ui/AppShell";
 import "./ui/global.css";
-import { useQuerySync } from "./hooks/useQuerySync";
+import { useSafeQueryParam } from "./hooks/useSafeQuerySync";
+import { AppQuerySchemas } from "./utils/urlValidation";
 import { ViewStateProvider } from "./contexts/ViewStateContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { FeatureFlagsProvider } from "./contexts/FeatureFlagsContext";
+import { SessionProvider } from "./contexts/SessionStateMachine";
+import { ToastProvider } from "./contexts/ToastContext";
+import { QueryProvider } from "./query/QueryProvider";
+import { AppErrorBoundary } from "./components/AppErrorBoundary";
+import { ToastContainer } from "./components/Toast";
 import type { ViewType } from "./components/Navigation";
 
 /**
@@ -39,7 +46,7 @@ import type { ViewType } from "./components/Navigation";
 /* --------------- App component --------------- */
 
 export default function App() {
-  const validViews: readonly ViewType[] = [
+  const _validViews: readonly ViewType[] = [
     "namespace-seed",
     "recommendations-playground",
     "bandit-playground",
@@ -50,17 +57,17 @@ export default function App() {
     "explain-llm",
     "privacy-policy",
   ];
-  const [activeView, setActiveView] = useQuerySync<ViewType>(
+  const [activeView, setActiveView] = useSafeQueryParam(
     "view",
-    "namespace-seed",
-    validViews,
-    { storageKey: "recsys-active-view" }
+    AppQuerySchemas.view,
+    "recommendations-playground" as ViewType,
+    { storageKey: "recsys-active-view", persist: true }
   );
-  const [namespace, setNamespace] = useQuerySync<string>(
+  const [namespace, setNamespace] = useSafeQueryParam(
     "namespace",
+    AppQuerySchemas.namespace,
     "default",
-    undefined,
-    { storageKey: "recsys-namespace" }
+    { storageKey: "recsys-namespace", persist: true }
   );
 
   // Shared state for generated data that needs to be passed between views
@@ -90,78 +97,91 @@ export default function App() {
   const [k, _setK] = useState(20);
 
   return (
-    <ThemeProvider>
-      <ViewStateProvider>
-        <ErrorBoundary>
-          {/* Skip link for screen readers */}
-          <a href="#main-content" className="skip-link">
-            Skip to main content
-          </a>
-          <AppShell
-            header={
-              <Navigation
-                activeView={activeView}
-                onViewChange={setActiveView}
-                swaggerUrl={config.swaggerUiUrl}
-                customChatGptUrl={config.customChatGptUrl}
-                namespace={namespace}
-              />
-            }
-          >
-            {activeView === "namespace-seed" && (
-              <NamespaceSeedView
-                namespace={namespace}
-                setNamespace={setNamespace}
-                apiBase={config.apiBase}
-                setGeneratedUsers={setGeneratedUsers}
-                setGeneratedItems={setGeneratedItems}
-              />
-            )}
+    <AppErrorBoundary>
+      <FeatureFlagsProvider>
+        <SessionProvider>
+          <ToastProvider>
+            <QueryProvider>
+              <ThemeProvider>
+                <ViewStateProvider>
+                  <ErrorBoundary>
+                    {/* Skip link for screen readers */}
+                    <a href="#main-content" className="skip-link">
+                      Skip to main content
+                    </a>
+                    <AppShell
+                      header={
+                        <Navigation
+                          activeView={activeView}
+                          onViewChange={setActiveView}
+                          swaggerUrl={config.api.swaggerUiUrl}
+                          customChatGptUrl={config.openai?.customUrl}
+                          namespace={namespace}
+                        />
+                      }
+                    >
+                      {activeView === "namespace-seed" && (
+                        <NamespaceSeedView
+                          namespace={namespace}
+                          setNamespace={setNamespace}
+                          apiBase={config.api.baseUrl}
+                          setGeneratedUsers={setGeneratedUsers}
+                          setGeneratedItems={setGeneratedItems}
+                        />
+                      )}
 
-            {activeView === "recommendations-playground" && (
-              <RecommendationsPlaygroundView
-                namespace={namespace}
-                generatedUsers={generatedUsers}
-                generatedItems={generatedItems}
-              />
-            )}
+                      {activeView === "recommendations-playground" && (
+                        <RecommendationsPlaygroundView
+                          namespace={namespace}
+                          generatedUsers={generatedUsers}
+                          generatedItems={generatedItems}
+                        />
+                      )}
 
-            {activeView === "bandit-playground" && (
-              <BanditPlaygroundView
-                namespace={namespace}
-                generatedUsers={generatedUsers}
-              />
-            )}
+                      {activeView === "bandit-playground" && (
+                        <BanditPlaygroundView
+                          namespace={namespace}
+                          generatedUsers={generatedUsers}
+                        />
+                      )}
 
-            {activeView === "user-session" && (
-              <UserSessionView
-                namespace={namespace}
-                generatedUsers={generatedUsers}
-                setGeneratedUsers={setGeneratedUsers}
-                generatedItems={generatedItems}
-                setGeneratedItems={setGeneratedItems}
-                eventTypes={eventTypes}
-                blend={blend}
-                k={k}
-              />
-            )}
+                      {activeView === "user-session" && (
+                        <UserSessionView
+                          namespace={namespace}
+                          generatedUsers={generatedUsers}
+                          setGeneratedUsers={setGeneratedUsers}
+                          generatedItems={generatedItems}
+                          setGeneratedItems={setGeneratedItems}
+                          eventTypes={eventTypes}
+                          blend={blend}
+                          k={k}
+                        />
+                      )}
 
-            {activeView === "data-management" && (
-              <DataManagementView namespace={namespace} />
-            )}
+                      {activeView === "data-management" && (
+                        <DataManagementView namespace={namespace} />
+                      )}
 
-            {activeView === "rules" && <RulesView namespace={namespace} />}
+                      {activeView === "rules" && (
+                        <RulesView namespace={namespace} />
+                      )}
 
-            {activeView === "documentation" && <DocumentationView />}
+                      {activeView === "documentation" && <DocumentationView />}
 
-            {activeView === "explain-llm" && (
-              <ExplainLLMView namespace={namespace} />
-            )}
+                      {activeView === "explain-llm" && (
+                        <ExplainLLMView namespace={namespace} />
+                      )}
 
-            {activeView === "privacy-policy" && <PrivacyPolicyView />}
-          </AppShell>
-        </ErrorBoundary>
-      </ViewStateProvider>
-    </ThemeProvider>
+                      {activeView === "privacy-policy" && <PrivacyPolicyView />}
+                    </AppShell>
+                    <ToastContainer />
+                  </ErrorBoundary>
+                </ViewStateProvider>
+              </ThemeProvider>
+            </QueryProvider>
+          </ToastProvider>
+        </SessionProvider>
+      </FeatureFlagsProvider>
+    </AppErrorBoundary>
   );
 }

@@ -136,7 +136,7 @@ export interface DeleteResponse {
   message: string;
 }
 
-const _API_BASE = config.apiBase; // reserved for future use
+const _API_BASE = config.api.baseUrl; // reserved for future use
 
 // Prefer generated client for listing/deleting entities
 

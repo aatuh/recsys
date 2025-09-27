@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "../primitives/UIComponents";
+import { SafeMarkdown } from "../SafeMarkdown";
 
 interface DocumentationSectionProps {
   className?: string;
@@ -58,58 +59,7 @@ export function DocumentationSection({ className }: DocumentationSectionProps) {
     fetchReadme(activeTab);
   }, [activeTab]);
 
-  const renderMarkdown = (content: string) => {
-    // Enhanced markdown rendering - convert markdown to HTML
-    const html = content
-      // Code blocks first (to avoid conflicts with other patterns)
-      .replace(
-        /```([\s\S]*?)```/g,
-        '<pre style="background: #f5f5f5; padding: 12px; border-radius: 4px; overflow-x: auto; margin: 8px 0;"><code>$1</code></pre>'
-      )
-      // Headers
-      .replace(
-        /^### (.*$)/gim,
-        '<h3 style="margin: 16px 0 8px 0; color: #1976d2;">$1</h3>'
-      )
-      .replace(
-        /^## (.*$)/gim,
-        '<h2 style="margin: 20px 0 12px 0; color: #1976d2; border-bottom: 1px solid #e0e0e0; padding-bottom: 4px;">$1</h2>'
-      )
-      .replace(
-        /^# (.*$)/gim,
-        '<h1 style="margin: 24px 0 16px 0; color: #1976d2;">$1</h1>'
-      )
-      // Lists
-      .replace(/^- (.*$)/gim, '<li style="margin: 4px 0;">$1</li>')
-      .replace(
-        /(<li.*<\/li>)/s,
-        '<ul style="margin: 8px 0; padding-left: 20px;">$1</ul>'
-      )
-      // Bold
-      .replace(
-        /\*\*(.*?)\*\*/g,
-        '<strong style="font-weight: 600;">$1</strong>'
-      )
-      // Italic
-      .replace(/\*(.*?)\*/g, "<em>$1</em>")
-      // Inline code
-      .replace(
-        /`(.*?)`/g,
-        '<code style="background: #f0f0f0; padding: 2px 4px; border-radius: 3px; font-family: monospace;">$1</code>'
-      )
-      // Links
-      .replace(
-        /\[([^\]]+)\]\(([^)]+)\)/g,
-        '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: #1976d2; text-decoration: none;">$1</a>'
-      )
-      // Line breaks
-      .replace(/\n\n/g, '</p><p style="margin: 8px 0;">')
-      .replace(/\n/g, "<br>")
-      // Wrap in paragraph
-      .replace(/^(.*)$/, '<p style="margin: 8px 0;">$1</p>');
-
-    return html;
-  };
+  // Removed renderMarkdown function - now using SafeMarkdown component
 
   return (
     <div className={className} style={{ marginTop: 24 }}>
@@ -263,10 +213,15 @@ export function DocumentationSection({ className }: DocumentationSectionProps) {
                   lineHeight: 1.6,
                   color: "#333",
                 }}
-                dangerouslySetInnerHTML={{
-                  __html: renderMarkdown(readmeContent.content),
-                }}
-              />
+              >
+                <SafeMarkdown
+                  content={readmeContent.content}
+                  allowHtml={false}
+                  allowLinks={true}
+                  allowImages={true}
+                  allowCode={true}
+                />
+              </div>
             </div>
           )}
         </div>
