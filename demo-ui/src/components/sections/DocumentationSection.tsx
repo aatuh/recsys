@@ -27,6 +27,7 @@ export function DocumentationSection({ className }: DocumentationSectionProps) {
     setError(null);
 
     try {
+      // eslint-disable-next-line no-restricted-globals
       const response = await fetch(`/readme-${source}.md`);
       if (!response.ok) {
         throw new Error(

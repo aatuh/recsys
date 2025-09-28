@@ -28,7 +28,7 @@ Do not read envs directly in feature code; inject via `config`.
 - `src/ui/` shared UI (design tokens, globals, AppShell, Toast)
 - `src/components/` views and sections
   - `rules/` split modal components for rules
-- `src/hooks/` reusable hooks (`useQuerySync`, `useAsync`)
+- `src/hooks/` reusable hooks (`useSafeQuerySync`, `useAsync`)
 - `src/services/` API adapters (wrap generated client)
 - `src/lib/api-client/` generated OpenAPI client (do not edit)
 
@@ -37,7 +37,7 @@ Do not read envs directly in feature code; inject via `config`.
 - Use design tokens from `src/ui/tokens.ts` for spacing, colors, and typography
 - Keep long-running or external calls in `services/`; views should stay thin
 - Use `useAsync` for async flows and surface toasts via `useToast`
-- Sync shareable state with `useQuerySync`; persist with `storageKey`
+- Sync shareable state with `useSafeQuerySync`; persist with `storageKey`
 
 ## Scripts
 

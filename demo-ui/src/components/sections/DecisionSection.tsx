@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Section, Row, Label, Button } from "../primitives/UIComponents";
 import { spacing, text, color } from "../../ui/tokens";
-import { useToast } from "../../ui/Toast";
+import { useToast } from "../../contexts/ToastContext";
 import {
   BanditService,
   type types_BanditDecideRequest,
@@ -208,14 +208,14 @@ export function DecisionSection({
         decisionHistory: [entry, ...prev.decisionHistory].slice(0, 500),
       }));
       const chosen = (parsedResponse as any)?.policy_id || "";
-      toast.success(
+      toast.showSuccess(
         `Decision OK${chosen ? `: ${String(chosen)}` : ""}`,
         "Bandit decision"
       );
     } catch (err) {
       console.error("Failed to make decision:", err);
       setError(err instanceof Error ? err.message : "Failed to make decision");
-      toast.error("Failed to make decision");
+      toast.showError("Failed to make decision");
     } finally {
       setLoading(false);
     }

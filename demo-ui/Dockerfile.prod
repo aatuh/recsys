@@ -1,0 +1,58 @@
+# Multi-stage production Dockerfile for demo-ui
+# This creates an optimized production image with CSP and caching support
+
+# Stage 1: Build stage
+FROM node:20-alpine AS builder
+
+# Enable pnpm via corepack and pin a modern version
+RUN corepack enable && corepack prepare pnpm@9.12.2 --activate
+
+WORKDIR /app
+ENV CI=1 PNPM_HOME=/root/.local/share/pnpm PATH="/root/.local/share/pnpm:${PATH}"
+
+# Copy package files
+COPY package.json pnpm-lock.yaml* ./
+
+# Install dependencies (including dev dependencies for build)
+RUN pnpm install --frozen-lockfile
+
+# Copy source code
+COPY . .
+
+# Build the application with production config
+RUN pnpm build --config vite.config.prod.ts
+
+# Stage 2: Production stage
+FROM node:20-alpine AS production
+
+# Enable pnpm via corepack
+RUN corepack enable && corepack prepare pnpm@9.12.2 --activate
+
+WORKDIR /app
+ENV CI=1 PNPM_HOME=/root/.local/share/pnpm PATH="/root/.local/share/pnpm:${PATH}"
+
+# Install only production dependencies
+COPY package.json pnpm-lock.yaml* ./
+RUN pnpm install --frozen-lockfile --prod
+
+# Copy built application from builder stage
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/public ./public
+
+# Create a non-root user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nextjs -u 1001
+
+# Change ownership of the app directory
+RUN chown -R nextjs:nodejs /app
+USER nextjs
+
+# Expose port
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD node -e "require('http').get('http://localhost:3000', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+
+# Start the preview server
+CMD ["pnpm", "preview", "--host", "0.0.0.0", "--port", "3000"]

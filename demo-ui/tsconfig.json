@@ -11,5 +11,9 @@
     "skipLibCheck": true,
     "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
-  "include": ["src"]
+  "include": [
+    "src",
+    "../.trash/enhancedApiServiceV2.ts",
+    "../.trash/enhancedApiServiceWithDI.ts"
+  ]
 }

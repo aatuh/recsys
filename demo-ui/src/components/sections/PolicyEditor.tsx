@@ -8,7 +8,7 @@ import {
   NumberInput,
 } from "../primitives/UIComponents";
 import { color, spacing } from "../../ui/tokens";
-import { useToast } from "../../ui/Toast";
+import { useToast } from "../../contexts/ToastContext";
 import { useValidation } from "../../hooks/useValidation";
 
 // Define BanditPolicy type locally since it's not exported from api-client
@@ -65,7 +65,7 @@ export function PolicyEditor({
   const handleSave = () => {
     const errors = validation.validateAll(editedPolicy);
     if (Object.keys(errors).length > 0) {
-      toast.error("Please fix validation errors before saving");
+      toast.showError("Please fix validation errors before saving");
       return;
     }
     onSave({ ...editedPolicy, name: editedPolicy.name.trim() });

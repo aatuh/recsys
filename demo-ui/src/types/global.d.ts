@@ -2,6 +2,8 @@
  * Global type declarations for browser APIs.
  */
 
+/// <reference types="vite/client" />
+
 declare global {
   interface Window {
     crypto: any;

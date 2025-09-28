@@ -8,7 +8,7 @@ import {
   Button,
 } from "../primitives/UIComponents";
 import { color, spacing } from "../../ui/tokens";
-import { useToast } from "../../ui/Toast";
+import { useToast } from "../../contexts/ToastContext";
 
 export interface TraitValue {
   value: string;
@@ -127,9 +127,9 @@ export function UserTraitsEditor({
         }
       });
       setUserTraits(traits);
-      toast.success(`Loaded traits for ${userId}`);
+      toast.showSuccess(`Loaded traits for ${userId}`);
     } catch (error: any) {
-      toast.error(`Error loading traits: ${error.message}`);
+      toast.showError(`Error loading traits: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -156,9 +156,9 @@ export function UserTraitsEditor({
     setLoading(true);
     try {
       await onUpdateUser(selectedUser, userTraits);
-      toast.success(`Updated traits for ${selectedUser}`);
+      toast.showSuccess(`Updated traits for ${selectedUser}`);
     } catch (error: any) {
-      toast.error(`Error updating traits: ${error.message}`);
+      toast.showError(`Error updating traits: ${error.message}`);
     } finally {
       setLoading(false);
     }

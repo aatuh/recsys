@@ -1,14 +1,24 @@
 // Centralized runtime configuration for the demo UI.
 // Now uses the new config module with schema validation.
 
-import { OpenAPI } from "./lib/api-client";
 import { config as appConfig } from "./config/index";
 
-// Configure the generated API client base once.
-OpenAPI.BASE = appConfig.api.baseUrl;
+function stripTrailingSlash(url: string): string {
+  return url.endsWith("/") ? url.slice(0, -1) : url;
+}
 
 // Re-export for backward compatibility
-export const apiBase = appConfig.api.baseUrl;
+export const apiBase = (() => {
+  const baseUrl = appConfig.api.baseUrl.startsWith("/")
+    ? appConfig.api.baseUrl.substring(1)
+    : appConfig.api.baseUrl;
+
+  const absoluteBase = appConfig.api.host
+    ? new URL(baseUrl, appConfig.api.host).toString()
+    : appConfig.api.baseUrl;
+
+  return stripTrailingSlash(absoluteBase);
+})();
 export const swaggerUiUrl = appConfig.api.swaggerUiUrl;
 export const customChatGptUrl = appConfig.openai?.customUrl;
 

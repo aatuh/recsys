@@ -1,14 +1,21 @@
 import React, { useEffect, useCallback, useMemo } from "react";
-import { Section, Row, Label, TextInput, Button, Code } from "../primitives/UIComponents";
+import {
+  Section,
+  Row,
+  Label,
+  TextInput,
+  Button,
+  Code,
+} from "../primitives/UIComponents";
 import { DataTable, Column } from "../primitives/DataTable";
 import { EventSequenceBuilder } from "./EventSequenceBuilder";
 import { UserJourneyVisualization } from "./UserJourneyVisualization";
 import {
-  batchEvents,
   recommend,
+  batchEvents,
   listItems,
   listUsers,
-} from "../../services/apiService";
+} from "../../services/api";
 import type { specs_types_ScoredItem } from "../../lib/api-client";
 import { randChoice, iso } from "../../utils/helpers";
 
@@ -171,7 +178,12 @@ export function UserSessionSimulator({
   const getRecommendations = useCallback(
     async (userId: string) => {
       try {
-        const response = await recommend(userId, namespace, k, blend);
+        const response = await recommend({
+          user_id: userId,
+          namespace,
+          k,
+          blend,
+        });
         return response.items || [];
       } catch (error) {
         appendLog(`Error getting recommendations: ${error}`);
@@ -220,7 +232,7 @@ export function UserSessionSimulator({
 
       // Send to API
       try {
-        await batchEvents(namespace, [event], appendLog);
+        await batchEvents({ namespace, events: [event] }, appendLog);
         appendLog(`Added ${event.typeName} event for ${userId} on ${itemId}`);
 
         // Refresh recommendations if auto-refresh is enabled
@@ -456,8 +468,16 @@ export function UserSessionSimulator({
 
       // Load both users and items in parallel
       const [usersResponse, itemsResponse] = await Promise.all([
-        listUsers({ namespace, limit: 1000, offset: 0 }),
-        listItems({ namespace, limit: 1000, offset: 0 }),
+        listUsers({
+          namespace,
+          limit: 1000,
+          offset: 0,
+        }),
+        listItems({
+          namespace,
+          limit: 1000,
+          offset: 0,
+        }),
       ]);
 
       const userIds = usersResponse.items
@@ -514,8 +534,16 @@ export function UserSessionSimulator({
 
       // Load both users and items in parallel
       const [usersResponse, itemsResponse] = await Promise.all([
-        listUsers({ namespace, limit: 1000, offset: 0 }),
-        listItems({ namespace, limit: 1000, offset: 0 }),
+        listUsers({
+          namespace,
+          limit: 1000,
+          offset: 0,
+        }),
+        listItems({
+          namespace,
+          limit: 1000,
+          offset: 0,
+        }),
       ]);
 
       const userIds = usersResponse.items

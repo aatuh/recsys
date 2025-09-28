@@ -71,8 +71,8 @@ func CORS() func(next http.Handler) http.Handler {
 	return cors.Handler(cors.Options{
 		AllowOriginFunc:  allowFunc,
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-Org-ID", "X-Requested-With"},
-		ExposedHeaders:   []string{"Link"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-Org-ID", "X-Requested-With", "X-Request-Id"},
+		ExposedHeaders:   []string{"Link", "X-Request-Id"},
 		AllowCredentials: cred,
 		MaxAge:           300,
 	})

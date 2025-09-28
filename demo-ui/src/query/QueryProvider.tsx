@@ -11,7 +11,7 @@ import { getQueryClient } from "./QueryClient";
 export function QueryProvider({
   children,
   client,
-  devtools = process.env.NODE_ENV === "development",
+  devtools = import.meta.env.DEV,
 }: QueryProviderProps) {
   const queryClient = client || getQueryClient();
 

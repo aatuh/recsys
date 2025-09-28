@@ -8,7 +8,7 @@ import {
   Button,
 } from "../primitives/UIComponents";
 import { color, spacing } from "../../ui/tokens";
-import { useToast } from "../../ui/Toast";
+import { useToast } from "../../contexts/ToastContext";
 
 export interface ItemValue {
   value: string;
@@ -178,9 +178,9 @@ export function ItemConfigEditor({
       }
 
       setItemUpdates(updates);
-      toast.success(`Loaded configuration for ${itemId}`);
+      toast.showSuccess(`Loaded configuration for ${itemId}`);
     } catch (error: any) {
-      toast.error(`Error loading item data: ${error.message}`);
+      toast.showError(`Error loading item data: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -221,9 +221,9 @@ export function ItemConfigEditor({
     setLoading(true);
     try {
       await onUpdateItem(selectedItem, itemUpdates);
-      toast.success(`Updated data for ${selectedItem}`);
+      toast.showSuccess(`Updated data for ${selectedItem}`);
     } catch (error: any) {
-      toast.error(`Error updating item: ${error.message}`);
+      toast.showError(`Error updating item: ${error.message}`);
     } finally {
       setLoading(false);
     }

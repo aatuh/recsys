@@ -113,6 +113,31 @@ export default [
       "object-shorthand": "error",
       "prefer-template": "warn", // Changed to warning
       "no-useless-escape": "warn", // Changed to warning
+
+      // API Transport Rules - Enforce unified API usage
+      "no-restricted-globals": [
+        "error",
+        {
+          name: "fetch",
+          message:
+            "Use the unified API service (./services/api) instead of direct fetch calls. This ensures consistent error handling, logging, and request tracking.",
+        },
+      ],
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: [
+                "../services/enhancedApiServiceWithDI",
+                "../services/enhancedApiServiceV2",
+              ],
+              message:
+                "Use the unified API service (./services/api) instead of deprecated services.",
+            },
+          ],
+        },
+      ],
     },
     settings: {
       react: {

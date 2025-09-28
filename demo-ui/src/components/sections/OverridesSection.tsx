@@ -6,7 +6,7 @@ import {
   type AlgorithmProfile,
 } from "../../types/algorithmProfiles";
 import { ProfileEditor } from "./ProfileEditor";
-import { useToast } from "../../ui/Toast";
+import { useToast } from "../../contexts/ToastContext";
 import { color, spacing } from "../../ui/tokens";
 
 interface CustomProfile {
@@ -62,7 +62,7 @@ export function OverridesSection({
       } catch (e) {
         console.warn("Failed to load custom profiles from localStorage:", e);
         prevCustomProfilesRef.current = JSON.stringify([]);
-        toast.error("Failed to load custom profiles");
+        toast.showError("Failed to load custom profiles");
       }
     } else {
       // Initialize ref with empty array
@@ -126,7 +126,7 @@ export function OverridesSection({
       setSelectedProfileId(null);
       setOverrides(null);
     }
-    toast.success("Profile deleted");
+    toast.showSuccess("Profile deleted");
   };
 
   const handleSaveProfile = (

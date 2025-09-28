@@ -164,6 +164,7 @@ export class EnhancedHttpClient implements HttpClient {
     }
 
     try {
+      // eslint-disable-next-line no-restricted-globals
       const response = await fetch(request.url, {
         method: request.method,
         headers: request.headers,

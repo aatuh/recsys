@@ -6,6 +6,7 @@ import React, {
   ReactNode,
 } from "react";
 import { type Theme, getThemeColors, generateThemeCSS } from "../ui/themes";
+import { useStringStorage } from "../hooks/useStorage";
 
 interface ThemeContextType {
   theme: Theme;
@@ -25,7 +26,11 @@ export function ThemeProvider({
   children,
   defaultTheme = "auto",
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(defaultTheme);
+  const { value: storedTheme, setValue: setStoredTheme } = useStringStorage(
+    "theme",
+    defaultTheme
+  );
+  const [theme, setTheme] = useState<Theme>(storedTheme as Theme);
   const [isDark, setIsDark] = useState(false);
 
   // Update theme colors when theme changes
@@ -83,18 +88,17 @@ export function ThemeProvider({
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, [theme]);
 
-  // Load theme from localStorage on mount
+  // Load theme from storage on mount
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") as Theme;
-    if (savedTheme && ["light", "dark", "auto"].includes(savedTheme)) {
-      setTheme(savedTheme);
+    if (storedTheme && ["light", "dark", "auto"].includes(storedTheme)) {
+      setTheme(storedTheme as Theme);
     }
-  }, []);
+  }, [storedTheme]);
 
-  // Save theme to localStorage when it changes
+  // Save theme to storage when it changes
   useEffect(() => {
-    localStorage.setItem("theme", theme);
-  }, [theme]);
+    setStoredTheme(theme);
+  }, [theme, setStoredTheme]);
 
   const toggleTheme = () => {
     if (theme === "light") {

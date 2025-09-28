@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Row, Label, NumberInput, Button } from "../primitives/UIComponents";
 import { color, spacing, text } from "../../ui/tokens";
-import { useToast } from "../../ui/Toast";
+import { useToast } from "../../contexts/ToastContext";
 import type { EventTypeConfig } from "../../types";
 
 interface EventTypeEditorProps {
@@ -25,17 +25,17 @@ export function EventTypeEditor({
 
   const addEventType = () => {
     if (!newEventType.id || !newEventType.title) {
-      toast.error("Please fill in both ID and Title");
+      toast.showError("Please fill in both ID and Title");
       return;
     }
 
     // Check for duplicate IDs or indexes
     if (eventTypes.some((et) => et.id === newEventType.id)) {
-      toast.error("Event type ID already exists");
+      toast.showError("Event type ID already exists");
       return;
     }
     if (eventTypes.some((et) => et.index === newEventType.index)) {
-      toast.error("Event type index already exists");
+      toast.showError("Event type index already exists");
       return;
     }
 
@@ -89,7 +89,7 @@ export function EventTypeEditor({
 
   const deleteEventType = (index: number) => {
     if (eventTypes.length <= 1) {
-      toast.error("At least one event type is required");
+      toast.showError("At least one event type is required");
       return;
     }
     setEventTypes(eventTypes.filter((_, i) => i !== index));

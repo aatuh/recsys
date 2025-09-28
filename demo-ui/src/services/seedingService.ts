@@ -7,12 +7,7 @@ import {
   randomBoolean,
   weightedChoice,
 } from "../utils/helpers";
-import {
-  upsertEventTypes,
-  upsertUsers,
-  upsertItems,
-  batchEvents,
-} from "./apiService";
+import { upsertEventTypes, upsertUsers, upsertItems, batchEvents } from "./api";
 import type { TraitConfig } from "../components/sections/UserTraitsEditor";
 import type {
   ItemConfig,
@@ -177,17 +172,28 @@ export async function handleSeed(
   setGeneratedUsers([]);
   setGeneratedItems([]);
   try {
-    await upsertEventTypes(namespace, eventTypes, append);
+    // Convert EventTypeConfig to types_EventTypeConfigUpsertRequest
+    const eventTypeRequests = eventTypes.map((et) => ({
+      name: et.title,
+      type: et.index,
+      weight: et.weight,
+      half_life_days: et.halfLifeDays,
+      is_active: true,
+    }));
+    await upsertEventTypes({ namespace, types: eventTypeRequests }, append);
     const users = buildUsers(userCount, userStartIndex, traitConfigs);
     const items = buildItems(itemCount, brands, tags, itemConfigs, priceRanges);
     setGeneratedUsers(users.map((u) => u.user_id!));
     setGeneratedItems(items.map((i) => i.item_id!));
 
-    await upsertUsers(namespace, users, append);
+    await upsertUsers({ namespace, users }, append);
     // Chunk to keep payload sizes modest
     const chunk = 200;
     for (let i = 0; i < items.length; i += chunk) {
-      await upsertItems(namespace, items.slice(i, i + chunk), append);
+      await upsertItems(
+        { namespace, items: items.slice(i, i + chunk) },
+        append
+      );
     }
     const events = buildEvents(
       users,
@@ -197,7 +203,10 @@ export async function handleSeed(
       eventTypes
     );
     for (let i = 0; i < events.length; i += 1000) {
-      await batchEvents(namespace, events.slice(i, i + 1000), append);
+      await batchEvents(
+        { namespace, events: events.slice(i, i + 1000) },
+        append
+      );
     }
     append("✅ Seed complete");
   } catch (e: any) {

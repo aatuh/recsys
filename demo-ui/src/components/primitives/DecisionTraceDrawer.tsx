@@ -8,7 +8,7 @@ import {
 import { Button, Code, Th, Td } from "../primitives/UIComponents";
 import { WhyItWorks } from "./WhyItWorks";
 import { color, spacing, text } from "../../ui/tokens";
-import { useToast } from "../../ui/Toast";
+import { useToast } from "../../contexts/ToastContext";
 
 interface DecisionTraceDrawerProps {
   isOpen: boolean;
@@ -56,7 +56,7 @@ export function DecisionTraceDrawer({
       const msg =
         err instanceof Error ? err.message : "Failed to load decision trace";
       setError(msg);
-      toast.error(msg);
+      toast.showError(msg);
     } finally {
       setLoading(false);
     }

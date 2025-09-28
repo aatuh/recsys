@@ -11,6 +11,7 @@ import type {
   types_BanditDecideResponse,
   types_RecommendWithBanditResponse,
 } from "../lib/api-client";
+import { useJsonStorage } from "../hooks/useStorage";
 
 // Bandit dashboard entries
 export interface BanditDecisionEntry {
@@ -441,13 +442,18 @@ export function ViewStateProvider({ children }: ViewStateProviderProps) {
   const [userSession, setUserSession] = useState<UserSessionState>(
     initialUserSessionState
   );
+  const { value: storedBanditPlayground, setValue: setStoredBanditPlayground } =
+    useJsonStorage<BanditPlaygroundState>(
+      "recsys-bandit-playground",
+      initialBanditPlaygroundState
+    );
+
   const [banditPlayground, setBanditPlayground] =
     useState<BanditPlaygroundState>(() => {
       try {
-        const saved = localStorage.getItem("recsys-bandit-playground");
-        if (saved) {
-          const parsed = JSON.parse(saved);
+        if (storedBanditPlayground) {
           // Rehydrate Date fields in histories
+          const parsed = { ...storedBanditPlayground };
           if (parsed?.decisionHistory) {
             parsed.decisionHistory = parsed.decisionHistory.map((d: any) => ({
               ...d,
@@ -468,19 +474,20 @@ export function ViewStateProvider({ children }: ViewStateProviderProps) {
       return initialBanditPlaygroundState;
     });
 
-  // Persist lightweight bandit playground state to localStorage
+  // Persist lightweight bandit playground state to storage
   React.useEffect(() => {
     try {
       const toSave = {
-        surface: banditPlayground.surface,
-        context: banditPlayground.context,
-        candidatePolicyIds: banditPlayground.candidatePolicyIds,
-        algorithm: banditPlayground.algorithm,
-        requestId: banditPlayground.requestId,
-        decisionHistory: banditPlayground.decisionHistory,
-        rewardHistory: banditPlayground.rewardHistory,
+        ...banditPlayground,
+        // Only persist the lightweight state, not the runtime state
+        decisionResult: null,
+        loading: false,
+        error: null,
+        recommendationResult: null,
+        recommendationLoading: false,
+        recommendationError: null,
       };
-      localStorage.setItem("recsys-bandit-playground", JSON.stringify(toSave));
+      setStoredBanditPlayground(toSave);
     } catch {
       // ignore
     }
@@ -492,6 +499,7 @@ export function ViewStateProvider({ children }: ViewStateProviderProps) {
     banditPlayground.requestId,
     banditPlayground.decisionHistory,
     banditPlayground.rewardHistory,
+    setStoredBanditPlayground,
   ]);
 
   const resetNamespaceSeed = () => {

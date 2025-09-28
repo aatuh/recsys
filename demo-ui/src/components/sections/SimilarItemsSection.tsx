@@ -8,8 +8,8 @@ import {
   Button,
   ResultsTable,
 } from "../primitives/UIComponents";
-import { similar } from "../../services/apiService";
-import { useToast } from "../../ui/Toast";
+import { getSimilarItems } from "../../services/api";
+import { useToast } from "../../contexts/ToastContext";
 import { logger } from "../../utils/logger";
 
 import type { specs_types_ScoredItem } from "../../lib/api-client";
@@ -46,13 +46,13 @@ export function SimilarItemsSection({
     setSimLoading(true);
     setSimOut(null);
     try {
-      const r = await similar(id, namespace, k);
+      const r = await getSimilarItems(id, namespace, k);
       setSimOut(r);
       logger.info("similar.success", { id, k, numItems: r?.length ?? 0 });
     } catch (e: any) {
       const msg = e?.message || "Failed to get similar items";
       setSimOut([{ item_id: `Error: ${msg}`, score: 0 }]);
-      toast.error(msg);
+      toast.showError(msg);
       logger.error("similar.error", { id, k, error: msg });
     } finally {
       setSimLoading(false);

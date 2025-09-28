@@ -62,7 +62,7 @@ export function createQueryClient(config: QueryClientConfig = {}): QueryClient {
 
 // Default query client instance
 export const defaultQueryClient = createQueryClient({
-  enableDevtools: process.env.NODE_ENV === "development",
+  enableDevtools: import.meta.env.DEV,
 });
 
 // Development query client with more aggressive caching
@@ -85,6 +85,6 @@ export const prodQueryClient = createQueryClient({
  * Get the appropriate query client based on environment.
  */
 export function getQueryClient(): QueryClient {
-  const isDevelopment = process.env.NODE_ENV === "development";
+  const isDevelopment = import.meta.env.DEV;
   return isDevelopment ? devQueryClient : prodQueryClient;
 }

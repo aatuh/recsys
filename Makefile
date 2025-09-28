@@ -1,4 +1,4 @@
-.PHONY: help codegen dev build test lint fmt typecheck uilint uitypecheck
+.PHONY: help codegen dev build test lint fmt typecheck uilint uitypecheck prod-build prod-run
 
 help: ## Show this help message
 	@echo "Available targets:"
@@ -39,3 +39,12 @@ fmt: ## Format UI (eslint --fix)
 typecheck: ## Typecheck UI
 	@echo "🔎 Typechecking UI..."
 	@cd demo-ui && pnpm run typecheck
+
+prod-build: ## Build production Docker image
+	@echo "🏗️  Building production image..."
+	@cd demo-ui && docker build -f Dockerfile.prod -t recsys-demo-ui:prod .
+	@echo "✅ Production image built: recsys-demo-ui:prod"
+
+prod-run: ## Run production environment
+	@echo "🚀 Starting production environment..."
+	@docker-compose -f docker-compose.yml -f demo-ui/docker-compose.prod.yml up

@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { Section, Row, Label, Button } from "../primitives/UIComponents";
 // import { spacing, text, color } from "../../ui/tokens";
-import { useToast } from "../../ui/Toast";
+import { useToast } from "../../contexts/ToastContext";
 import {
   RankingService,
   type types_RecommendWithBanditRequest,
@@ -129,7 +129,7 @@ export function OneShotRecommendationsSection({
         recommendationResult: parsedResponse,
         decisionHistory: [decisionEntry, ...prev.decisionHistory].slice(0, 500),
       }));
-      toast.success(
+      toast.showSuccess(
         `Got ${String((parsedResponse as any)?.items?.length ?? 0)} items`,
         "Bandit recommendations"
       );
@@ -156,7 +156,7 @@ export function OneShotRecommendationsSection({
         ...prev,
         recommendationError: errorMessage,
       }));
-      toast.error(errorMessage);
+      toast.showError(errorMessage);
     } finally {
       setBanditPlayground((prev) => ({
         ...prev,

@@ -9,7 +9,7 @@ import {
 } from "../primitives/UIComponents";
 import type { types_Overrides } from "../../lib/api-client";
 import { color, spacing } from "../../ui/tokens";
-import { useToast } from "../../ui/Toast";
+import { useToast } from "../../contexts/ToastContext";
 import { useValidation } from "../../hooks/useValidation";
 
 interface ProfileEditorProps {
@@ -126,7 +126,7 @@ export function ProfileEditor({
       ...editedOverrides,
     });
     if (Object.keys(errors).length > 0) {
-      toast.error("Please fix validation errors before saving");
+      toast.showError("Please fix validation errors before saving");
       return;
     }
     onSave(name.trim(), description, editedOverrides);

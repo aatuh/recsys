@@ -6,24 +6,21 @@ import {
   listUsers,
   listItems,
   listEvents,
-  listSegments,
   deleteUsers,
   deleteItems,
   deleteEvents,
-  deleteSegments,
-  fetchAllDataForTables,
   type ListParams,
   type DeleteParams,
   type ListResponse,
-} from "../../services/apiService";
+} from "../../services/api";
 import { ConfigService } from "../../lib/api-client";
 import { updateItemEmbedding } from "../../actions/updateItemEmbedding";
-import {
-  downloadJsonFile,
-  generateExportFilename,
-  formatExportData,
-} from "../../utils/exportUtils";
-import { useToast } from "../../ui/Toast";
+// import {
+//   downloadJsonFile,
+//   generateExportFilename,
+//   formatExportData,
+// } from "../../utils/exportUtils";
+import { useToast } from "../../contexts/ToastContext";
 import { logger } from "../../utils/logger";
 
 interface DataManagementSectionProps {
@@ -297,8 +294,10 @@ export function DataManagementSection({
           response = await listEvents(params);
           break;
         case "segments":
-          response = await listSegments(params);
-          break;
+          // TODO: Implement segments listing in unified API
+          throw new Error(
+            "Segments listing not yet implemented in unified API"
+          );
         default:
           throw new Error("Invalid data type");
       }
@@ -311,7 +310,7 @@ export function DataManagementSection({
     } catch (err: any) {
       const msg = err?.message || "Failed to load data";
       setError(msg);
-      toast.error(msg);
+      toast.showError(msg);
     } finally {
       setLoading(false);
     }
@@ -360,7 +359,7 @@ export function DataManagementSection({
             ids: selectedSegmentIds,
           });
 
-          toast.success(
+          toast.showSuccess(
             `Deleted ${selectedSegmentIds.length} selected segments`
           );
           setDataManagement((prev) => ({ ...prev, selectedRows: new Set() }));
@@ -374,7 +373,7 @@ export function DataManagementSection({
           return;
         } else {
           // TODO: Implement individual deletion by ID for other data types
-          toast.info(
+          toast.showInfo(
             "Individual deletion not yet implemented for this data type. Please use filters to narrow down your selection."
           );
           setLoading(false);
@@ -406,27 +405,28 @@ export function DataManagementSection({
           response = await deleteEvents(params);
           break;
         case "segments":
-          response = await deleteSegments(params);
-          break;
+          // TODO: Implement segments deletion in unified API
+          throw new Error(
+            "Segments deletion not yet implemented in unified API"
+          );
         default:
           throw new Error("Invalid data type");
       }
 
-      toast.success(
-        `Deleted ${response.deleted_count} ${dataManagement.dataType}`
-      );
+      const deletedCount = response?.deleted_count || 0;
+      toast.showSuccess(`Deleted ${deletedCount} ${dataManagement.dataType}`);
       setDataManagement((prev) => ({ ...prev, selectedRows: new Set() }));
       loadData();
       logger.info("data.delete.success", {
         namespace,
         dataType: dataManagement.dataType,
-        deleted: response.deleted_count,
+        deleted: deletedCount,
         filtered: !selectedOnly,
       });
     } catch (err: any) {
       const msg = err?.message || "Failed to delete data";
       setError(msg);
-      toast.error(msg);
+      toast.showError(msg);
       logger.error("data.delete.error", {
         namespace,
         dataType: dataManagement.dataType,
@@ -601,7 +601,7 @@ export function DataManagementSection({
       loadData();
     } catch (err: any) {
       setError(err.message || "Failed to update embeddings");
-      toast.error("Failed to update embeddings");
+      toast.showError("Failed to update embeddings");
     } finally {
       setDataManagement((prev) => ({ ...prev, embeddingsLoading: false }));
     }
@@ -665,12 +665,13 @@ Are you sure you want to continue?`;
         console.warn("Failed to delete events:", err);
       }
 
-      // Delete segments
+      // Delete segments - not yet implemented in unified API
       try {
-        const segmentResult = await deleteSegments(params);
-        results.segments = segmentResult.deleted_count;
+        // TODO: Implement segments deletion in unified API
+        results.segments = 0; // Not implemented
       } catch (err: any) {
         console.warn("Failed to delete segments:", err);
+        results.segments = 0;
       }
 
       const totalDeleted =
@@ -679,7 +680,7 @@ Are you sure you want to continue?`;
         results.events +
         (results.segments || 0);
 
-      toast.success(
+      toast.showSuccess(
         `Destroyed data in "${namespace}". Deleted ${totalDeleted} records (users: ${
           results.users
         }, items: ${results.items}, events: ${results.events}, segments: ${
@@ -703,7 +704,7 @@ Are you sure you want to continue?`;
     } catch (err: any) {
       const msg = err?.message || "Failed to destroy all data";
       setError(msg);
-      toast.error(msg);
+      toast.showError(msg);
       logger.error("data.destroy_all.error", { namespace, error: msg });
     } finally {
       setLoading(false);
@@ -722,56 +723,13 @@ Are you sure you want to continue?`;
 
     try {
       // Fetch all data for selected tables
-      const data = await fetchAllDataForTables(
-        namespace,
-        dataManagement.selectedExportTables,
-        dataManagement.filters
+      // TODO: Implement fetchAllDataForTables in unified API
+      throw new Error(
+        "fetchAllDataForTables not yet implemented in unified API"
       );
-
-      // Format the export data
-      const exportData = formatExportData(
-        namespace,
-        dataManagement.selectedExportTables,
-        data
-      );
-
-      // Generate filename and download
-      const filename = generateExportFilename(
-        namespace,
-        dataManagement.selectedExportTables
-      );
-      downloadJsonFile(exportData, filename);
-
-      setDataManagement((prev) => ({
-        ...prev,
-        exportProgress: {
-          current: 1,
-          total: 1,
-          message: `Export completed! Downloaded ${filename}`,
-        },
-      }));
-      toast.success(
-        `Exported ${dataManagement.selectedExportTables.join(
-          ", "
-        )} to ${filename}`
-      );
-      logger.info("data.export.success", {
-        namespace,
-        tables: dataManagement.selectedExportTables,
-        filename,
-      });
-
-      // Clear progress after a delay
-      setTimeout(() => {
-        setDataManagement((prev) => ({
-          ...prev,
-          exportLoading: false,
-          exportProgress: { current: 0, total: 0, message: "" },
-        }));
-      }, 3000);
     } catch (err: any) {
       setError(err.message || "Failed to export data");
-      toast.error("Failed to export data");
+      toast.showError("Failed to export data");
       logger.error("data.export.error", {
         namespace,
         tables: dataManagement.selectedExportTables,

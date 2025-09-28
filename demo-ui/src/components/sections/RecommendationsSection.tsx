@@ -8,7 +8,7 @@ import {
   Button,
   ResultsTable,
 } from "../primitives/UIComponents";
-import { recommend } from "../../services/apiService";
+import { recommend } from "../../services/api";
 import type {
   specs_types_ScoredItem,
   types_RecommendResponse,
@@ -17,7 +17,7 @@ import type {
 import { ExplainModal } from "../primitives/ExplainModal";
 import { SegmentProfileBadge } from "../primitives/SegmentProfileBadge";
 import { DiffBlock, useDiffGenerator } from "../primitives/DiffBlock";
-import { useToast } from "../../ui/Toast";
+import { useToast } from "../../contexts/ToastContext";
 import { logger } from "../../utils/logger";
 import { WhyItWorks } from "../primitives/WhyItWorks";
 import type { AlgorithmBlend } from "../../types/ui";
@@ -79,13 +79,13 @@ export function RecommendationsSection({
     }
 
     try {
-      const r: types_RecommendResponse = await recommend(
-        id,
+      const r: types_RecommendResponse = await recommend({
+        user_id: id,
         namespace,
         k,
         blend,
-        overrides
-      );
+        overrides: overrides || undefined,
+      });
       setRecOut(r.items ?? []);
       setLastResponse(r);
       logger.info("recommend.success", {
@@ -98,7 +98,7 @@ export function RecommendationsSection({
     } catch (e: any) {
       const msg = e?.message || "Failed to get recommendations";
       setRecOut([{ item_id: `Error: ${msg}`, score: 0 }]);
-      toast.error(msg);
+      toast.showError(msg);
       logger.error("recommend.error", { id, k, error: msg });
     } finally {
       setRecLoading(false);
@@ -215,7 +215,7 @@ export function RecommendationsSection({
             }.json`;
             a.click();
             URL.revokeObjectURL(url);
-            toast.success("Changes exported successfully");
+            toast.showSuccess("Changes exported successfully");
           }}
         />
       )}

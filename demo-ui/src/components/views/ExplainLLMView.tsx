@@ -6,6 +6,7 @@ import {
 } from "../../lib/api-client";
 import { Button, Section, Label, TextInput } from "../primitives/UIComponents";
 import { SafeMarkdown } from "../SafeMarkdown";
+import { useStringStorage } from "../../hooks/useStorage";
 
 type TargetType = "item" | "banner" | "surface" | "segment";
 
@@ -30,24 +31,29 @@ export function ExplainLLMView({ namespace }: ExplainLLMViewProps) {
     null
   );
 
-  // Local settings
-  const [llmEnabled, setLlmEnabled] = useState<boolean>(true);
-  const [llmProvider, setLlmProvider] = useState<string>(
-    localStorage.getItem("LLM_PROVIDER") || "openai"
+  // Local settings using storage abstraction
+  const { value: storedLlmEnabled, setValue: setStoredLlmEnabled } =
+    useStringStorage("LLM_ENABLED", "true");
+  const { value: llmProvider, setValue: setLlmProvider } = useStringStorage(
+    "LLM_PROVIDER",
+    "openai"
   );
-  const [llmPrimary, setLlmPrimary] = useState<string>(
-    localStorage.getItem("LLM_MODEL_PRIMARY") || "o4-mini"
+  const { value: llmPrimary, setValue: setLlmPrimary } = useStringStorage(
+    "LLM_MODEL_PRIMARY",
+    "o4-mini"
   );
-  const [llmEscalate, setLlmEscalate] = useState<string>(
-    localStorage.getItem("LLM_MODEL_ESCALATE") || "o3"
+  const { value: llmEscalate, setValue: setLlmEscalate } = useStringStorage(
+    "LLM_MODEL_ESCALATE",
+    "o3"
+  );
+
+  const [llmEnabled, setLlmEnabled] = useState<boolean>(
+    storedLlmEnabled === "true"
   );
 
   useEffect(() => {
-    const storedEnabled = localStorage.getItem("LLM_ENABLED");
-    if (storedEnabled != null) {
-      setLlmEnabled(storedEnabled === "true");
-    }
-  }, []);
+    setLlmEnabled(storedLlmEnabled === "true");
+  }, [storedLlmEnabled]);
 
   const canSubmit = useMemo(() => {
     if (!namespace) return false;
@@ -277,7 +283,7 @@ export function ExplainLLMView({ namespace }: ExplainLLMViewProps) {
                   onChange={(e) => {
                     const v = e.target.checked;
                     setLlmEnabled(v);
-                    localStorage.setItem("LLM_ENABLED", String(v));
+                    setStoredLlmEnabled(String(v));
                   }}
                 />
                 <span>Enable LLM</span>
@@ -287,7 +293,6 @@ export function ExplainLLMView({ namespace }: ExplainLLMViewProps) {
                   value={llmProvider}
                   onChange={(e) => {
                     setLlmProvider(e.target.value);
-                    localStorage.setItem("LLM_PROVIDER", e.target.value);
                   }}
                   style={{
                     padding: 8,
@@ -304,7 +309,6 @@ export function ExplainLLMView({ namespace }: ExplainLLMViewProps) {
                   value={llmPrimary}
                   onChange={(e) => {
                     setLlmPrimary(e.target.value);
-                    localStorage.setItem("LLM_MODEL_PRIMARY", e.target.value);
                   }}
                   style={{
                     padding: 8,
@@ -321,7 +325,6 @@ export function ExplainLLMView({ namespace }: ExplainLLMViewProps) {
                   value={llmEscalate}
                   onChange={(e) => {
                     setLlmEscalate(e.target.value);
-                    localStorage.setItem("LLM_MODEL_ESCALATE", e.target.value);
                   }}
                   style={{
                     padding: 8,

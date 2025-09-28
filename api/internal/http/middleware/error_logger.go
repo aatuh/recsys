@@ -89,7 +89,8 @@ func ErrorLogger(logger *zap.Logger) func(http.Handler) http.Handler {
 				if rec.status >= 500 {
 					logger.Error("http server error", fields...)
 				} else {
-					logger.Warn("http client error", fields...)
+					// Use Info level for 4xx errors to avoid stack traces in development mode
+					logger.Info("http client error", fields...)
 				}
 			}
 		})

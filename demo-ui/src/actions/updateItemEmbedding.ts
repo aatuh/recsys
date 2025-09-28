@@ -1,5 +1,5 @@
 import { embedText, itemToText } from "../embeddings/browserEmbedder";
-import { upsertItems } from "../services/apiService";
+import { upsertItems } from "../services/api";
 
 /**
  * Compute an embedding for a single item in the browser and upsert it.
@@ -19,8 +19,7 @@ export async function updateItemEmbedding(
   const vec = await embedText(text);
 
   await upsertItems(
-    namespace,
-    [{ item_id: item.item_id, embedding: vec }],
+    { namespace, items: [{ item_id: item.item_id, embedding: vec }] },
     (message) => log?.(message)
   );
   log?.(`✔ embedding upserted for ${item.item_id}`);

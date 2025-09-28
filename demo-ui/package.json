@@ -7,14 +7,18 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:prod": "vite build --config vite.config.prod.ts",
     "preview": "vite preview --host 0.0.0.0 --port 3000",
+    "preview:prod": "vite preview --host 0.0.0.0 --port 3000 --config vite.config.prod.ts",
     "codegen:api": "openapi --input ../swagger-service/public/swagger.json --output src/lib/api-client --client fetch",
     "typecheck": "tsc --noEmit",
     "sync:readme": "node scripts/sync-readme.js",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "docker:build:prod": "docker build -f Dockerfile.prod -t recsys-demo-ui:prod .",
+    "docker:run:prod": "docker run -p 3000:3000 --env-file .env.prod recsys-demo-ui:prod"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.2",
@@ -48,6 +52,7 @@
     "eslint-plugin-react-refresh": "^0.4.14",
     "jsdom": "^27.0.0",
     "openapi-typescript-codegen": "^0.29.0",
+    "terser": "^5.44.0",
     "typescript": "^5.9.2",
     "vite": "^7.1.5",
     "vitest": "^2.1.9"

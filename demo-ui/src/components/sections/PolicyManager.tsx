@@ -3,7 +3,7 @@ import { Section, Row, Label, Button } from "../primitives/UIComponents";
 import { BanditService } from "../../lib/api-client";
 import { PolicyEditor } from "./PolicyEditor";
 import { ALGORITHM_PROFILES } from "../../types/algorithmProfiles";
-import { useToast } from "../../ui/Toast";
+import { useToast } from "../../contexts/ToastContext";
 
 // Define BanditPolicy type locally since it's not exported from api-client
 interface types_BanditPolicy {
@@ -187,7 +187,10 @@ export function PolicyManager({
       if (onPoliciesChange) {
         onPoliciesChange(policiesArray);
       }
-      toast.success(`Loaded ${policiesArray.length} policies`);
+      toast.showSuccess(
+        "Policies loaded",
+        `Loaded ${policiesArray.length} policies`
+      );
     } catch (err) {
       console.error("Failed to load bandit policies:", err);
       setError(
@@ -197,7 +200,7 @@ export function PolicyManager({
       );
       // Set empty array on error to prevent map errors
       setPolicies([]);
-      toast.error("Failed to load policies");
+      toast.showError("Failed to load policies");
     } finally {
       setLoading(false);
     }

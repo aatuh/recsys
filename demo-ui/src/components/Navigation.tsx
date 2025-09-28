@@ -1,7 +1,7 @@
 import { Button } from "./primitives/UIComponents";
 import { ThemeToggleCompact, ThemeToggleFull } from "./primitives/ThemeToggle";
 import { color, radius, spacing, text } from "../ui/tokens";
-import { useToast } from "../ui/Toast";
+import { useToast } from "../contexts/ToastContext";
 import { useState } from "react";
 
 export type ViewType =
@@ -65,9 +65,9 @@ export function Navigation({
   const copyLink = async () => {
     try {
       await window.navigator.clipboard.writeText(getViewUrl(activeView));
-      toast.success("Link copied", "Shareable link");
+      toast.showSuccess("Shareable link", "Link copied");
     } catch {
-      toast.error("Failed to copy to clipboard");
+      toast.showError("Failed to copy to clipboard");
     }
   };
 
