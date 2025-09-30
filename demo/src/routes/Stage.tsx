@@ -11,15 +11,15 @@ import { useSearchParams } from "react-router-dom";
 import TopKCard from "../components/TopKCard";
 import type { ScoredItem } from "../types/recommendations";
 import {
+  AdminService,
   BanditService,
   IngestionService,
   RankingService,
-  RuleService,
   ExplainService,
 } from "../lib/api-client";
 import type {
   types_BanditPolicy as BanditPolicy,
-  RuleResponse,
+  types_RuleResponse as RuleResponse,
 } from "../lib/api-client";
 import { ensureApiBase } from "../lib/api";
 
@@ -249,11 +249,7 @@ export default function Stage() {
   // Load active rules for the namespace and surface
   useEffect(() => {
     let cancelled = false;
-    RuleService.getV1AdminRules({
-      namespace,
-      surface,
-      enabled: true,
-    })
+    AdminService.getV1AdminRules(namespace, surface, undefined, true)
       .then((response) => {
         if (cancelled) return;
         setActiveRules(response.rules || []);
@@ -962,16 +958,13 @@ export default function Stage() {
                       <button
                         className="btn btn-ghost btn-tiny rule-disable-btn"
                         onClick={async () => {
-                          if (ruleBusy) return;
+                          if (ruleBusy || !rule.rule_id) return;
                           setRuleBusy(true);
                           try {
-                            await RuleService.putV1AdminRulesRuleId(
-                              rule.rule_id,
-                              {
-                                ...rule,
-                                enabled: false,
-                              }
-                            );
+                            await AdminService.putV1AdminRules(rule.rule_id, {
+                              ...rule,
+                              enabled: false,
+                            });
                             setActiveRules((prev) =>
                               prev.filter((r) => r.rule_id !== rule.rule_id)
                             );
@@ -1194,10 +1187,7 @@ export default function Stage() {
 
           {showEmptyState ? (
             <div className="stage-empty-card">
-              <p>
-                Nothing yet. Run "Decide Policy + Recommend" to fetch a fresh
-                list.
-              </p>
+              <p>No recommendations found.</p>
             </div>
           ) : null}
 
@@ -1297,8 +1287,8 @@ export default function Stage() {
                                 r.target_type === "ITEM" &&
                                 r.item_ids?.includes(id)
                             );
-                            if (existing) {
-                              await RuleService.putV1AdminRulesRuleId(
+                            if (existing && existing.rule_id) {
+                              await AdminService.putV1AdminRules(
                                 existing.rule_id,
                                 {
                                   ...existing,
@@ -1312,7 +1302,7 @@ export default function Stage() {
                               );
                             } else {
                               const created =
-                                await RuleService.postV1AdminRules({
+                                await AdminService.postV1AdminRules({
                                   namespace,
                                   surface,
                                   name: `Pin ${id} - Demo`,
@@ -1342,8 +1332,8 @@ export default function Stage() {
                                 r.target_type === "BRAND" &&
                                 r.target_key === brand
                             );
-                            if (existing) {
-                              await RuleService.putV1AdminRulesRuleId(
+                            if (existing && existing.rule_id) {
+                              await AdminService.putV1AdminRules(
                                 existing.rule_id,
                                 {
                                   ...existing,
@@ -1357,7 +1347,7 @@ export default function Stage() {
                               );
                             } else {
                               const created =
-                                await RuleService.postV1AdminRules({
+                                await AdminService.postV1AdminRules({
                                   namespace,
                                   surface,
                                   name: `Block ${brand} - Demo`,

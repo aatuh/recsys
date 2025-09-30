@@ -898,6 +898,160 @@ definitions:
         example: vip
         type: string
     type: object
+  types.RuleDryRunPinnedItem:
+    properties:
+      from_candidates:
+        type: boolean
+      item_id:
+        type: string
+      rule_ids:
+        items:
+          type: string
+        type: array
+    type: object
+  types.RuleDryRunRequest:
+    properties:
+      items:
+        items:
+          type: string
+        type: array
+      namespace:
+        type: string
+      segment_id:
+        type: string
+      surface:
+        type: string
+    type: object
+  types.RuleDryRunResponse:
+    properties:
+      pinned_items:
+        items:
+          $ref: '#/definitions/types.RuleDryRunPinnedItem'
+        type: array
+      reason_tags:
+        additionalProperties:
+          items:
+            type: string
+          type: array
+        type: object
+      rule_effects_per_item:
+        additionalProperties:
+          $ref: '#/definitions/types.RuleItemEffectResponse'
+        type: object
+      rules_evaluated:
+        items:
+          type: string
+        type: array
+      rules_matched:
+        items:
+          $ref: '#/definitions/types.RuleMatchResponse'
+        type: array
+    type: object
+  types.RuleItemEffectResponse:
+    properties:
+      blocked:
+        type: boolean
+      boost_delta:
+        type: number
+      pinned:
+        type: boolean
+    type: object
+  types.RuleMatchResponse:
+    properties:
+      action:
+        type: string
+      item_ids:
+        items:
+          type: string
+        type: array
+      rule_id:
+        type: string
+      target_type:
+        type: string
+    type: object
+  types.RulePayload:
+    properties:
+      action:
+        type: string
+      boost_value:
+        type: number
+      description:
+        type: string
+      enabled:
+        type: boolean
+      item_ids:
+        items:
+          type: string
+        type: array
+      max_pins:
+        type: integer
+      name:
+        type: string
+      namespace:
+        type: string
+      priority:
+        type: integer
+      segment_id:
+        type: string
+      surface:
+        type: string
+      target_key:
+        type: string
+      target_type:
+        type: string
+      valid_from:
+        type: string
+      valid_until:
+        type: string
+    type: object
+  types.RuleResponse:
+    properties:
+      action:
+        type: string
+      boost_value:
+        type: number
+      created_at:
+        type: string
+      description:
+        type: string
+      enabled:
+        type: boolean
+      item_ids:
+        items:
+          type: string
+        type: array
+      max_pins:
+        type: integer
+      name:
+        type: string
+      namespace:
+        type: string
+      priority:
+        type: integer
+      rule_id:
+        type: string
+      segment_id:
+        type: string
+      surface:
+        type: string
+      target_key:
+        type: string
+      target_type:
+        type: string
+      updated_at:
+        type: string
+      valid_from:
+        type: string
+      valid_until:
+        type: string
+    type: object
+  types.RulesListResponse:
+    properties:
+      rules:
+        items:
+          $ref: '#/definitions/types.RuleResponse'
+        type: array
+    type: object
   types.SegmentDryRunRequest:
     properties:
       context:
@@ -980,6 +1134,157 @@ info:
   title: Recsys API
   version: 0.0.1
 paths:
+  /v1/admin/rules:
+    get:
+      consumes:
+      - application/json
+      description: List merchandising rules with optional filtering
+      parameters:
+      - description: Namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: Filter by surface
+        in: query
+        name: surface
+        type: string
+      - description: Filter by segment ID
+        in: query
+        name: segment_id
+        type: string
+      - description: Filter by enabled status
+        in: query
+        name: enabled
+        type: boolean
+      - description: Filter by active status
+        in: query
+        name: active_now
+        type: boolean
+      - description: Filter by action type
+        in: query
+        name: action
+        type: string
+      - description: Filter by target type
+        in: query
+        name: target_type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.RulesListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.APIError'
+      summary: List merchandising rules
+      tags:
+      - admin
+    post:
+      consumes:
+      - application/json
+      description: Create a new merchandising rule (BLOCK, PIN, BOOST)
+      parameters:
+      - description: Rule payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.RulePayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/types.RuleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.APIError'
+      summary: Create a merchandising rule
+      tags:
+      - admin
+  /v1/admin/rules/{rule_id}:
+    put:
+      consumes:
+      - application/json
+      description: Update an existing merchandising rule
+      parameters:
+      - description: Rule ID
+        in: path
+        name: rule_id
+        required: true
+        type: string
+      - description: Rule payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.RulePayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.RuleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.APIError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.APIError'
+      summary: Update a merchandising rule
+      tags:
+      - admin
+  /v1/admin/rules/dry-run:
+    post:
+      consumes:
+      - application/json
+      description: Preview matched rules and effects without mutating state
+      parameters:
+      - description: Dry run request
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.RuleDryRunRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.RuleDryRunResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.APIError'
+      summary: Preview rule effects
+      tags:
+      - admin
   /v1/audit/decisions:
     get:
       parameters:

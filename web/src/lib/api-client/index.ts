@@ -59,6 +59,14 @@ export { types_RecommendRequest } from './models/types_RecommendRequest';
 export type { types_RecommendResponse } from './models/types_RecommendResponse';
 export { types_RecommendWithBanditRequest } from './models/types_RecommendWithBanditRequest';
 export type { types_RecommendWithBanditResponse } from './models/types_RecommendWithBanditResponse';
+export type { types_RuleDryRunPinnedItem } from './models/types_RuleDryRunPinnedItem';
+export type { types_RuleDryRunRequest } from './models/types_RuleDryRunRequest';
+export type { types_RuleDryRunResponse } from './models/types_RuleDryRunResponse';
+export type { types_RuleItemEffectResponse } from './models/types_RuleItemEffectResponse';
+export type { types_RuleMatchResponse } from './models/types_RuleMatchResponse';
+export type { types_RulePayload } from './models/types_RulePayload';
+export type { types_RuleResponse } from './models/types_RuleResponse';
+export type { types_RulesListResponse } from './models/types_RulesListResponse';
 export type { types_SegmentDryRunRequest } from './models/types_SegmentDryRunRequest';
 export type { types_SegmentDryRunResponse } from './models/types_SegmentDryRunResponse';
 export type { types_SegmentProfilesListResponse } from './models/types_SegmentProfilesListResponse';
@@ -68,6 +76,7 @@ export type { types_SegmentsUpsertRequest } from './models/types_SegmentsUpsertR
 export type { types_User } from './models/types_User';
 export type { types_UsersUpsertRequest } from './models/types_UsersUpsertRequest';
 
+export { AdminService } from './services/AdminService';
 export { AuditService } from './services/AuditService';
 export { BanditService } from './services/BanditService';
 export { ConfigService } from './services/ConfigService';

@@ -13,21 +13,21 @@
 * **Impl notes**: Add `packages/api-client` workspace (shared OpenAPI client). New `docker-compose` service + Caddy route. `.env` with `VITE_API_BASE_URL`.
 * **Acceptance**: `make dev` spins up existing services + `exec-demo`; opening `exec.local` shows the hero.
 
-**EDS‑01 · Single‑button Hero: “Start the demo”**
+✅ **EDS‑01 · Single‑button Hero: “Start the demo”**
 
 * **What**: One primary CTA that (a) seeds a namespace, (b) autoselects persona+surface, (c) routes to the Stage.
 * **Why**: One click to delight.
 * **Impl notes**: Use shared seeding adapter; seed users/items/events + baseline segments; persist namespace to querystring.
 * **Acceptance**: One click → populated recommendations with human reasons.
 
-**EDS‑02 · The Stage (split layout)**
+✅ **EDS‑02 · The Stage (split layout)**
 
 * **What**: Left = compact controls (Persona, Surface, K). Right = large, elegant Top‑K cards with 3 badges each (e.g., Popular now · Similar to X · Diverse brands). Subheader shows a 1‑sentence explanation.
 * **Why**: Executives focus on the result; controls are there but quiet.
 * **Impl notes**: Reuse tokens; build `TopKCard`, `BadgesRow`, `HumanSummary` components. Keep advanced tucked away.
 * **Acceptance**: Clean stage, scroll‑free on laptop, obvious “what I’m seeing.”
 
-**EDS‑03 · “Explain this page” (plain English)**
+✅ **EDS‑03 · “Explain this page” (plain English)**
 
 * **What**: Button above the list opens a concise modal describing why these items ranked (no jargon). Link to details.
 * **Why**: Tell first, numbers on demand.

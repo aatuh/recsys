@@ -17,7 +17,17 @@ import (
 	specstypes "recsys/specs/types"
 )
 
-// RulesCreate handles POST /admin/rules.
+// RulesCreate godoc
+// @Summary      Create a merchandising rule
+// @Description  Create a new merchandising rule (BLOCK, PIN, BOOST)
+// @Tags         admin
+// @Accept       json
+// @Produce      json
+// @Param        payload body types.RulePayload true "Rule payload"
+// @Success      201 {object} types.RuleResponse
+// @Failure      400 {object} common.APIError
+// @Failure      500 {object} common.APIError
+// @Router       /v1/admin/rules [post]
 func (h *Handler) RulesCreate(w http.ResponseWriter, r *http.Request) {
 	var payload specstypes.RulePayload
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
@@ -66,7 +76,19 @@ func (h *Handler) RulesCreate(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(resp)
 }
 
-// RulesUpdate handles PUT /admin/rules/{rule_id}.
+// RulesUpdate godoc
+// @Summary      Update a merchandising rule
+// @Description  Update an existing merchandising rule
+// @Tags         admin
+// @Accept       json
+// @Produce      json
+// @Param        rule_id path string true "Rule ID"
+// @Param        payload body types.RulePayload true "Rule payload"
+// @Success      200 {object} types.RuleResponse
+// @Failure      400 {object} common.APIError
+// @Failure      404 {object} common.APIError
+// @Failure      500 {object} common.APIError
+// @Router       /v1/admin/rules/{rule_id} [put]
 func (h *Handler) RulesUpdate(w http.ResponseWriter, r *http.Request) {
 	ruleIDParam := chi.URLParam(r, "rule_id")
 	ruleID, err := uuid.Parse(ruleIDParam)
@@ -135,7 +157,23 @@ func (h *Handler) RulesUpdate(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(resp)
 }
 
-// RulesList handles GET /admin/rules.
+// RulesList godoc
+// @Summary      List merchandising rules
+// @Description  List merchandising rules with optional filtering
+// @Tags         admin
+// @Accept       json
+// @Produce      json
+// @Param        namespace query string true "Namespace"
+// @Param        surface query string false "Filter by surface"
+// @Param        segment_id query string false "Filter by segment ID"
+// @Param        enabled query boolean false "Filter by enabled status"
+// @Param        active_now query boolean false "Filter by active status"
+// @Param        action query string false "Filter by action type"
+// @Param        target_type query string false "Filter by target type"
+// @Success      200 {object} types.RulesListResponse
+// @Failure      400 {object} common.APIError
+// @Failure      500 {object} common.APIError
+// @Router       /v1/admin/rules [get]
 func (h *Handler) RulesList(w http.ResponseWriter, r *http.Request) {
 	orgID := h.defaultOrgFromHeader(r)
 	q := r.URL.Query()
@@ -199,7 +237,17 @@ func (h *Handler) RulesList(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(resp)
 }
 
-// RulesDryRun handles POST /admin/rules/dry-run.
+// RulesDryRun godoc
+// @Summary      Preview rule effects
+// @Description  Preview matched rules and effects without mutating state
+// @Tags         admin
+// @Accept       json
+// @Produce      json
+// @Param        payload body types.RuleDryRunRequest true "Dry run request"
+// @Success      200 {object} types.RuleDryRunResponse
+// @Failure      400 {object} common.APIError
+// @Failure      500 {object} common.APIError
+// @Router       /v1/admin/rules/dry-run [post]
 func (h *Handler) RulesDryRun(w http.ResponseWriter, r *http.Request) {
 	if h.RulesManager == nil || !h.RulesManager.Enabled() {
 		common.BadRequest(w, r, "rules_disabled", "rules engine is disabled", nil)
