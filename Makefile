@@ -9,7 +9,8 @@ codegen: ## Generate code
 	@cd api && make swag
 	@cp api/swagger/swagger.json swagger-service/public/swagger.json
 	@cp api/swagger/swagger.yaml swagger-service/public/swagger.yaml
-	@cd demo-ui && pnpm run codegen:api && pnpm run sync:readme
+	@cd web && pnpm run codegen:api && pnpm run sync:readme
+	@cd demo && pnpm run codegen:api
 	@echo "🔄 Code generated successfully"
 
 dev: ## Start development environment
@@ -30,21 +31,21 @@ test: ## Run tests
 
 lint: ## Lint API and UI
 	@echo "🔍 Linting UI..."
-	@cd demo-ui && pnpm run lint
+	@cd web && pnpm run lint
 
 fmt: ## Format UI (eslint --fix)
 	@echo "🧼 Formatting UI..."
-	@cd demo-ui && pnpm run lint:fix || true
+	@cd web && pnpm run lint:fix || true
 
 typecheck: ## Typecheck UI
 	@echo "🔎 Typechecking UI..."
-	@cd demo-ui && pnpm run typecheck
+	@cd web && pnpm run typecheck
 
 prod-build: ## Build production Docker image
 	@echo "🏗️  Building production image..."
-	@cd demo-ui && docker build -f Dockerfile.prod -t recsys-demo-ui:prod .
-	@echo "✅ Production image built: recsys-demo-ui:prod"
+	@cd web && docker build -f Dockerfile.prod -t recsys-web:prod .
+	@echo "✅ Production image built: recsys-web:prod"
 
 prod-run: ## Run production environment
 	@echo "🚀 Starting production environment..."
-	@docker-compose -f docker-compose.yml -f demo-ui/docker-compose.prod.yml up
+	@docker-compose -f docker-compose.yml -f web/docker-compose.prod.yml up

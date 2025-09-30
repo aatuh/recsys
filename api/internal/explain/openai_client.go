@@ -66,11 +66,11 @@ func (c *OpenAIClient) Generate(ctx context.Context, model string, systemPrompt 
 		Input: []openAIInput{
 			{
 				Role:    "system",
-				Content: []openAIContent{{Type: "text", Text: systemPrompt}},
+				Content: []openAIContent{{Type: "input_text", Text: systemPrompt}},
 			},
 			{
 				Role:    "user",
-				Content: []openAIContent{{Type: "text", Text: userPrompt}},
+				Content: []openAIContent{{Type: "input_text", Text: userPrompt}},
 			},
 		},
 	}

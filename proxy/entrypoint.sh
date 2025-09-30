@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Check if required environment variables are provided
 missing_vars=()
-for var in WEB_DOMAIN API_DOMAIN SWAGGER_DOMAIN WEB_BACKEND API_BACKEND SWAGGER_BACKEND; do
+for var in WEB_DOMAIN API_DOMAIN SWAGGER_DOMAIN DEMO_DOMAIN WEB_BACKEND API_BACKEND SWAGGER_BACKEND DEMO_BACKEND; do
   if [ -z "${!var+x}" ]; then
     missing_vars+=("$var")
   fi
@@ -11,7 +11,7 @@ done
 
 if [ "${#missing_vars[@]}" -ne 0 ]; then
   echo "Error: Required environment variables are not set: ${missing_vars[*]}"
-  echo "Please set WEB_DOMAIN, API_DOMAIN, SWAGGER_DOMAIN, WEB_BACKEND, API_BACKEND, and SWAGGER_BACKEND environment variables."
+  echo "Please set WEB_DOMAIN, API_DOMAIN, SWAGGER_DOMAIN, DEMO_DOMAIN, WEB_BACKEND, API_BACKEND, SWAGGER_BACKEND, and DEMO_BACKEND environment variables."
   exit 1
 fi
 
@@ -26,7 +26,7 @@ if [[ ! -f "${CAROOT}/rootCA-key.pem" ]]; then
 fi
 
 # Generate certs for both domains
-for domain in "${WEB_DOMAIN}" "${API_DOMAIN}" "${SWAGGER_DOMAIN}"; do
+for domain in "${WEB_DOMAIN}" "${API_DOMAIN}" "${SWAGGER_DOMAIN}" "${DEMO_DOMAIN}"; do
   if [[ ! -f "${CERT_DIR}/${domain}.crt" ]]; then
     echo "⏳ generating cert for ${domain}"
     mkcert -key-file "${CERT_DIR}/${domain}.key" \
@@ -52,6 +52,12 @@ ${SWAGGER_DOMAIN} {
     tls ${CERT_DIR}/${SWAGGER_DOMAIN}.crt ${CERT_DIR}/${SWAGGER_DOMAIN}.key
 
     reverse_proxy ${SWAGGER_BACKEND}
+}
+
+${DEMO_DOMAIN} {
+    tls ${CERT_DIR}/${DEMO_DOMAIN}.crt ${CERT_DIR}/${DEMO_DOMAIN}.key
+
+    reverse_proxy ${DEMO_BACKEND}
 }
 EOF
 

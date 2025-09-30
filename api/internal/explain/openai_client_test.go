@@ -26,7 +26,7 @@ func TestOpenAIClientGenerate(t *testing.T) {
 	client := &OpenAIClient{
 		HTTP: newTestClient(func(r *http.Request) (*http.Response, error) {
 			require.Equal(t, "Bearer test-key", r.Header.Get("Authorization"))
-			body := io.NopCloser(strings.NewReader(`{"output":[{"content":[{"type":"text","text":"hello"}]}]}`))
+			body := io.NopCloser(strings.NewReader(`{"output":[{"content":[{"type":"output_text","text":"hello"}]}]}`))
 			return &http.Response{
 				StatusCode: http.StatusOK,
 				Body:       body,

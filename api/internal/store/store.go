@@ -606,6 +606,36 @@ func (s *Store) ListEvents(ctx context.Context, orgID uuid.UUID, ns string, limi
 	return events, total, rows.Err()
 }
 
+// CountEventsByName returns the number of events with a given logical name
+// (e.g. 'click') within a time window for a namespace. If itemID is non-empty,
+// the count is restricted to that item.
+func (s *Store) CountEventsByName(
+	ctx context.Context,
+	orgID uuid.UUID,
+	ns string,
+	from, to time.Time,
+	itemID string,
+	name string,
+) (int, error) {
+	args := []any{orgID, ns, from, to, name}
+	where := "WHERE e.org_id = $1 AND e.namespace = $2 AND e.ts >= $3 AND e.ts <= $4 AND etc.name = $5"
+	if itemID != "" {
+		where += " AND e.item_id = $6"
+		args = append(args, itemID)
+	}
+	query := `
+        SELECT COUNT(*)
+        FROM events e
+        JOIN event_type_config etc
+          ON etc.org_id = e.org_id AND etc.namespace = e.namespace AND etc.type = e.type
+        ` + where
+	var total int
+	if err := s.Pool.QueryRow(ctx, query, args...).Scan(&total); err != nil {
+		return 0, err
+	}
+	return total, nil
+}
+
 // DeleteUsers deletes users based on filters
 func (s *Store) DeleteUsers(ctx context.Context, orgID uuid.UUID, ns string, filters map[string]interface{}) (int, error) {
 	// Build WHERE clause

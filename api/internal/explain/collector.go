@@ -47,8 +47,31 @@ func (c *Collector) Collect(ctx context.Context, orgID uuid.UUID, req Request) (
 	errorsCount := 0
 
 	for _, summary := range summaries {
-		impressions += c.countTargetImpressions(summary.FinalItemsJSON, req.TargetID)
-		clicks += c.countTargetClicks(summary.FinalItemsJSON, req.TargetID)
+		// For surface targets, impressions are total items shown across
+		// decisions, and clicks are any click-like reasons across items.
+		// For item targets, keep legacy behavior: count only that item's
+		// occurrences and click-like reasons attached to that item.
+		if strings.EqualFold(req.TargetType, "surface") {
+			impressions += c.countSurfaceImpressions(summary.FinalItemsJSON)
+			clicks += c.countSurfaceClicks(summary.FinalItemsJSON)
+		} else {
+			impressions += c.countTargetImpressions(summary.FinalItemsJSON, req.TargetID)
+			clicks += c.countTargetClicks(summary.FinalItemsJSON, req.TargetID)
+		}
+
+		// Augment click counts using events table where available. For surface
+		// targets, count all clicks in the namespace/window. For item targets,
+		// count clicks for that item id in the same window. This provides a
+		// stronger signal than relying on decision-trace reasons alone.
+		if strings.EqualFold(req.TargetType, "surface") {
+			if evClicks, err := c.Store.CountEventsByName(ctx, orgID, req.Namespace, req.From, req.To, "", "click"); err == nil {
+				clicks = evClicks
+			}
+		} else if req.TargetID != "" {
+			if evClicks, err := c.Store.CountEventsByName(ctx, orgID, req.Namespace, req.From, req.To, req.TargetID, "click"); err == nil {
+				clicks = evClicks
+			}
+		}
 		if len(summary.ExtrasJSON) > 0 {
 			c.appendAuditEvidence(summary.ExtrasJSON, &evidence)
 			if c.extrasReportError(summary.ExtrasJSON) {
@@ -130,6 +153,39 @@ func (c *Collector) countTargetClicks(raw []byte, targetID string) int {
 		if id, _ := item["item_id"].(string); id != targetID {
 			continue
 		}
+		reasons, _ := item["reasons"].([]any)
+		for _, reason := range reasons {
+			if s, ok := reason.(string); ok && strings.Contains(strings.ToLower(s), "click") {
+				total++
+			}
+		}
+	}
+	return total
+}
+
+// countSurfaceImpressions counts total items shown in a decision's final list.
+func (c *Collector) countSurfaceImpressions(raw []byte) int {
+	if len(raw) == 0 {
+		return 0
+	}
+	var items []map[string]any
+	if err := json.Unmarshal(raw, &items); err != nil {
+		return 0
+	}
+	return len(items)
+}
+
+// countSurfaceClicks counts click-like reasons across all items in a decision.
+func (c *Collector) countSurfaceClicks(raw []byte) int {
+	if len(raw) == 0 {
+		return 0
+	}
+	var items []map[string]any
+	if err := json.Unmarshal(raw, &items); err != nil {
+		return 0
+	}
+	total := 0
+	for _, item := range items {
 		reasons, _ := item["reasons"].([]any)
 		for _, reason := range reasons {
 			if s, ok := reason.(string); ok && strings.Contains(strings.ToLower(s), "click") {
