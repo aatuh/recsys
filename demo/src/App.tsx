@@ -33,10 +33,10 @@ export default function App() {
     <div className="app-shell">
       <section className="app-hero" aria-label="Executive demo setup">
         <header>
-          <h1 className="app-hero-title">Executive-ready recommendations</h1>
+          <h1 className="app-hero-title">RecSys Demo</h1>
           <p className="app-hero-copy">
-            Start a fresh namespace, seed realistic catalog data, and jump straight
-            to the stage experience designed for a three-minute wow.
+            Explore RecSys with realistic catalog data, and step into a stage
+            experience created to give a clear view in just a few minutes.
           </p>
         </header>
         <div className="app-hero-actions">
