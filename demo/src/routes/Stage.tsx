@@ -1489,6 +1489,11 @@ const Controls = forwardRef<ControlsHandle, ControlsProps>(function Controls(
           <option value="Casual">Casual</option>
           <option value="New">New</option>
         </select>
+        <div className="controls-help">
+          User behavior profile that affects personalization. VIP users get
+          premium items, Casual users see popular items, New users get diverse
+          recommendations.
+        </div>
       </label>
 
       <label className="controls-field">
@@ -1517,6 +1522,11 @@ const Controls = forwardRef<ControlsHandle, ControlsProps>(function Controls(
           <option value="home_personalized">Home · Personalized</option>
           <option value="browse_shoes">Browse · Shoes</option>
         </select>
+        <div className="controls-help">
+          Where recommendations appear in your app. Different surfaces use
+          different algorithms - Home shows trending items, Browse focuses on
+          category relevance.
+        </div>
       </label>
 
       <label className="controls-field">
@@ -1529,6 +1539,10 @@ const Controls = forwardRef<ControlsHandle, ControlsProps>(function Controls(
           value={formK}
           onChange={(e) => onFormKChange(e.target.value)}
         />
+        <div className="controls-help">
+          Number of recommendations to show (5-30). Higher values give more
+          variety but may include less relevant items.
+        </div>
       </label>
 
       {showInlineApply ? (

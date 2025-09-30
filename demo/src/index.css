@@ -1573,6 +1573,13 @@ button:focus-visible {
   box-shadow: 0 0 0 2px var(--color-accent-soft);
 }
 
+.controls-help {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+  margin-top: var(--space-1);
+}
+
 /* Recommendations summary */
 .recommendations-summary {
   margin-bottom: var(--space-4);
