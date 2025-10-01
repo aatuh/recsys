@@ -121,8 +121,12 @@ button:focus-visible {
 }
 
 .app-hero-title {
-  font-size: var(--font-size-xl);
-  margin: 0;
+  font-size: var(--font-size-2xl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-3) 0;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
 .app-hero-copy {
@@ -133,8 +137,80 @@ button:focus-visible {
 
 .app-hero-actions {
   display: flex;
+  justify-content: center;
   gap: var(--space-3);
   align-items: center;
+}
+
+/* Pitch deck styles */
+.pitch-deck {
+  margin-top: var(--space-8);
+}
+
+.pitch-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.pitch-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-xs);
+  transition: all var(--transition-base);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  position: relative;
+}
+
+.pitch-card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--color-border);
+  background: var(--color-surface-soft);
+}
+
+.pitch-card-title {
+  font-size: var(--font-size-lg);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+.pitch-card-hook {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-accent);
+  margin: 0;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+.pitch-card-copy {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.6;
+  flex: 1;
+  opacity: 0.85;
+}
+
+/* .pitch-card-cta and .pitch-card-icon removed - no longer needed */
+
+.pitch-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: var(--space-6);
 }
 
 .stage-shell {
@@ -899,6 +975,28 @@ button:focus-visible {
   .app-hero-actions {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  /* Mobile pitch cards */
+  .pitch-cards {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .pitch-card {
+    padding: var(--space-4);
+  }
+
+  .pitch-card-title {
+    font-size: var(--font-size-base);
+  }
+
+  .pitch-card-hook {
+    font-size: var(--font-size-sm);
+  }
+
+  .pitch-card-copy {
+    font-size: var(--font-size-xs);
   }
 
   .stage-shell {

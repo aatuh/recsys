@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import TopKCard from "../components/TopKCard";
 import type { ScoredItem } from "../types/recommendations";
 import {
@@ -65,6 +65,7 @@ type ControlsHandle = {
 
 export default function Stage() {
   const [params, setParams] = useSearchParams();
+  const navigate = useNavigate();
   const namespace = params.get("ns") || "default";
   const userId = params.get("u") || "user-1";
   const rawK = Number(params.get("k") || 10);
@@ -777,7 +778,16 @@ export default function Stage() {
   return (
     <div className="stage-shell">
       <header className="demo-title-header">
-        <h1 className="demo-title">RecSys Demo</h1>
+        <h1 className="demo-title">
+          <span
+            className="demo-title-link"
+            onClick={() => navigate("/")}
+            title="Back to main page"
+            style={{ cursor: "pointer" }}
+          >
+            RecSys Demo
+          </span>
+        </h1>
       </header>
 
       <div className="stage-grid">
