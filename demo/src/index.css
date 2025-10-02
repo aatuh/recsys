@@ -213,6 +213,34 @@ button:focus-visible {
   margin-top: var(--space-6);
 }
 
+/* ChatGPT navigation link styling */
+.chatgpt-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  text-decoration: none;
+  transition: all var(--transition-base);
+}
+
+.chatgpt-nav-link:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  border-color: transparent !important;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  text-decoration: none;
+}
+
+.chatgpt-icon {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  transition: color var(--transition-base);
+}
+
+.chatgpt-nav-link:hover .chatgpt-icon {
+  color: white !important;
+}
+
 .stage-shell {
   max-width: 1280px;
   margin: 0 auto;

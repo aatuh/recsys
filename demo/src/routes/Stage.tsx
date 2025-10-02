@@ -838,6 +838,17 @@ export default function Stage() {
             >
               Explain recommendations
             </button>
+            {import.meta.env.VITE_CUSTOM_CHATGPT_URL && (
+              <a
+                href={import.meta.env.VITE_CUSTOM_CHATGPT_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-ghost btn-small chatgpt-nav-link"
+              >
+                <span className="chatgpt-icon">✓</span>
+                Ask AI Expert
+              </a>
+            )}
           </div>
 
           {showControlsSection && (
