@@ -6,12 +6,14 @@
 
 ## P0 — The 3‑minute WOW Path (Must‑ship)
 
+# TODO: Cluttered, must be 100% mobile friendly
+
 ✅ **EDS‑00 · Create the new service scaffold**
 
-* **What**: New `exec-demo` web app (Vite + React) in the monorepo; separate Docker service and route (e.g., `https://exec.local`). Minimal dependencies, same OpenAPI client.
+* **What**: New `recsys-demo` web app (Vite + React) in the monorepo; separate Docker service and route (e.g., `https://exec.local`). Minimal dependencies, same OpenAPI client.
 * **Why**: Isolate the exec experience, keep demo‑ui as a playground.
 * **Impl notes**: Add `packages/api-client` workspace (shared OpenAPI client). New `docker-compose` service + Caddy route. `.env` with `VITE_API_BASE_URL`.
-* **Acceptance**: `make dev` spins up existing services + `exec-demo`; opening `exec.local` shows the hero.
+* **Acceptance**: `make dev` spins up existing services + `recsys-demo`; opening `exec.local` shows the hero.
 
 ✅ **EDS‑01 · Single‑button Hero: “Start the demo”**
 
@@ -27,6 +29,8 @@
 * **Impl notes**: Reuse tokens; build `TopKCard`, `BadgesRow`, `HumanSummary` components. Keep advanced tucked away.
 * **Acceptance**: Clean stage, scroll‑free on laptop, obvious “what I’m seeing.”
 
+# TODO: "Why this list" explanation is not very useful or informative (from the pov of "executive")
+
 ✅ **EDS‑03 · “Explain this page” (plain English)**
 
 * **What**: Button above the list opens a concise modal describing why these items ranked (no jargon). Link to details.
@@ -34,21 +38,25 @@
 * **Impl notes**: Summarize reason codes into 5 badge types + 1 paragraph. Details panel can show raw reasons.
 * **Acceptance**: A readable 2–3 sentence summary that a non‑technical VP understands.
 
-**EDS‑04 · One‑tap Before/After (personalization moment)**
+✅ **EDS‑04 · One‑tap Before/After (personalization moment)**
 
 * **What**: Button runs a 5‑event “week” (view→view→click→add→purchase) and animates a side‑by‑side diff.
 * **Why**: Visually proves adaptivity.
 * **Impl notes**: Simulate events for the selected persona; recompute recs; animate changed ranks with subtle transitions. Provide “Replay for another persona.”
 * **Acceptance**: Press once → clear, animated delta of the list.
 
-**EDS‑05 · Bandit “chooses a winner” in 10 seconds**
+TODO: "Watch it adapt" popup "replay button should be on top to allow constant scrolling down
+
+✅ **EDS-05 · Bandit “chooses a winner” in 10 seconds**
 
 * **What**: Preload two policies (Baseline vs Diverse). Single CTA: “Decide + Recommend.” Show winner chip + tiny “uplift this session”.
 * **Why**: Demonstrate online learning without knobs.
 * **Impl notes**: One‑shot endpoint (decide+rank) + mock reward. Keep copy to one sentence.
 * **Acceptance**: One press, visibly different list, winner labeled.
 
-**EDS‑06 · Rule engine pinch‑test**
+TODO: Any way to affect bandit decision in demo (Similar as "watch it adapt")?
+
+✅ **EDS-06 · Rule engine pinch-test**
 
 * **What**: Tiny “Merchandising” inline demo: click “Pin this item to #1” or “Block brand X” → instant re‑rank snapshot.
 * **Why**: Show business control without scary UI.
@@ -57,7 +65,7 @@
 
 **EDS‑07 · Reset & Share**
 
-* **What**: “Reset Demo” (reseed) + “Copy Link to this story”.
+* **What**: “Reset Demo” (reseed) + “Copy Link to this story” + back button to main page.
 * **Why**: Zero dead ends; reproducible demo.
 * **Impl notes**: Namespace in URL; reseed clears and reloads; copy writes a short URL (optional).
 * **Acceptance**: Fresh start in one click; link opens same state on another machine.
@@ -134,7 +142,7 @@
 
 **EDS‑A1 · Monorepo wiring**
 
-* Add `packages/api-client` (generated), import from both UIs. Add `exec-demo/` with its own vite config, tokens, and build.
+* Add `packages/api-client` (generated), import from both UIs. Add `recsys-demo/` with its own vite config, tokens, and build.
 
 **EDS‑A2 · Docker & Proxy**
 
@@ -142,7 +150,7 @@
 
 **EDS‑A3 · Config schema**
 
-* Mirror env validation in `exec-demo` (`VITE_API_BASE_URL`, `VITE_SWAGGER_UI_URL`, logging, analytics flag).
+* Mirror env validation in `recsys-demo` (`VITE_API_BASE_URL`, `VITE_SWAGGER_UI_URL`, logging, analytics flag).
 
 **EDS‑A4 · Shared utilities**
 
@@ -150,7 +158,7 @@
 
 **EDS‑A5 · CI**
 
-* Lint, typecheck, build `exec-demo`; upload Playwright screenshots on PR.
+* Lint, typecheck, build `recsys-demo`; upload Playwright screenshots on PR.
 
 ---
 

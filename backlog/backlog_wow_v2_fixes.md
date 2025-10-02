@@ -176,7 +176,7 @@ Micro-impl notes (drop-in)
 // call before decide
 async function primeBanditWinner(ns: string, surface: string, winner: "baseline"|"diverse") {
   const loser = winner === "baseline" ? "diverse" : "baseline";
-  const bucket = "exec-demo"; // constant so rewards aggregate
+  const bucket = "recsys-demo"; // constant so rewards aggregate
   // 6 wins for winner, 1 loss for loser — tweak as needed
   for (let i=0;i<6;i++) await BanditService.postV1BanditReward({namespace: ns, surface, policy_id: winner, reward: 1, bucket_key: bucket, request_id: `prime-${winner}-${i}`});
   for (let i=0;i<2;i++) await BanditService.postV1BanditReward({namespace: ns, surface, policy_id: loser,  reward: 0, bucket_key: bucket, request_id: `prime-${loser}-${i}`});
