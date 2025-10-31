@@ -4,7 +4,8 @@ set -eu
 URL="${OPENAPI_URL:-http://recsys-swagger:8080/swagger.json}"
 
 # Install deps once (mounted volume persists node_modules)
-if [ ! -d node_modules ]; then
+# If the volume created an empty node_modules directory, ensure we still install
+if [ ! -f node_modules/.bin/vite ]; then
   echo "Installing deps with pnpm..."
   pnpm install --frozen-lockfile=false
 fi
@@ -18,5 +19,3 @@ done
 
 echo "Starting Vite dev server..."
 exec pnpm dev --host 0.0.0.0 --port 3001
-
-

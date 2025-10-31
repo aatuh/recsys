@@ -115,6 +115,29 @@ services:
       - demo_node_modules:/app/node_modules
     command: ["/bin/sh", "-c", "/app/entrypoint.sh"]
 
+  shop:
+    container_name: recsys-shop
+    build:
+      context: ./shop
+      dockerfile: Dockerfile
+    depends_on:
+      api:
+        condition: service_started
+      swagger:
+        condition: service_started
+    env_file:
+      - ./shop/.env
+    environment:
+      - DATABASE_URL=file:./dev.db
+      - RECSYS_API_BASE_URL=http://api:8000
+      - RECSYS_NAMESPACE=default
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./shop:/app
+      - shop_node_modules:/app/node_modules
+    command: ["/bin/sh", "-c", "/app/entrypoint.sh"]
+
   swagger:
     container_name: recsys-swagger
     build:
@@ -163,3 +186,4 @@ volumes:
   caddy_certs:
   web_node_modules:
   demo_node_modules:
+  shop_node_modules:

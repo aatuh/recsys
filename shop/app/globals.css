@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: 255 255 255;
+  --fg: 17 24 39;
+  --surface: 255 255 255;
+  --border: 229 231 235;
+  --muted: 107 114 128;
+}
+
+.dark {
+  --bg: 17 24 39; /* gray-900 */
+  --fg: 229 231 235; /* gray-200 */
+  --surface: 31 41 55; /* gray-800 */
+  --border: 55 65 81; /* gray-700 */
+  --muted: 156 163 175; /* gray-400 */
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  color: rgb(var(--fg));
+  background: rgb(var(--bg));
+}
+
+input,
+select,
+textarea,
+button {
+  background: rgb(var(--surface));
+  color: rgb(var(--fg));
+  border: 1px solid rgb(var(--border));
+}
+
+table {
+  border-color: rgb(var(--border));
+}
+th,
+td {
+  background: rgb(var(--surface));
+  color: rgb(var(--fg));
+  border-color: rgb(var(--border));
+}
+
+.dark .bg-gray-50 {
+  background-color: rgb(var(--surface)) !important;
+}
+.text-muted-foreground {
+  color: rgb(var(--muted));
+}

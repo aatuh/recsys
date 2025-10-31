@@ -10,6 +10,7 @@ codegen: ## Generate code
 	@cp api/swagger/swagger.json swagger-service/public/swagger.json
 	@cp api/swagger/swagger.yaml swagger-service/public/swagger.yaml
 	@cd web && pnpm run codegen:api && pnpm run sync:readme
+	@cd shop && pnpm run codegen:api || pnpm run codegen:api:local
 	@cd demo && pnpm run codegen:api
 	@echo "🔄 Code generated successfully"
 

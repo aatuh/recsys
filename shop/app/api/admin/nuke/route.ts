@@ -1,0 +1,58 @@
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/server/db/client";
+
+export async function POST(req: NextRequest) {
+  const body = (await req.json().catch(() => ({}))) as { tables?: string[] };
+  const requested = new Set(
+    (
+      body.tables ?? [
+        "events",
+        "orderItem",
+        "order",
+        "cartItem",
+        "cart",
+        "product",
+        "user",
+      ]
+    ).map((t) => t)
+  );
+  // Expand dependencies so FK constraints won't fail even if caller passes a subset
+  if (requested.has("user")) {
+    requested.add("events");
+    requested.add("orderItem");
+    requested.add("order");
+    requested.add("cartItem");
+    requested.add("cart");
+  }
+  if (requested.has("product")) {
+    requested.add("orderItem");
+    requested.add("cartItem");
+  }
+  if (requested.has("order")) {
+    requested.add("orderItem");
+  }
+  if (requested.has("cart")) {
+    requested.add("cartItem");
+  }
+  // Enforce safe deletion order (children first)
+  const order = [
+    "events",
+    "orderItem",
+    "order",
+    "cartItem",
+    "cart",
+    "product",
+    "user",
+  ];
+  for (const t of order) {
+    if (!requested.has(t)) continue;
+    if (t === "events") await prisma.event.deleteMany({});
+    else if (t === "orderItem") await prisma.orderItem.deleteMany({});
+    else if (t === "order") await prisma.order.deleteMany({});
+    else if (t === "cartItem") await prisma.cartItem.deleteMany({});
+    else if (t === "cart") await prisma.cart.deleteMany({});
+    else if (t === "product") await prisma.product.deleteMany({});
+    else if (t === "user") await prisma.user.deleteMany({});
+  }
+  return NextResponse.json({ status: "nuked", tables: Array.from(requested) });
+}
