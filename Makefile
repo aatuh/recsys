@@ -1,4 +1,6 @@
-.PHONY: help codegen dev build test lint fmt typecheck uilint uitypecheck prod-build prod-run
+.PHONY: help codegen dev build test lint fmt typecheck uilint uitypecheck prod-build prod-run env
+
+PROFILE ?= dev
 
 help: ## Show this help message
 	@echo "Available targets:"
@@ -25,6 +27,17 @@ down: ## Clean up containers and volumes
 build: ## Build all services
 	@echo "🔨 Building all services..."
 	@docker-compose build
+
+env: ## Generate .env/.env.test from profile (PROFILE=dev|test|prod)
+	@profile=$(PROFILE); \
+	case "$$profile" in \
+		dev) src="api/env/dev.env"; dst="api/.env";; \
+		test) src="api/env/test.env"; dst="api/.env.test";; \
+		prod) src="api/env/prod.env"; dst="api/.env";; \
+		*) echo "Unknown PROFILE '$$profile'. Use dev, test, or prod."; exit 1;; \
+	esac; \
+	cp "$$src" "$$dst"; \
+	echo "Generated $$dst from $$src"
 
 test: ## Run tests
 	@echo "🧪 Running tests..."
@@ -54,4 +67,3 @@ prod-run: ## Run production environment
 health:
 	@echo "🏥 Checking service healthiness..."
 	@cd api && make health
-

@@ -72,7 +72,7 @@
   **Proposal:** Add `httptest`-backed suites (or dockerized integration tests) that exercise ingestion → recommendation → audit flows, validate Swagger schema compliance, and guard against regression in pagination/filters. Automate them via `make test`.  
   **Impact:** Higher confidence in refactors, better regression detection, and living documentation of API behavior.
 
-- [ ] **Ticket:** Provide developer-friendly local profiles and feature flags  
+- [x] **Ticket:** Provide developer-friendly local profiles and feature flags  
   **Category:** DX / Maintainability  
   **Problem:** Developers must mirror production-like env vars to run the API; toggles such as rule engine or decision tracing require manual env editing.  
   **Proposal:** Introduce profile-based config (`dev`, `test`, `prod`) with sane defaults, CLI to generate `.env` templates, and feature flags exposed via config structures. Document workflows in `README.md`.  

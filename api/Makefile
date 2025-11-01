@@ -46,8 +46,8 @@ TEST_PATTERN ?=
 PKG          ?= ./...
 test:
 	@echo "🧪 Running tests in Docker. Pattern: '$(TEST_PATTERN)'  Flags: '$(FLAGS)'  Pkg: '$(PKG)'"
-	@docker compose up -d db api
-	@docker compose run --no-deps --rm \
+	@API_ENV_FILE=./api/.env.test docker compose -f ../docker-compose.yml up -d db api
+	@API_ENV_FILE=./api/.env.test docker compose -f ../docker-compose.yml run --no-deps --rm \
 		-e TEST_PATTERN='$(TEST_PATTERN)' \
 		-e FLAGS='$(FLAGS)' \
 		-e PKG='$(PKG)' \

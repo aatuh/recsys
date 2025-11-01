@@ -71,6 +71,7 @@ func (s *Service) Explain(ctx context.Context, orgID uuid.UUID, req Request) (Re
 	var warnings []string
 
 	if !s.Config.Enabled || s.Client == nil {
+		model = "fallback"
 		markdown = fallbackMarkdown(facts, evidence)
 		warnings = append(warnings, "llm_disabled")
 	} else {
@@ -78,6 +79,7 @@ func (s *Service) Explain(ctx context.Context, orgID uuid.UUID, req Request) (Re
 		defer cancel()
 		markdown, err = s.Client.Generate(ctx, model, systemPrompt, userPrompt, s.Config.MaxTokens)
 		if err != nil {
+			model = "fallback"
 			markdown = fallbackMarkdown(facts, evidence)
 			if errors.Is(err, ErrCircuitOpen) {
 				warnings = append(warnings, "llm_circuit_open")

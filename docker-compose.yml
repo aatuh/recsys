@@ -29,7 +29,7 @@ services:
     depends_on:
       db: { condition: service_healthy }
     env_file:
-      - ./api/.env
+      - ${API_ENV_FILE:-./api/.env}
     environment:
       - API_PORT=${API_PORT}
     ports: ["${API_PORT}:8000"]

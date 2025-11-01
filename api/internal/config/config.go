@@ -25,6 +25,7 @@ type Config struct {
 	Explain        ExplainConfig
 	Migrations     MigrationConfig
 	Observability  ObservabilityConfig
+	Features       FeatureFlagsConfig
 }
 
 type ServerConfig struct {
@@ -154,6 +155,59 @@ type ObservabilityConfig struct {
 	TraceExporter  string
 }
 
+type FeatureFlagsConfig struct {
+	Rules         bool
+	DecisionTrace bool
+	Explain       bool
+}
+
+type profileDefaults struct {
+	AppDebug             bool
+	AuthEnabled          bool
+	RulesEnabled         bool
+	DecisionTraceEnabled bool
+	ExplainEnabled       bool
+	MetricsEnabled       bool
+	TracingEnabled       bool
+}
+
+var defaultProfiles = map[string]profileDefaults{
+	"development": {
+		AppDebug:             true,
+		AuthEnabled:          false,
+		RulesEnabled:         false,
+		DecisionTraceEnabled: false,
+		ExplainEnabled:       false,
+		MetricsEnabled:       true,
+		TracingEnabled:       false,
+	},
+	"test": {
+		AppDebug:             false,
+		AuthEnabled:          false,
+		RulesEnabled:         false,
+		DecisionTraceEnabled: false,
+		ExplainEnabled:       false,
+		MetricsEnabled:       false,
+		TracingEnabled:       false,
+	},
+	"production": {
+		AppDebug:             false,
+		AuthEnabled:          false,
+		RulesEnabled:         true,
+		DecisionTraceEnabled: true,
+		ExplainEnabled:       true,
+		MetricsEnabled:       true,
+		TracingEnabled:       true,
+	},
+}
+
+func defaultsForProfile(profile string) profileDefaults {
+	if def, ok := defaultProfiles[profile]; ok {
+		return def
+	}
+	return defaultProfiles["development"]
+}
+
 type CircuitBreakerConfig struct {
 	Enabled           bool
 	FailureThreshold  int
@@ -168,6 +222,8 @@ func Load(ctx context.Context, src Source) (Config, error) {
 	l := newLoader(src)
 
 	var cfg Config
+	profile := strings.ToLower(l.optionalString("ENV", "development"))
+	profileDefaults := defaultsForProfile(profile)
 
 	cfg.Server = ServerConfig{
 		Port:              l.requiredString("API_PORT"),
@@ -206,8 +262,8 @@ func Load(ctx context.Context, src Source) (Config, error) {
 	}
 
 	cfg.Debug = DebugConfig{
-		Environment: strings.ToLower(l.optionalString("ENV", "development")),
-		AppDebug:    l.bool("APP_DEBUG", false),
+		Environment: profile,
+		AppDebug:    l.bool("APP_DEBUG", profileDefaults.AppDebug),
 	}
 
 	cfg.HTTP = HTTPConfig{
@@ -218,7 +274,7 @@ func Load(ctx context.Context, src Source) (Config, error) {
 	}
 
 	cfg.Auth = AuthConfig{
-		Enabled: l.bool("API_AUTH_ENABLED", false),
+		Enabled: l.bool("API_AUTH_ENABLED", profileDefaults.AuthEnabled),
 		APIKeys: make(map[string]APIKeyConfig),
 	}
 
@@ -376,14 +432,14 @@ func Load(ctx context.Context, src Source) (Config, error) {
 	}
 
 	cfg.Rules = RulesConfig{
-		Enabled:      l.bool("RULES_ENABLE", false),
+		Enabled:      l.bool("RULES_ENABLE", profileDefaults.RulesEnabled),
 		CacheRefresh: l.optionalDuration("RULES_CACHE_REFRESH", 2*time.Second),
 		MaxPinSlots:  l.optionalIntGreaterThan("RULES_MAX_PIN_SLOTS", 0, 3),
 		AuditSample:  l.optionalPositiveFloat("RULES_AUDIT_SAMPLE", 1.0),
 	}
 
 	cfg.Audit = AuditConfig{}
-	decisionTraceEnabled := l.bool("AUDIT_DECISIONS_ENABLED", false)
+	decisionTraceEnabled := l.bool("AUDIT_DECISIONS_ENABLED", profileDefaults.DecisionTraceEnabled)
 	if decisionTraceEnabled {
 		cfg.Audit.DecisionTrace = DecisionTraceConfig{
 			Enabled:         true,
@@ -397,7 +453,7 @@ func Load(ctx context.Context, src Source) (Config, error) {
 	}
 
 	cfg.Explain = ExplainConfig{}
-	cfg.Explain.Enabled = l.bool("LLM_EXPLAIN_ENABLED", false)
+	cfg.Explain.Enabled = l.bool("LLM_EXPLAIN_ENABLED", profileDefaults.ExplainEnabled)
 	cfg.Explain.Provider = l.optionalString("LLM_PROVIDER", "")
 	cfg.Explain.ModelPrimary = l.optionalString("LLM_MODEL_PRIMARY", "")
 	cfg.Explain.ModelEscalate = l.optionalString("LLM_MODEL_ESCALATE", "")
@@ -414,9 +470,9 @@ func Load(ctx context.Context, src Source) (Config, error) {
 	}
 
 	cfg.Observability = ObservabilityConfig{
-		MetricsEnabled: l.bool("OBSERVABILITY_METRICS_ENABLED", true),
+		MetricsEnabled: l.bool("OBSERVABILITY_METRICS_ENABLED", profileDefaults.MetricsEnabled),
 		MetricsPath:    l.optionalString("OBSERVABILITY_METRICS_PATH", "/metrics"),
-		TracingEnabled: l.bool("OBSERVABILITY_TRACING_ENABLED", false),
+		TracingEnabled: l.bool("OBSERVABILITY_TRACING_ENABLED", profileDefaults.TracingEnabled),
 		TraceExporter:  strings.ToLower(l.optionalString("OBSERVABILITY_TRACING_EXPORTER", "stdout")),
 	}
 
@@ -431,6 +487,12 @@ func Load(ctx context.Context, src Source) (Config, error) {
 		default:
 			l.appendErr("OBSERVABILITY_TRACING_EXPORTER", fmt.Errorf("unsupported tracing exporter %q", cfg.Observability.TraceExporter))
 		}
+	}
+
+	cfg.Features = FeatureFlagsConfig{
+		Rules:         cfg.Rules.Enabled,
+		DecisionTrace: cfg.Audit.DecisionTrace.Enabled,
+		Explain:       cfg.Explain.Enabled,
 	}
 
 	if err := l.err(); err != nil {

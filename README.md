@@ -41,6 +41,21 @@ users, items, and events. The service returns top-K recommendations and
   user segments, with optional time limits. The system includes a dry-run mode
   to test which rules would apply to a set of items before making changes.
 
+## Configuration profiles and feature flags
+
+- The API recognises three configuration profiles: `development`, `test`, and
+  `production`. Set the `ENV` environment variable (defaults to `development`)
+  to pick the profile. Each profile applies sensible defaults for debug mode,
+  feature toggles (rules, decision trace, LLM explain), and observability.
+- Generate ready-to-use `.env` files with `make env PROFILE=dev|test|prod`. The
+  command copies the matching template from `api/env/` into `api/.env`
+  (and `api/.env.test` for the `test` profile).
+- The config loader exposes consolidated feature flags via
+  `config.Config.Features`, keeping the effective state of optional subsystems
+  in one place.
+- `make test` automatically runs the suite with the `test` profile so the API
+  starts in a deterministic, offline-friendly mode.
+
 ## Recommendation Algorithms Used
 
 These algorithms are used together in the recommendation pipeline.

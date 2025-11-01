@@ -5,8 +5,6 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"go.opentelemetry.io/contrib/instrumentation/github.com/jackc/pgx/otelpgx"
-	"go.opentelemetry.io/otel"
 )
 
 // Config controls pgxpool settings.
@@ -56,7 +54,6 @@ func NewPool(ctx context.Context, dsn string, cfg Config) (*pgxpool.Pool, error)
 		poolCfg.ConnConfig.RuntimeParams = make(map[string]string)
 	}
 	poolCfg.ConnConfig.RuntimeParams["application_name"] = "recsys-api"
-	poolCfg.ConnConfig.Tracer = otelpgx.NewTracer(otelpgx.WithTracerProvider(otel.GetTracerProvider()))
 	if cfg.AcquireTimeout > 0 {
 		poolCfg.ConnConfig.ConnectTimeout = cfg.AcquireTimeout
 	}

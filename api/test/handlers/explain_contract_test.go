@@ -90,7 +90,7 @@ func TestExplainLLMFallbackContract(t *testing.T) {
 	require.NoError(t, json.Unmarshal(body, &explainResp))
 
 	require.Contains(t, explainResp.Markdown, "## Summary")
-	require.Equal(t, "fallback", explainResp.Model)
+	require.Equal(t, "fallback", explainResp.Model, "expected fallback explain implementation; ensure LLM_EXPLAIN_ENABLED is false in test environment")
 	require.Equal(t, "miss", explainResp.Cache)
 	require.NotEmpty(t, explainResp.Facts["metrics"])
 
@@ -101,5 +101,5 @@ func TestExplainLLMFallbackContract(t *testing.T) {
 			break
 		}
 	}
-	require.True(t, hasDisabledWarning, "expected llm_disabled warning")
+	require.True(t, hasDisabledWarning, "expected llm_disabled warning; ensure LLM_EXPLAIN_ENABLED is false for integration tests")
 }
