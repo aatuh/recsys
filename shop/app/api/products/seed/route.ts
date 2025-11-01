@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/server/db/client";
+import { upsertItems } from "@/server/services/recsys";
+import { buildItemContract } from "@/lib/contracts/item";
 
 export async function POST(req: NextRequest) {
   const { count = 50 } = (await req.json().catch(() => ({}))) as {
@@ -148,5 +150,38 @@ export async function POST(req: NextRequest) {
     tagsCsv: categories[i % categories.length].toLowerCase(),
   }));
   await prisma.product.createMany({ data });
+
+  // Get the created products to sync to recsys
+  const createdProducts = await prisma.product.findMany({
+    where: {
+      sku: {
+        in: data.map((d) => d.sku),
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    take: count,
+  });
+
+  // Upsert to recsys with actual database IDs
+  void upsertItems(
+    createdProducts.map(
+      (product: {
+        id: string;
+        name: string;
+        sku: string;
+        price: number;
+        currency: string;
+        brand?: string | null;
+        category?: string | null;
+        description?: string | null;
+        imageUrl?: string | null;
+        stockCount: number;
+        tagsCsv?: string | null;
+      }) => buildItemContract(product)
+    )
+  ).catch((error) => {
+    console.error("Failed to sync products to recsys:", error);
+  });
+
   return NextResponse.json({ inserted: data.length });
 }

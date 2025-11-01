@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/server/db/client";
+import { deleteItems } from "@/server/services/recsys";
 
 type BatchPayload = {
   action: "update" | "delete";
   ids: string[];
-  data?: any;
+  data?: Record<string, unknown>;
 };
 
 export async function POST(req: NextRequest) {
@@ -12,15 +13,30 @@ export async function POST(req: NextRequest) {
   if (!body.ids?.length)
     return NextResponse.json({ error: "ids required" }, { status: 400 });
   if (body.action === "delete") {
+    // Delete dependent records first to avoid foreign key constraints
+    await prisma.cartItem.deleteMany({
+      where: { productId: { in: body.ids } },
+    });
+    await prisma.orderItem.deleteMany({
+      where: { productId: { in: body.ids } },
+    });
+
+    // Now delete the products
     const res = await prisma.product.deleteMany({
       where: { id: { in: body.ids } },
     });
+
+    // Sync deletion with Recsys
+    void deleteItems(body.ids).catch(() => null);
     return NextResponse.json({ deleted: res.count });
   }
   if (body.action === "update") {
     const { data } = body;
+    if (!data)
+      return NextResponse.json({ error: "data required" }, { status: 400 });
     const tx = body.ids.map((id) =>
-      prisma.product.update({ where: { id }, data })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      prisma.product.update({ where: { id }, data: data as any })
     );
     await prisma.$transaction(tx);
     return NextResponse.json({ updated: body.ids.length });

@@ -19,17 +19,37 @@ export default function ClickTelemetry() {
           path === "/cart" ||
           path === "/orders";
         if (!isBusiness) return;
+
         const productId = a.getAttribute("data-product-id") || undefined;
+        const isRecommended = a.hasAttribute("data-recommended");
+        const widget = a.getAttribute("data-widget") || undefined;
+        const rank = a.getAttribute("data-rank")
+          ? parseInt(a.getAttribute("data-rank")!)
+          : undefined;
+
         void emit({
           type: "click",
           productId,
-          meta: { href: path, text: a.textContent?.trim() },
+          meta: {
+            surface: path.startsWith("/products")
+              ? "pdp"
+              : path === "/cart"
+              ? "cart"
+              : path === "/orders"
+              ? "checkout"
+              : "home",
+            widget,
+            recommended: isRecommended,
+            rank,
+            href: path,
+            text: a.textContent?.trim(),
+          },
         });
       } catch {}
     }
     document.addEventListener("click", handler, { capture: true });
     return () =>
-      document.removeEventListener("click", handler, { capture: true } as any);
+      document.removeEventListener("click", handler, { capture: true });
   }, [emit]);
   return null;
 }

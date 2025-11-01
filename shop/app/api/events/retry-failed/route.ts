@@ -12,18 +12,29 @@ export async function POST() {
     take: 200,
   });
   if (failed.length === 0) return NextResponse.json({ retried: 0 });
-  const payload = failed.map((e: any) => ({
-    user_id: e.userId,
-    item_id: e.productId ?? undefined,
-    type: mapEventTypeToCode(e.type as any),
-    value: e.value,
-    ts: e.ts.toISOString(),
-    source_event_id: e.id,
-  }));
+  const payload = failed.map(
+    (e: {
+      userId: string;
+      productId: string | null;
+      type: string;
+      value: number;
+      ts: Date;
+      id: string;
+    }) => ({
+      user_id: e.userId,
+      item_id: e.productId ?? undefined,
+      type: mapEventTypeToCode(
+        e.type as "view" | "click" | "add" | "purchase" | "custom"
+      ),
+      value: e.value,
+      ts: e.ts.toISOString(),
+      source_event_id: e.id,
+    })
+  );
   try {
     await forwardEventsBatch(payload);
     await prisma.event.updateMany({
-      where: { id: { in: failed.map((f: any) => f.id) } },
+      where: { id: { in: failed.map((f: { id: string }) => f.id) } },
       data: { recsysStatus: "sent", sentAt: new Date() },
     });
     return NextResponse.json({ retried: failed.length });

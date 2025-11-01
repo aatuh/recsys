@@ -91,11 +91,11 @@ export default function AdminProductsPage() {
     } else if (selectedIds.length > 1) {
       // If multiple selected, prefill common values; otherwise leave empty
       const sel = items.filter((x) => selected[x.id]);
-      const allEq = (getter: (p: Product) => any) => {
+      const allEq = (getter: (p: Product) => string | number) => {
         if (sel.length === 0) return "";
         const v = getter(sel[0]);
         for (const s of sel) if (getter(s) !== v) return "";
-        return v ?? "";
+        return String(v ?? "");
       };
       setForm({
         name: allEq((p) => p.name) || "",
@@ -206,7 +206,7 @@ export default function AdminProductsPage() {
       return;
     }
     // Batch update selected: only apply touched fields
-    const data: any = {};
+    const data: Record<string, unknown> = {};
     if (touched.name) data.name = form.name;
     if (touched.sku) data.sku = form.sku;
     if (touched.price) data.price = form.price ? parseFloat(form.price) : 0;

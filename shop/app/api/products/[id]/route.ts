@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/server/db/client";
 import { upsertItems, deleteItems } from "@/server/services/recsys";
+import { buildItemContract } from "@/lib/contracts/item";
 
 export async function GET(
   _req: NextRequest,
@@ -22,19 +23,12 @@ export async function PATCH(
     where: { id },
     data: body,
   });
-  void upsertItems([
-    {
-      item_id: item.id,
-      available: item.stockCount > 0,
-      price: item.price,
-      tags: item.tagsCsv
-        ? item.tagsCsv
-            .split(",")
-            .map((s: string) => s.trim())
-            .filter(Boolean)
-        : undefined,
-    },
-  ]).catch(() => null);
+
+  // Sync changes to Recsys
+  void upsertItems([buildItemContract(item)]).catch((error) => {
+    console.error("Failed to sync product update to recsys:", error);
+  });
+
   return NextResponse.json(item);
 }
 
@@ -43,6 +37,16 @@ export async function DELETE(
   context: { params: Promise<{ id: string }> }
 ) {
   const { id } = await context.params;
+
+  // Delete dependent records first to avoid foreign key constraints
+  await prisma.cartItem.deleteMany({
+    where: { productId: id },
+  });
+  await prisma.orderItem.deleteMany({
+    where: { productId: id },
+  });
+
+  // Now delete the product
   await prisma.product.delete({ where: { id } });
   void deleteItems([id]).catch(() => null);
   return NextResponse.json({ status: "deleted" });

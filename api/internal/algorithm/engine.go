@@ -278,9 +278,10 @@ func (e *Engine) applyExclusions(
 	// Filter candidates by excluding excluded items.
 	filtered := make([]types.ScoredItem, 0, len(candidates))
 	for _, candidate := range candidates {
-		if _, skip := exclude[candidate.ItemID]; !skip {
-			filtered = append(filtered, candidate)
+		if _, skip := exclude[candidate.ItemID]; skip {
+			continue
 		}
+		filtered = append(filtered, candidate)
 	}
 
 	return filtered, nil

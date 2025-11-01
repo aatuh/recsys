@@ -108,6 +108,9 @@ func TestRecommend_TenantOverrideAffectsRanking(t *testing.T) {
 	// Initial recs: defaults mean B (purchase=1.0) should beat A (view=0.1)
 	body1 := client.DoRequestWithStatus(t, http.MethodPost, endpoints.Recommendations, map[string]any{
 		"user_id": "u1", "namespace": "default", "k": 2,
+		"overrides": map[string]any{
+			"rule_exclude_events": false,
+		},
 	}, http.StatusOK)
 	var r1 struct {
 		Items []struct {
@@ -130,6 +133,9 @@ func TestRecommend_TenantOverrideAffectsRanking(t *testing.T) {
 	// Recs after override: A should now top B
 	body2 := client.DoRequestWithStatus(t, http.MethodPost, endpoints.Recommendations, map[string]any{
 		"user_id": "u1", "namespace": "default", "k": 2,
+		"overrides": map[string]any{
+			"rule_exclude_events": false,
+		},
 	}, http.StatusOK)
 	var r2 struct {
 		Items []struct {

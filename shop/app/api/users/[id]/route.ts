@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/server/db/client";
+import { upsertUsers, deleteUsers } from "@/server/services/recsys";
+import { buildUserContract } from "@/lib/contracts/user";
 
 export async function GET(
   _req: NextRequest,
@@ -18,6 +20,10 @@ export async function PATCH(
   const { id } = await context.params;
   const body = await req.json();
   const item = await prisma.user.update({ where: { id }, data: body });
+
+  // Sync changes to Recsys
+  void upsertUsers([buildUserContract(item)]).catch(() => null);
+
   return NextResponse.json(item);
 }
 
@@ -27,5 +33,6 @@ export async function DELETE(
 ) {
   const { id } = await context.params;
   await prisma.user.delete({ where: { id } });
+  void deleteUsers([id]).catch(() => null);
   return NextResponse.json({ status: "deleted" });
 }

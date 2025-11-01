@@ -17,12 +17,22 @@ export async function GET(req: NextRequest) {
     prisma.cart.count(),
   ]);
 
-  const items = carts.map((c) => ({
-    id: c.id,
-    userId: c.userId,
-    items: c.items.reduce((sum, it) => sum + it.qty, 0),
-    updatedAt: c.updatedAt,
-  }));
+  const items = carts.map(
+    (c: {
+      id: string;
+      userId: string;
+      updatedAt: Date;
+      items: Array<{ qty: number }>;
+    }) => ({
+      id: c.id,
+      userId: c.userId,
+      items: c.items.reduce(
+        (sum: number, it: { qty: number }) => sum + it.qty,
+        0
+      ),
+      updatedAt: c.updatedAt,
+    })
+  );
 
   return NextResponse.json({ items, total });
 }

@@ -36,14 +36,23 @@ export default function AdminEventsPage() {
       const res = await fetch(url);
       const data = await res.json();
       setItems(
-        (data.items || []).map((e: any) => ({
-          id: e.id,
-          type: e.type,
-          userId: e.userId,
-          productId: e.productId,
-          ts: e.ts,
-          recsysStatus: e.recsysStatus,
-        }))
+        (data.items || []).map(
+          (e: {
+            id: string;
+            type: string;
+            userId: string;
+            productId: string | null;
+            ts: string;
+            recsysStatus: string;
+          }) => ({
+            id: e.id,
+            type: e.type,
+            userId: e.userId,
+            productId: e.productId,
+            ts: e.ts,
+            recsysStatus: e.recsysStatus,
+          })
+        )
       );
       setTotal(data.total || 0);
       setSelected({});

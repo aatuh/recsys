@@ -10,7 +10,7 @@ export type EventFilter = {
 
 export const EventRepository = {
   async list(filter: EventFilter = {}) {
-    const where: any = {};
+    const where: Record<string, unknown> = {};
     if (filter.type) where.type = filter.type;
     if (filter.userId) where.userId = filter.userId;
     if (filter.productId) where.productId = filter.productId;
@@ -28,7 +28,16 @@ export const EventRepository = {
     return { items, total, limit, offset };
   },
 
-  async createBatch(events: any[]) {
+  async createBatch(
+    events: Array<{
+      type: string;
+      userId: string;
+      productId?: string | null;
+      value: number;
+      ts: Date;
+      metaText?: string | null;
+    }>
+  ) {
     return prisma.$transaction(
       events.map((e) => prisma.event.create({ data: e }))
     );

@@ -19,15 +19,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Cart empty" }, { status: 400 });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const order = await prisma.$transaction(async (tx: any) => {
     const total = cart.items.reduce(
-      (s: number, i: any) => s + i.qty * i.unitPrice,
+      (s: number, i: { qty: number; unitPrice: number }) =>
+        s + i.qty * i.unitPrice,
       0
     );
     const o = await tx.order.create({
       data: { userId, total, currency: "USD" },
     });
-    for (const i of cart.items as any[]) {
+    for (const i of cart.items) {
       await tx.orderItem.create({
         data: {
           orderId: o.id,
@@ -46,7 +48,7 @@ export async function POST(req: NextRequest) {
   });
 
   // Record purchase events and forward
-  const events = (cart.items as any[]).map((i: any) => ({
+  const events = cart.items.map((i: { productId: string; qty: number }) => ({
     userId,
     productId: i.productId,
     type: "purchase",
@@ -55,28 +57,37 @@ export async function POST(req: NextRequest) {
   }));
 
   const created = await prisma.$transaction(
-    events.map((e: any) =>
-      prisma.event.create({
-        data: {
-          userId: e.userId,
-          productId: e.productId,
-          type: "purchase",
-          value: e.value,
-          ts: new Date(e.ts),
-          recsysStatus: "pending",
-        },
-      })
+    events.map(
+      (e: { userId: string; productId: string; value: number; ts: string }) =>
+        prisma.event.create({
+          data: {
+            userId: e.userId,
+            productId: e.productId,
+            type: "purchase",
+            value: e.value,
+            ts: new Date(e.ts),
+            recsysStatus: "pending",
+          },
+        })
     )
   );
 
-  const payload = created.map((e: any) => ({
-    user_id: e.userId,
-    item_id: e.productId ?? undefined,
-    type: mapEventTypeToCode("purchase"),
-    value: e.value,
-    ts: e.ts.toISOString(),
-    source_event_id: e.id,
-  }));
+  const payload = created.map(
+    (e: {
+      userId: string;
+      productId: string | null;
+      value: number;
+      ts: Date;
+      id: string;
+    }) => ({
+      user_id: e.userId,
+      item_id: e.productId ?? undefined,
+      type: mapEventTypeToCode("purchase"),
+      value: e.value,
+      ts: e.ts.toISOString(),
+      source_event_id: e.id,
+    })
+  );
   await forwardEventsBatch(payload).catch(() => null);
 
   return NextResponse.json({ orderId: order.id, total: order.total });

@@ -42,8 +42,8 @@ export default function NewProductPage() {
       if (!res.ok) throw new Error("Failed to create");
       const created = await res.json();
       window.location.href = `/products/${encodeURIComponent(created.id)}`;
-    } catch (err: any) {
-      setError(err?.message || "Error");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error");
     } finally {
       setSubmitting(false);
     }

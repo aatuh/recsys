@@ -17,13 +17,13 @@ export default function AdminCartsPage() {
   );
 
   async function load() {
-    const res = await fetch(`/api/cart?userId=`); // placeholder to fetch nothing
+    await fetch(`/api/cart?userId=`); // placeholder to fetch nothing
     // carts listing API isn't implemented; synthesize from users
     const ur = await fetch(`/api/users?limit=1000`);
     const data = await ur.json();
     // For demo purposes, we don't have a list carts API; show users as entries
     setItems(
-      (data.items || []).map((u: any) => ({
+      (data.items || []).map((u: { id: string }) => ({
         id: u.id,
         userId: u.id,
         items: 0,

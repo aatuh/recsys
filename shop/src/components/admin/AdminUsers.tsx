@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useToast } from "@/components/ToastProvider";
 
 type User = { id: string; displayName: string };
@@ -27,7 +27,7 @@ export default function AdminUsers() {
     setTouched({ displayName: true });
   }
 
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     try {
       const url = new URL(`/api/users`, window.location.origin);
@@ -42,11 +42,13 @@ export default function AdminUsers() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [limit, offset, q]);
 
   useEffect(() => {
     load();
-  }, [limit, offset]);
+  }, [limit, offset, load]);
+
+  const selectedIdsString = selectedIds.join("|");
 
   useEffect(() => {
     setTouched({});
@@ -62,7 +64,7 @@ export default function AdminUsers() {
     } else {
       setForm({ displayName: "" });
     }
-  }, [selectedIds.join("|"), items]);
+  }, [selectedIdsString, items, selected, selectedIds]);
 
   async function onDeleteSelected() {
     if (!selectedIds.length) return;
@@ -77,7 +79,7 @@ export default function AdminUsers() {
 
   async function onUpdateSelected() {
     if (!selectedIds.length) return;
-    const data: any = {};
+    const data: Record<string, unknown> = {};
     if (touched.displayName) data.displayName = form.displayName;
     if (!Object.keys(data).length) return toast("No changes to apply");
     await fetch("/api/users/batch", {

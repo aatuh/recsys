@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"net/http"
 	"sync"
 	"time"
@@ -96,24 +97,39 @@ func ErrorMetricsMiddleware(metrics *ErrorMetrics) func(http.Handler) http.Handl
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			start := time.Now()
-			rec := &statusRecorder{ResponseWriter: w, status: 200}
+			rec := &metricsRecorder{ResponseWriter: w, status: http.StatusOK}
 			next.ServeHTTP(rec, r)
 
 			// Record error metrics for 4xx and 5xx responses
-			if rec.status >= 400 {
+			if rec.status >= http.StatusBadRequest {
 				metrics.RecordError(rec.status, r.URL.Path, time.Since(start))
 			}
 		})
 	}
 }
 
-// LogErrorMetrics logs error metrics periodically
-func LogErrorMetrics(logger *zap.Logger, metrics *ErrorMetrics, interval time.Duration) {
+// LogErrorMetrics logs error metrics periodically until the context is done.
+func LogErrorMetrics(ctx context.Context, logger *zap.Logger, metrics *ErrorMetrics, interval time.Duration) {
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 
-	for range ticker.C {
-		stats := metrics.GetStats()
-		logger.Info("error metrics", zap.Any("stats", stats))
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			stats := metrics.GetStats()
+			logger.Info("error metrics", zap.Any("stats", stats))
+		}
 	}
+}
+
+type metricsRecorder struct {
+	http.ResponseWriter
+	status int
+}
+
+func (r *metricsRecorder) WriteHeader(status int) {
+	r.status = status
+	r.ResponseWriter.WriteHeader(status)
 }

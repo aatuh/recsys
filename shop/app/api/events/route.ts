@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/server/db/client";
-import {
-  forwardEventsBatch,
-  mapEventTypeToCode,
-} from "@/server/services/recsys";
+import { forwardEventsBatch } from "@/server/services/recsys";
+import { buildEventContract } from "@/lib/contracts/event";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -66,19 +64,32 @@ export async function PUT() {
     return NextResponse.json({ forwarded: 0 });
   }
 
-  const payload = pending.map((e: any) => ({
-    user_id: e.userId,
-    item_id: e.productId ?? undefined,
-    type: mapEventTypeToCode(e.type as any),
-    value: e.value,
-    ts: e.ts.toISOString(),
-    meta: e.metaText ? safeParse(e.metaText) : undefined,
-    source_event_id: e.id,
-  }));
+  const payload = pending.map(
+    (e: {
+      userId: string;
+      productId: string | null;
+      type: string;
+      value: number;
+      ts: Date;
+      metaText: string | null;
+      id: string;
+    }) =>
+      buildEventContract({
+        userId: e.userId,
+        productId: e.productId,
+        type: e.type as "view" | "click" | "add" | "purchase" | "custom",
+        value: e.value,
+        ts: e.ts.toISOString(),
+        meta: e.metaText
+          ? (safeParse(e.metaText) as Record<string, unknown>)
+          : undefined,
+        sourceEventId: e.id,
+      })
+  );
 
   try {
     await forwardEventsBatch(payload);
-    const ids = pending.map((p: any) => p.id);
+    const ids = pending.map((p: { id: string }) => p.id);
     await prisma.event.updateMany({
       where: { id: { in: ids } },
       data: { recsysStatus: "sent", sentAt: new Date() },
@@ -86,7 +97,7 @@ export async function PUT() {
     return NextResponse.json({ forwarded: pending.length });
   } catch {
     await prisma.event.updateMany({
-      where: { id: { in: pending.map((p: any) => p.id) } },
+      where: { id: { in: pending.map((p: { id: string }) => p.id) } },
       data: { recsysStatus: "failed" },
     });
     return NextResponse.json(

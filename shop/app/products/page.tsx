@@ -1,5 +1,5 @@
 import { prisma } from "@/server/db/client";
-import { AddToCartButton } from "@/components/AddToCartButton";
+import { ProductCard } from "@/components/ProductCard";
 
 export default async function ProductsPage({
   searchParams,
@@ -35,18 +35,34 @@ export default async function ProductsPage({
       <h1 className="text-xl font-semibold">Products</h1>
       <p className="text-sm text-gray-600">Total: {total}</p>
       <ul className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {items.map((p: any) => (
-          <li key={p.id} className="border rounded p-3">
-            <div className="text-sm font-medium">{p.name}</div>
-            <div className="text-xs text-gray-600">{p.brand}</div>
-            <div className="mt-2 text-sm">
-              ${p.price.toFixed(2)} {p.currency}
-            </div>
-            <div className="mt-2">
-              <AddToCartButton productId={p.id} />
-            </div>
-          </li>
-        ))}
+        {items.map(
+          (p: {
+            id: string;
+            name: string;
+            brand?: string | null;
+            category?: string | null;
+            price: number;
+            currency: string;
+            imageUrl?: string | null;
+          }) => (
+            <li key={p.id}>
+              <ProductCard
+                product={{
+                  id: p.id,
+                  name: p.name,
+                  brand: p.brand || undefined,
+                  category: p.category || undefined,
+                  price: p.price,
+                  currency: p.currency,
+                  imageUrl: p.imageUrl || undefined,
+                }}
+                surface="products"
+                widget="products_page"
+                showId={true}
+              />
+            </li>
+          )
+        )}
       </ul>
     </main>
   );

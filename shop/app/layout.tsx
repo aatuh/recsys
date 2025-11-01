@@ -1,5 +1,6 @@
 import "./globals.css";
 import type { ReactNode } from "react";
+import Link from "next/link";
 import { UserPicker } from "@/components/UserPicker";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ToastProvider } from "@/components/ToastProvider";
@@ -16,12 +17,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
         <header className="border-b">
           <nav className="mx-auto max-w-6xl flex items-center gap-6 p-4">
-            <a className="font-semibold" href="/">
+            <Link className="font-semibold" href="/">
               Recsys Shop
-            </a>
+            </Link>
             <a href="/cart">Cart</a>
             <a href="/orders">My Orders</a>
-            <a href="/events">Events</a>
+            <Link href="/events">Events</Link>
             <a href="/admin">Admin</a>
             <div className="ml-auto flex items-center gap-3">
               <ThemeToggle />

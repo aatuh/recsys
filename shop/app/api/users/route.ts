@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/server/db/client";
 import { upsertUsers } from "@/server/services/recsys";
+import { buildUserContract } from "@/lib/contracts/user";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -26,20 +27,6 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const item = await prisma.user.create({ data: body });
-  void upsertUsers([
-    {
-      user_id: item.id,
-      traits: item.traitsText ? safeParseJson(item.traitsText) : undefined,
-    },
-  ]).catch(() => null);
+  void upsertUsers([buildUserContract(item)]).catch(() => null);
   return NextResponse.json(item, { status: 201 });
-}
-
-function safeParseJson(s?: string | null): unknown | undefined {
-  if (!s) return undefined;
-  try {
-    return JSON.parse(s);
-  } catch {
-    return undefined;
-  }
 }

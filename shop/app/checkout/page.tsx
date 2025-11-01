@@ -1,14 +1,48 @@
 "use client";
 import { useEffect, useState } from "react";
+import {
+  getStoredShopUserId,
+  SHOP_USER_CHANGED_EVENT,
+  SHOP_USER_STORAGE_KEY,
+  ShopUserChangeDetail,
+} from "@/lib/shopUser/client";
 
 export default function CheckoutPage() {
   const [userId, setUserId] = useState<string>("");
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<{
+    orderId: string;
+    total: number;
+  } | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const u = window.localStorage.getItem("shop_user_id") || "";
-    setUserId(u);
+    const readUser = () => setUserId(getStoredShopUserId());
+
+    const handleUserChange = (event: Event) => {
+      const custom = event as CustomEvent<ShopUserChangeDetail>;
+      setUserId(custom.detail?.userId ?? "");
+    };
+
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === SHOP_USER_STORAGE_KEY) {
+        setUserId(event.newValue ?? "");
+      }
+    };
+
+    readUser();
+    window.addEventListener(
+      SHOP_USER_CHANGED_EVENT,
+      handleUserChange as EventListener
+    );
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      window.removeEventListener(
+        SHOP_USER_CHANGED_EVENT,
+        handleUserChange as EventListener
+      );
+      window.removeEventListener("storage", handleStorage);
+    };
   }, []);
 
   const onCheckout = async () => {

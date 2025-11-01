@@ -1,6 +1,7 @@
 "use client";
 import { useCallback } from "react";
 import { telemetryEventSchema } from "./schema";
+import { RecommendationMeta } from "@/lib/contracts/event";
 
 type TelemetryEvent = {
   userId: string;
@@ -8,9 +9,24 @@ type TelemetryEvent = {
   type: "view" | "click" | "add" | "purchase" | "custom";
   value?: number;
   ts?: string;
-  meta?: unknown;
+  meta?: RecommendationMeta;
   sourceEventId?: string;
 };
+
+// Generate session ID for tracking
+function getSessionId(): string {
+  let sessionId = window.sessionStorage.getItem("shop_session_id");
+  if (!sessionId) {
+    sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    window.sessionStorage.setItem("shop_session_id", sessionId);
+  }
+  return sessionId;
+}
+
+// Generate request ID for recommendation tracking
+function generateRequestId(): string {
+  return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+}
 
 async function postEventFetch(ev: TelemetryEvent) {
   await fetch("/api/events", {
@@ -24,13 +40,31 @@ export function useTelemetry() {
   const emit = useCallback(async (ev: Omit<TelemetryEvent, "userId">) => {
     const userId = window.localStorage.getItem("shop_user_id");
     if (!userId) return;
+    
+    const sessionId = getSessionId();
+    const requestId = generateRequestId();
+    
+    // Enhance meta with session and request context
+    const enhancedMeta: RecommendationMeta = {
+      session_id: sessionId,
+      request_id: requestId,
+      referrer: document.referrer || window.location.pathname,
+      ...ev.meta,
+    };
+    
     const payload: TelemetryEvent = {
       userId,
       ts: new Date().toISOString(),
+      meta: enhancedMeta,
       ...ev,
     };
+    
     const parsed = telemetryEventSchema.safeParse(payload);
-    if (!parsed.success) return;
+    if (!parsed.success) {
+      console.warn("Invalid telemetry event:", parsed.error, payload);
+      return;
+    }
+    
     if (navigator.sendBeacon) {
       try {
         const blob = new Blob([JSON.stringify(payload)], {

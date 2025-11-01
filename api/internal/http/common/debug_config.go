@@ -1,21 +1,16 @@
 package common
 
-import (
-	"recsys/shared/util"
-	"strings"
-)
+import "strings"
 
 type DebugConfig struct {
 	Environment string
 	AppDebug    bool
 }
 
-func LoadDebugConfig() DebugConfig {
-	env := strings.ToLower(util.MustGetEnv("ENV"))
-	appDebug := util.MustGetEnv("APP_DEBUG") == "true"
-
+// NewDebugConfig normalises environment metadata.
+func NewDebugConfig(environment string, appDebug bool) DebugConfig {
 	return DebugConfig{
-		Environment: env,
+		Environment: strings.ToLower(strings.TrimSpace(environment)),
 		AppDebug:    appDebug,
 	}
 }

@@ -20,18 +20,27 @@ export default async function EventsPage() {
         </button>
       </form>
       <ul className="space-y-2">
-        {events.map((e: any) => (
-          <li key={e.id} className="border rounded p-3">
-            <div className="text-xs text-gray-600">
-              {e.ts.toISOString()} • {e.type} • {e.recsysStatus}
-            </div>
-            <div className="text-sm">
-              <a className="underline" href={`/events/${e.id}`}>
-                {e.user?.displayName} {e.product ? `→ ${e.product.name}` : ""}
-              </a>
-            </div>
-          </li>
-        ))}
+        {events.map(
+          (e: {
+            id: string;
+            ts: Date;
+            type: string;
+            recsysStatus: string;
+            user: { displayName: string } | null;
+            product: { name: string } | null;
+          }) => (
+            <li key={e.id} className="border rounded p-3">
+              <div className="text-xs text-gray-600">
+                {e.ts.toISOString()} • {e.type} • {e.recsysStatus}
+              </div>
+              <div className="text-sm">
+                <a className="underline" href={`/events/${e.id}`}>
+                  {e.user?.displayName} {e.product ? `→ ${e.product.name}` : ""}
+                </a>
+              </div>
+            </li>
+          )
+        )}
       </ul>
     </main>
   );

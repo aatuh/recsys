@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/server/db/client";
+import {
+  deleteAllItemsInNamespace,
+  deleteAllUsersInNamespace,
+  deleteAllEventsInNamespace,
+} from "@/server/services/recsys";
 
 export async function POST(req: NextRequest) {
   const body = (await req.json().catch(() => ({}))) as { tables?: string[] };
@@ -54,5 +59,24 @@ export async function POST(req: NextRequest) {
     else if (t === "product") await prisma.product.deleteMany({});
     else if (t === "user") await prisma.user.deleteMany({});
   }
+
+  // Sync deletions with Recsys
+  try {
+    if (requested.has("events")) {
+      await deleteAllEventsInNamespace();
+    }
+    if (requested.has("product")) {
+      // Namespace-wide items delete ensures full cleanup
+      await deleteAllItemsInNamespace();
+    }
+
+    if (requested.has("user")) {
+      // Delete all events first, then all users in namespace
+      await deleteAllUsersInNamespace();
+    }
+  } catch (err) {
+    console.error("Recsys sync during nuke failed:", err);
+  }
+
   return NextResponse.json({ status: "nuked", tables: Array.from(requested) });
 }

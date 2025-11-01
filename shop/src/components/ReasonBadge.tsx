@@ -2,8 +2,9 @@
 import { useState } from "react";
 
 export function ReasonBadge({ reasons }: { reasons?: string[] }) {
-  if (!reasons || reasons.length === 0) return null;
   const [open, setOpen] = useState(false);
+
+  if (!reasons || reasons.length === 0) return null;
   return (
     <span className="inline-block">
       <button

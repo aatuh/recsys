@@ -1,8 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
+import {
+  getStoredShopUserId,
+  setStoredShopUserId,
+} from "@/lib/shopUser/client";
 
 export function UserPicker() {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<
+    Array<{ id: string; displayName: string }>
+  >([]);
   const [userId, setUserId] = useState<string>("");
 
   useEffect(() => {
@@ -10,14 +16,14 @@ export function UserPicker() {
       .then((r) => r.json())
       .then((d) => setUsers(d.items || []))
       .catch(() => setUsers([]));
-    const saved = window.localStorage.getItem("shop_user_id") || "";
+    const saved = getStoredShopUserId();
     setUserId(saved);
   }, []);
 
   const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.target.value;
     setUserId(val);
-    window.localStorage.setItem("shop_user_id", val);
+    setStoredShopUserId(val);
     if (val) {
       fetch(`/api/users/${encodeURIComponent(val)}/upsert`, {
         method: "POST",

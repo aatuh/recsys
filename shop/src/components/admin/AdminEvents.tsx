@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useToast } from "@/components/ToastProvider";
 
 type EventRow = {
@@ -26,7 +26,7 @@ export default function AdminEvents() {
     [selected]
   );
 
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     try {
       const url = new URL(`/api/events`, window.location.origin);
@@ -36,25 +36,34 @@ export default function AdminEvents() {
       const res = await fetch(url);
       const data = await res.json();
       setItems(
-        (data.items || []).map((e: any) => ({
-          id: e.id,
-          type: e.type,
-          userId: e.userId,
-          productId: e.productId,
-          ts: e.ts,
-          recsysStatus: e.recsysStatus,
-        }))
+        (data.items || []).map(
+          (e: {
+            id: string;
+            type: string;
+            userId: string;
+            productId: string | null;
+            ts: string;
+            recsysStatus: string;
+          }) => ({
+            id: e.id,
+            type: e.type,
+            userId: e.userId,
+            productId: e.productId,
+            ts: e.ts,
+            recsysStatus: e.recsysStatus,
+          })
+        )
       );
       setTotal(data.total || 0);
       setSelected({});
     } finally {
       setLoading(false);
     }
-  }
+  }, [limit, offset, type]);
 
   useEffect(() => {
     load();
-  }, [limit, offset]);
+  }, [limit, offset, load]);
 
   async function onDeleteSelected() {
     if (!selectedIds.length) return;
@@ -76,6 +85,49 @@ export default function AdminEvents() {
     toast("Flush triggered");
     load();
   }
+  async function onDeletePending() {
+    if (!confirm("Delete ALL pending events?")) return;
+    await fetch("/api/events/batch", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ action: "delete-pending" }),
+    });
+    toast("All pending events deleted");
+    load();
+  }
+
+  async function onDeleteFromRecsys() {
+    if (!selectedIds.length) {
+      alert("Please select events to delete from Recsys");
+      return;
+    }
+    if (!confirm(`Delete ${selectedIds.length} events from Recsys?`)) return;
+
+    try {
+      const response = await fetch("/api/events/batch", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          action: "delete-from-recsys",
+          ids: selectedIds,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to delete events from Recsys: ${response.status}`
+        );
+      }
+
+      const result = await response.json();
+      toast(`Deleted ${result.deleted || 0} events from Recsys`);
+      load();
+    } catch (error) {
+      console.error("Failed to delete events from Recsys:", error);
+      toast("Failed to delete events from Recsys");
+    }
+  }
+
   async function onNuke() {
     if (!confirm("Delete ALL events?")) return;
     await fetch("/api/admin/nuke", {
@@ -126,13 +178,29 @@ export default function AdminEvents() {
             Retry failed
           </button>
           <button
+            className="border rounded px-3 py-2 text-sm bg-red-50 text-red-700 hover:bg-red-100"
+            onClick={onDeletePending}
+          >
+            Delete pending
+          </button>
+          <button
             className="border rounded px-3 py-2 text-sm"
             onClick={onDeleteSelected}
             disabled={!selectedIds.length}
           >
             Delete selected
           </button>
-          <button className="border rounded px-3 py-2 text-sm" onClick={onNuke}>
+          <button
+            className="border rounded px-3 py-2 text-sm bg-orange-50 text-orange-700 hover:bg-orange-100"
+            onClick={onDeleteFromRecsys}
+            disabled={!selectedIds.length}
+          >
+            Delete from Recsys
+          </button>
+          <button
+            className="border rounded px-3 py-2 text-sm bg-red-50 text-red-700 hover:bg-red-100"
+            onClick={onNuke}
+          >
             Nuke events
           </button>
         </div>

@@ -8,7 +8,7 @@ export type UserFilter = {
 
 export const UserRepository = {
   async list(filter: UserFilter = {}) {
-    const where: any = {};
+    const where: Record<string, unknown> = {};
     if (filter.q)
       where.displayName = { contains: filter.q, mode: "insensitive" };
     const limit = filter.limit ?? 20;
@@ -29,11 +29,11 @@ export const UserRepository = {
     return prisma.user.findUnique({ where: { id } });
   },
 
-  async create(data: any) {
+  async create(data: { displayName: string }) {
     return prisma.user.create({ data });
   },
 
-  async update(id: string, data: any) {
+  async update(id: string, data: Partial<{ displayName: string }>) {
     return prisma.user.update({ where: { id }, data });
   },
 

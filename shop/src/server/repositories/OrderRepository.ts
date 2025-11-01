@@ -7,15 +7,16 @@ export const OrderRepository = {
       include: { items: true },
     });
     if (!cart || cart.items.length === 0) return null;
-    return prisma.$transaction(async (tx: any) => {
+    return prisma.$transaction(async (tx) => {
       const total = cart.items.reduce(
-        (s: number, i: any) => s + i.qty * i.unitPrice,
+        (s: number, i: { qty: number; unitPrice: number }) =>
+          s + i.qty * i.unitPrice,
         0
       );
       const order = await tx.order.create({
         data: { userId, total, currency: "USD" },
       });
-      for (const i of cart.items as any[]) {
+      for (const i of cart.items) {
         await tx.orderItem.create({
           data: {
             orderId: order.id,

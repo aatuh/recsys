@@ -91,11 +91,11 @@ export default function AdminProducts() {
       }
     } else if (ids.length > 1) {
       const sel = items.filter((x) => selected[x.id]);
-      const allEq = (getter: (p: Product) => any) => {
+      const allEq = (getter: (p: Product) => string | number) => {
         if (sel.length === 0) return "";
         const v = getter(sel[0]);
         for (const s of sel) if (getter(s) !== v) return "";
-        return v ?? "";
+        return String(v ?? "");
       };
       setForm({
         name: allEq((p) => p.name) || "",
@@ -169,6 +169,29 @@ export default function AdminProducts() {
     load();
   }
 
+  async function onSyncAll() {
+    try {
+      const response = await fetch("/api/admin/sync-items", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+      });
+      const result = await response.json();
+      if (response.ok) {
+        toast(
+          `Successfully synced ${result.synced || "all"} products to recsys`
+        );
+      } else {
+        toast(`Sync failed: ${result.message || "Unknown error"}`);
+      }
+    } catch (error) {
+      toast(
+        `Sync failed: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    }
+  }
+
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const ids = selectedIds;
@@ -206,7 +229,7 @@ export default function AdminProducts() {
       load();
       return;
     }
-    const data: any = {};
+    const data: Record<string, unknown> = {};
     if (touched.name) data.name = form.name;
     if (touched.sku) data.sku = form.sku;
     if (touched.price) data.price = form.price ? parseFloat(form.price) : 0;
@@ -278,6 +301,13 @@ export default function AdminProducts() {
           >
             Set brand=Acme
           </button>
+          <button
+            className="border rounded px-3 py-2 text-sm bg-blue-50 hover:bg-blue-100"
+            onClick={onSyncAll}
+            disabled={loading}
+          >
+            Sync to Recsys
+          </button>
           <button className="border rounded px-3 py-2 text-sm" onClick={onNuke}>
             Nuke products
           </button>
@@ -301,6 +331,7 @@ export default function AdminProducts() {
                 }}
               />
             </th>
+            <th className="p-2 border">ID</th>
             <th className="p-2 border">Name</th>
             <th className="p-2 border">Brand</th>
             <th className="p-2 border">Category</th>
@@ -319,6 +350,9 @@ export default function AdminProducts() {
                     setSelected((s) => ({ ...s, [p.id]: e.target.checked }))
                   }
                 />
+              </td>
+              <td className="p-2 border text-xs font-mono text-gray-600">
+                {p.id}
               </td>
               <td className="p-2 border">{p.name}</td>
               <td className="p-2 border">{p.brand}</td>

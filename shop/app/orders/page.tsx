@@ -13,16 +13,24 @@ export default async function OrdersPage() {
         <div className="text-sm text-muted-foreground">No orders yet.</div>
       ) : (
         <ul className="space-y-2">
-          {orders.map((o: any) => (
-            <li key={o.id} className="border rounded p-3">
-              <div className="text-sm font-medium">
-                {o.id} • ${o.total} {o.currency}
-              </div>
-              <div className="text-xs text-gray-600">
-                {o.user?.displayName} • {o.createdAt.toISOString()}
-              </div>
-            </li>
-          ))}
+          {orders.map(
+            (o: {
+              id: string;
+              total: number;
+              currency: string;
+              createdAt: Date;
+              user: { displayName: string } | null;
+            }) => (
+              <li key={o.id} className="border rounded p-3">
+                <div className="text-sm font-medium">
+                  {o.id} • ${o.total} {o.currency}
+                </div>
+                <div className="text-xs text-gray-600">
+                  {o.user?.displayName} • {o.createdAt.toISOString()}
+                </div>
+              </li>
+            )
+          )}
         </ul>
       )}
     </main>

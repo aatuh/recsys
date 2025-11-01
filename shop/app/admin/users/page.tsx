@@ -79,7 +79,7 @@ export default function AdminUsersPage() {
 
   async function onUpdateSelected() {
     if (!selectedIds.length) return;
-    const data: any = {};
+    const data: Record<string, unknown> = {};
     if (touched.displayName) data.displayName = form.displayName;
     if (!Object.keys(data).length) return toast("No changes to apply");
     await fetch("/api/users/batch", {

@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import pkg from "@prisma/client";
-const { PrismaClient } = pkg as any;
+import { PrismaClient } from "@prisma/client";
 
 export async function POST() {
   const prisma = new PrismaClient();
@@ -18,7 +17,6 @@ export async function POST() {
     data: Array.from({ length: 10 }).map((_, i) => ({
       displayName: `User ${i + 1}`,
     })),
-    skipDuplicates: true as any,
   });
 
   // Seed products
@@ -37,7 +35,6 @@ export async function POST() {
       stockCount: Math.floor(Math.random() * 50) + 1,
       tagsCsv: categories[i % categories.length].toLowerCase(),
     })),
-    skipDuplicates: true as any,
   });
 
   await prisma.$disconnect();

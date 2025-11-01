@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/server/db/client";
+import { upsertUsers } from "@/server/services/recsys";
+import { buildUserContract } from "@/lib/contracts/user";
 
 export async function POST(req: NextRequest) {
   const { count = 20 } = (await req.json().catch(() => ({}))) as {
@@ -100,12 +102,21 @@ export async function POST(req: NextRequest) {
     "Watson",
     "Young",
   ];
+  const usersData = Array.from({ length: count }).map((_, i) => ({
+    displayName: `${firsts[i % firsts.length]} ${
+      lasts[(i * 7) % lasts.length]
+    }`,
+  }));
+  
   await prisma.user.createMany({
-    data: Array.from({ length: count }).map((_, i) => ({
-      displayName: `${firsts[i % firsts.length]} ${
-        lasts[(i * 7) % lasts.length]
-      }`,
-    })),
+    data: usersData,
   });
+  
+  // Upsert to recsys
+  void upsertUsers(usersData.map((user, index) => buildUserContract({
+    ...user,
+    id: `temp-${Date.now()}-${index}`, // Generate temporary ID for contract
+  }))).catch(() => null);
+  
   return NextResponse.json({ inserted: count });
 }

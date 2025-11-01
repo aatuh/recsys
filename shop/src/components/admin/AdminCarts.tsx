@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useToast } from "@/components/ToastProvider";
 
 type CartRow = { id: string; userId: string; items: number; updatedAt: string };
@@ -16,7 +16,7 @@ export default function AdminCarts() {
     [selected]
   );
 
-  async function load() {
+  const load = useCallback(async () => {
     const url = new URL(`/api/admin/carts`, window.location.origin);
     url.searchParams.set("limit", String(limit));
     url.searchParams.set("offset", String(offset));
@@ -24,11 +24,11 @@ export default function AdminCarts() {
     const data = await res.json();
     setItems(data.items || []);
     setTotal(data.total || 0);
-  }
+  }, [limit, offset]);
 
   useEffect(() => {
     load();
-  }, [limit, offset]);
+  }, [limit, offset, load]);
 
   async function onDeleteSelected() {
     for (const uid of selectedIds) {

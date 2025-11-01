@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useToast } from "@/components/ToastProvider";
 
 type OrderRow = {
@@ -22,27 +22,35 @@ export default function AdminOrdersPage() {
     [selected]
   );
 
-  async function load() {
+  const load = useCallback(async () => {
     const url = new URL(`/api/orders`, window.location.origin);
     url.searchParams.set("limit", String(limit));
     url.searchParams.set("offset", String(offset));
     const res = await fetch(url);
     const data = await res.json();
     setItems(
-      (data.items || []).map((o: any) => ({
-        id: o.id,
-        userId: o.userId,
-        total: o.total,
-        currency: o.currency,
-        createdAt: o.createdAt,
-      }))
+      (data.items || []).map(
+        (o: {
+          id: string;
+          userId: string;
+          total: number;
+          currency: string;
+          createdAt: string;
+        }) => ({
+          id: o.id,
+          userId: o.userId,
+          total: o.total,
+          currency: o.currency,
+          createdAt: o.createdAt,
+        })
+      )
     );
     setTotal(data.total || 0);
-  }
+  }, [limit, offset]);
 
   useEffect(() => {
     load();
-  }, [limit, offset]);
+  }, [limit, offset, load]);
 
   async function onDeleteSelected() {
     // orders delete API not provided; use nuke for demo
