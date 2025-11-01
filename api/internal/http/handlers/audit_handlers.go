@@ -19,6 +19,16 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
+// AuditHandler serves decision-trace audit endpoints.
+type AuditHandler struct {
+	store      *store.Store
+	defaultOrg uuid.UUID
+}
+
+func NewAuditHandler(st *store.Store, defaultOrg uuid.UUID) *AuditHandler {
+	return &AuditHandler{store: st, defaultOrg: defaultOrg}
+}
+
 // AuditDecisionsList returns recent decision traces metadata.
 // @Summary      List decision traces with optional filters
 // @Tags         audit
@@ -32,14 +42,14 @@ import (
 // @Success      200 {object} types.AuditDecisionListResponse
 // @Failure      400 {object} common.APIError
 // @Router       /v1/audit/decisions [get]
-func (h *Handler) AuditDecisionsList(w http.ResponseWriter, r *http.Request) {
+func (h *AuditHandler) AuditDecisionsList(w http.ResponseWriter, r *http.Request) {
 	ns := r.URL.Query().Get("namespace")
 	if ns == "" {
 		common.BadRequest(w, r, "missing_namespace", "namespace is required", nil)
 		return
 	}
 
-	orgID := h.defaultOrgFromHeader(r)
+	orgID := orgIDFromHeader(r, h.defaultOrg)
 
 	filter, err := buildDecisionFilter(
 		r.URL.Query().Get("from"),
@@ -72,7 +82,7 @@ func (h *Handler) AuditDecisionsList(w http.ResponseWriter, r *http.Request) {
 // @Success      200 {object} types.AuditDecisionListResponse
 // @Failure      400 {object} common.APIError
 // @Router       /v1/audit/search [post]
-func (h *Handler) AuditDecisionsSearch(w http.ResponseWriter, r *http.Request) {
+func (h *AuditHandler) AuditDecisionsSearch(w http.ResponseWriter, r *http.Request) {
 	var req handlerstypes.AuditDecisionsSearchRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		common.BadRequest(w, r, "invalid_payload", "request body must be valid JSON", nil)
@@ -94,7 +104,7 @@ func (h *Handler) AuditDecisionsSearch(w http.ResponseWriter, r *http.Request) {
 	}
 	filter.Limit = req.Limit
 
-	resp, err := h.listDecisions(r.Context(), h.defaultOrgFromHeader(r), req.Namespace, filter)
+	resp, err := h.listDecisions(r.Context(), orgIDFromHeader(r, h.defaultOrg), req.Namespace, filter)
 	if err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)
 		return
@@ -113,7 +123,7 @@ func (h *Handler) AuditDecisionsSearch(w http.ResponseWriter, r *http.Request) {
 // @Failure      400 {object} common.APIError
 // @Failure      404 {object} common.APIError
 // @Router       /v1/audit/decisions/{decision_id} [get]
-func (h *Handler) AuditDecisionGet(w http.ResponseWriter, r *http.Request) {
+func (h *AuditHandler) AuditDecisionGet(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "decision_id")
 	decisionID, err := uuid.Parse(idStr)
 	if err != nil {
@@ -121,9 +131,9 @@ func (h *Handler) AuditDecisionGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	orgID := h.defaultOrgFromHeader(r)
+	orgID := orgIDFromHeader(r, h.defaultOrg)
 
-	rec, err := h.Store.GetDecisionTrace(r.Context(), orgID, decisionID)
+	rec, err := h.store.GetDecisionTrace(r.Context(), orgID, decisionID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			common.HttpError(w, r, err, http.StatusNotFound)
@@ -143,13 +153,13 @@ func (h *Handler) AuditDecisionGet(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(detail)
 }
 
-func (h *Handler) listDecisions(
+func (h *AuditHandler) listDecisions(
 	ctx context.Context,
 	orgID uuid.UUID,
 	ns string,
 	filter store.DecisionTraceFilter,
 ) (handlerstypes.AuditDecisionListResponse, error) {
-	records, err := h.Store.ListDecisionTraces(ctx, orgID, ns, filter)
+	records, err := h.store.ListDecisionTraces(ctx, orgID, ns, filter)
 	if err != nil {
 		return handlerstypes.AuditDecisionListResponse{}, err
 	}

@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -24,6 +25,7 @@ import (
 	"recsys/internal/http/handlers"
 	httpmiddleware "recsys/internal/http/middleware"
 	"recsys/internal/migrator"
+	"recsys/internal/observability"
 	"recsys/internal/rules"
 	"recsys/internal/services/datamanagement"
 	"recsys/internal/services/ingestion"
@@ -69,9 +71,12 @@ func New(ctx context.Context, opts Options) (*App, error) {
 	common.SetDebugConfig(debugCfg)
 
 	dbCfg := db.Config{
-		MaxConnIdle: cfg.Database.MaxConnIdle,
-		MinConns:    cfg.Database.MinConns,
-		MaxConns:    cfg.Database.MaxConns,
+		MaxConnIdle:       cfg.Database.MaxConnIdle,
+		MaxConnLifetime:   cfg.Database.MaxConnLifetime,
+		HealthCheckPeriod: cfg.Database.HealthCheckPeriod,
+		AcquireTimeout:    cfg.Database.AcquireTimeout,
+		MinConns:          cfg.Database.MinConns,
+		MaxConns:          cfg.Database.MaxConns,
 	}
 	pool, err := db.NewPool(ctx, cfg.Database.URL, dbCfg)
 	if err != nil {
@@ -92,7 +97,12 @@ func New(ctx context.Context, opts Options) (*App, error) {
 		}
 	}
 
-	st := store.New(pool)
+	st := store.NewWithOptions(pool, store.Options{
+		QueryTimeout:        cfg.Database.QueryTimeout,
+		RetryAttempts:       cfg.Database.RetryAttempts,
+		RetryInitialBackoff: cfg.Database.RetryInitialBackoff,
+		RetryMaxBackoff:     cfg.Database.RetryMaxBackoff,
+	})
 	ingestionSvc := ingestion.New(st)
 	dataSvc := datamanagement.New(st)
 	rulesManager := rules.NewManager(st, rules.ManagerOptions{
@@ -152,37 +162,30 @@ func New(ctx context.Context, opts Options) (*App, error) {
 	recoHandler := handlers.NewRecommendationHandler(recommendationSvc, st, recConfig, tracer, cfg.Recommendation.DefaultOrgID, logger)
 	banditHandler := handlers.NewBanditHandler(st, recommendationSvc, recConfig, tracer, cfg.Recommendation.DefaultOrgID, cfg.Recommendation.BanditAlgo, logger)
 	rulesHandler := handlers.NewRulesHandler(st, rulesManager, cfg.Recommendation.DefaultOrgID, cfg.Recommendation.BrandTagPrefixes, cfg.Recommendation.CategoryTagPrefixes)
+	eventTypesHandler := handlers.NewEventTypesHandler(st, cfg.Recommendation.DefaultOrgID)
+	explainHandler := handlers.NewExplainHandler(explainService, cfg.Recommendation.DefaultOrgID)
+	auditHandler := handlers.NewAuditHandler(st, cfg.Recommendation.DefaultOrgID)
 
-	hs := &handlers.Handler{
-		Store:               st,
-		DefaultOrg:          cfg.Recommendation.DefaultOrgID,
-		HalfLifeDays:        cfg.Recommendation.HalfLifeDays,
-		CoVisWindowDays:     cfg.Recommendation.CoVisWindowDays,
-		PopularityFanout:    cfg.Recommendation.PopularityFanout,
-		MMRLambda:           cfg.Recommendation.MMRLambda,
-		BrandCap:            cfg.Recommendation.BrandCap,
-		CategoryCap:         cfg.Recommendation.CategoryCap,
-		RuleExcludeEvents:   cfg.Recommendation.RuleExcludeEvents,
-		ExcludeEventTypes:   cfg.Recommendation.ExcludeEventTypes,
-		BrandTagPrefixes:    cfg.Recommendation.BrandTagPrefixes,
-		CategoryTagPrefixes: cfg.Recommendation.CategoryTagPrefixes,
-		RulesManager:        rulesManager,
-		RulesAuditSample:    cfg.Rules.AuditSample,
-		ExplainService:      explainService,
-		PurchasedWindowDays: cfg.Recommendation.PurchasedWindowDays,
-		ProfileWindowDays:   cfg.Recommendation.Profile.WindowDays,
-		ProfileBoost:        cfg.Recommendation.Profile.Boost,
-		ProfileTopNTags:     cfg.Recommendation.Profile.TopNTags,
-		BlendAlpha:          cfg.Recommendation.Blend.Alpha,
-		BlendBeta:           cfg.Recommendation.Blend.Beta,
-		BlendGamma:          cfg.Recommendation.Blend.Gamma,
-		BanditAlgo:          cfg.Recommendation.BanditAlgo,
-		Logger:              logger,
-		DecisionRecorder:    decisionRecorder,
-		DecisionTraceSalt:   cfg.Audit.DecisionTrace.Salt,
+	obs, err := observability.Setup(ctx, cfg.Observability, logger)
+	if err != nil {
+		for _, closer := range closers {
+			_ = closer(context.Background())
+		}
+		return nil, fmt.Errorf("observability: %w", err)
+	}
+	if obs != nil && obs.Shutdown != nil {
+		closers = append(closers, obs.Shutdown)
 	}
 
 	router := chi.NewRouter()
+	if obs != nil {
+		if obs.TraceMiddleware != nil {
+			router.Use(obs.TraceMiddleware)
+		}
+		if obs.MetricsMiddleware != nil {
+			router.Use(obs.MetricsMiddleware)
+		}
+	}
 	router.Use(httpmiddleware.CORS(httpmiddleware.CORSOptions{
 		AllowedOrigins:   cfg.HTTP.CORS.AllowedOrigins,
 		AllowCredentials: cfg.HTTP.CORS.AllowCredentials,
@@ -196,10 +199,40 @@ func New(ctx context.Context, opts Options) (*App, error) {
 	router.Use(httpmiddleware.ErrorMetricsMiddleware(errorMetrics))
 
 	router.Get(endpoints.Health, func(w http.ResponseWriter, r *http.Request) {
+		type workerHealth struct {
+			Status  string `json:"status"`
+			Message string `json:"message,omitempty"`
+		}
+		health := struct {
+			Status  string                  `json:"status"`
+			Workers map[string]workerHealth `json:"workers,omitempty"`
+		}{
+			Status: "ok",
+		}
+
+		if err := decisionRecorder.Healthy(); err != nil {
+			health.Status = "degraded"
+			if health.Workers == nil {
+				health.Workers = make(map[string]workerHealth, 1)
+			}
+			health.Workers["decision_recorder"] = workerHealth{
+				Status:  "error",
+				Message: err.Error(),
+			}
+		}
+
+		code := http.StatusOK
+		if health.Status != "ok" {
+			code = http.StatusServiceUnavailable
+		}
+
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte(`{"status":"ok"}`))
+		w.WriteHeader(code)
+		_ = json.NewEncoder(w).Encode(health)
 	})
+	if obs != nil && cfg.Observability.MetricsEnabled && obs.MetricsHandler != nil && cfg.Observability.MetricsPath != "" {
+		router.Handle(cfg.Observability.MetricsPath, obs.MetricsHandler)
+	}
 
 	protected := chi.NewRouter()
 	protected.Use(httpmiddleware.RequireOrgID())
@@ -234,8 +267,8 @@ func New(ctx context.Context, opts Options) (*App, error) {
 	protected.Post(endpoints.EventsBatch, ingHandler.EventsBatch)
 	protected.Post(endpoints.Recommendations, recoHandler.Recommend)
 	protected.Get(endpoints.ItemsSimilar, recoHandler.ItemSimilar)
-	protected.Post(endpoints.EventTypesUpsert, hs.EventTypesUpsert)
-	protected.Get(endpoints.EventTypes, hs.EventTypesList)
+	protected.Post(endpoints.EventTypesUpsert, eventTypesHandler.EventTypesUpsert)
+	protected.Get(endpoints.EventTypes, eventTypesHandler.EventTypesList)
 
 	protected.Get(endpoints.UsersList, dataHandler.ListUsers)
 	protected.Get(endpoints.ItemsList, dataHandler.ListItems)
@@ -252,9 +285,9 @@ func New(ctx context.Context, opts Options) (*App, error) {
 	protected.Post(endpoints.SegmentsDelete, segmentsHandler.SegmentsDelete)
 	protected.Post(endpoints.SegmentDryRun, segmentsHandler.SegmentsDryRun)
 
-	protected.Get(endpoints.AuditDecisions, hs.AuditDecisionsList)
-	protected.Get(endpoints.AuditDecisionByID, hs.AuditDecisionGet)
-	protected.Post(endpoints.AuditSearch, hs.AuditDecisionsSearch)
+	protected.Get(endpoints.AuditDecisions, auditHandler.AuditDecisionsList)
+	protected.Get(endpoints.AuditDecisionByID, auditHandler.AuditDecisionGet)
+	protected.Post(endpoints.AuditSearch, auditHandler.AuditDecisionsSearch)
 
 	protected.Post(endpoints.BanditPoliciesUpsert, banditHandler.BanditPoliciesUpsert)
 	protected.Get(endpoints.BanditPolicies, banditHandler.BanditPoliciesList)
@@ -267,7 +300,7 @@ func New(ctx context.Context, opts Options) (*App, error) {
 	protected.Get(endpoints.Rules, rulesHandler.RulesList)
 	protected.Post(endpoints.RulesDryRun, rulesHandler.RulesDryRun)
 
-	protected.Post(endpoints.ExplainLLM, hs.ExplainLLM)
+	protected.Post(endpoints.ExplainLLM, explainHandler.ExplainLLM)
 
 	router.Mount("/", protected)
 
@@ -408,11 +441,18 @@ func newExplainService(cfg config.ExplainConfig, st *store.Store, logger *zap.Lo
 			Timeout:       cfg.Timeout,
 			MaxTokens:     cfg.MaxTokens,
 			CacheTTL:      30 * time.Minute,
+			CircuitBreaker: explain.CircuitBreakerConfig{
+				Enabled:           cfg.CircuitBreaker.Enabled,
+				FailureThreshold:  cfg.CircuitBreaker.FailureThreshold,
+				ResetAfter:        cfg.CircuitBreaker.ResetAfter,
+				HalfOpenSuccesses: cfg.CircuitBreaker.HalfOpenSuccesses,
+			},
 		},
 		Logger: logger,
 	}
 
 	if !cfg.Enabled {
+		svc.Client = explain.WithCircuitBreaker(svc.Client, svc.Config.CircuitBreaker, logger)
 		return svc
 	}
 
@@ -422,14 +462,20 @@ func newExplainService(cfg config.ExplainConfig, st *store.Store, logger *zap.Lo
 	}
 	httpClient := &http.Client{Timeout: timeout}
 
-	if strings.EqualFold(cfg.Provider, "openai") && cfg.APIKey != "" {
-		svc.Client = &explain.OpenAIClient{
-			HTTP:    httpClient,
-			APIKey:  cfg.APIKey,
-			BaseURL: cfg.BaseURL,
-			Logger:  logger,
-		}
+	registry := explain.DefaultProviderRegistry()
+	client, err := registry.Build(cfg.Provider, explain.ProviderOptions{
+		APIKey:     cfg.APIKey,
+		BaseURL:    cfg.BaseURL,
+		HTTPClient: httpClient,
+		Logger:     logger,
+	})
+	if err != nil {
+		logger.Warn("explain provider init failed", zap.Error(err))
+		svc.Config.Enabled = false
+	} else {
+		svc.Client = client
 	}
 
+	svc.Client = explain.WithCircuitBreaker(svc.Client, svc.Config.CircuitBreaker, logger)
 	return svc
 }

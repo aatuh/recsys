@@ -43,27 +43,36 @@ func (s *Store) BuildUserTagProfile(
 		since = &t
 	}
 
-	rows, err := s.Pool.Query(ctx, userTagProfileSQL, orgID, ns, userID, since, topN)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
 	raw := map[string]float64{}
 	total := 0.0
-	for rows.Next() {
-		var tag string
-		var score float64
-		if err := rows.Scan(&tag, &score); err != nil {
-			return nil, err
+	err := s.withRetry(ctx, func(ctx context.Context) error {
+		rows, err := s.Pool.Query(ctx, userTagProfileSQL, orgID, ns, userID, since, topN)
+		if err != nil {
+			return err
 		}
-		// Guard against negatives or NaN (shouldn't happen).
-		if score > 0 {
-			raw[tag] = score
-			total += score
+		defer rows.Close()
+
+		tmp := map[string]float64{}
+		accum := 0.0
+		for rows.Next() {
+			var tag string
+			var score float64
+			if err := rows.Scan(&tag, &score); err != nil {
+				return err
+			}
+			if score > 0 {
+				tmp[tag] = score
+				accum += score
+			}
 		}
-	}
-	if err := rows.Err(); err != nil {
+		if err := rows.Err(); err != nil {
+			return err
+		}
+		raw = tmp
+		total = accum
+		return nil
+	})
+	if err != nil {
 		return nil, err
 	}
 

@@ -7,7 +7,20 @@ import (
 	"recsys/internal/http/common"
 	"recsys/internal/store"
 	"recsys/specs/types"
+
+	"github.com/google/uuid"
 )
+
+// EventTypesHandler manages event type configuration endpoints.
+type EventTypesHandler struct {
+	store      *store.Store
+	defaultOrg uuid.UUID
+}
+
+// NewEventTypesHandler constructs an event-types handler.
+func NewEventTypesHandler(st *store.Store, defaultOrg uuid.UUID) *EventTypesHandler {
+	return &EventTypesHandler{store: st, defaultOrg: defaultOrg}
+}
 
 // @Summary Upsert tenant event-type config
 // @Tags config
@@ -17,13 +30,13 @@ import (
 // @Success 202 {object} types.Ack
 // @Router /v1/event-types:upsert [post]
 // @ID upsertEventTypes
-func (h *Handler) EventTypesUpsert(w http.ResponseWriter, r *http.Request) {
+func (h *EventTypesHandler) EventTypesUpsert(w http.ResponseWriter, r *http.Request) {
 	var req types.EventTypeConfigUpsertRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		common.HttpError(w, r, err, http.StatusBadRequest)
 		return
 	}
-	orgID := h.defaultOrgFromHeader(r)
+	orgID := orgIDFromHeader(r, h.defaultOrg)
 	rows := make([]store.EventTypeConfig, 0, len(req.Types))
 	for _, t := range req.Types {
 		if t.Weight <= 0 {
@@ -42,7 +55,7 @@ func (h *Handler) EventTypesUpsert(w http.ResponseWriter, r *http.Request) {
 			IsActive:     t.IsActive,
 		})
 	}
-	if err := h.Store.UpsertEventTypeConfig(r.Context(), orgID, req.Namespace, rows); err != nil {
+	if err := h.store.UpsertEventTypeConfig(r.Context(), orgID, req.Namespace, rows); err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)
 		return
 	}
@@ -57,14 +70,14 @@ func (h *Handler) EventTypesUpsert(w http.ResponseWriter, r *http.Request) {
 // @Param namespace query string true "Namespace"
 // @Success 200 {array} types.EventTypeConfigUpsertResponse
 // @Router /v1/event-types [get]
-func (h *Handler) EventTypesList(w http.ResponseWriter, r *http.Request) {
+func (h *EventTypesHandler) EventTypesList(w http.ResponseWriter, r *http.Request) {
 	ns := r.URL.Query().Get("namespace")
 	if ns == "" {
 		common.BadRequest(w, r, "missing_namespace", "namespace is required", nil)
 		return
 	}
-	orgID := h.defaultOrgFromHeader(r)
-	rows, err := h.Store.ListEventTypeConfigEffective(r.Context(), orgID, ns)
+	orgID := orgIDFromHeader(r, h.defaultOrg)
+	rows, err := h.store.ListEventTypeConfigEffective(r.Context(), orgID, ns)
 	if err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)
 		return

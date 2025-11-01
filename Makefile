@@ -51,19 +51,7 @@ prod-run: ## Run production environment
 	@echo "🚀 Starting production environment..."
 	@docker-compose -f docker-compose.yml -f web/docker-compose.prod.yml up
 
-health: ## Check service healthiness (logs + curl)
+health:
 	@echo "🏥 Checking service healthiness..."
-	@echo "📋 Docker Compose logs (last 20 lines):"
-	@docker-compose logs --tail=20 api
-	@echo ""
-	@echo "🌐 Health endpoint check:"
-	@set -e; \
-	for i in {1..5}; do \
-		if curl -sf http://localhost:8000/health >/dev/null; then \
-			echo "✅ Health check completed"; \
-			exit 0; \
-		fi; \
-		sleep 2; \
-	done; \
-	echo "❌ Health check failed"; \
-	exit 1
+	@cd api && make health
+

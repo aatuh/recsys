@@ -29,21 +29,32 @@ func (s *Store) SimilarByEmbeddingTopK(
 	if k <= 0 {
 		k = 20
 	}
-	rows, err := s.Pool.Query(ctx, embeddingSimilaritySQL, orgID, ns, itemID, k)
+	var out []types.ScoredItem
+	err := s.withRetry(ctx, func(ctx context.Context) error {
+		rows, err := s.Pool.Query(ctx, embeddingSimilaritySQL, orgID, ns, itemID, k)
+		if err != nil {
+			return err
+		}
+		defer rows.Close()
+
+		items := make([]types.ScoredItem, 0, k)
+		for rows.Next() {
+			var it types.ScoredItem
+			if err := rows.Scan(&it.ItemID, &it.Score); err != nil {
+				return err
+			}
+			items = append(items, it)
+		}
+		if err := rows.Err(); err != nil {
+			return err
+		}
+		out = items
+		return nil
+	})
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
-	out := make([]types.ScoredItem, 0, k)
-	for rows.Next() {
-		var it types.ScoredItem
-		if err := rows.Scan(&it.ItemID, &it.Score); err != nil {
-			return nil, err
-		}
-		out = append(out, it)
-	}
-	return out, rows.Err()
+	return out, nil
 }
 
 // ListItemsEmbeddings returns item_id -> embedding vector for given IDs.
@@ -58,27 +69,34 @@ func (s *Store) ListItemsEmbeddings(
 		return map[string][]float64{}, nil
 	}
 
-	rows, err := s.Pool.Query(ctx, itemsEmbeddingsSQL, orgID, ns, ids)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
+	var out map[string][]float64
+	err := s.withRetry(ctx, func(ctx context.Context) error {
+		rows, err := s.Pool.Query(ctx, itemsEmbeddingsSQL, orgID, ns, ids)
+		if err != nil {
+			return err
+		}
+		defer rows.Close()
 
-	out := make(map[string][]float64, len(ids))
-	for rows.Next() {
-		var id string
-		var emb []float64
-		if err := rows.Scan(&id, &emb); err != nil {
-			return nil, err
+		res := make(map[string][]float64, len(ids))
+		for rows.Next() {
+			var id string
+			var emb []float64
+			if err := rows.Scan(&id, &emb); err != nil {
+				return err
+			}
+			if len(emb) > 0 {
+				cp := make([]float64, len(emb))
+				copy(cp, emb)
+				res[id] = cp
+			}
 		}
-		if len(emb) > 0 {
-			// Copy to avoid aliasing the driver buffer.
-			cp := make([]float64, len(emb))
-			copy(cp, emb)
-			out[id] = cp
+		if err := rows.Err(); err != nil {
+			return err
 		}
-	}
-	if err := rows.Err(); err != nil {
+		out = res
+		return nil
+	})
+	if err != nil {
 		return nil, err
 	}
 	return out, nil

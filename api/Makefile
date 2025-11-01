@@ -57,4 +57,18 @@ test:
 
 health:
 	@echo "🏥 Checking service healthiness..."
-	@cd api && make health
+	@echo "📋 Docker Compose logs (last 20 lines):"
+	@docker compose logs --tail=20 api || true
+	@echo ""
+	@echo "🌐 Health endpoint check:"
+	@set -e; \
+	PORT=$${API_PORT:-8000}; \
+	for i in {1..5}; do \
+		if curl -sf http://localhost:$$PORT/health >/dev/null; then \
+			echo "✅ Health check completed"; \
+			exit 0; \
+		fi; \
+		sleep 2; \
+	done; \
+	echo "❌ Health check failed"; \
+	exit 1

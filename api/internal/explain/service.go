@@ -79,7 +79,11 @@ func (s *Service) Explain(ctx context.Context, orgID uuid.UUID, req Request) (Re
 		markdown, err = s.Client.Generate(ctx, model, systemPrompt, userPrompt, s.Config.MaxTokens)
 		if err != nil {
 			markdown = fallbackMarkdown(facts, evidence)
-			warnings = append(warnings, fmt.Sprintf("llm_error:%v", err))
+			if errors.Is(err, ErrCircuitOpen) {
+				warnings = append(warnings, "llm_circuit_open")
+			} else {
+				warnings = append(warnings, fmt.Sprintf("llm_error:%v", err))
+			}
 		}
 	}
 

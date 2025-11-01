@@ -9,7 +9,19 @@ import (
 	"recsys/internal/explain"
 	"recsys/internal/http/common"
 	handlerstypes "recsys/specs/types"
+
+	"github.com/google/uuid"
 )
+
+// ExplainHandler manages LLM explain endpoints.
+type ExplainHandler struct {
+	service    *explain.Service
+	defaultOrg uuid.UUID
+}
+
+func NewExplainHandler(service *explain.Service, defaultOrg uuid.UUID) *ExplainHandler {
+	return &ExplainHandler{service: service, defaultOrg: defaultOrg}
+}
 
 // ExplainLLM godoc
 // @Summary      Generate RCA explanation via LLM
@@ -21,8 +33,8 @@ import (
 // @Failure      400 {object} common.APIError
 // @Failure      500 {object} common.APIError
 // @Router       /v1/explain/llm [post]
-func (h *Handler) ExplainLLM(w http.ResponseWriter, r *http.Request) {
-	if h.ExplainService == nil {
+func (h *ExplainHandler) ExplainLLM(w http.ResponseWriter, r *http.Request) {
+	if h.service == nil {
 		common.ServiceUnavailable(w, r)
 		return
 	}
@@ -59,7 +71,7 @@ func (h *Handler) ExplainLLM(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	orgID := h.defaultOrgFromHeader(r)
+	orgID := orgIDFromHeader(r, h.defaultOrg)
 
 	explainReq := explain.Request{
 		OrgID:      orgID.String(),
@@ -73,7 +85,7 @@ func (h *Handler) ExplainLLM(w http.ResponseWriter, r *http.Request) {
 		Question:   req.Question,
 	}
 
-	result, err := h.ExplainService.Explain(r.Context(), orgID, explainReq)
+	result, err := h.service.Explain(r.Context(), orgID, explainReq)
 	if err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)
 		return

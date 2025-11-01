@@ -17,13 +17,14 @@ type Request struct {
 
 // Config holds LLM configuration and feature flags.
 type Config struct {
-	Enabled       bool
-	Provider      string
-	ModelPrimary  string
-	ModelEscalate string
-	Timeout       time.Duration
-	MaxTokens     int
-	CacheTTL      time.Duration
+	Enabled        bool
+	Provider       string
+	ModelPrimary   string
+	ModelEscalate  string
+	Timeout        time.Duration
+	MaxTokens      int
+	CacheTTL       time.Duration
+	CircuitBreaker CircuitBreakerConfig
 }
 
 // FactsPack represents the compact facts sent to the LLM.
@@ -86,4 +87,12 @@ type Result struct {
 	Model    string
 	CacheHit bool
 	Warnings []string
+}
+
+// CircuitBreakerConfig tunes protective wraps around LLM providers.
+type CircuitBreakerConfig struct {
+	Enabled           bool
+	FailureThreshold  int
+	ResetAfter        time.Duration
+	HalfOpenSuccesses int
 }

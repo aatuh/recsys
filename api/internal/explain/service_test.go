@@ -109,3 +109,40 @@ func TestCacheHit(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, result.CacheHit)
 }
+
+func TestServiceCircuitOpenWarning(t *testing.T) {
+	facts := FactsPack{}
+	facts.Target.Type = "item"
+	facts.Target.ID = "slot-3"
+	facts.Window.From = time.Now().Add(-time.Hour).UTC().Format(time.RFC3339)
+	facts.Window.To = time.Now().UTC().Format(time.RFC3339)
+	facts.Context.Namespace = "default"
+	facts.Context.Surface = "home"
+
+	collector := &stubCollector{facts: facts}
+	svc := &Service{
+		Collector: collector,
+		Client:    stubClient{err: ErrCircuitOpen},
+		Config: Config{
+			Enabled:      true,
+			CacheTTL:     time.Minute,
+			Timeout:      time.Second,
+			MaxTokens:    100,
+			ModelPrimary: "o4-mini",
+		},
+	}
+
+	orgID := uuid.New()
+	req := Request{
+		TargetType: "ITEM",
+		TargetID:   "slot-3",
+		Namespace:  "default",
+		Surface:    "home",
+		From:       time.Now().Add(-time.Hour),
+		To:         time.Now(),
+	}
+
+	result, err := svc.Explain(context.Background(), orgID, req)
+	require.NoError(t, err)
+	require.Contains(t, result.Warnings, "llm_circuit_open")
+}

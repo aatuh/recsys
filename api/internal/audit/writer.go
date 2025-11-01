@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"math/rand"
 	"sync"
 	"time"
@@ -28,6 +29,7 @@ type WriterConfig struct {
 type Recorder interface {
 	Record(trace *Trace)
 	Close(ctx context.Context) error
+	Healthy() error
 }
 
 type Store interface {
@@ -35,16 +37,19 @@ type Store interface {
 }
 
 type writer struct {
-	cfg     WriterConfig
-	store   Store
-	logger  *zap.Logger
-	ch      chan *Trace
-	wg      sync.WaitGroup
-	ctx     context.Context
-	cancel  context.CancelFunc
-	enabled bool
-	randMu  sync.Mutex
-	rnd     *rand.Rand
+	cfg         WriterConfig
+	store       Store
+	logger      *zap.Logger
+	ch          chan *Trace
+	wg          sync.WaitGroup
+	ctx         context.Context
+	cancel      context.CancelFunc
+	enabled     bool
+	randMu      sync.Mutex
+	rnd         *rand.Rand
+	healthMu    sync.RWMutex
+	healthErr   error
+	lastFailure time.Time
 }
 
 // NewWriter creates a new decision trace writer. When disabled it returns a no-op recorder.
@@ -113,10 +118,23 @@ func (w *writer) Close(ctx context.Context) error {
 
 	select {
 	case <-done:
-		return nil
+		return w.Healthy()
 	case <-ctx.Done():
 		return ctx.Err()
 	}
+}
+
+func (w *writer) Healthy() error {
+	if !w.enabled {
+		return nil
+	}
+	w.healthMu.RLock()
+	defer w.healthMu.RUnlock()
+	if w.healthErr == nil {
+		return nil
+	}
+	timestamp := w.lastFailure.UTC().Format(time.RFC3339)
+	return fmt.Errorf("decision trace writer unhealthy since %s: %v", timestamp, w.healthErr)
 }
 
 func (w *writer) shouldSample(namespace string) bool {
@@ -152,6 +170,7 @@ func (w *writer) loop() {
 		rows, err := w.buildRows(batch)
 		batch = batch[:0]
 		if err != nil {
+			w.recordFailure(err)
 			if w.logger != nil {
 				w.logger.Error("build decision rows", zap.Error(err))
 			}
@@ -162,10 +181,15 @@ func (w *writer) loop() {
 		}
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
-		if err := w.store.InsertDecisionTraces(ctx, rows); err != nil && !errors.Is(err, context.Canceled) {
-			if w.logger != nil {
-				w.logger.Error("insert decision traces", zap.Error(err))
+		if err := w.store.InsertDecisionTraces(ctx, rows); err != nil {
+			if !errors.Is(err, context.Canceled) {
+				w.recordFailure(err)
+				if w.logger != nil {
+					w.logger.Error("insert decision traces", zap.Error(err))
+				}
 			}
+		} else {
+			w.recordSuccess()
 		}
 	}
 
@@ -198,6 +222,22 @@ func (w *writer) buildRows(traces []*Trace) ([]store.DecisionTraceInsert, error)
 		rows = append(rows, row)
 	}
 	return rows, nil
+}
+
+func (w *writer) recordFailure(err error) {
+	if err == nil {
+		return
+	}
+	w.healthMu.Lock()
+	w.healthErr = err
+	w.lastFailure = time.Now()
+	w.healthMu.Unlock()
+}
+
+func (w *writer) recordSuccess() {
+	w.healthMu.Lock()
+	w.healthErr = nil
+	w.healthMu.Unlock()
 }
 
 func toDecisionTraceInsert(tr *Trace) (store.DecisionTraceInsert, error) {
@@ -307,3 +347,5 @@ type noopRecorder struct{}
 func (noopRecorder) Record(*Trace) {}
 
 func (noopRecorder) Close(context.Context) error { return nil }
+
+func (noopRecorder) Healthy() error { return nil }

@@ -24,6 +24,7 @@ type Config struct {
 	Audit          AuditConfig
 	Explain        ExplainConfig
 	Migrations     MigrationConfig
+	Observability  ObservabilityConfig
 }
 
 type ServerConfig struct {
@@ -34,10 +35,17 @@ type ServerConfig struct {
 }
 
 type DatabaseConfig struct {
-	URL         string
-	MaxConnIdle time.Duration
-	MinConns    int32
-	MaxConns    int32
+	URL                 string
+	MaxConnIdle         time.Duration
+	MaxConnLifetime     time.Duration
+	HealthCheckPeriod   time.Duration
+	AcquireTimeout      time.Duration
+	MinConns            int32
+	MaxConns            int32
+	QueryTimeout        time.Duration
+	RetryAttempts       int
+	RetryInitialBackoff time.Duration
+	RetryMaxBackoff     time.Duration
 }
 
 type DebugConfig struct {
@@ -123,19 +131,34 @@ type DecisionTraceConfig struct {
 }
 
 type ExplainConfig struct {
-	Enabled       bool
-	Provider      string
-	ModelPrimary  string
-	ModelEscalate string
-	Timeout       time.Duration
-	MaxTokens     int
-	APIKey        string
-	BaseURL       string
+	Enabled        bool
+	Provider       string
+	ModelPrimary   string
+	ModelEscalate  string
+	Timeout        time.Duration
+	MaxTokens      int
+	APIKey         string
+	BaseURL        string
+	CircuitBreaker CircuitBreakerConfig
 }
 
 type MigrationConfig struct {
 	RunOnStart bool
 	Dir        string
+}
+
+type ObservabilityConfig struct {
+	MetricsEnabled bool
+	MetricsPath    string
+	TracingEnabled bool
+	TraceExporter  string
+}
+
+type CircuitBreakerConfig struct {
+	Enabled           bool
+	FailureThreshold  int
+	ResetAfter        time.Duration
+	HalfOpenSuccesses int
 }
 
 // Load reads configuration from the provided source. If src is nil, the
@@ -163,10 +186,23 @@ func Load(ctx context.Context, src Source) (Config, error) {
 	}
 
 	cfg.Database = DatabaseConfig{
-		URL:         l.requiredString("DATABASE_URL"),
-		MaxConnIdle: 90 * time.Second,
-		MinConns:    0,
-		MaxConns:    10,
+		URL:                 l.requiredString("DATABASE_URL"),
+		MaxConnIdle:         l.optionalDuration("DATABASE_MAX_CONN_IDLE", 90*time.Second),
+		MaxConnLifetime:     l.optionalDuration("DATABASE_MAX_CONN_LIFETIME", 0),
+		HealthCheckPeriod:   l.optionalDuration("DATABASE_HEALTH_CHECK_PERIOD", 30*time.Second),
+		AcquireTimeout:      l.optionalDuration("DATABASE_ACQUIRE_TIMEOUT", 5*time.Second),
+		MinConns:            int32(l.optionalIntGreaterThan("DATABASE_MIN_CONNS", -1, 0)),
+		MaxConns:            int32(l.optionalIntGreaterThan("DATABASE_MAX_CONNS", 0, 10)),
+		QueryTimeout:        l.optionalDuration("DATABASE_QUERY_TIMEOUT", 5*time.Second),
+		RetryAttempts:       l.optionalIntGreaterThan("DATABASE_RETRY_ATTEMPTS", 0, 3),
+		RetryInitialBackoff: l.optionalDuration("DATABASE_RETRY_BACKOFF", 50*time.Millisecond),
+		RetryMaxBackoff:     l.optionalDuration("DATABASE_RETRY_MAX_BACKOFF", 500*time.Millisecond),
+	}
+	if cfg.Database.RetryAttempts < 1 {
+		cfg.Database.RetryAttempts = 1
+	}
+	if cfg.Database.RetryMaxBackoff > 0 && cfg.Database.RetryMaxBackoff < cfg.Database.RetryInitialBackoff {
+		cfg.Database.RetryMaxBackoff = cfg.Database.RetryInitialBackoff
 	}
 
 	cfg.Debug = DebugConfig{
@@ -369,6 +405,33 @@ func Load(ctx context.Context, src Source) (Config, error) {
 	cfg.Explain.BaseURL = l.optionalString("LLM_BASE_URL", "")
 	cfg.Explain.Timeout = l.optionalDuration("LLM_TIMEOUT", 6*time.Second)
 	cfg.Explain.MaxTokens = l.optionalIntGreaterThan("LLM_MAX_TOKENS", 0, 1200)
+
+	cfg.Explain.CircuitBreaker = CircuitBreakerConfig{
+		Enabled:           l.bool("LLM_BREAKER_ENABLED", false),
+		FailureThreshold:  l.optionalIntGreaterThan("LLM_BREAKER_FAILURES", 0, 3),
+		ResetAfter:        l.optionalDuration("LLM_BREAKER_RESET", time.Minute),
+		HalfOpenSuccesses: l.optionalIntGreaterThan("LLM_BREAKER_HALF_OPEN_SUCCESS", 0, 1),
+	}
+
+	cfg.Observability = ObservabilityConfig{
+		MetricsEnabled: l.bool("OBSERVABILITY_METRICS_ENABLED", true),
+		MetricsPath:    l.optionalString("OBSERVABILITY_METRICS_PATH", "/metrics"),
+		TracingEnabled: l.bool("OBSERVABILITY_TRACING_ENABLED", false),
+		TraceExporter:  strings.ToLower(l.optionalString("OBSERVABILITY_TRACING_EXPORTER", "stdout")),
+	}
+
+	if cfg.Observability.MetricsEnabled && cfg.Observability.MetricsPath == "" {
+		l.appendErr("OBSERVABILITY_METRICS_PATH", fmt.Errorf("must be set when metrics are enabled"))
+	}
+
+	if cfg.Observability.TracingEnabled {
+		switch cfg.Observability.TraceExporter {
+		case "stdout", "":
+			cfg.Observability.TraceExporter = "stdout"
+		default:
+			l.appendErr("OBSERVABILITY_TRACING_EXPORTER", fmt.Errorf("unsupported tracing exporter %q", cfg.Observability.TraceExporter))
+		}
+	}
 
 	if err := l.err(); err != nil {
 		return Config{}, err

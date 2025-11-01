@@ -12,7 +12,7 @@
   **Proposal:** Introduce a typed config loader (e.g., `envconfig` or custom decoder) that supports defaults, required markers, aggregation of validation errors, and pluggable sources (env, file, flags). Emit structured diagnostics and allow injecting config during tests without environment churn.  
   **Impact:** More resilient startup, faster developer feedback, and simpler configuration management in different environments.
 
-- [ ] **Ticket:** Split god `Handler` into focused HTTP adapters backed by interface-driven services  
+- [x] **Ticket:** Split god `Handler` into focused HTTP adapters backed by interface-driven services  
   **Category:** Architecture / SOLID  
   **Problem:** `internal/http/handlers/ingest.go:24-52` stores dozens of fields (store, rules, explain, tuning knobs) and every endpoint manipulates core logic directly (`recommend.go:67-108`). This violates single responsibility and makes unit testing handlers difficult.  
   **Proposal:** Introduce domain services (`IngestionService`, `RecommendationService`, `AdminService`, etc.) defined via interfaces in `internal/types` and implemented in `internal/services`. Keep HTTP handlers thin: decode → validate → call service → encode. Provide dependency injection through the composition root.  
@@ -36,25 +36,25 @@
   **Proposal:** Wrap handlers with `http.MaxBytesReader`, enable `DisallowUnknownFields`, and adopt a validation library (e.g., `go-playground/validator`) or generated schema checks. Return consistent 4xx errors for validation failures.  
   **Impact:** Reduced DoS surface, clearer API contracts, and less time spent chasing production data quality issues.
 
-- [ ] **Ticket:** Instrument API with structured metrics and distributed tracing  
+- [x] **Ticket:** Instrument API with structured metrics and distributed tracing  
   **Category:** Observability  
   **Problem:** Beyond error tallies (`cmd/api/main.go:94-100`), there is no request/latency instrumentation, trace context propagation, or standardized logging correlation.  
   **Proposal:** Adopt OpenTelemetry for HTTP/server/db spans, expose Prometheus metrics (request counts, latencies, DB usage), and enrich zap logs with trace/span IDs. Provide dashboards and alerts for key SLOs.  
   **Impact:** Faster incident response, measurable performance baselines, and easier capacity planning.
 
-- [ ] **Ticket:** Make DB pool sizing, retry, and observability configurable  
+- [x] **Ticket:** Make DB pool sizing, retry, and observability configurable  
   **Category:** Reliability / Performance  
   **Problem:** `internal/http/db/pool.go:10-27` hard-codes connection limits and lacks query instrumentation or retry semantics. Long-running queries inherit request contexts without deadlines (`internal/store/*.go`).  
   **Proposal:** Move pool sizing and timeouts into config, wrap store calls with context deadlines, add query logging/metrics, and introduce safe retry policies for transient errors. Consider using PGX `BeforeAcquire` hooks for connection health.  
   **Impact:** Better database resilience under load, clearer capacity tuning knobs, and reduced risk of hung requests.
 
-- [ ] **Ticket:** Propagate background worker failures to health checks and shutdown logic  
+- [x] **Ticket:** Propagate background worker failures to health checks and shutdown logic  
   **Category:** Reliability  
   **Problem:** The decision recorder (`cmd/api/main.go:150-164`) runs in a goroutine; failures only log warnings on shutdown. If the writer encounters persistent errors, the API keeps serving without signaling degraded state.  
   **Proposal:** Expose a health component for background workers, emit metrics, and trigger graceful degradation (e.g., disable recording with alerts). Include worker lifecycle management in the composition root.  
   **Impact:** Detect silent failures sooner and avoid data loss in audit pipelines.
 
-- [ ] **Ticket:** Abstract LLM explain clients behind provider interfaces with circuit breakers  
+- [x] **Ticket:** Abstract LLM explain clients behind provider interfaces with circuit breakers  
   **Category:** Robustness / SOLID  
   **Problem:** `cmd/api/main.go:122-149` instantiates OpenAI client inline, with minimal timeout handling and no fallbacks beyond a null client. Provider choice logic is tied to env strings.  
   **Proposal:** Define an `ExplainClient` interface with provider-specific implementations registered via config. Add circuit breaker/timeout defaults, response caching, and structured error mapping. Support dependency injection for testing/mocking.  
@@ -66,7 +66,7 @@
   **Proposal:** Require explicit allowlists, fail closed by default, and support environment-specific presets. Add logging when wildcards are used and provide tests covering regex conversion.  
   **Impact:** Prevents unintended cross-origin access and aligns with least-privilege defaults.
 
-- [ ] **Ticket:** Expand automated coverage with API integration and contract tests  
+- [x] **Ticket:** Expand automated coverage with API integration and contract tests  
   **Category:** Quality / DX  
   **Problem:** Existing tests focus on lower-level packages; there are limited end-to-end checks that ingest data and assert recommendation responses or admin workflows through HTTP (`api/test` covers selected paths only).  
   **Proposal:** Add `httptest`-backed suites (or dockerized integration tests) that exercise ingestion → recommendation → audit flows, validate Swagger schema compliance, and guard against regression in pagination/filters. Automate them via `make test`.  
