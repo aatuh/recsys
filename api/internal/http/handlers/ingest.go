@@ -1,54 +1,44 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
-	"sync"
-	"time"
-
-	"recsys/internal/audit"
-	"recsys/internal/explain"
-	"recsys/internal/http/common"
-	"recsys/internal/rules"
-	"recsys/internal/store"
-	internaltypes "recsys/internal/types"
-	"recsys/specs/types"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
+
+	"recsys/internal/http/common"
+	"recsys/internal/services/ingestion"
+	specstypes "recsys/specs/types"
 )
 
-// Keep in sync with store.EmbeddingDims.
-const embeddingDims = 384
+// IngestionService captures the ingestion domain contract required by the HTTP adapter.
+type IngestionService interface {
+	UpsertItems(ctx context.Context, orgID uuid.UUID, req specstypes.ItemsUpsertRequest) error
+	UpsertUsers(ctx context.Context, orgID uuid.UUID, req specstypes.UsersUpsertRequest) error
+	InsertEvents(ctx context.Context, orgID uuid.UUID, req specstypes.EventsBatchRequest) error
+}
 
-type Handler struct {
-	Store                 *store.Store
-	DefaultOrg            uuid.UUID
-	HalfLifeDays          float64
-	CoVisWindowDays       float64
-	PopularityFanout      int
-	MMRLambda             float64
-	BrandCap              int
-	CategoryCap           int
-	RuleExcludeEvents     bool
-	ExcludeEventTypes     []int16
-	BrandTagPrefixes      []string
-	CategoryTagPrefixes   []string
-	RulesManager          *rules.Manager
-	RulesAuditSample      float64
-	ExplainService        *explain.Service
-	PurchasedWindowDays   float64
-	ProfileWindowDays     float64 // lookback for building profile; <=0 disables windowing
-	ProfileBoost          float64 // multiplier in [0, +inf). 0 disables personalization
-	ProfileTopNTags       int     // limit of profile tags considered
-	BlendAlpha            float64
-	BlendBeta             float64
-	BlendGamma            float64
-	BanditAlgo            internaltypes.Algorithm
-	Logger                *zap.Logger
-	DecisionRecorder      audit.Recorder
-	DecisionTraceSalt     string
-	auditRecorderWarnOnce sync.Once
+// IngestionHandler exposes ingestion routes backed by the ingestion service.
+type IngestionHandler struct {
+	service    IngestionService
+	defaultOrg uuid.UUID
+	logger     *zap.Logger
+}
+
+// NewIngestionHandler constructs a handler backed by the provided service.
+func NewIngestionHandler(svc IngestionService, defaultOrg uuid.UUID, logger *zap.Logger) *IngestionHandler {
+	h := &IngestionHandler{
+		service:    svc,
+		defaultOrg: defaultOrg,
+		logger:     logger,
+	}
+	if h.logger == nil {
+		h.logger = zap.NewNop()
+	}
+	return h
 }
 
 // ItemsUpsert godoc
@@ -62,54 +52,29 @@ type Handler struct {
 // @Failure      400      {object}  common.APIError
 // @Router       /v1/items:upsert [post]
 // @ID upsertItems
-func (h *Handler) ItemsUpsert(w http.ResponseWriter, r *http.Request) {
-	var req types.ItemsUpsertRequest
+func (h *IngestionHandler) ItemsUpsert(w http.ResponseWriter, r *http.Request) {
+	var req specstypes.ItemsUpsertRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		common.HttpErrorWithLogger(w, r, err, http.StatusBadRequest, h.Logger)
+		common.HttpErrorWithLogger(w, r, err, http.StatusBadRequest, h.logger)
 		return
 	}
-	orgID := h.DefaultOrg
-	if s := r.Header.Get("X-Org-ID"); s != "" {
-		if id, err := uuid.Parse(s); err == nil {
-			orgID = id
-		}
-	}
+	orgID := orgIDFromHeader(r, h.defaultOrg)
 
-	batch := make([]store.ItemUpsert, 0, len(req.Items))
-	for _, it := range req.Items {
-		// Validate embedding length if provided.
-		var emb *[]float64
-		if len(it.Embedding) > 0 {
-			if len(it.Embedding) != embeddingDims {
-				common.BadRequest(
-					w, r,
-					"embedding_dim_mismatch",
-					"embedding length must be 384",
-					map[string]any{"got": len(it.Embedding)},
-				)
-				return
-			}
-			tmp := make([]float64, len(it.Embedding))
-			copy(tmp, it.Embedding)
-			emb = &tmp
-		}
-		batch = append(batch, store.ItemUpsert{
-			ItemID:    it.ItemID,
-			Available: it.Available,
-			Price:     it.Price,
-			Tags:      it.Tags,
-			Props:     it.Props,
-			Embedding: emb,
-		})
-	}
-
-	if err := h.Store.UpsertItems(r.Context(), orgID, req.Namespace, batch); err != nil {
-		common.HttpErrorWithLogger(w, r, err, http.StatusInternalServerError, h.Logger)
+	if h.service == nil {
+		common.HttpErrorWithLogger(w, r, errors.New("ingestion handler: service is nil"), http.StatusInternalServerError, h.logger)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusAccepted)
-	_, _ = w.Write([]byte(`{"status":"accepted"}`))
+	if err := h.service.UpsertItems(r.Context(), orgID, req); err != nil {
+		var vErr ingestion.ValidationError
+		if errors.As(err, &vErr) {
+			common.BadRequest(w, r, vErr.Code, vErr.Message, vErr.Details)
+			return
+		}
+		common.HttpErrorWithLogger(w, r, err, http.StatusInternalServerError, h.logger)
+		return
+	}
+
+	writeAccepted(w)
 }
 
 // UsersUpsert godoc
@@ -122,29 +87,29 @@ func (h *Handler) ItemsUpsert(w http.ResponseWriter, r *http.Request) {
 // @Failure      400      {object}  common.APIError
 // @Router       /v1/users:upsert [post]
 // @ID upsertUsers
-func (h *Handler) UsersUpsert(w http.ResponseWriter, r *http.Request) {
-	var req types.UsersUpsertRequest
+func (h *IngestionHandler) UsersUpsert(w http.ResponseWriter, r *http.Request) {
+	var req specstypes.UsersUpsertRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		common.HttpErrorWithLogger(w, r, err, http.StatusBadRequest, h.Logger)
+		common.HttpErrorWithLogger(w, r, err, http.StatusBadRequest, h.logger)
 		return
 	}
-	orgID := h.DefaultOrg
-	if s := r.Header.Get("X-Org-ID"); s != "" {
-		if id, err := uuid.Parse(s); err == nil {
-			orgID = id
+	orgID := orgIDFromHeader(r, h.defaultOrg)
+
+	if h.service == nil {
+		common.HttpErrorWithLogger(w, r, errors.New("ingestion handler: service is nil"), http.StatusInternalServerError, h.logger)
+		return
+	}
+	if err := h.service.UpsertUsers(r.Context(), orgID, req); err != nil {
+		var vErr ingestion.ValidationError
+		if errors.As(err, &vErr) {
+			common.BadRequest(w, r, vErr.Code, vErr.Message, vErr.Details)
+			return
 		}
-	}
-	batch := make([]store.UserUpsert, 0, len(req.Users))
-	for _, u := range req.Users {
-		batch = append(batch, store.UserUpsert{UserID: u.UserID, Traits: u.Traits})
-	}
-	if err := h.Store.UpsertUsers(r.Context(), orgID, req.Namespace, batch); err != nil {
-		common.HttpErrorWithLogger(w, r, err, http.StatusInternalServerError, h.Logger)
+		common.HttpErrorWithLogger(w, r, err, http.StatusInternalServerError, h.logger)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusAccepted)
-	_, _ = w.Write([]byte(`{"status":"accepted"}`))
+
+	writeAccepted(w)
 }
 
 // EventsBatch godoc
@@ -157,36 +122,32 @@ func (h *Handler) UsersUpsert(w http.ResponseWriter, r *http.Request) {
 // @Failure      400      {object}  common.APIError
 // @Router       /v1/events:batch [post]
 // @ID batchEvents
-func (h *Handler) EventsBatch(w http.ResponseWriter, r *http.Request) {
-	var req types.EventsBatchRequest
+func (h *IngestionHandler) EventsBatch(w http.ResponseWriter, r *http.Request) {
+	var req specstypes.EventsBatchRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		common.HttpErrorWithLogger(w, r, err, http.StatusBadRequest, h.Logger)
+		common.HttpErrorWithLogger(w, r, err, http.StatusBadRequest, h.logger)
 		return
 	}
-	orgID := h.DefaultOrg
-	if s := r.Header.Get("X-Org-ID"); s != "" {
-		if id, err := uuid.Parse(s); err == nil {
-			orgID = id
-		}
-	}
-	batch := make([]store.EventInsert, 0, len(req.Events))
-	for _, e := range req.Events {
-		t := time.Now().UTC()
-		if e.TS != "" {
-			pt, err := time.Parse(time.RFC3339, e.TS)
-			if err != nil {
-				common.HttpErrorWithLogger(w, r, err, http.StatusBadRequest, h.Logger)
-				return
-			}
-			t = pt
-		}
-		batch = append(batch, store.EventInsert{
-			UserID: e.UserID, ItemID: e.ItemID, Type: e.Type, Value: e.Value, TS: t, Meta: e.Meta, SourceEventID: e.SourceEventID})
-	}
-	if err := h.Store.InsertEvents(r.Context(), orgID, req.Namespace, batch); err != nil {
-		common.HttpErrorWithLogger(w, r, err, http.StatusInternalServerError, h.Logger)
+	orgID := orgIDFromHeader(r, h.defaultOrg)
+
+	if h.service == nil {
+		common.HttpErrorWithLogger(w, r, errors.New("ingestion handler: service is nil"), http.StatusInternalServerError, h.logger)
 		return
 	}
+	if err := h.service.InsertEvents(r.Context(), orgID, req); err != nil {
+		var vErr ingestion.ValidationError
+		if errors.As(err, &vErr) {
+			common.BadRequest(w, r, vErr.Code, vErr.Message, vErr.Details)
+			return
+		}
+		common.HttpErrorWithLogger(w, r, err, http.StatusInternalServerError, h.logger)
+		return
+	}
+
+	writeAccepted(w)
+}
+
+func writeAccepted(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusAccepted)
 	_, _ = w.Write([]byte(`{"status":"accepted"}`))

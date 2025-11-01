@@ -34,7 +34,7 @@ func CORS(opts CORSOptions) func(next http.Handler) http.Handler {
 		exacts = append(exacts, origin)
 	}
 
-	allowAll := len(exacts) == 0 && len(wildcards) == 0
+	allowAll := len(exacts) == 0 && len(wildcards) == 0 && len(opts.AllowedOrigins) > 0
 
 	allowFunc := func(r *http.Request, origin string) bool {
 		if origin == "" {

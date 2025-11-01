@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -17,6 +18,7 @@ type Config struct {
 	Database       DatabaseConfig
 	Debug          DebugConfig
 	HTTP           HTTPConfig
+	Auth           AuthConfig
 	Recommendation RecommendationConfig
 	Rules          RulesConfig
 	Audit          AuditConfig
@@ -50,6 +52,23 @@ type HTTPConfig struct {
 type CORSConfig struct {
 	AllowedOrigins   []string
 	AllowCredentials bool
+}
+
+type AuthConfig struct {
+	Enabled   bool
+	APIKeys   map[string]APIKeyConfig
+	RateLimit RateLimitConfig
+}
+
+type APIKeyConfig struct {
+	AllowAll bool
+	OrgIDs   []uuid.UUID
+}
+
+type RateLimitConfig struct {
+	Enabled           bool
+	RequestsPerMinute int
+	Burst             int
 }
 
 type RecommendationConfig struct {
@@ -160,6 +179,120 @@ func Load(ctx context.Context, src Source) (Config, error) {
 			AllowedOrigins:   l.stringSlice("CORS_ALLOWED_ORIGINS", ',', true),
 			AllowCredentials: l.bool("CORS_ALLOW_CREDENTIALS", false),
 		},
+	}
+
+	cfg.Auth = AuthConfig{
+		Enabled: l.bool("API_AUTH_ENABLED", false),
+		APIKeys: make(map[string]APIKeyConfig),
+	}
+
+	rawAPIKeys := l.optionalString("API_AUTH_KEYS", "")
+	if rawAPIKeys != "" {
+		entries := strings.Split(rawAPIKeys, ",")
+		for _, entry := range entries {
+			entry = strings.TrimSpace(entry)
+			if entry == "" {
+				continue
+			}
+			parts := strings.SplitN(entry, ":", 2)
+			if len(parts) != 2 {
+				l.appendErr("API_AUTH_KEYS", fmt.Errorf("invalid entry %q (expected key:org1|org2 or key:*)", entry))
+				continue
+			}
+			key := strings.TrimSpace(parts[0])
+			if key == "" {
+				l.appendErr("API_AUTH_KEYS", fmt.Errorf("missing api key identifier in entry %q", entry))
+				continue
+			}
+			if _, exists := cfg.Auth.APIKeys[key]; exists {
+				l.appendErr("API_AUTH_KEYS", fmt.Errorf("duplicate api key %q", key))
+				continue
+			}
+			scope := strings.TrimSpace(parts[1])
+			if scope == "" {
+				l.appendErr("API_AUTH_KEYS", fmt.Errorf("missing scope definition for key %q", key))
+				continue
+			}
+			var keyCfg APIKeyConfig
+			valid := true
+			if scope == "*" {
+				keyCfg.AllowAll = true
+			} else {
+				segments := strings.Split(scope, "|")
+				seen := make(map[uuid.UUID]struct{})
+				for _, seg := range segments {
+					seg = strings.TrimSpace(seg)
+					if seg == "" {
+						continue
+					}
+					id, err := uuid.Parse(seg)
+					if err != nil {
+						l.appendErr("API_AUTH_KEYS", fmt.Errorf("invalid org id %q for key %s", seg, key))
+						valid = false
+						continue
+					}
+					if _, exists := seen[id]; exists {
+						continue
+					}
+					seen[id] = struct{}{}
+					keyCfg.OrgIDs = append(keyCfg.OrgIDs, id)
+				}
+				if valid && len(keyCfg.OrgIDs) == 0 {
+					l.appendErr("API_AUTH_KEYS", fmt.Errorf("no valid org ids for key %q", key))
+					valid = false
+				}
+			}
+			if !valid {
+				continue
+			}
+			cfg.Auth.APIKeys[key] = keyCfg
+		}
+	}
+
+	if cfg.Auth.Enabled && len(cfg.Auth.APIKeys) == 0 {
+		l.appendErr("API_AUTH_KEYS", fmt.Errorf("must define at least one api key when API_AUTH_ENABLED=true"))
+	}
+
+	cfg.Auth.RateLimit = RateLimitConfig{
+		RequestsPerMinute: 600,
+		Burst:             60,
+	}
+
+	if rpmStr, ok := l.lookup("API_RATE_LIMIT_RPM"); ok {
+		if rpmStr == "" {
+			cfg.Auth.RateLimit.RequestsPerMinute = 0
+		} else {
+			rpm, err := strconv.Atoi(rpmStr)
+			if err != nil || rpm < 0 {
+				l.appendErr("API_RATE_LIMIT_RPM", fmt.Errorf("must be an integer >= 0"))
+				cfg.Auth.RateLimit.RequestsPerMinute = 0
+			} else {
+				cfg.Auth.RateLimit.RequestsPerMinute = rpm
+			}
+		}
+	}
+
+	if cfg.Auth.RateLimit.RequestsPerMinute > 0 {
+		if burstStr, ok := l.lookup("API_RATE_LIMIT_BURST"); ok {
+			if burstStr == "" {
+				cfg.Auth.RateLimit.Burst = 0
+			} else {
+				burst, err := strconv.Atoi(burstStr)
+				if err != nil || burst <= 0 {
+					l.appendErr("API_RATE_LIMIT_BURST", fmt.Errorf("must be an integer > 0"))
+					cfg.Auth.RateLimit.Burst = 0
+				} else {
+					cfg.Auth.RateLimit.Burst = burst
+				}
+			}
+		}
+		if cfg.Auth.RateLimit.Burst <= 0 {
+			cfg.Auth.RateLimit.Burst = 60
+		}
+		cfg.Auth.RateLimit.Enabled = true
+	} else {
+		cfg.Auth.RateLimit.Burst = 0
+		cfg.Auth.RateLimit.Enabled = false
 	}
 
 	cfg.Recommendation = RecommendationConfig{}

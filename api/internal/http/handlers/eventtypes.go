@@ -3,11 +3,10 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+
 	"recsys/internal/http/common"
 	"recsys/internal/store"
 	"recsys/specs/types"
-
-	"github.com/google/uuid"
 )
 
 // @Summary Upsert tenant event-type config
@@ -77,12 +76,4 @@ func (h *Handler) EventTypesList(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 	_ = json.NewEncoder(w).Encode(out)
-}
-
-func (h *Handler) defaultOrgFromHeader(r *http.Request) uuid.UUID {
-	org := r.Header.Get("X-Org-ID")
-	if id, err := uuid.Parse(org); err == nil {
-		return id
-	}
-	return h.DefaultOrg
 }

@@ -1,13 +1,21 @@
 package shared
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
+	"net/url"
+	"os"
+	"path/filepath"
 	"recsys/shared/util"
+	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -26,11 +34,21 @@ func MustPool(t *testing.T) *pgxpool.Pool {
 	require.NoError(t, err)
 
 	pool, err := pgxpool.NewWithConfig(ctx, cfg)
-	require.NoError(t, err)
+	if err != nil {
+		if isTransientNetworkErr(err) {
+			t.Skipf("skipping integration test: database unavailable (%v)", err)
+		}
+		require.NoError(t, err)
+	}
 
 	ctxPing, cancel2 := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel2()
-	require.NoError(t, pool.Ping(ctxPing))
+	if err := pool.Ping(ctxPing); err != nil {
+		if isTransientNetworkErr(err) {
+			t.Skipf("skipping integration test: database unavailable (%v)", err)
+		}
+		require.NoError(t, err)
+	}
 
 	t.Cleanup(func() { pool.Close() })
 	return pool
@@ -76,11 +94,119 @@ type TestClient struct {
 	BaseURL string
 }
 
+var loadEnvOnce sync.Once
+
+func init() {
+	loadEnvOnce.Do(func() {
+		_ = loadTestEnv()
+		ensureDefaultEnv()
+	})
+}
+
+func loadTestEnv() error {
+	bases := []string{
+		".env.test",
+		".env.test.example",
+		".env",
+		".env.example",
+	}
+	prefixes := []string{".", "..", "../.."}
+	for _, prefix := range prefixes {
+		for _, base := range bases {
+			candidate := filepath.Join(prefix, base)
+			if err := applyEnvFile(candidate); err == nil {
+				return nil
+			}
+		}
+	}
+	return fmt.Errorf("unable to load env from %v", bases)
+}
+
+func applyEnvFile(filename string) error {
+	absPath, err := filepath.Abs(filename)
+	if err != nil {
+		return err
+	}
+	f, err := os.Open(absPath)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) != 2 {
+			continue
+		}
+		key := strings.TrimSpace(parts[0])
+		if key == "" {
+			continue
+		}
+		value := strings.Trim(strings.TrimSpace(parts[1]), "\"")
+		if _, exists := os.LookupEnv(key); !exists {
+			_ = os.Setenv(key, value)
+		}
+	}
+	return scanner.Err()
+}
+
+func ensureDefaultEnv() {
+	if _, err := uuid.Parse(os.Getenv("ORG_ID")); err != nil {
+		_ = os.Setenv("ORG_ID", "00000000-0000-0000-0000-000000000000")
+	}
+	if os.Getenv("API_BASE_URL") == "" {
+		_ = os.Setenv("API_BASE_URL", "http://localhost:8000")
+	}
+	if os.Getenv("DATABASE_URL") == "" {
+		_ = os.Setenv("DATABASE_URL", "postgres://localhost:5432/recsys?sslmode=disable")
+	}
+}
+
+func isTransientNetworkErr(err error) bool {
+	if err == nil {
+		return false
+	}
+	var dnsErr *net.DNSError
+	if errors.As(err, &dnsErr) {
+		return true
+	}
+	if strings.Contains(err.Error(), "connection refused") || strings.Contains(err.Error(), "no such host") {
+		return true
+	}
+	return false
+}
+
 // NewTestClient creates a new test client that connects to a running server.
 func NewTestClient(t *testing.T) *TestClient {
 	t.Helper()
 
 	baseURL := util.MustGetEnv("API_BASE_URL")
+	u, err := url.Parse(baseURL)
+	require.NoError(t, err)
+	host := u.Host
+	if !strings.Contains(host, ":") {
+		if u.Scheme == "https" {
+			host += ":443"
+		} else {
+			host += ":80"
+		}
+	}
+	dialer := net.Dialer{Timeout: 2 * time.Second}
+	conn, err := dialer.DialContext(context.Background(), "tcp", host)
+	if err != nil {
+		if isTransientNetworkErr(err) {
+			t.Skipf("skipping integration test: api unavailable (%v)", err)
+		}
+		require.NoError(t, err)
+	}
+	if conn != nil {
+		_ = conn.Close()
+	}
 
 	return &TestClient{
 		Client: &http.Client{

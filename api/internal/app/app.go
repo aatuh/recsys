@@ -12,6 +12,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 
@@ -24,6 +25,7 @@ import (
 	httpmiddleware "recsys/internal/http/middleware"
 	"recsys/internal/migrator"
 	"recsys/internal/rules"
+	"recsys/internal/services/ingestion"
 	"recsys/internal/store"
 	"recsys/specs/endpoints"
 )
@@ -89,6 +91,7 @@ func New(ctx context.Context, opts Options) (*App, error) {
 	}
 
 	st := store.New(pool)
+	ingestionSvc := ingestion.New(st)
 	rulesManager := rules.NewManager(st, rules.ManagerOptions{
 		RefreshInterval: cfg.Rules.CacheRefresh,
 		MaxPinSlots:     cfg.Rules.MaxPinSlots,
@@ -116,6 +119,8 @@ func New(ctx context.Context, opts Options) (*App, error) {
 		}
 		return nil
 	})
+
+	ingHandler := handlers.NewIngestionHandler(ingestionSvc, cfg.Recommendation.DefaultOrgID, logger)
 
 	hs := &handlers.Handler{
 		Store:               st,
@@ -159,55 +164,85 @@ func New(ctx context.Context, opts Options) (*App, error) {
 	errorMetrics := httpmiddleware.NewErrorMetrics()
 	router.Use(httpmiddleware.ErrorMetricsMiddleware(errorMetrics))
 
-	router.Options("/*", func(w http.ResponseWriter, _ *http.Request) {
-		w.WriteHeader(http.StatusNoContent)
-	})
-
 	router.Get(endpoints.Health, func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{"status":"ok"}`))
 	})
 
-	router.Post(endpoints.ItemsUpsert, hs.ItemsUpsert)
-	router.Post(endpoints.UsersUpsert, hs.UsersUpsert)
-	router.Post(endpoints.EventsBatch, hs.EventsBatch)
-	router.Post(endpoints.Recommendations, hs.Recommend)
-	router.Get(endpoints.ItemsSimilar, hs.ItemSimilar)
-	router.Post(endpoints.EventTypesUpsert, hs.EventTypesUpsert)
-	router.Get(endpoints.EventTypes, hs.EventTypesList)
+	protected := chi.NewRouter()
+	protected.Use(httpmiddleware.RequireOrgID())
 
-	router.Get(endpoints.UsersList, hs.ListUsers)
-	router.Get(endpoints.ItemsList, hs.ListItems)
-	router.Get(endpoints.EventsList, hs.ListEvents)
-	router.Post(endpoints.UsersDelete, hs.DeleteUsers)
-	router.Post(endpoints.ItemsDelete, hs.DeleteItems)
-	router.Post(endpoints.EventsDelete, hs.DeleteEvents)
+	if cfg.Auth.Enabled {
+		keyAccess := make(map[string]httpmiddleware.APIKeyAccess, len(cfg.Auth.APIKeys))
+		for key, accessCfg := range cfg.Auth.APIKeys {
+			entry := httpmiddleware.APIKeyAccess{AllowAll: accessCfg.AllowAll}
+			if !accessCfg.AllowAll && len(accessCfg.OrgIDs) > 0 {
+				entry.OrgIDs = make(map[uuid.UUID]struct{}, len(accessCfg.OrgIDs))
+				for _, id := range accessCfg.OrgIDs {
+					entry.OrgIDs[id] = struct{}{}
+				}
+			}
+			keyAccess[key] = entry
+		}
+		authorizer := httpmiddleware.NewAPIKeyAuthorizer(keyAccess, logger)
+		protected.Use(authorizer.Middleware)
+	}
 
-	router.Get(endpoints.SegmentProfiles, hs.SegmentProfilesList)
-	router.Post(endpoints.SegmentProfilesUpsert, hs.SegmentProfilesUpsert)
-	router.Post(endpoints.SegmentProfilesDelete, hs.SegmentProfilesDelete)
-	router.Get(endpoints.Segments, hs.SegmentsList)
-	router.Post(endpoints.SegmentsUpsert, hs.SegmentsUpsert)
-	router.Post(endpoints.SegmentsDelete, hs.SegmentsDelete)
-	router.Post(endpoints.SegmentDryRun, hs.SegmentsDryRun)
+	if cfg.Auth.RateLimit.Enabled {
+		if limiter := httpmiddleware.NewRateLimiter(cfg.Auth.RateLimit.RequestsPerMinute, cfg.Auth.RateLimit.Burst, logger); limiter != nil {
+			protected.Use(limiter.Middleware)
+		}
+	}
+	protected.Options("/*", func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	})
 
-	router.Get(endpoints.AuditDecisions, hs.AuditDecisionsList)
-	router.Get(endpoints.AuditDecisionByID, hs.AuditDecisionGet)
-	router.Post(endpoints.AuditSearch, hs.AuditDecisionsSearch)
+	protected.Post(endpoints.ItemsUpsert, ingHandler.ItemsUpsert)
+	protected.Post(endpoints.UsersUpsert, ingHandler.UsersUpsert)
+	protected.Post(endpoints.EventsBatch, ingHandler.EventsBatch)
+	protected.Post(endpoints.Recommendations, hs.Recommend)
+	protected.Get(endpoints.ItemsSimilar, hs.ItemSimilar)
+	protected.Post(endpoints.EventTypesUpsert, hs.EventTypesUpsert)
+	protected.Get(endpoints.EventTypes, hs.EventTypesList)
 
-	router.Post(endpoints.BanditPoliciesUpsert, hs.BanditPoliciesUpsert)
-	router.Get(endpoints.BanditPolicies, hs.BanditPoliciesList)
-	router.Post(endpoints.BanditDecide, hs.BanditDecide)
-	router.Post(endpoints.BanditReward, hs.BanditReward)
-	router.Post(endpoints.BanditRecommendations, hs.RecommendWithBandit)
+	protected.Get(endpoints.UsersList, hs.ListUsers)
+	protected.Get(endpoints.ItemsList, hs.ListItems)
+	protected.Get(endpoints.EventsList, hs.ListEvents)
+	protected.Post(endpoints.UsersDelete, hs.DeleteUsers)
+	protected.Post(endpoints.ItemsDelete, hs.DeleteItems)
+	protected.Post(endpoints.EventsDelete, hs.DeleteEvents)
 
-	router.Post(endpoints.Rules, hs.RulesCreate)
-	router.Put(endpoints.RuleByID, hs.RulesUpdate)
-	router.Get(endpoints.Rules, hs.RulesList)
-	router.Post(endpoints.RulesDryRun, hs.RulesDryRun)
+	protected.Get(endpoints.SegmentProfiles, hs.SegmentProfilesList)
+	protected.Post(endpoints.SegmentProfilesUpsert, hs.SegmentProfilesUpsert)
+	protected.Post(endpoints.SegmentProfilesDelete, hs.SegmentProfilesDelete)
+	protected.Get(endpoints.Segments, hs.SegmentsList)
+	protected.Post(endpoints.SegmentsUpsert, hs.SegmentsUpsert)
+	protected.Post(endpoints.SegmentsDelete, hs.SegmentsDelete)
+	protected.Post(endpoints.SegmentDryRun, hs.SegmentsDryRun)
 
-	router.Post(endpoints.ExplainLLM, hs.ExplainLLM)
+	protected.Get(endpoints.AuditDecisions, hs.AuditDecisionsList)
+	protected.Get(endpoints.AuditDecisionByID, hs.AuditDecisionGet)
+	protected.Post(endpoints.AuditSearch, hs.AuditDecisionsSearch)
+
+	protected.Post(endpoints.BanditPoliciesUpsert, hs.BanditPoliciesUpsert)
+	protected.Get(endpoints.BanditPolicies, hs.BanditPoliciesList)
+	protected.Post(endpoints.BanditDecide, hs.BanditDecide)
+	protected.Post(endpoints.BanditReward, hs.BanditReward)
+	protected.Post(endpoints.BanditRecommendations, hs.RecommendWithBandit)
+
+	protected.Post(endpoints.Rules, hs.RulesCreate)
+	protected.Put(endpoints.RuleByID, hs.RulesUpdate)
+	protected.Get(endpoints.Rules, hs.RulesList)
+	protected.Post(endpoints.RulesDryRun, hs.RulesDryRun)
+
+	protected.Post(endpoints.ExplainLLM, hs.ExplainLLM)
+
+	router.Mount("/", protected)
+
+	router.Options("/*", func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	})
 
 	server := &http.Server{
 		Addr:              ":" + cfg.Server.Port,

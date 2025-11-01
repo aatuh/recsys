@@ -2,11 +2,13 @@ package store_test
 
 import (
 	"context"
+	"strings"
 	"testing"
 	"time"
 
 	"recsys/internal/store"
 	"recsys/shared/util"
+	"recsys/test/shared"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -15,17 +17,7 @@ import (
 // getTestPool connects to the DB used by other integration tests.
 func getTestPool(t *testing.T) *pgxpool.Pool {
 	t.Helper()
-	dsn := util.MustGetEnv("DATABASE_URL")
-	cfg, err := pgxpool.ParseConfig(dsn)
-	if err != nil {
-		t.Fatalf("parse dsn: %v", err)
-	}
-	pool, err := pgxpool.NewWithConfig(context.Background(), cfg)
-	if err != nil {
-		t.Fatalf("new pool: %v", err)
-	}
-	t.Cleanup(func() { pool.Close() })
-	return pool
+	return shared.MustPool(t)
 }
 
 // ensurePgVector makes sure the extension exists for the current DB.
@@ -35,6 +27,9 @@ func ensurePgVector(t *testing.T, pool *pgxpool.Pool) {
 	_, err := pool.Exec(context.Background(),
 		"CREATE EXTENSION IF NOT EXISTS vector WITH SCHEMA public;")
 	if err != nil {
+		if strings.Contains(err.Error(), "no such host") {
+			t.Skipf("skipping integration test: database unavailable (%v)", err)
+		}
 		t.Fatalf("create extension vector: %v", err)
 	}
 }

@@ -14,6 +14,7 @@ help:
 	@echo "  migrate-status  - Show the status of the migrations"
 	@echo "  tidy            - Tidy the go modules"
 	@echo "  test            - Run the tests"
+	@echo "  health          - Check service healthiness"
 
 dev:
 	docker compose --env-file .env up --build
@@ -53,3 +54,7 @@ test:
 		-e FAST='$(FAST)' \
 		-e SKIP_API_WAIT='$(SKIP_API_WAIT)' \
 		test
+
+health:
+	@echo "🏥 Checking service healthiness..."
+	@cd api && make health

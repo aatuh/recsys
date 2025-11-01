@@ -82,8 +82,14 @@ func NotFound(w http.ResponseWriter, r *http.Request) {
 func Unauthorized(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, r, NewAPIError("unauthorized", "Unauthorized", http.StatusUnauthorized))
 }
+func Forbidden(w http.ResponseWriter, r *http.Request) {
+	writeJSON(w, r, NewAPIError("forbidden", "Forbidden", http.StatusForbidden))
+}
 func ServiceUnavailable(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, r, NewAPIError("service_unavailable", "Service unavailable", http.StatusServiceUnavailable))
+}
+func TooManyRequests(w http.ResponseWriter, r *http.Request) {
+	writeJSON(w, r, NewAPIError("rate_limited", "Too many requests", http.StatusTooManyRequests))
 }
 func Unprocessable(w http.ResponseWriter, r *http.Request, code, msg string, details map[string]any) {
 	ae := NewAPIError(code, msg, http.StatusUnprocessableEntity)

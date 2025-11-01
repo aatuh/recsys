@@ -8,13 +8,17 @@ import (
 	"testing"
 
 	"recsys/internal/http/handlers"
+	"recsys/internal/services/ingestion"
 	"recsys/specs/endpoints"
+
+	"github.com/google/uuid"
 )
 
 // Test that ItemsUpsert rejects embeddings with the wrong dimension.
 // This returns before touching the store, so we do not need a DB.
 func TestItemsUpsert_EmbeddingDimMismatch(t *testing.T) {
-	h := &handlers.Handler{} // Store not needed for early-return branch.
+	svc := ingestion.New(nil)
+	h := handlers.NewIngestionHandler(svc, uuid.New(), nil)
 
 	// Build valid JSON with a 3-dim embedding to trigger the check.
 	payload := map[string]any{
@@ -35,6 +39,7 @@ func TestItemsUpsert_EmbeddingDimMismatch(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, endpoints.ItemsUpsert,
 		bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Org-ID", uuid.New().String())
 	rec := httptest.NewRecorder()
 
 	h.ItemsUpsert(rec, req)

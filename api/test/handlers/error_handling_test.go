@@ -9,7 +9,7 @@ import (
 
 	"recsys/internal/http/common"
 	"recsys/internal/http/handlers"
-	"recsys/internal/store"
+	"recsys/internal/services/ingestion"
 	"recsys/specs/types"
 
 	"github.com/go-chi/chi/v5"
@@ -21,10 +21,8 @@ import (
 func TestErrorHandling_StructuredLogging(t *testing.T) {
 	// Setup test handler
 	logger := zap.NewNop() // Use no-op logger for testing
-	h := &handlers.Handler{
-		Store:  &store.Store{}, // Mock store
-		Logger: logger,
-	}
+	ingSvc := ingestion.New(nil)
+	h := handlers.NewIngestionHandler(ingSvc, uuid.New(), logger)
 
 	tests := []struct {
 		name           string
