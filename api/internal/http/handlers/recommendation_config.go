@@ -1,0 +1,55 @@
+package handlers
+
+import "recsys/internal/algorithm"
+
+// RecommendationConfig captures the base algorithm tunables used for ranking.
+type RecommendationConfig struct {
+	HalfLifeDays        float64
+	CoVisWindowDays     float64
+	PopularityFanout    int
+	MMRLambda           float64
+	BrandCap            int
+	CategoryCap         int
+	RuleExcludeEvents   bool
+	ExcludeEventTypes   []int16
+	BrandTagPrefixes    []string
+	CategoryTagPrefixes []string
+	PurchasedWindowDays float64
+	ProfileWindowDays   float64
+	ProfileBoost        float64
+	ProfileTopNTags     int
+	BlendAlpha          float64
+	BlendBeta           float64
+	BlendGamma          float64
+}
+
+// BaseConfig materializes the config into an algorithm.Config with defensive copies.
+func (c RecommendationConfig) BaseConfig() algorithm.Config {
+	cfg := algorithm.Config{
+		BlendAlpha:          c.BlendAlpha,
+		BlendBeta:           c.BlendBeta,
+		BlendGamma:          c.BlendGamma,
+		ProfileBoost:        c.ProfileBoost,
+		ProfileWindowDays:   c.ProfileWindowDays,
+		ProfileTopNTags:     c.ProfileTopNTags,
+		MMRLambda:           c.MMRLambda,
+		BrandCap:            c.BrandCap,
+		CategoryCap:         c.CategoryCap,
+		HalfLifeDays:        c.HalfLifeDays,
+		CoVisWindowDays:     int(c.CoVisWindowDays),
+		PurchasedWindowDays: int(c.PurchasedWindowDays),
+		RuleExcludeEvents:   c.RuleExcludeEvents,
+		PopularityFanout:    c.PopularityFanout,
+	}
+
+	if len(c.ExcludeEventTypes) > 0 {
+		cfg.ExcludeEventTypes = append([]int16(nil), c.ExcludeEventTypes...)
+	}
+	if len(c.BrandTagPrefixes) > 0 {
+		cfg.BrandTagPrefixes = append([]string(nil), c.BrandTagPrefixes...)
+	}
+	if len(c.CategoryTagPrefixes) > 0 {
+		cfg.CategoryTagPrefixes = append([]string(nil), c.CategoryTagPrefixes...)
+	}
+	return cfg
+}

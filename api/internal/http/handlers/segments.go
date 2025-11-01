@@ -7,9 +7,23 @@ import (
 
 	"recsys/internal/algorithm"
 	"recsys/internal/http/common"
+	"recsys/internal/store"
 	"recsys/internal/types"
 	handlerstypes "recsys/specs/types"
+
+	"github.com/google/uuid"
 )
+
+// SegmentsHandler exposes segment and segment-profile management endpoints.
+type SegmentsHandler struct {
+	store      *store.Store
+	defaultOrg uuid.UUID
+}
+
+// NewSegmentsHandler constructs an HTTP handler for segment operations.
+func NewSegmentsHandler(st *store.Store, defaultOrg uuid.UUID) *SegmentsHandler {
+	return &SegmentsHandler{store: st, defaultOrg: defaultOrg}
+}
 
 // SegmentProfilesList godoc
 // @Summary      List segment profiles
@@ -19,14 +33,14 @@ import (
 // @Success      200 {object} types.SegmentProfilesListResponse
 // @Failure      500 {object} common.APIError
 // @Router       /v1/segment-profiles [get]
-func (h *Handler) SegmentProfilesList(w http.ResponseWriter, r *http.Request) {
+func (h *SegmentsHandler) SegmentProfilesList(w http.ResponseWriter, r *http.Request) {
 	ns := r.URL.Query().Get("namespace")
 	if ns == "" {
 		ns = "default"
 	}
-	orgID := h.defaultOrgFromHeader(r)
+	orgID := orgIDFromHeader(r, h.defaultOrg)
 
-	profiles, err := h.Store.ListSegmentProfiles(r.Context(), orgID, ns)
+	profiles, err := h.store.ListSegmentProfiles(r.Context(), orgID, ns)
 	if err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)
 		return
@@ -55,7 +69,7 @@ func (h *Handler) SegmentProfilesList(w http.ResponseWriter, r *http.Request) {
 // @Failure      500 {object} common.APIError
 // @Router       /v1/segment-profiles:upsert [post]
 // @ID segmentProfilesUpsert
-func (h *Handler) SegmentProfilesUpsert(w http.ResponseWriter, r *http.Request) {
+func (h *SegmentsHandler) SegmentProfilesUpsert(w http.ResponseWriter, r *http.Request) {
 	var req handlerstypes.SegmentProfilesUpsertRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		common.HttpError(w, r, err, http.StatusBadRequest)
@@ -69,7 +83,7 @@ func (h *Handler) SegmentProfilesUpsert(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	orgID := h.defaultOrgFromHeader(r)
+	orgID := orgIDFromHeader(r, h.defaultOrg)
 	internalProfiles := make([]types.SegmentProfile, 0, len(req.Profiles))
 	for _, profile := range req.Profiles {
 		if profile.ProfileID == "" {
@@ -79,7 +93,7 @@ func (h *Handler) SegmentProfilesUpsert(w http.ResponseWriter, r *http.Request) 
 		internalProfiles = append(internalProfiles, mapSegmentProfileToInternal(profile))
 	}
 
-	if err := h.Store.UpsertSegmentProfiles(r.Context(), orgID, req.Namespace, internalProfiles); err != nil {
+	if err := h.store.UpsertSegmentProfiles(r.Context(), orgID, req.Namespace, internalProfiles); err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)
 		return
 	}
@@ -99,7 +113,7 @@ func (h *Handler) SegmentProfilesUpsert(w http.ResponseWriter, r *http.Request) 
 // @Failure      500 {object} common.APIError
 // @Router       /v1/segment-profiles:delete [post]
 // @ID segmentProfilesDelete
-func (h *Handler) SegmentProfilesDelete(w http.ResponseWriter, r *http.Request) {
+func (h *SegmentsHandler) SegmentProfilesDelete(w http.ResponseWriter, r *http.Request) {
 	var req handlerstypes.IDListRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		common.HttpError(w, r, err, http.StatusBadRequest)
@@ -113,8 +127,8 @@ func (h *Handler) SegmentProfilesDelete(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	orgID := h.defaultOrgFromHeader(r)
-	if _, err := h.Store.DeleteSegmentProfiles(r.Context(), orgID, req.Namespace, req.IDs); err != nil {
+	orgID := orgIDFromHeader(r, h.defaultOrg)
+	if _, err := h.store.DeleteSegmentProfiles(r.Context(), orgID, req.Namespace, req.IDs); err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)
 		return
 	}
@@ -131,14 +145,14 @@ func (h *Handler) SegmentProfilesDelete(w http.ResponseWriter, r *http.Request) 
 // @Success      200 {object} types.SegmentsListResponse
 // @Failure      500 {object} common.APIError
 // @Router       /v1/segments [get]
-func (h *Handler) SegmentsList(w http.ResponseWriter, r *http.Request) {
+func (h *SegmentsHandler) SegmentsList(w http.ResponseWriter, r *http.Request) {
 	ns := r.URL.Query().Get("namespace")
 	if ns == "" {
 		ns = "default"
 	}
-	orgID := h.defaultOrgFromHeader(r)
+	orgID := orgIDFromHeader(r, h.defaultOrg)
 
-	segments, err := h.Store.ListSegmentsWithRules(r.Context(), orgID, ns)
+	segments, err := h.store.ListSegmentsWithRules(r.Context(), orgID, ns)
 	if err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)
 		return
@@ -167,7 +181,7 @@ func (h *Handler) SegmentsList(w http.ResponseWriter, r *http.Request) {
 // @Failure      500 {object} common.APIError
 // @Router       /v1/segments:upsert [post]
 // @ID segmentsUpsert
-func (h *Handler) SegmentsUpsert(w http.ResponseWriter, r *http.Request) {
+func (h *SegmentsHandler) SegmentsUpsert(w http.ResponseWriter, r *http.Request) {
 	var req handlerstypes.SegmentsUpsertRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		common.HttpError(w, r, err, http.StatusBadRequest)
@@ -208,8 +222,8 @@ func (h *Handler) SegmentsUpsert(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	orgID := h.defaultOrgFromHeader(r)
-	if err := h.Store.UpsertSegmentWithRules(r.Context(), orgID, req.Namespace, internalSeg); err != nil {
+	orgID := orgIDFromHeader(r, h.defaultOrg)
+	if err := h.store.UpsertSegmentWithRules(r.Context(), orgID, req.Namespace, internalSeg); err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)
 		return
 	}
@@ -229,7 +243,7 @@ func (h *Handler) SegmentsUpsert(w http.ResponseWriter, r *http.Request) {
 // @Failure      500 {object} common.APIError
 // @Router       /v1/segments:delete [post]
 // @ID segmentsDelete
-func (h *Handler) SegmentsDelete(w http.ResponseWriter, r *http.Request) {
+func (h *SegmentsHandler) SegmentsDelete(w http.ResponseWriter, r *http.Request) {
 	var req handlerstypes.IDListRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		common.HttpError(w, r, err, http.StatusBadRequest)
@@ -243,8 +257,8 @@ func (h *Handler) SegmentsDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	orgID := h.defaultOrgFromHeader(r)
-	if _, err := h.Store.DeleteSegments(r.Context(), orgID, req.Namespace, req.IDs); err != nil {
+	orgID := orgIDFromHeader(r, h.defaultOrg)
+	if _, err := h.store.DeleteSegments(r.Context(), orgID, req.Namespace, req.IDs); err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)
 		return
 	}
@@ -264,7 +278,7 @@ func (h *Handler) SegmentsDelete(w http.ResponseWriter, r *http.Request) {
 // @Failure      500 {object} common.APIError
 // @Router       /v1/segments:dry-run [post]
 // @ID segmentsDryRun
-func (h *Handler) SegmentsDryRun(w http.ResponseWriter, r *http.Request) {
+func (h *SegmentsHandler) SegmentsDryRun(w http.ResponseWriter, r *http.Request) {
 	var req handlerstypes.SegmentDryRunRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		common.HttpError(w, r, err, http.StatusBadRequest)
@@ -274,23 +288,23 @@ func (h *Handler) SegmentsDryRun(w http.ResponseWriter, r *http.Request) {
 		req.Namespace = "default"
 	}
 
-	orgID := h.defaultOrgFromHeader(r)
+	orgID := orgIDFromHeader(r, h.defaultOrg)
 	algoReq := algorithm.Request{
 		OrgID:     orgID,
 		UserID:    req.UserID,
 		Namespace: req.Namespace,
 	}
-	_, segmentID, profileID, ruleID, err := h.selectSegmentProfile(r.Context(), algoReq, handlerstypes.RecommendRequest{Namespace: req.Namespace, Context: req.Context}, req.Traits)
+	sel, ruleID, err := resolveSegmentSelection(r.Context(), h.store, algoReq, handlerstypes.RecommendRequest{Namespace: req.Namespace, Context: req.Context}, req.Traits)
 	if err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)
 		return
 	}
 
-	matched := segmentID != ""
+	matched := sel.SegmentID != ""
 	resp := handlerstypes.SegmentDryRunResponse{
 		Matched:   matched,
-		SegmentID: segmentID,
-		ProfileID: profileID,
+		SegmentID: sel.SegmentID,
+		ProfileID: sel.ProfileID,
 	}
 	if ruleID != 0 {
 		resp.MatchedRuleID = &ruleID

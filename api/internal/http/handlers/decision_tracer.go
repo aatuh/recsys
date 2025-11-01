@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"net/http"
 	"sort"
+	"sync"
 	"time"
 
 	"recsys/internal/algorithm"
@@ -17,6 +18,23 @@ import (
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
+
+type decisionTracer struct {
+	recorder         audit.Recorder
+	logger           *zap.Logger
+	salt             string
+	rulesAuditSample float64
+	warnOnce         sync.Once
+}
+
+func NewDecisionTracer(recorder audit.Recorder, logger *zap.Logger, salt string, sample float64) *decisionTracer {
+	return &decisionTracer{
+		recorder:         recorder,
+		logger:           logger,
+		salt:             salt,
+		rulesAuditSample: sample,
+	}
+}
 
 type decisionTraceInput struct {
 	Request      *http.Request
@@ -42,11 +60,14 @@ type banditTraceContext struct {
 
 var auditRand = rand.New(rand.NewSource(time.Now().UnixNano()))
 
-func (h *Handler) recordDecisionTrace(in decisionTraceInput) {
-	if h.DecisionRecorder == nil {
-		if h.Logger != nil {
-			h.auditRecorderWarnOnce.Do(func() {
-				h.Logger.Warn("decision recorder not configured; skipping audit trace")
+func (dt *decisionTracer) Record(in decisionTraceInput) {
+	if dt == nil {
+		return
+	}
+	if dt.recorder == nil {
+		if dt.logger != nil {
+			dt.warnOnce.Do(func() {
+				dt.logger.Warn("decision recorder not configured; skipping audit trace")
 			})
 		}
 		return
@@ -85,13 +106,12 @@ func (h *Handler) recordDecisionTrace(in decisionTraceInput) {
 		},
 	}
 
-	// Prefer bandit/request context request_id if available; fall back to req id
 	if in.Bandit != nil && in.Bandit.RequestID != "" {
 		trace.RequestID = in.Bandit.RequestID
 	} else if reqID := middleware.GetReqID(in.Request.Context()); reqID != "" {
 		trace.RequestID = reqID
 	}
-	if hash := hashUser(namespace, in.AlgoRequest.UserID, h.DecisionTraceSalt); hash != "" {
+	if hash := hashUser(namespace, in.AlgoRequest.UserID, dt.salt); hash != "" {
 		trace.UserHash = hash
 	}
 
@@ -135,12 +155,15 @@ func (h *Handler) recordDecisionTrace(in decisionTraceInput) {
 	if len(in.TraceData.CapsInfo) > 0 {
 		extras["caps_applied"] = true
 	}
+
 	includeRuleExtras := true
-	if h.RulesAuditSample <= 0 {
+	switch {
+	case dt.rulesAuditSample <= 0:
 		includeRuleExtras = false
-	} else if h.RulesAuditSample < 1 {
-		includeRuleExtras = auditRand.Float64() < h.RulesAuditSample
+	case dt.rulesAuditSample < 1:
+		includeRuleExtras = auditRand.Float64() < dt.rulesAuditSample
 	}
+
 	if includeRuleExtras && len(in.TraceData.RuleEvaluated) > 0 {
 		ids := make([]string, 0, len(in.TraceData.RuleEvaluated))
 		for _, id := range in.TraceData.RuleEvaluated {
@@ -228,46 +251,47 @@ func (h *Handler) recordDecisionTrace(in decisionTraceInput) {
 		}
 	}
 
-	if h.Logger != nil {
-		h.Logger.Debug("queueing decision trace", zap.String("decision_id", trace.DecisionID.String()), zap.String("namespace", trace.Namespace), zap.Int("final_items", len(trace.FinalItems)))
+	if dt.logger != nil {
+		dt.logger.Debug(
+			"queueing decision trace",
+			zap.String("decision_id", trace.DecisionID.String()),
+			zap.String("namespace", trace.Namespace),
+			zap.Int("final_items", len(trace.FinalItems)),
+		)
 	}
-	h.DecisionRecorder.Record(&trace)
+	dt.recorder.Record(&trace)
 }
 
 func buildTraceConstraints(c *types.PopConstraints) *audit.TraceConstraints {
 	if c == nil {
 		return nil
 	}
-	tc := &audit.TraceConstraints{}
-	if len(c.IncludeTagsAny) > 0 {
-		tc.IncludeTagsAny = append([]string(nil), c.IncludeTagsAny...)
+	out := &audit.TraceConstraints{
+		IncludeTagsAny: append([]string(nil), c.IncludeTagsAny...),
+		ExcludeItemIDs: append([]string(nil), c.ExcludeItemIDs...),
 	}
-	if len(c.ExcludeItemIDs) > 0 {
-		tc.ExcludeItemIDs = append([]string(nil), c.ExcludeItemIDs...)
-	}
-	if c.MinPrice != nil {
-		tc.PriceBetween = append(tc.PriceBetween, *c.MinPrice)
-	}
-	if c.MaxPrice != nil {
-		tc.PriceBetween = append(tc.PriceBetween, *c.MaxPrice)
+	if c.MinPrice != nil || c.MaxPrice != nil {
+		pb := make([]float64, 0, 2)
+		if c.MinPrice != nil {
+			pb = append(pb, *c.MinPrice)
+		}
+		if c.MaxPrice != nil {
+			pb = append(pb, *c.MaxPrice)
+		}
+		out.PriceBetween = pb
 	}
 	if c.CreatedAfter != nil {
-		tc.CreatedAfter = c.CreatedAfter.UTC().Format(time.RFC3339)
+		out.CreatedAfter = c.CreatedAfter.Format(time.RFC3339)
 	}
-	if len(tc.IncludeTagsAny) == 0 && len(tc.ExcludeItemIDs) == 0 && len(tc.PriceBetween) == 0 && tc.CreatedAfter == "" {
-		return nil
-	}
-	return tc
+	return out
 }
 
-func buildTraceCandidates(items []types.ScoredItem) []audit.TraceCandidate {
-	if len(items) == 0 {
+func buildTraceCandidates(candidates []types.ScoredItem) []audit.TraceCandidate {
+	if len(candidates) == 0 {
 		return nil
 	}
-	copied := append([]types.ScoredItem(nil), items...)
-	sort.SliceStable(copied, func(i, j int) bool { return copied[i].Score > copied[j].Score })
-	out := make([]audit.TraceCandidate, len(copied))
-	for i, cand := range copied {
+	out := make([]audit.TraceCandidate, len(candidates))
+	for i, cand := range candidates {
 		out[i] = audit.TraceCandidate{ItemID: cand.ItemID, Score: cand.Score}
 	}
 	return out

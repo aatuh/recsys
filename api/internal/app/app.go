@@ -25,7 +25,9 @@ import (
 	httpmiddleware "recsys/internal/http/middleware"
 	"recsys/internal/migrator"
 	"recsys/internal/rules"
+	"recsys/internal/services/datamanagement"
 	"recsys/internal/services/ingestion"
+	"recsys/internal/services/recommendation"
 	"recsys/internal/store"
 	"recsys/specs/endpoints"
 )
@@ -92,11 +94,13 @@ func New(ctx context.Context, opts Options) (*App, error) {
 
 	st := store.New(pool)
 	ingestionSvc := ingestion.New(st)
+	dataSvc := datamanagement.New(st)
 	rulesManager := rules.NewManager(st, rules.ManagerOptions{
 		RefreshInterval: cfg.Rules.CacheRefresh,
 		MaxPinSlots:     cfg.Rules.MaxPinSlots,
 		Enabled:         cfg.Rules.Enabled,
 	})
+	recommendationSvc := recommendation.New(st, rulesManager)
 
 	explainService := newExplainService(cfg.Explain, st, logger)
 
@@ -120,7 +124,34 @@ func New(ctx context.Context, opts Options) (*App, error) {
 		return nil
 	})
 
+	tracer := handlers.NewDecisionTracer(decisionRecorder, logger, cfg.Audit.DecisionTrace.Salt, cfg.Rules.AuditSample)
+
+	recConfig := handlers.RecommendationConfig{
+		HalfLifeDays:        cfg.Recommendation.HalfLifeDays,
+		CoVisWindowDays:     cfg.Recommendation.CoVisWindowDays,
+		PopularityFanout:    cfg.Recommendation.PopularityFanout,
+		MMRLambda:           cfg.Recommendation.MMRLambda,
+		BrandCap:            cfg.Recommendation.BrandCap,
+		CategoryCap:         cfg.Recommendation.CategoryCap,
+		RuleExcludeEvents:   cfg.Recommendation.RuleExcludeEvents,
+		ExcludeEventTypes:   cfg.Recommendation.ExcludeEventTypes,
+		BrandTagPrefixes:    cfg.Recommendation.BrandTagPrefixes,
+		CategoryTagPrefixes: cfg.Recommendation.CategoryTagPrefixes,
+		PurchasedWindowDays: cfg.Recommendation.PurchasedWindowDays,
+		ProfileWindowDays:   cfg.Recommendation.Profile.WindowDays,
+		ProfileBoost:        cfg.Recommendation.Profile.Boost,
+		ProfileTopNTags:     cfg.Recommendation.Profile.TopNTags,
+		BlendAlpha:          cfg.Recommendation.Blend.Alpha,
+		BlendBeta:           cfg.Recommendation.Blend.Beta,
+		BlendGamma:          cfg.Recommendation.Blend.Gamma,
+	}
+
 	ingHandler := handlers.NewIngestionHandler(ingestionSvc, cfg.Recommendation.DefaultOrgID, logger)
+	dataHandler := handlers.NewDataManagementHandler(dataSvc, cfg.Recommendation.DefaultOrgID, logger)
+	segmentsHandler := handlers.NewSegmentsHandler(st, cfg.Recommendation.DefaultOrgID)
+	recoHandler := handlers.NewRecommendationHandler(recommendationSvc, st, recConfig, tracer, cfg.Recommendation.DefaultOrgID, logger)
+	banditHandler := handlers.NewBanditHandler(st, recommendationSvc, recConfig, tracer, cfg.Recommendation.DefaultOrgID, cfg.Recommendation.BanditAlgo, logger)
+	rulesHandler := handlers.NewRulesHandler(st, rulesManager, cfg.Recommendation.DefaultOrgID, cfg.Recommendation.BrandTagPrefixes, cfg.Recommendation.CategoryTagPrefixes)
 
 	hs := &handlers.Handler{
 		Store:               st,
@@ -201,40 +232,40 @@ func New(ctx context.Context, opts Options) (*App, error) {
 	protected.Post(endpoints.ItemsUpsert, ingHandler.ItemsUpsert)
 	protected.Post(endpoints.UsersUpsert, ingHandler.UsersUpsert)
 	protected.Post(endpoints.EventsBatch, ingHandler.EventsBatch)
-	protected.Post(endpoints.Recommendations, hs.Recommend)
-	protected.Get(endpoints.ItemsSimilar, hs.ItemSimilar)
+	protected.Post(endpoints.Recommendations, recoHandler.Recommend)
+	protected.Get(endpoints.ItemsSimilar, recoHandler.ItemSimilar)
 	protected.Post(endpoints.EventTypesUpsert, hs.EventTypesUpsert)
 	protected.Get(endpoints.EventTypes, hs.EventTypesList)
 
-	protected.Get(endpoints.UsersList, hs.ListUsers)
-	protected.Get(endpoints.ItemsList, hs.ListItems)
-	protected.Get(endpoints.EventsList, hs.ListEvents)
-	protected.Post(endpoints.UsersDelete, hs.DeleteUsers)
-	protected.Post(endpoints.ItemsDelete, hs.DeleteItems)
-	protected.Post(endpoints.EventsDelete, hs.DeleteEvents)
+	protected.Get(endpoints.UsersList, dataHandler.ListUsers)
+	protected.Get(endpoints.ItemsList, dataHandler.ListItems)
+	protected.Get(endpoints.EventsList, dataHandler.ListEvents)
+	protected.Post(endpoints.UsersDelete, dataHandler.DeleteUsers)
+	protected.Post(endpoints.ItemsDelete, dataHandler.DeleteItems)
+	protected.Post(endpoints.EventsDelete, dataHandler.DeleteEvents)
 
-	protected.Get(endpoints.SegmentProfiles, hs.SegmentProfilesList)
-	protected.Post(endpoints.SegmentProfilesUpsert, hs.SegmentProfilesUpsert)
-	protected.Post(endpoints.SegmentProfilesDelete, hs.SegmentProfilesDelete)
-	protected.Get(endpoints.Segments, hs.SegmentsList)
-	protected.Post(endpoints.SegmentsUpsert, hs.SegmentsUpsert)
-	protected.Post(endpoints.SegmentsDelete, hs.SegmentsDelete)
-	protected.Post(endpoints.SegmentDryRun, hs.SegmentsDryRun)
+	protected.Get(endpoints.SegmentProfiles, segmentsHandler.SegmentProfilesList)
+	protected.Post(endpoints.SegmentProfilesUpsert, segmentsHandler.SegmentProfilesUpsert)
+	protected.Post(endpoints.SegmentProfilesDelete, segmentsHandler.SegmentProfilesDelete)
+	protected.Get(endpoints.Segments, segmentsHandler.SegmentsList)
+	protected.Post(endpoints.SegmentsUpsert, segmentsHandler.SegmentsUpsert)
+	protected.Post(endpoints.SegmentsDelete, segmentsHandler.SegmentsDelete)
+	protected.Post(endpoints.SegmentDryRun, segmentsHandler.SegmentsDryRun)
 
 	protected.Get(endpoints.AuditDecisions, hs.AuditDecisionsList)
 	protected.Get(endpoints.AuditDecisionByID, hs.AuditDecisionGet)
 	protected.Post(endpoints.AuditSearch, hs.AuditDecisionsSearch)
 
-	protected.Post(endpoints.BanditPoliciesUpsert, hs.BanditPoliciesUpsert)
-	protected.Get(endpoints.BanditPolicies, hs.BanditPoliciesList)
-	protected.Post(endpoints.BanditDecide, hs.BanditDecide)
-	protected.Post(endpoints.BanditReward, hs.BanditReward)
-	protected.Post(endpoints.BanditRecommendations, hs.RecommendWithBandit)
+	protected.Post(endpoints.BanditPoliciesUpsert, banditHandler.BanditPoliciesUpsert)
+	protected.Get(endpoints.BanditPolicies, banditHandler.BanditPoliciesList)
+	protected.Post(endpoints.BanditDecide, banditHandler.BanditDecide)
+	protected.Post(endpoints.BanditReward, banditHandler.BanditReward)
+	protected.Post(endpoints.BanditRecommendations, banditHandler.RecommendWithBandit)
 
-	protected.Post(endpoints.Rules, hs.RulesCreate)
-	protected.Put(endpoints.RuleByID, hs.RulesUpdate)
-	protected.Get(endpoints.Rules, hs.RulesList)
-	protected.Post(endpoints.RulesDryRun, hs.RulesDryRun)
+	protected.Post(endpoints.Rules, rulesHandler.RulesCreate)
+	protected.Put(endpoints.RuleByID, rulesHandler.RulesUpdate)
+	protected.Get(endpoints.Rules, rulesHandler.RulesList)
+	protected.Post(endpoints.RulesDryRun, rulesHandler.RulesDryRun)
 
 	protected.Post(endpoints.ExplainLLM, hs.ExplainLLM)
 

@@ -3,8 +3,14 @@ set -e
 
 if [ -z "$SKIP_API_WAIT" ]; then
     echo "Waiting for API server to be ready..."
-    until wget --no-verbose --tries=1 --spider http://api:8000/health >/dev/null 2>&1; do 
+    waited=0
+    until wget --no-verbose --tries=1 --spider http://api:8000/health >/dev/null 2>&1; do
         sleep 1
+        waited=$((waited + 1))
+        if [ $waited -ge 30 ]; then
+            echo "API server did not become ready within timeout."
+            exit 1
+        fi
     done
 else
     echo "SKIP_API_WAIT set; not waiting for API"

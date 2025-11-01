@@ -1,15 +1,49 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 
-	"recsys/internal/http/common"
-	"recsys/specs/types"
-
 	"github.com/google/uuid"
+	"go.uber.org/zap"
+
+	"recsys/internal/http/common"
+	"recsys/internal/services/datamanagement"
+	specstypes "recsys/specs/types"
 )
+
+// DataManagementService defines the domain contract required by the HTTP adapter.
+type DataManagementService interface {
+	ListUsers(ctx context.Context, orgID uuid.UUID, opts datamanagement.ListOptions) (specstypes.ListResponse, error)
+	ListItems(ctx context.Context, orgID uuid.UUID, opts datamanagement.ListOptions) (specstypes.ListResponse, error)
+	ListEvents(ctx context.Context, orgID uuid.UUID, opts datamanagement.ListOptions) (specstypes.ListResponse, error)
+	DeleteUsers(ctx context.Context, orgID uuid.UUID, opts datamanagement.DeleteOptions) (int, error)
+	DeleteItems(ctx context.Context, orgID uuid.UUID, opts datamanagement.DeleteOptions) (int, error)
+	DeleteEvents(ctx context.Context, orgID uuid.UUID, opts datamanagement.DeleteOptions) (int, error)
+}
+
+// DataManagementHandler exposes list/delete routes backed by the service.
+type DataManagementHandler struct {
+	service    DataManagementService
+	defaultOrg uuid.UUID
+	logger     *zap.Logger
+}
+
+// NewDataManagementHandler constructs a handler for data-management endpoints.
+func NewDataManagementHandler(svc DataManagementService, defaultOrg uuid.UUID, logger *zap.Logger) *DataManagementHandler {
+	h := &DataManagementHandler{
+		service:    svc,
+		defaultOrg: defaultOrg,
+		logger:     logger,
+	}
+	if h.logger == nil {
+		h.logger = zap.NewNop()
+	}
+	return h
+}
 
 // ListUsers godoc
 // @Summary      List users with pagination and filtering
@@ -27,72 +61,17 @@ import (
 // @Failure      400        {object}  common.APIError
 // @Router       /v1/users [get]
 // @ID listUsers
-func (h *Handler) ListUsers(w http.ResponseWriter, r *http.Request) {
-	// Parse query parameters
-	namespace := r.URL.Query().Get("namespace")
-	if namespace == "" {
-		common.BadRequest(w, r, "missing_namespace", "namespace parameter is required", nil)
-		return
-	}
-
-	limit := 100 // default
-	if l := r.URL.Query().Get("limit"); l != "" {
-		if parsed, err := strconv.Atoi(l); err == nil && parsed > 0 && parsed <= 1000 {
-			limit = parsed
-		}
-	}
-
-	offset := 0 // default
-	if o := r.URL.Query().Get("offset"); o != "" {
-		if parsed, err := strconv.Atoi(o); err == nil && parsed >= 0 {
-			offset = parsed
-		}
-	}
-
-	// Build filters
-	filters := make(map[string]interface{})
+func (h *DataManagementHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
+	filters := make(map[string]any)
 	if userID := r.URL.Query().Get("user_id"); userID != "" {
 		filters["user_id"] = userID
 	}
-	if createdAfter := r.URL.Query().Get("created_after"); createdAfter != "" {
-		filters["created_after"] = createdAfter
-	}
-	if createdBefore := r.URL.Query().Get("created_before"); createdBefore != "" {
-		filters["created_before"] = createdBefore
-	}
+	addCreatedFilters(r, filters)
 
-	orgID := h.DefaultOrg
-	if s := r.Header.Get("X-Org-ID"); s != "" {
-		if id, err := uuid.Parse(s); err == nil {
-			orgID = id
-		}
-	}
-
-	users, total, err := h.Store.ListUsers(r.Context(), orgID, namespace, limit, offset, filters)
-	if err != nil {
-		common.HttpError(w, r, err, http.StatusInternalServerError)
-		return
-	}
-
-	hasMore := offset+limit < total
-	var nextOffset *int
-	if hasMore {
-		next := offset + limit
-		nextOffset = &next
-	}
-
-	response := types.ListResponse{
-		Items:      convertToAnySlice(users),
-		Total:      total,
-		Limit:      limit,
-		Offset:     offset,
-		HasMore:    hasMore,
-		NextOffset: nextOffset,
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
+	h.list(w, r, func(ctx context.Context, orgID uuid.UUID, opts datamanagement.ListOptions) (specstypes.ListResponse, error) {
+		opts.Filters = filters
+		return h.service.ListUsers(ctx, orgID, opts)
+	})
 }
 
 // ListItems godoc
@@ -111,72 +90,17 @@ func (h *Handler) ListUsers(w http.ResponseWriter, r *http.Request) {
 // @Failure      400        {object}  common.APIError
 // @Router       /v1/items [get]
 // @ID listItems
-func (h *Handler) ListItems(w http.ResponseWriter, r *http.Request) {
-	// Parse query parameters
-	namespace := r.URL.Query().Get("namespace")
-	if namespace == "" {
-		common.BadRequest(w, r, "missing_namespace", "namespace parameter is required", nil)
-		return
-	}
-
-	limit := 100 // default
-	if l := r.URL.Query().Get("limit"); l != "" {
-		if parsed, err := strconv.Atoi(l); err == nil && parsed > 0 && parsed <= 1000 {
-			limit = parsed
-		}
-	}
-
-	offset := 0 // default
-	if o := r.URL.Query().Get("offset"); o != "" {
-		if parsed, err := strconv.Atoi(o); err == nil && parsed >= 0 {
-			offset = parsed
-		}
-	}
-
-	// Build filters
-	filters := make(map[string]interface{})
+func (h *DataManagementHandler) ListItems(w http.ResponseWriter, r *http.Request) {
+	filters := make(map[string]any)
 	if itemID := r.URL.Query().Get("item_id"); itemID != "" {
 		filters["item_id"] = itemID
 	}
-	if createdAfter := r.URL.Query().Get("created_after"); createdAfter != "" {
-		filters["created_after"] = createdAfter
-	}
-	if createdBefore := r.URL.Query().Get("created_before"); createdBefore != "" {
-		filters["created_before"] = createdBefore
-	}
+	addCreatedFilters(r, filters)
 
-	orgID := h.DefaultOrg
-	if s := r.Header.Get("X-Org-ID"); s != "" {
-		if id, err := uuid.Parse(s); err == nil {
-			orgID = id
-		}
-	}
-
-	items, total, err := h.Store.ListItems(r.Context(), orgID, namespace, limit, offset, filters)
-	if err != nil {
-		common.HttpError(w, r, err, http.StatusInternalServerError)
-		return
-	}
-
-	hasMore := offset+limit < total
-	var nextOffset *int
-	if hasMore {
-		next := offset + limit
-		nextOffset = &next
-	}
-
-	response := types.ListResponse{
-		Items:      convertToAnySlice(items),
-		Total:      total,
-		Limit:      limit,
-		Offset:     offset,
-		HasMore:    hasMore,
-		NextOffset: nextOffset,
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
+	h.list(w, r, func(ctx context.Context, orgID uuid.UUID, opts datamanagement.ListOptions) (specstypes.ListResponse, error) {
+		opts.Filters = filters
+		return h.service.ListItems(ctx, orgID, opts)
+	})
 }
 
 // ListEvents godoc
@@ -197,30 +121,8 @@ func (h *Handler) ListItems(w http.ResponseWriter, r *http.Request) {
 // @Failure      400        {object}  common.APIError
 // @Router       /v1/events [get]
 // @ID listEvents
-func (h *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
-	// Parse query parameters
-	namespace := r.URL.Query().Get("namespace")
-	if namespace == "" {
-		common.BadRequest(w, r, "missing_namespace", "namespace parameter is required", nil)
-		return
-	}
-
-	limit := 100 // default
-	if l := r.URL.Query().Get("limit"); l != "" {
-		if parsed, err := strconv.Atoi(l); err == nil && parsed > 0 && parsed <= 1000 {
-			limit = parsed
-		}
-	}
-
-	offset := 0 // default
-	if o := r.URL.Query().Get("offset"); o != "" {
-		if parsed, err := strconv.Atoi(o); err == nil && parsed >= 0 {
-			offset = parsed
-		}
-	}
-
-	// Build filters
-	filters := make(map[string]interface{})
+func (h *DataManagementHandler) ListEvents(w http.ResponseWriter, r *http.Request) {
+	filters := make(map[string]any)
 	if userID := r.URL.Query().Get("user_id"); userID != "" {
 		filters["user_id"] = userID
 	}
@@ -232,45 +134,12 @@ func (h *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
 			filters["event_type"] = int16(parsed)
 		}
 	}
-	if createdAfter := r.URL.Query().Get("created_after"); createdAfter != "" {
-		filters["created_after"] = createdAfter
-	}
-	if createdBefore := r.URL.Query().Get("created_before"); createdBefore != "" {
-		filters["created_before"] = createdBefore
-	}
+	addCreatedFilters(r, filters)
 
-	orgID := h.DefaultOrg
-	if s := r.Header.Get("X-Org-ID"); s != "" {
-		if id, err := uuid.Parse(s); err == nil {
-			orgID = id
-		}
-	}
-
-	events, total, err := h.Store.ListEvents(r.Context(), orgID, namespace, limit, offset, filters)
-	if err != nil {
-		common.HttpError(w, r, err, http.StatusInternalServerError)
-		return
-	}
-
-	hasMore := offset+limit < total
-	var nextOffset *int
-	if hasMore {
-		next := offset + limit
-		nextOffset = &next
-	}
-
-	response := types.ListResponse{
-		Items:      convertToAnySlice(events),
-		Total:      total,
-		Limit:      limit,
-		Offset:     offset,
-		HasMore:    hasMore,
-		NextOffset: nextOffset,
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
+	h.list(w, r, func(ctx context.Context, orgID uuid.UUID, opts datamanagement.ListOptions) (specstypes.ListResponse, error) {
+		opts.Filters = filters
+		return h.service.ListEvents(ctx, orgID, opts)
+	})
 }
 
 // DeleteUsers godoc
@@ -284,46 +153,10 @@ func (h *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
 // @Failure      400      {object}  common.APIError
 // @Router       /v1/users:delete [post]
 // @ID deleteUsers
-func (h *Handler) DeleteUsers(w http.ResponseWriter, r *http.Request) {
-	var req types.DeleteRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		common.HttpError(w, r, err, http.StatusBadRequest)
-		return
-	}
-
-	orgID := h.DefaultOrg
-	if s := r.Header.Get("X-Org-ID"); s != "" {
-		if id, err := uuid.Parse(s); err == nil {
-			orgID = id
-		}
-	}
-
-	// Build filters
-	filters := make(map[string]interface{})
-	if req.UserID != nil {
-		filters["user_id"] = *req.UserID
-	}
-	if req.CreatedAfter != nil {
-		filters["created_after"] = *req.CreatedAfter
-	}
-	if req.CreatedBefore != nil {
-		filters["created_before"] = *req.CreatedBefore
-	}
-
-	deletedCount, err := h.Store.DeleteUsers(r.Context(), orgID, req.Namespace, filters)
-	if err != nil {
-		common.HttpError(w, r, err, http.StatusInternalServerError)
-		return
-	}
-
-	response := types.DeleteResponse{
-		DeletedCount: deletedCount,
-		Message:      "Users deleted successfully",
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
+func (h *DataManagementHandler) DeleteUsers(w http.ResponseWriter, r *http.Request) {
+	h.delete(w, r, "Users deleted successfully", func(ctx context.Context, orgID uuid.UUID, opts datamanagement.DeleteOptions) (int, error) {
+		return h.service.DeleteUsers(ctx, orgID, opts)
+	})
 }
 
 // DeleteItems godoc
@@ -337,46 +170,10 @@ func (h *Handler) DeleteUsers(w http.ResponseWriter, r *http.Request) {
 // @Failure      400      {object}  common.APIError
 // @Router       /v1/items:delete [post]
 // @ID deleteItems
-func (h *Handler) DeleteItems(w http.ResponseWriter, r *http.Request) {
-	var req types.DeleteRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		common.HttpError(w, r, err, http.StatusBadRequest)
-		return
-	}
-
-	orgID := h.DefaultOrg
-	if s := r.Header.Get("X-Org-ID"); s != "" {
-		if id, err := uuid.Parse(s); err == nil {
-			orgID = id
-		}
-	}
-
-	// Build filters
-	filters := make(map[string]interface{})
-	if req.ItemID != nil {
-		filters["item_id"] = *req.ItemID
-	}
-	if req.CreatedAfter != nil {
-		filters["created_after"] = *req.CreatedAfter
-	}
-	if req.CreatedBefore != nil {
-		filters["created_before"] = *req.CreatedBefore
-	}
-
-	deletedCount, err := h.Store.DeleteItems(r.Context(), orgID, req.Namespace, filters)
-	if err != nil {
-		common.HttpError(w, r, err, http.StatusInternalServerError)
-		return
-	}
-
-	response := types.DeleteResponse{
-		DeletedCount: deletedCount,
-		Message:      "Items deleted successfully",
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
+func (h *DataManagementHandler) DeleteItems(w http.ResponseWriter, r *http.Request) {
+	h.delete(w, r, "Items deleted successfully", func(ctx context.Context, orgID uuid.UUID, opts datamanagement.DeleteOptions) (int, error) {
+		return h.service.DeleteItems(ctx, orgID, opts)
+	})
 }
 
 // DeleteEvents godoc
@@ -390,22 +187,108 @@ func (h *Handler) DeleteItems(w http.ResponseWriter, r *http.Request) {
 // @Failure      400      {object}  common.APIError
 // @Router       /v1/events:delete [post]
 // @ID deleteEvents
-func (h *Handler) DeleteEvents(w http.ResponseWriter, r *http.Request) {
-	var req types.DeleteRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		common.HttpError(w, r, err, http.StatusBadRequest)
+func (h *DataManagementHandler) DeleteEvents(w http.ResponseWriter, r *http.Request) {
+	h.delete(w, r, "Events deleted successfully", func(ctx context.Context, orgID uuid.UUID, opts datamanagement.DeleteOptions) (int, error) {
+		return h.service.DeleteEvents(ctx, orgID, opts)
+	})
+}
+
+type listInvoker func(ctx context.Context, orgID uuid.UUID, opts datamanagement.ListOptions) (specstypes.ListResponse, error)
+
+func (h *DataManagementHandler) list(w http.ResponseWriter, r *http.Request, invoke listInvoker) {
+	orgID := orgIDFromHeader(r, h.defaultOrg)
+	limit := parseLimitParam(r.URL.Query().Get("limit"), 100, 1000)
+	offset := parseOffsetParam(r.URL.Query().Get("offset"), 0)
+
+	opts := datamanagement.ListOptions{
+		Namespace: r.URL.Query().Get("namespace"),
+		Limit:     limit,
+		Offset:    offset,
+		Filters:   make(map[string]any),
+	}
+
+	resp, err := invoke(r.Context(), orgID, opts)
+	if err != nil {
+		var vErr datamanagement.ValidationError
+		if errors.As(err, &vErr) {
+			common.BadRequest(w, r, vErr.Code, vErr.Message, vErr.Details)
+			return
+		}
+		common.HttpErrorWithLogger(w, r, err, http.StatusInternalServerError, h.logger)
 		return
 	}
 
-	orgID := h.DefaultOrg
-	if s := r.Header.Get("X-Org-ID"); s != "" {
-		if id, err := uuid.Parse(s); err == nil {
-			orgID = id
-		}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(resp)
+}
+
+type deleteInvoker func(ctx context.Context, orgID uuid.UUID, opts datamanagement.DeleteOptions) (int, error)
+
+func (h *DataManagementHandler) delete(w http.ResponseWriter, r *http.Request, successMsg string, invoke deleteInvoker) {
+	var req specstypes.DeleteRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		common.HttpErrorWithLogger(w, r, err, http.StatusBadRequest, h.logger)
+		return
 	}
 
-	// Build filters
-	filters := make(map[string]interface{})
+	orgID := orgIDFromHeader(r, h.defaultOrg)
+	opts := datamanagement.DeleteOptions{
+		Namespace: req.Namespace,
+		Filters:   buildDeleteFilters(req),
+	}
+
+	count, err := invoke(r.Context(), orgID, opts)
+	if err != nil {
+		var vErr datamanagement.ValidationError
+		if errors.As(err, &vErr) {
+			common.BadRequest(w, r, vErr.Code, vErr.Message, vErr.Details)
+			return
+		}
+		common.HttpErrorWithLogger(w, r, err, http.StatusInternalServerError, h.logger)
+		return
+	}
+
+	response := specstypes.DeleteResponse{
+		DeletedCount: count,
+		Message:      successMsg,
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(response)
+}
+
+func addCreatedFilters(r *http.Request, filters map[string]any) {
+	if createdAfter := r.URL.Query().Get("created_after"); createdAfter != "" {
+		filters["created_after"] = createdAfter
+	}
+	if createdBefore := r.URL.Query().Get("created_before"); createdBefore != "" {
+		filters["created_before"] = createdBefore
+	}
+}
+
+func parseLimitParam(val string, def, max int) int {
+	if val == "" {
+		return def
+	}
+	if parsed, err := strconv.Atoi(val); err == nil && parsed > 0 && (max <= 0 || parsed <= max) {
+		return parsed
+	}
+	return def
+}
+
+func parseOffsetParam(val string, def int) int {
+	if val == "" {
+		return def
+	}
+	if parsed, err := strconv.Atoi(val); err == nil && parsed >= 0 {
+		return parsed
+	}
+	return def
+}
+
+func buildDeleteFilters(req specstypes.DeleteRequest) map[string]any {
+	filters := make(map[string]any)
 	if req.UserID != nil {
 		filters["user_id"] = *req.UserID
 	}
@@ -421,28 +304,5 @@ func (h *Handler) DeleteEvents(w http.ResponseWriter, r *http.Request) {
 	if req.CreatedBefore != nil {
 		filters["created_before"] = *req.CreatedBefore
 	}
-
-	deletedCount, err := h.Store.DeleteEvents(r.Context(), orgID, req.Namespace, filters)
-	if err != nil {
-		common.HttpError(w, r, err, http.StatusInternalServerError)
-		return
-	}
-
-	response := types.DeleteResponse{
-		DeletedCount: deletedCount,
-		Message:      "Events deleted successfully",
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
-}
-
-// Helper function to convert []map[string]interface{} to []any
-func convertToAnySlice(items []map[string]interface{}) []any {
-	result := make([]any, len(items))
-	for i, item := range items {
-		result[i] = item
-	}
-	return result
+	return filters
 }

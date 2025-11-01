@@ -13,9 +13,30 @@ import (
 
 	"recsys/internal/http/common"
 	"recsys/internal/rules"
+	"recsys/internal/store"
 	"recsys/internal/types"
 	specstypes "recsys/specs/types"
 )
+
+// RulesHandler exposes merchandising rule management endpoints.
+type RulesHandler struct {
+	store               *store.Store
+	manager             *rules.Manager
+	defaultOrg          uuid.UUID
+	brandTagPrefixes    []string
+	categoryTagPrefixes []string
+}
+
+// NewRulesHandler constructs a handler for merchandising rules.
+func NewRulesHandler(st *store.Store, mgr *rules.Manager, defaultOrg uuid.UUID, brandPrefixes, categoryPrefixes []string) *RulesHandler {
+	return &RulesHandler{
+		store:               st,
+		manager:             mgr,
+		defaultOrg:          defaultOrg,
+		brandTagPrefixes:    append([]string(nil), brandPrefixes...),
+		categoryTagPrefixes: append([]string(nil), categoryPrefixes...),
+	}
+}
 
 // RulesCreate godoc
 // @Summary      Create a merchandising rule
@@ -28,7 +49,7 @@ import (
 // @Failure      400 {object} common.APIError
 // @Failure      500 {object} common.APIError
 // @Router       /v1/admin/rules [post]
-func (h *Handler) RulesCreate(w http.ResponseWriter, r *http.Request) {
+func (h *RulesHandler) RulesCreate(w http.ResponseWriter, r *http.Request) {
 	var payload specstypes.RulePayload
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		common.HttpError(w, r, err, http.StatusBadRequest)
@@ -41,7 +62,7 @@ func (h *Handler) RulesCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	orgID := h.defaultOrgFromHeader(r)
+	orgID := orgIDFromHeader(r, h.defaultOrg)
 	rule := types.Rule{
 		RuleID:      uuid.New(),
 		OrgID:       orgID,
@@ -62,7 +83,7 @@ func (h *Handler) RulesCreate(w http.ResponseWriter, r *http.Request) {
 		ValidUntil:  input.ValidUntil,
 	}
 
-	created, err := h.Store.CreateRule(r.Context(), rule)
+	created, err := h.store.CreateRule(r.Context(), rule)
 	if err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)
 		return
@@ -89,7 +110,7 @@ func (h *Handler) RulesCreate(w http.ResponseWriter, r *http.Request) {
 // @Failure      404 {object} common.APIError
 // @Failure      500 {object} common.APIError
 // @Router       /v1/admin/rules/{rule_id} [put]
-func (h *Handler) RulesUpdate(w http.ResponseWriter, r *http.Request) {
+func (h *RulesHandler) RulesUpdate(w http.ResponseWriter, r *http.Request) {
 	ruleIDParam := chi.URLParam(r, "rule_id")
 	ruleID, err := uuid.Parse(ruleIDParam)
 	if err != nil {
@@ -108,8 +129,8 @@ func (h *Handler) RulesUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	orgID := h.defaultOrgFromHeader(r)
-	existing, err := h.Store.GetRule(r.Context(), orgID, ruleID)
+	orgID := orgIDFromHeader(r, h.defaultOrg)
+	existing, err := h.store.GetRule(r.Context(), orgID, ruleID)
 	if err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)
 		return
@@ -139,7 +160,7 @@ func (h *Handler) RulesUpdate(w http.ResponseWriter, r *http.Request) {
 		ValidUntil:  input.ValidUntil,
 	}
 
-	updated, err := h.Store.UpdateRule(r.Context(), orgID, update)
+	updated, err := h.store.UpdateRule(r.Context(), orgID, update)
 	if err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)
 		return
@@ -174,10 +195,10 @@ func (h *Handler) RulesUpdate(w http.ResponseWriter, r *http.Request) {
 // @Failure      400 {object} common.APIError
 // @Failure      500 {object} common.APIError
 // @Router       /v1/admin/rules [get]
-func (h *Handler) RulesList(w http.ResponseWriter, r *http.Request) {
-	orgID := h.defaultOrgFromHeader(r)
+func (h *RulesHandler) RulesList(w http.ResponseWriter, r *http.Request) {
+	orgID := orgIDFromHeader(r, h.defaultOrg)
 	q := r.URL.Query()
-	namespace := q.Get("namespace")
+	namespace := strings.TrimSpace(q.Get("namespace"))
 	if namespace == "" {
 		namespace = "default"
 	}
@@ -222,7 +243,7 @@ func (h *Handler) RulesList(w http.ResponseWriter, r *http.Request) {
 		filters.TargetType = &tgt
 	}
 
-	rulesList, err := h.Store.ListRules(r.Context(), orgID, namespace, filters)
+	rulesList, err := h.store.ListRules(r.Context(), orgID, namespace, filters)
 	if err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)
 		return
@@ -248,8 +269,8 @@ func (h *Handler) RulesList(w http.ResponseWriter, r *http.Request) {
 // @Failure      400 {object} common.APIError
 // @Failure      500 {object} common.APIError
 // @Router       /v1/admin/rules/dry-run [post]
-func (h *Handler) RulesDryRun(w http.ResponseWriter, r *http.Request) {
-	if h.RulesManager == nil || !h.RulesManager.Enabled() {
+func (h *RulesHandler) RulesDryRun(w http.ResponseWriter, r *http.Request) {
+	if h.manager == nil || !h.manager.Enabled() {
 		common.BadRequest(w, r, "rules_disabled", "rules engine is disabled", nil)
 		return
 	}
@@ -270,7 +291,7 @@ func (h *Handler) RulesDryRun(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	orgID := h.defaultOrgFromHeader(r)
+	orgID := orgIDFromHeader(r, h.defaultOrg)
 	candidates := make([]types.ScoredItem, 0, len(payload.Items))
 	queryIDs := make([]string, 0, len(payload.Items))
 	for _, id := range payload.Items {
@@ -282,7 +303,7 @@ func (h *Handler) RulesDryRun(w http.ResponseWriter, r *http.Request) {
 		queryIDs = append(queryIDs, trimmed)
 	}
 
-	tagMap, err := h.Store.ListItemsTags(r.Context(), orgID, payload.Namespace, queryIDs)
+	tagMap, err := h.store.ListItemsTags(r.Context(), orgID, payload.Namespace, queryIDs)
 	if err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)
 		return
@@ -300,11 +321,11 @@ func (h *Handler) RulesDryRun(w http.ResponseWriter, r *http.Request) {
 		Now:                 time.Now().UTC(),
 		Candidates:          candidates,
 		ItemTags:            simpleTags,
-		BrandTagPrefixes:    h.BrandTagPrefixes,
-		CategoryTagPrefixes: h.CategoryTagPrefixes,
+		BrandTagPrefixes:    h.brandTagPrefixes,
+		CategoryTagPrefixes: h.categoryTagPrefixes,
 	}
 
-	evalResult, err := h.RulesManager.Evaluate(r.Context(), evalReq)
+	evalResult, err := h.manager.Evaluate(r.Context(), evalReq)
 	if err != nil {
 		common.HttpError(w, r, err, http.StatusInternalServerError)
 		return
@@ -360,11 +381,41 @@ func (h *Handler) RulesDryRun(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(resp)
 }
 
+func (h *RulesHandler) invalidateRuleCache(namespace, surface string) {
+	if h.manager == nil {
+		return
+	}
+	namespace = strings.TrimSpace(namespace)
+	if namespace == "" {
+		namespace = "default"
+	}
+	h.manager.Invalidate(namespace, strings.TrimSpace(surface))
+}
+
 func writeAPIError(w http.ResponseWriter, r *http.Request, status int, code, message string) {
 	ae := common.NewAPIError(code, message, status)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(ae)
+}
+
+// Helper types and functions copied from legacy handler with minor adjustments.
+type ruleInput struct {
+	Namespace   string
+	Surface     string
+	Name        string
+	Description string
+	Action      types.RuleAction
+	TargetType  types.RuleTarget
+	TargetKey   string
+	ItemIDs     []string
+	BoostValue  *float64
+	MaxPins     *int
+	SegmentID   string
+	Priority    int
+	Enabled     bool
+	ValidFrom   *time.Time
+	ValidUntil  *time.Time
 }
 
 func parseRulePayload(payload specstypes.RulePayload) (ruleInput, error) {
@@ -529,33 +580,4 @@ func formatTime(ts *time.Time) string {
 		return ""
 	}
 	return ts.UTC().Format(time.RFC3339)
-}
-
-type ruleInput struct {
-	Namespace   string
-	Surface     string
-	Name        string
-	Description string
-	Action      types.RuleAction
-	TargetType  types.RuleTarget
-	TargetKey   string
-	ItemIDs     []string
-	BoostValue  *float64
-	MaxPins     *int
-	SegmentID   string
-	Priority    int
-	Enabled     bool
-	ValidFrom   *time.Time
-	ValidUntil  *time.Time
-}
-
-func (h *Handler) invalidateRuleCache(namespace, surface string) {
-	if h.RulesManager == nil {
-		return
-	}
-	namespace = strings.TrimSpace(namespace)
-	if namespace == "" {
-		namespace = "default"
-	}
-	h.RulesManager.Invalidate(namespace, strings.TrimSpace(surface))
 }
