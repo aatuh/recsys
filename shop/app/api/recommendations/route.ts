@@ -5,6 +5,10 @@ import { getSeenItemIds, summarizeExclusion } from "@/server/services/seenItems"
 import { applyDiversityCaps } from "@/server/services/diversity";
 import { getFreshItemIds } from "@/server/services/freshItems";
 import { logColdStart } from "@/server/logging/coldStart";
+import {
+  getAlgorithmProfileCached,
+  defaultAlgorithmProfileDTO,
+} from "@/server/services/recommendationProfiles";
 
 const FALLBACK_BRAND_CAP = 2;
 const FALLBACK_CATEGORY_CAP = 3;
@@ -16,10 +20,8 @@ function envNumber(key: string): number | undefined {
   return Number.isFinite(parsed) ? parsed : undefined;
 }
 
-const DEFAULT_BRAND_CAP =
-  envNumber("SHOP_DIVERSITY_BRAND_CAP") ?? FALLBACK_BRAND_CAP;
-const DEFAULT_CATEGORY_CAP =
-  envNumber("SHOP_DIVERSITY_CATEGORY_CAP") ?? FALLBACK_CATEGORY_CAP;
+const ENV_DEFAULT_BRAND_CAP = envNumber("SHOP_DIVERSITY_BRAND_CAP");
+const ENV_DEFAULT_CATEGORY_CAP = envNumber("SHOP_DIVERSITY_CATEGORY_CAP");
 const DEFAULT_FRESH_SLOTS = Number(
   process.env.SHOP_FRESH_ITEM_SLOTS ?? "2"
 );
@@ -27,12 +29,15 @@ const DEFAULT_FRESH_MAX_AGE_DAYS = Number(
   process.env.SHOP_FRESH_ITEM_MAX_AGE_DAYS ?? "7"
 );
 
-function resolveSurfaceCaps(surface: string) {
+function resolveSurfaceCaps(
+  surface: string,
+  defaults: { brandCap: number; categoryCap: number }
+) {
   const key = surface.toUpperCase();
   const brandCap =
-    envNumber(`SHOP_DIVERSITY_BRAND_CAP_${key}`) ?? DEFAULT_BRAND_CAP;
+    envNumber(`SHOP_DIVERSITY_BRAND_CAP_${key}`) ?? defaults.brandCap;
   const categoryCap =
-    envNumber(`SHOP_DIVERSITY_CATEGORY_CAP_${key}`) ?? DEFAULT_CATEGORY_CAP;
+    envNumber(`SHOP_DIVERSITY_CATEGORY_CAP_${key}`) ?? defaults.categoryCap;
   return { brandCap, categoryCap };
 }
 
@@ -45,9 +50,31 @@ export async function GET(req: NextRequest) {
     const surface = searchParams.get("surface") ?? "home";
     const widget = searchParams.get("widget") ?? undefined;
     const variant = searchParams.get("variant") ?? undefined;
+    const requestedProfileId = searchParams.get("profileId") ?? undefined;
 
     if (!userId) {
       return NextResponse.json({ error: "userId required" }, { status: 400 });
+    }
+
+    let settings = defaultAlgorithmProfileDTO();
+    let profileSource = "fallback";
+    try {
+      const result = await getAlgorithmProfileCached({
+        profileId: requestedProfileId ?? undefined,
+        surface,
+      });
+      settings = result.profile;
+      profileSource = result.source;
+    } catch (err) {
+      if (requestedProfileId) {
+        const message =
+          err instanceof Error ? err.message : "Requested profile not found";
+        return NextResponse.json({ error: message }, { status: 404 });
+      }
+      console.warn(
+        "[recsys] defaulting algorithm profile due to load failure",
+        err
+      );
     }
 
     // Parse constraints from query parameters
@@ -71,8 +98,20 @@ export async function GET(req: NextRequest) {
 
     const brandCapParam = searchParams.get("brandCap");
     const categoryCapParam = searchParams.get("categoryCap");
+    const baseBrandCap =
+      Number.isFinite(settings.brandCap) && settings.brandCap >= 0
+        ? settings.brandCap
+        : ENV_DEFAULT_BRAND_CAP ?? FALLBACK_BRAND_CAP;
+    const baseCategoryCap =
+      Number.isFinite(settings.categoryCap) && settings.categoryCap >= 0
+        ? settings.categoryCap
+        : ENV_DEFAULT_CATEGORY_CAP ?? FALLBACK_CATEGORY_CAP;
+
     const { brandCap: surfaceBrandCap, categoryCap: surfaceCategoryCap } =
-      resolveSurfaceCaps(surface);
+      resolveSurfaceCaps(surface, {
+        brandCap: baseBrandCap,
+        categoryCap: baseCategoryCap,
+      });
 
     const parsedBrandCap =
       brandCapParam !== null ? Number(brandCapParam) : surfaceBrandCap;
@@ -83,10 +122,10 @@ export async function GET(req: NextRequest) {
     
     const resolvedBrandCap = Number.isFinite(parsedBrandCap)
       ? parsedBrandCap
-      : DEFAULT_BRAND_CAP;
+      : baseBrandCap;
     const resolvedCategoryCap = Number.isFinite(parsedCategoryCap)
       ? parsedCategoryCap
-      : DEFAULT_CATEGORY_CAP;
+      : baseCategoryCap;
 
     if (brandCapParam) {
       constraints.brand_cap = resolvedBrandCap;
@@ -109,6 +148,7 @@ export async function GET(req: NextRequest) {
       surface,
       widget,
       context: Object.keys(extraContext).length > 0 ? extraContext : undefined,
+      profileId: settings.profileId,
     });
     const seenItemIds = await getSeenItemIds({ userId });
     const items = response.items ?? [];
@@ -129,7 +169,17 @@ export async function GET(req: NextRequest) {
       ...response,
       surface,
       widget,
+      settings_version: settings.updatedAt,
+      profile_id: settings.profileId,
+      profile_source: profileSource,
     };
+
+    if (response.profile_id) {
+      payload.profile_id = response.profile_id;
+    }
+    if (response.profile_source) {
+      payload.profile_source = response.profile_source;
+    }
 
     // resolved caps already calculated above, reuse for post-processing
     const shouldApplyDiversity =

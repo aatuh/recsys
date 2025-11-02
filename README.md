@@ -444,6 +444,17 @@ The recommendation ranking pipeline stays the same. The bandit only chooses the
 policy for this request. You can call the one‑shot endpoint to "decide + rank" in
 one go, then send a reward later when you know the outcome.
 
+> ℹ️  When you run the demo shop, it first calls `/v1/bandit/policies` with the
+> configured policy IDs. If none exist (or the lookup fails), the shop disables
+> exploration automatically, logs a single warning, and falls back to the
+> standard `/v1/recommendations` endpoint so local runs aren’t flooded with 500s.
+
+Profiles that drive the core blend/diversity knobs are stored in the shop
+database (`RecommendationProfile`). Use `/api/admin/recommendation-settings`
+or the Admin UI to create/edit profiles, then pass `profileId=<id>` on any shop
+request. Inline overrides in the request body still win if you need a quick
+one-off experiment.
+
 ### Usage: end‑to‑end with examples
 
 #### Define policies (the arms)

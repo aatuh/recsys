@@ -305,6 +305,8 @@ Overrides are applied before ranking; they temporarily replace the corresponding
 - **Policies**: named knob bundles; think “A=diverse”, “B=more co‑vis”, “C=embedding‑heavy”.
 - **Serve**: `/v1/bandit/recommendations` returns both the chosen policy id and the items.
 - **Algorithms**: Thompson sampling or UCB1 (choose in config).
+- **Shop safety checks**: the demo shop pings `/v1/bandit/policies` on startup. If the configured policy IDs are missing (or the lookup fails), it disables exploration automatically and falls back to `/v1/recommendations`, emitting a single warning instead of repeated 500s.
+- **Profiles**: Algorithm weights live in the `RecommendationProfile` table. The shop admin UI (or `/api/admin/recommendation-settings`) lets you create profiles, mark defaults per surface, and clients can request one via the `profileId` query parameter; inline overrides still win if both are supplied.
 
 ---
 

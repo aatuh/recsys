@@ -15,8 +15,12 @@ fi
 if [ -f prisma/schema.prisma ]; then
   echo "Generating Prisma client..."
   pnpm prisma:generate || true
-  echo "Pushing Prisma schema to DB..."
-  pnpm exec prisma db push || true
+  echo "Applying Prisma migrations..."
+  if [ "${NODE_ENV:-development}" = "production" ]; then
+    pnpm exec prisma migrate deploy || true
+  else
+    pnpm exec prisma db push --accept-data-loss || true
+  fi
 fi
 
 # Run dev by default if NODE_ENV not production

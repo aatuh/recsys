@@ -8,8 +8,48 @@ import { BanditService } from "@/lib/api-client/services/BanditService";
 import { ItemContract } from "@/lib/contracts/item";
 import { UserContract } from "@/lib/contracts/user";
 import { EventContract } from "@/lib/contracts/event";
-import { prisma } from "@/server/db/client";
 import type { specs_types_ScoredItem } from "@/lib/api-client/models/specs_types_ScoredItem";
+import type { types_BanditPolicy } from "@/lib/api-client/models/types_BanditPolicy";
+import type { types_Overrides } from "@/lib/api-client/models/types_Overrides";
+import {
+  getAlgorithmProfileCached,
+  defaultAlgorithmProfileDTO,
+  type AlgorithmProfileDTO,
+  type AlgorithmProfileSource,
+} from "./recommendationProfiles";
+import { prisma } from "@/server/db/client";
+import { ApiError } from "@/lib/api-client/core/ApiError";
+
+const RAW_BANDIT_ENABLED = process.env.SHOP_BANDIT_ENABLED === "true";
+const CONFIGURED_BANDIT_POLICY_IDS =
+  process.env.SHOP_BANDIT_POLICY_IDS?.split(",")
+    .map((id) => id.trim())
+    .filter((id) => id.length > 0) ?? [];
+const BANDIT_REWARD_ON_CLICK =
+  process.env.SHOP_BANDIT_REWARD_ON_CLICK !== "false";
+const BANDIT_REWARD_ON_ADD = process.env.SHOP_BANDIT_REWARD_ON_ADD !== "false";
+const BANDIT_REWARD_ON_PURCHASE =
+  process.env.SHOP_BANDIT_REWARD_ON_PURCHASE !== "false";
+const BANDIT_STATUS_TTL_MS = Number(
+  process.env.SHOP_BANDIT_STATUS_TTL_MS ?? "60000"
+);
+
+export type BanditFeatureStatus = {
+  configured: boolean;
+  enabled: boolean;
+  reason?: string;
+  checkedAt: string;
+  policyIds: string[];
+  missingPolicies?: string[];
+};
+
+type BanditStatusCache = {
+  status: BanditFeatureStatus;
+  expiresAt: number;
+};
+
+let cachedBanditStatus: BanditStatusCache | null = null;
+let lastLoggedBanditMessage: string | undefined;
 
 export function initRecsysClient() {
   const cfg = loadConfig();
@@ -39,11 +79,12 @@ export function mapEventTypeToCode(
 export async function forwardEventsBatch(events: EventContract[]) {
   const cfg = loadConfig();
   initRecsysClient();
+  const banditStatusForRewards = await getBanditFeatureStatus();
   const result = await IngestionService.batchEvents({
     namespace: cfg.recsysNamespace,
     events,
   });
-  if (BANDIT_ENABLED) {
+  if (banditStatusForRewards.enabled) {
     const rewardCandidates = events.filter((event) =>
       shouldSendBanditReward(event)
     );
@@ -73,7 +114,7 @@ export async function forwardEventsBatch(events: EventContract[]) {
 }
 
 function shouldSendBanditReward(event: EventContract): boolean {
-  if (!BANDIT_ENABLED) {
+  if (!cachedBanditStatus?.status.enabled) {
     return false;
   }
   const meta = event.meta as Record<string, unknown> | undefined;
@@ -136,17 +177,6 @@ export async function upsertEventTypeConfig() {
   return { status: "skipped" };
 }
 
-const BANDIT_ENABLED = process.env.SHOP_BANDIT_ENABLED === "true";
-const BANDIT_POLICY_IDS =
-  process.env.SHOP_BANDIT_POLICY_IDS?.split(",")
-    .map((id) => id.trim())
-    .filter((id) => id.length > 0) ?? [];
-const BANDIT_REWARD_ON_CLICK =
-  process.env.SHOP_BANDIT_REWARD_ON_CLICK !== "false";
-const BANDIT_REWARD_ON_ADD = process.env.SHOP_BANDIT_REWARD_ON_ADD !== "false";
-const BANDIT_REWARD_ON_PURCHASE =
-  process.env.SHOP_BANDIT_REWARD_ON_PURCHASE !== "false";
-
 type RecommendationConstraintsInput = {
   price_between?: [number, number];
   include_tags_any?: string[];
@@ -160,6 +190,7 @@ export type RecommendationResponse = {
   model_version?: string;
   segment_id?: string;
   profile_id?: string;
+  profile_source?: string;
   bandit?: {
     chosen_policy_id?: string;
     algorithm?: string;
@@ -180,9 +211,44 @@ export async function getRecommendations(params: {
   surface?: string;
   widget?: string;
   context?: Record<string, string>;
+  profileId?: string;
 }): Promise<RecommendationResponse> {
   const cfg = loadConfig();
   initRecsysClient();
+  const surface = params.surface ?? "home";
+  let profileSource: AlgorithmProfileSource = "default";
+  let settings: AlgorithmProfileDTO;
+  try {
+    const result = await getAlgorithmProfileCached({
+      profileId: params.profileId,
+      surface,
+    });
+    settings = result.profile;
+    profileSource = result.source;
+  } catch (error) {
+    if (params.profileId) {
+      throw error;
+    }
+    settings = defaultAlgorithmProfileDTO();
+    profileSource = "fallback";
+  }
+
+  const overrides: types_Overrides = {
+    blend_alpha: settings.blendAlpha,
+    blend_beta: settings.blendBeta,
+    blend_gamma: settings.blendGamma,
+    popularity_halflife_days: settings.popularityHalflifeDays,
+    covis_window_days: settings.covisWindowDays,
+    popularity_fanout: settings.popularityFanout,
+    mmr_lambda: settings.mmrLambda,
+    brand_cap: settings.brandCap,
+    category_cap: settings.categoryCap,
+    rule_exclude_events: settings.ruleExcludeEvents,
+    purchased_window_days: settings.purchasedWindowDays,
+    profile_window_days: settings.profileWindowDays,
+    profile_top_n: settings.profileTopN,
+    profile_boost: settings.profileBoost,
+  };
 
   // Build the request payload
   const basePayload: Record<string, unknown> = {
@@ -190,6 +256,12 @@ export async function getRecommendations(params: {
     namespace: cfg.recsysNamespace,
     k: params.k ?? 12,
     include_reasons: params.includeReasons ?? false,
+    overrides,
+    blend: {
+      pop: settings.blendAlpha,
+      cooc: settings.blendBeta,
+      als: settings.blendGamma,
+    },
   };
 
   // Add constraints if provided
@@ -221,14 +293,17 @@ export async function getRecommendations(params: {
     }
   }
 
-  const surface = params.surface ?? "home";
   const context: Record<string, string> = {
     surface,
     ...(params.widget ? { widget: params.widget } : {}),
     ...(params.context ?? {}),
+    settings_updated_at: settings.updatedAt,
+    profile_id: settings.profileId,
   };
+  basePayload.context = context;
 
-  if (BANDIT_ENABLED) {
+  const banditStatusForRequest = await getBanditFeatureStatus();
+  if (banditStatusForRequest.enabled) {
     const requestId = randomUUID();
     const banditPayload: Record<string, unknown> = {
       ...basePayload,
@@ -236,8 +311,8 @@ export async function getRecommendations(params: {
       context,
       request_id: requestId,
     };
-    if (BANDIT_POLICY_IDS.length > 0) {
-      banditPayload.candidate_policy_ids = BANDIT_POLICY_IDS;
+    if (banditStatusForRequest.policyIds.length > 0) {
+      banditPayload.candidate_policy_ids = banditStatusForRequest.policyIds;
     }
 
     try {
@@ -258,7 +333,8 @@ export async function getRecommendations(params: {
           })),
         model_version: banditResponse.model_version,
         segment_id: banditResponse.segment_id,
-        profile_id: banditResponse.profile_id,
+        profile_id: banditResponse.profile_id ?? settings.profileId,
+        profile_source: profileSource,
         bandit: {
           chosen_policy_id: banditResponse.chosen_policy_id,
           algorithm: banditResponse.algorithm ?? undefined,
@@ -271,6 +347,7 @@ export async function getRecommendations(params: {
         },
       };
     } catch (error) {
+      recordBanditFailure(error);
       console.warn(
         "Bandit recommendations failed, falling back to standard ranking",
         error
@@ -293,7 +370,8 @@ export async function getRecommendations(params: {
       })),
     model_version: recommendationResponse.model_version,
     segment_id: recommendationResponse.segment_id,
-    profile_id: recommendationResponse.profile_id,
+    profile_id: recommendationResponse.profile_id ?? settings.profileId,
+    profile_source: profileSource,
   };
 }
 
@@ -445,4 +523,149 @@ export async function deleteEvents(eventIds: string[]) {
     console.error("Failed to delete events from recsys:", error);
     throw error;
   }
+}
+
+async function resolveBanditPolicies(): Promise<types_BanditPolicy[]> {
+  const cfg = loadConfig();
+  initRecsysClient();
+  return BanditService.getV1BanditPolicies(cfg.recsysNamespace);
+}
+
+function buildStatusFromPolicies(
+  policies: types_BanditPolicy[]
+): BanditFeatureStatus {
+  const availableIds = policies
+    .map((p) => p.policy_id)
+    .filter((id): id is string => Boolean(id));
+  const missing = CONFIGURED_BANDIT_POLICY_IDS.filter(
+    (id) => !availableIds.includes(id)
+  );
+  if (missing.length > 0) {
+    return {
+      configured: true,
+      enabled: false,
+      reason: `Missing policies: ${missing.join(", ")}`,
+      checkedAt: new Date().toISOString(),
+      policyIds: availableIds,
+      missingPolicies: missing,
+    };
+  }
+  if (availableIds.length === 0) {
+    return {
+      configured: true,
+      enabled: false,
+      reason: "No policies found in namespace",
+      checkedAt: new Date().toISOString(),
+      policyIds: [],
+    };
+  }
+  return {
+    configured: true,
+    enabled: true,
+    checkedAt: new Date().toISOString(),
+    policyIds: availableIds,
+  };
+}
+
+function disabledStatus(reason: string): BanditFeatureStatus {
+  return {
+    configured: RAW_BANDIT_ENABLED && CONFIGURED_BANDIT_POLICY_IDS.length > 0,
+    enabled: false,
+    reason,
+    checkedAt: new Date().toISOString(),
+    policyIds: [],
+    missingPolicies:
+      CONFIGURED_BANDIT_POLICY_IDS.length > 0
+        ? [...CONFIGURED_BANDIT_POLICY_IDS]
+        : undefined,
+  };
+}
+
+function logBanditStatusChange(status: BanditFeatureStatus) {
+  const message = status.enabled
+    ? "bandit exploration enabled"
+    : `bandit exploration disabled: ${status.reason ?? "unavailable"}`;
+  if (message !== lastLoggedBanditMessage) {
+    if (status.enabled) {
+      console.info(`[bandit] ${message}`);
+    } else {
+      console.warn(`[bandit] ${message}`);
+    }
+    lastLoggedBanditMessage = message;
+  }
+}
+
+function recordBanditFailure(error: unknown) {
+  const apiError =
+    error instanceof ApiError
+      ? error
+      : typeof error === "object" &&
+        error !== null &&
+        (error as { name?: string }).name === "ApiError" &&
+        "status" in (error as Record<string, unknown>)
+      ? (error as ApiError)
+      : null;
+  if (!apiError) {
+    return;
+  }
+  const err = apiError as ApiError;
+  const bodyMessage =
+    typeof err.body?.error === "string"
+      ? `${err.body.error}${err.body.message ? `: ${err.body.message}` : ""}`
+      : "";
+  const reason =
+    bodyMessage || err.statusText || `bandit request failed (${err.status})`;
+  const status = disabledStatus(reason);
+  cachedBanditStatus = {
+    status,
+    expiresAt: Date.now() + Math.max(BANDIT_STATUS_TTL_MS, 5000),
+  };
+  logBanditStatusChange(status);
+}
+
+export async function getBanditFeatureStatus(): Promise<BanditFeatureStatus> {
+  const now = Date.now();
+  const configured =
+    RAW_BANDIT_ENABLED && CONFIGURED_BANDIT_POLICY_IDS.length > 0;
+  if (!configured) {
+    return disabledStatus(
+      RAW_BANDIT_ENABLED
+        ? "no policy IDs configured"
+        : "disabled via SHOP_BANDIT_ENABLED"
+    );
+  }
+  if (
+    cachedBanditStatus &&
+    cachedBanditStatus.expiresAt > now &&
+    cachedBanditStatus.status.configured
+  ) {
+    return cachedBanditStatus.status;
+  }
+
+  try {
+    const policies = await resolveBanditPolicies();
+    const status = buildStatusFromPolicies(policies);
+    cachedBanditStatus = {
+      status,
+      expiresAt: now + Math.max(BANDIT_STATUS_TTL_MS, 5000),
+    };
+    logBanditStatusChange(status);
+    return status;
+  } catch (error) {
+    const status = disabledStatus(
+      `policy lookup failed: ${
+        error instanceof Error ? error.message : "unknown error"
+      }`
+    );
+    cachedBanditStatus = {
+      status,
+      expiresAt: now + Math.max(BANDIT_STATUS_TTL_MS, 5000),
+    };
+    logBanditStatusChange(status);
+    return status;
+  }
+}
+
+export function getConfiguredBanditPolicyIds(): string[] {
+  return [...CONFIGURED_BANDIT_POLICY_IDS];
 }

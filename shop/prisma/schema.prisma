@@ -93,3 +93,28 @@ model Event {
   product       Product?  @relation(fields: [productId], references: [id])
 }
 
+model RecommendationProfile {
+  id                     Int      @id @default(autoincrement())
+  profileId              String   @unique
+  name                   String
+  description            String?
+  surface                String?
+  isDefault              Boolean  @default(false)
+  blendAlpha             Float
+  blendBeta              Float
+  blendGamma             Float
+  popularityHalflifeDays Float
+  covisWindowDays        Float
+  popularityFanout       Int
+  mmrLambda              Float
+  brandCap               Int
+  categoryCap            Int
+  ruleExcludeEvents      Boolean
+  purchasedWindowDays    Float
+  profileWindowDays      Float
+  profileTopN            Int
+  profileBoost           Float
+  excludeEventTypes      String   @default("")
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+}

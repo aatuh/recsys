@@ -11,6 +11,7 @@ interface RecommendationWidgetProps {
   k?: number;
   className?: string;
   constraints?: RecommendationConstraints;
+  profileId?: string;
 }
 
 interface RecommendationItem {
@@ -39,6 +40,7 @@ export function RecommendationWidget({
   k = 8,
   className = "",
   constraints,
+  profileId,
 }: RecommendationWidgetProps) {
   const [items, setItems] = useState<RecommendationItem[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -47,21 +49,30 @@ export function RecommendationWidget({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!userId) {
+      return;
+    }
+
+    let cancelled = false;
+    const abortController = new AbortController();
+
     async function fetchRecommendations() {
       try {
         setLoading(true);
         setError(null);
 
-        // Build query parameters
         const params = new URLSearchParams({
-          userId: userId,
+          userId,
           k: k.toString(),
           includeReasons: "true",
           surface,
           widget,
         });
 
-        // Add constraints if provided
+        if (profileId) {
+          params.set("profileId", profileId);
+        }
+
         if (constraints) {
           if (constraints.price_between) {
             params.set("minPrice", constraints.price_between[0].toString());
@@ -81,7 +92,9 @@ export function RecommendationWidget({
           }
         }
 
-        const response = await fetch(`/api/recommendations?${params}`);
+        const response = await fetch(`/api/recommendations?${params}`, {
+          signal: abortController.signal,
+        });
         if (!response.ok) {
           throw new Error(
             `Failed to fetch recommendations: ${response.status}`
@@ -89,6 +102,8 @@ export function RecommendationWidget({
         }
 
         const data = await response.json();
+        if (cancelled) return;
+
         if (data.bandit) {
           setBanditMeta({
             policyId: data.bandit.chosen_policy_id ?? undefined,
@@ -97,40 +112,59 @@ export function RecommendationWidget({
             bucket:
               data.bandit.bandit_bucket ?? data.bandit.bucket ?? undefined,
             explore: data.bandit.explore ?? undefined,
-            experiment: data.bandit.bandit_experiment ?? data.bandit.experiment ?? undefined,
-            variant: data.bandit.bandit_variant ?? data.bandit.variant ?? undefined,
+            experiment:
+              data.bandit.bandit_experiment ?? data.bandit.experiment ?? undefined,
+            variant:
+              data.bandit.bandit_variant ?? data.bandit.variant ?? undefined,
           });
         } else {
           setBanditMeta(null);
         }
-        const recommendationItems = data.items || [];
+
+        const recommendationItems: RecommendationItem[] = data.items || [];
         setItems(recommendationItems);
 
-        // Fetch product details for recommended items
         if (recommendationItems.length > 0) {
           const productIds = recommendationItems.map(
             (item: RecommendationItem) => item.item_id
           );
           const productsResponse = await fetch(
-            `/api/products?ids=${productIds.join(",")}`
+            `/api/products?ids=${productIds.join(",")}`,
+            { signal: abortController.signal }
           );
-          if (productsResponse.ok) {
-            const productsData = await productsResponse.json();
-            setProducts(productsData.items || []);
+          if (!productsResponse.ok) {
+            throw new Error(
+              `Failed to load products: ${productsResponse.status}`
+            );
           }
+          const productsData = await productsResponse.json();
+          if (cancelled) return;
+          setProducts(productsData.items || []);
+        } else {
+          setProducts([]);
         }
       } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") {
+          return;
+        }
         console.error("Failed to fetch recommendations:", err);
-        setError(err instanceof Error ? err.message : "Unknown error");
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Unknown error");
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
 
-    if (userId) {
-      fetchRecommendations();
-    }
-  }, [userId, k, constraints, surface, widget]);
+    fetchRecommendations();
+
+    return () => {
+      cancelled = true;
+      abortController.abort();
+    };
+  }, [userId, k, constraints, surface, widget, profileId]);
 
   if (loading) {
     return (
