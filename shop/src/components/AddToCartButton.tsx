@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useTelemetry } from "@/lib/telemetry/useTelemetry";
+import { BanditMeta } from "@/lib/recommendations/bandit";
 
 export function AddToCartButton({
   productId,
@@ -10,6 +11,8 @@ export function AddToCartButton({
   rank,
   unitPrice,
   currency = "USD",
+  coldStart = false,
+  banditMeta,
 }: {
   productId: string;
   surface?: "home" | "pdp" | "cart" | "checkout" | "products";
@@ -18,6 +21,8 @@ export function AddToCartButton({
   rank?: number;
   unitPrice?: number;
   currency?: string;
+  coldStart?: boolean;
+  banditMeta?: BanditMeta;
 }) {
   const [loading, setLoading] = useState(false);
   const [ok, setOk] = useState(false);
@@ -57,6 +62,17 @@ export function AddToCartButton({
             cart_id: cartData.cart?.id,
             unit_price: unitPrice,
             currency,
+            cold_start: coldStart || undefined,
+            bandit_policy_id: banditMeta?.policyId,
+            bandit_request_id: banditMeta?.requestId,
+            bandit_algorithm: banditMeta?.algorithm,
+            bandit_bucket: banditMeta?.bucket,
+            bandit_explore:
+              banditMeta?.explore !== undefined
+                ? banditMeta.explore
+                : undefined,
+            bandit_experiment: banditMeta?.experiment,
+            bandit_variant: banditMeta?.variant,
           },
         });
       }

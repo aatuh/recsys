@@ -1,6 +1,7 @@
 .PHONY: help codegen dev build test lint fmt typecheck uilint uitypecheck prod-build prod-run env
 
 PROFILE ?= dev
+SINCE ?= 24h
 
 help: ## Show this help message
 	@echo "Available targets:"
@@ -11,9 +12,9 @@ codegen: ## Generate code
 	@cd api && make swag
 	@cp api/swagger/swagger.json swagger-service/public/swagger.json
 	@cp api/swagger/swagger.yaml swagger-service/public/swagger.yaml
-	@cd web && pnpm run codegen:api && pnpm run sync:readme
-	@cd shop && pnpm run codegen:api || pnpm run codegen:api:local
-	@cd demo && pnpm run codegen:api
+	@cd web && pnpm run codegen:api:local && pnpm run sync:readme
+	@cd shop && pnpm run codegen:api:local
+	@cd demo && pnpm run codegen:api:local
 	@echo "🔄 Code generated successfully"
 
 dev: ## Start development environment
@@ -67,3 +68,11 @@ prod-run: ## Run production environment
 health:
 	@echo "🏥 Checking service healthiness..."
 	@cd api && make health
+
+catalog-backfill: ## Backfill catalog metadata and refresh embeddings
+	@echo "📦 Running catalog backfill..."
+	@cd api && go run ./cmd/catalog_backfill --mode backfill --batch 200
+
+catalog-refresh: ## Refresh catalog metadata since duration (use SINCE=24h or RFC3339)
+	@echo "♻️ Refreshing catalog metadata..."
+	@cd api && go run ./cmd/catalog_backfill --mode refresh --batch 200 --since $(SINCE)

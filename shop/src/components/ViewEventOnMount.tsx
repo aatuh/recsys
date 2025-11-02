@@ -7,13 +7,15 @@ export function ViewEventOnMount({
   surface = "pdp",
   widget,
   recommended = false,
-  rank 
+  rank,
+  coldStart = false,
 }: { 
   productId: string;
   surface?: "home" | "pdp" | "cart" | "checkout";
   widget?: string;
   recommended?: boolean;
   rank?: number;
+  coldStart?: boolean;
 }) {
   const { emit } = useTelemetry();
 
@@ -27,9 +29,10 @@ export function ViewEventOnMount({
         widget,
         recommended,
         rank,
+        cold_start: coldStart || undefined,
       }
     });
-  }, [emit, productId, surface, widget, recommended, rank]);
+  }, [emit, productId, surface, widget, recommended, rank, coldStart]);
 
   return null;
 }

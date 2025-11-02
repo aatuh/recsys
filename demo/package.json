@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0 --port 3000",
-    "codegen:api": "openapi --input ../swagger-service/public/swagger.json --output src/lib/api-client --client fetch",
+    "codegen:api:local": "pnpm dlx openapi-typescript-codegen --input ../swagger-service/public/swagger.json --output src/lib/api-client --client fetch",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix"

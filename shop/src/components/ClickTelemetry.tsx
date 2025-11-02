@@ -26,6 +26,21 @@ export default function ClickTelemetry() {
         const rank = a.getAttribute("data-rank")
           ? parseInt(a.getAttribute("data-rank")!)
           : undefined;
+        const isColdStart = a.getAttribute("data-cold-start") === "true";
+        const banditPolicy = a.getAttribute("data-bandit-policy") || undefined;
+        const banditRequest =
+          a.getAttribute("data-bandit-request") || undefined;
+        const banditAlgorithm =
+          a.getAttribute("data-bandit-algorithm") || undefined;
+        const banditBucket =
+          a.getAttribute("data-bandit-bucket") || undefined;
+        const banditExploreAttr = a.getAttribute("data-bandit-explore");
+        const banditExplore =
+          banditExploreAttr !== null ? banditExploreAttr === "true" : undefined;
+        const banditExperiment =
+          a.getAttribute("data-bandit-experiment") || undefined;
+        const banditVariant =
+          a.getAttribute("data-bandit-variant") || undefined;
 
         void emit({
           type: "click",
@@ -43,6 +58,14 @@ export default function ClickTelemetry() {
             rank,
             href: path,
             text: a.textContent?.trim(),
+            cold_start: isColdStart || undefined,
+            bandit_policy_id: banditPolicy,
+            bandit_request_id: banditRequest,
+            bandit_algorithm: banditAlgorithm,
+            bandit_bucket: banditBucket,
+            bandit_explore: banditExplore,
+            bandit_experiment: banditExperiment,
+            bandit_variant: banditVariant,
           },
         });
       } catch {}

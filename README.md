@@ -23,6 +23,10 @@ users, items, and events. The service returns top-K recommendations and
 - **Diversity & caps** (optional) to avoid showing too many items from
   one brand/category.
 
+- **Manual overrides & catalog tooling** so merchandising teams can boost,
+  suppress, or pin items in real time (with audit history) and keep item
+  metadata fresh through backfills.
+
 - **Blended scoring** decides how high each candidate should rank, and the
   re‑ranker (MMR + caps) decides which of the high scorers make the final top‑K.
 
@@ -55,6 +59,8 @@ users, items, and events. The service returns top-K recommendations and
   in one place.
 - `make test` automatically runs the suite with the `test` profile so the API
   starts in a deterministic, offline-friendly mode.
+- `make catalog-backfill` and `make catalog-refresh SINCE=24h` help populate and
+  keep catalog metadata/embeddings fresh (run after adjusting the `.env`).
 
 ## Recommendation Algorithms Used
 
@@ -392,6 +398,16 @@ Tiny example (3 items, tags)
 - Dry running lets you test which profile a hypothetical user would receive.
   This makes it straightforward to tailor ranking knobs for cohorts such as
   "new", "returning", or "VIP" players without code changes.
+
+### Manual overrides for boosts and suppressions
+
+- Merchants can register ad-hoc overrides (boost or suppress) through the
+  `/v1/admin/manual_overrides` API. Each override creates a dedicated rule
+  behind the scenes, honours expiry, and records who created or cancelled it.
+- Overrides are listed, queried, and cancelled through the same endpoint, and
+  every action is stored so you can audit merchandising changes later.
+- Overrides share the same namespace/surface scoping as regular rules, so
+  guardrails stay isolated per placement and tenant.
 
 ### Decision audit trail
 
@@ -810,7 +826,6 @@ To enable the LLM-powered RCA endpoint following environment variables:
 | `LLM_API_KEY`         | string           | Provider API key (required if feature enabled).   | Keep secret.                      |
 | `LLM_BASE_URL`        | string (URL)     | Optional override for the Responses API endpoint. |                                   |
 
-
 ## Tuning Cheat-Sheet
 
 - Start with `alpha=1.0`, `beta=0.1`, `gamma=0.1`.
@@ -827,7 +842,7 @@ To enable the LLM-powered RCA endpoint following environment variables:
 
 ## Explore
 
-- **Swagger UI**: served by the Swagger service (default http://localhost:8081 or https://docs.<your-domain>).
+- **Swagger UI**: served by the Swagger service (default `http://localhost:8081` or `https://docs.<your-domain>`).
 - **Makefile**: see targets for dev, tests, and migrations.
 - **Web UI**: Access the interactive web UI with user traits editor at the web UI URL.
 

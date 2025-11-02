@@ -6,8 +6,10 @@ export type types_AuditTraceBandit = {
     algorithm?: string;
     bucket_key?: string;
     chosen_policy_id?: string;
+    experiment?: string;
     explain?: Record<string, string>;
     explore?: boolean;
     request_id?: string;
+    variant?: string;
 };
 

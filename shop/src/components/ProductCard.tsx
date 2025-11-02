@@ -1,6 +1,7 @@
 import { AddToCartButton } from "@/components/AddToCartButton";
 import ProductPlaceholder from "@/components/ProductPlaceholder";
 import Image from "next/image";
+import { BanditMeta } from "@/lib/recommendations/bandit";
 
 interface ProductCardProps {
   product: {
@@ -20,6 +21,8 @@ interface ProductCardProps {
   rank?: number;
   score?: number;
   showId?: boolean;
+  coldStart?: boolean;
+  banditMeta?: BanditMeta;
 }
 
 export function ProductCard({
@@ -31,6 +34,8 @@ export function ProductCard({
   rank,
   score,
   showId = false,
+  coldStart = false,
+  banditMeta,
 }: ProductCardProps) {
   const displayPrice = unitPrice ?? product.price;
 
@@ -58,6 +63,18 @@ export function ProductCard({
         data-recommended={recommended ? "true" : undefined}
         data-widget={widget}
         data-rank={rank}
+        data-cold-start={coldStart ? "true" : undefined}
+        data-bandit-policy={banditMeta?.policyId}
+        data-bandit-request={banditMeta?.requestId}
+        data-bandit-algorithm={banditMeta?.algorithm}
+        data-bandit-bucket={banditMeta?.bucket}
+        data-bandit-explore={
+          banditMeta?.explore !== undefined
+            ? String(banditMeta.explore)
+            : undefined
+        }
+        data-bandit-experiment={banditMeta?.experiment}
+        data-bandit-variant={banditMeta?.variant}
         className="text-sm font-medium block mb-1"
       >
         {product.name}
@@ -96,6 +113,8 @@ export function ProductCard({
           currency={product.currency}
           recommended={recommended}
           rank={rank}
+          coldStart={coldStart}
+          banditMeta={banditMeta}
         />
       </div>
     </div>

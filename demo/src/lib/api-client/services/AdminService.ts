@@ -2,6 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { types_ManualOverrideCancelRequest } from '../models/types_ManualOverrideCancelRequest';
+import type { types_ManualOverrideRequest } from '../models/types_ManualOverrideRequest';
+import type { types_ManualOverrideResponse } from '../models/types_ManualOverrideResponse';
 import type { types_RuleDryRunRequest } from '../models/types_RuleDryRunRequest';
 import type { types_RuleDryRunResponse } from '../models/types_RuleDryRunResponse';
 import type { types_RulePayload } from '../models/types_RulePayload';
@@ -11,6 +14,83 @@ import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class AdminService {
+    /**
+     * List manual overrides
+     * @param namespace Namespace
+     * @param surface Surface
+     * @param status Filter by status (active,cancelled,expired)
+     * @param action Filter by action (boost,suppress)
+     * @param includeExpired Include expired overrides
+     * @returns types_ManualOverrideResponse OK
+     * @throws ApiError
+     */
+    public static getV1AdminManualOverrides(
+        namespace: string,
+        surface?: string,
+        status?: string,
+        action?: string,
+        includeExpired?: boolean,
+    ): CancelablePromise<Array<types_ManualOverrideResponse>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/v1/admin/manual_overrides',
+            query: {
+                'namespace': namespace,
+                'surface': surface,
+                'status': status,
+                'action': action,
+                'include_expired': includeExpired,
+            },
+            errors: {
+                400: `Bad Request`,
+                500: `Internal Server Error`,
+            },
+        });
+    }
+    /**
+     * Create a manual boost/suppression override
+     * @param payload Manual override payload
+     * @returns types_ManualOverrideResponse Created
+     * @throws ApiError
+     */
+    public static postV1AdminManualOverrides(
+        payload: types_ManualOverrideRequest,
+    ): CancelablePromise<types_ManualOverrideResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/v1/admin/manual_overrides',
+            body: payload,
+            errors: {
+                400: `Bad Request`,
+                500: `Internal Server Error`,
+            },
+        });
+    }
+    /**
+     * Cancel a manual override
+     * @param overrideId Override ID
+     * @param payload Optional cancellation metadata
+     * @returns types_ManualOverrideResponse OK
+     * @throws ApiError
+     */
+    public static postV1AdminManualOverridesCancel(
+        overrideId: string,
+        payload?: types_ManualOverrideCancelRequest,
+    ): CancelablePromise<types_ManualOverrideResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/v1/admin/manual_overrides/{override_id}/cancel',
+            path: {
+                'override_id': overrideId,
+            },
+            body: payload,
+            errors: {
+                400: `Bad Request`,
+                404: `Not Found`,
+                500: `Internal Server Error`,
+            },
+        });
+    }
     /**
      * List merchandising rules
      * List merchandising rules with optional filtering

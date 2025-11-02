@@ -6,7 +6,9 @@ import type { specs_types_ScoredItem } from './specs_types_ScoredItem';
 export type types_RecommendWithBanditResponse = {
     algorithm?: string;
     bandit_bucket?: string;
+    bandit_experiment?: string;
     bandit_explain?: Record<string, string>;
+    bandit_variant?: string;
     chosen_policy_id?: string;
     explore?: boolean;
     items?: Array<specs_types_ScoredItem>;

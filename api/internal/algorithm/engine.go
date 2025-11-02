@@ -2,6 +2,7 @@ package algorithm
 
 import (
 	"context"
+	"errors"
 	"math"
 	"sort"
 	"strings"
@@ -11,6 +12,7 @@ import (
 	"recsys/internal/types"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 // Default recent anchors window days if not configured.
@@ -58,18 +60,103 @@ func (e *Engine) Recommend(
 		k = 20
 	}
 
+	sourceMetrics := make(map[string]SourceMetric)
+
 	// Get popularity candidates.
-	candidates, err := e.getPopularityCandidates(
+	popStart := time.Now()
+	popCandidates, err := e.getPopularityCandidates(
 		ctx, req.OrgID, req.Namespace, k, req.Constraints,
 	)
 	if err != nil {
 		return nil, nil, err
 	}
+	sourceMetrics["popularity"] = SourceMetric{Count: len(popCandidates), Duration: time.Since(popStart)}
+
+	existing := make(map[string]struct{}, len(popCandidates))
+	for _, c := range popCandidates {
+		existing[c.ItemID] = struct{}{}
+	}
+
+	collabScores := make(map[string]float64)
+	contentScores := make(map[string]float64)
+	sessionScores := make(map[string]float64)
+	if req.UserID != "" {
+		start := time.Now()
+		_, scores, err := e.getCollaborativeCandidates(ctx, req, existing, k)
+		if err != nil {
+			return nil, nil, err
+		}
+		for id, score := range scores {
+			collabScores[id] = score
+		}
+		sourceMetrics["collaborative"] = SourceMetric{Count: len(scores), Duration: time.Since(start)}
+	}
+
+	if req.UserID != "" {
+		start := time.Now()
+		_, scores, err := e.getContentBasedCandidates(ctx, req, existing, k)
+		if err != nil {
+			return nil, nil, err
+		}
+		for id, score := range scores {
+			contentScores[id] = score
+		}
+		sourceMetrics["content"] = SourceMetric{Count: len(scores), Duration: time.Since(start)}
+	}
+	if req.UserID != "" {
+		start := time.Now()
+		_, scores, err := e.getSessionCandidates(ctx, req, existing, k)
+		if err != nil {
+			return nil, nil, err
+		}
+		for id, score := range scores {
+			sessionScores[id] = score
+		}
+		sourceMetrics["session"] = SourceMetric{Count: len(scores), Duration: time.Since(start)}
+	}
+
+	popScores := make(map[string]float64, len(popCandidates))
+	for _, cand := range popCandidates {
+		popScores[cand.ItemID] = cand.Score
+	}
+
+	mergeStart := time.Now()
+	merged := e.mergeCandidates(popCandidates, popScores, collabScores, contentScores, sessionScores, k)
+	sourceMetrics["merged"] = SourceMetric{Count: len(merged), Duration: time.Since(mergeStart)}
 
 	// Apply exclusions.
-	candidates, err = e.applyExclusions(ctx, candidates, req)
+	excludeStart := time.Now()
+	candidates, err := e.applyExclusions(ctx, merged, req)
 	if err != nil {
 		return nil, nil, err
+	}
+	sourceMetrics["post_exclusion"] = SourceMetric{Count: len(candidates), Duration: time.Since(excludeStart)}
+	if len(collabScores) > 0 {
+		filtered := make(map[string]float64, len(collabScores))
+		for _, cand := range candidates {
+			if score, ok := collabScores[cand.ItemID]; ok {
+				filtered[cand.ItemID] = score
+			}
+		}
+		collabScores = filtered
+	}
+	if len(contentScores) > 0 {
+		filtered := make(map[string]float64, len(contentScores))
+		for _, cand := range candidates {
+			if score, ok := contentScores[cand.ItemID]; ok {
+				filtered[cand.ItemID] = score
+			}
+		}
+		contentScores = filtered
+	}
+	if len(sessionScores) > 0 {
+		filtered := make(map[string]float64, len(sessionScores))
+		for _, cand := range candidates {
+			if score, ok := sessionScores[cand.ItemID]; ok {
+				filtered[cand.ItemID] = score
+			}
+		}
+		sessionScores = filtered
 	}
 
 	// Get tags for all candidates.
@@ -87,6 +174,27 @@ func (e *Engine) Recommend(
 		return nil, nil, err
 	}
 	candidateData.Tags = tags
+	for id, score := range collabScores {
+		if score > candidateData.EmbScores[id] {
+			candidateData.EmbScores[id] = score
+		}
+		candidateData.UsedEmb[id] = true
+		candidateData.Collaborative[id] = true
+	}
+	for id, score := range contentScores {
+		if score > candidateData.EmbScores[id] {
+			candidateData.EmbScores[id] = score
+		}
+		candidateData.UsedEmb[id] = true
+		candidateData.ContentBased[id] = true
+	}
+	for id, score := range sessionScores {
+		if score > candidateData.EmbScores[id] {
+			candidateData.EmbScores[id] = score
+		}
+		candidateData.UsedEmb[id] = true
+		candidateData.SessionBased[id] = true
+	}
 
 	// Apply blended scoring.
 	e.applyBlendedScoring(candidateData, weights)
@@ -145,6 +253,7 @@ func (e *Engine) Recommend(
 		IncludeReasons: req.IncludeReasons,
 		ExplainLevel:   req.ExplainLevel,
 		ModelVersion:   modelVersion,
+		SourceMetrics:  sourceMetrics,
 	}
 	reasonSink := make(map[string][]string)
 	response := e.buildResponse(
@@ -251,6 +360,224 @@ func (e *Engine) getPopularityCandidates(
 	}
 
 	return cands, nil
+}
+
+// getCollaborativeCandidates fetches ALS-based candidates for the user.
+func (e *Engine) getCollaborativeCandidates(
+	ctx context.Context,
+	req Request,
+	existing map[string]struct{},
+	k int,
+) ([]types.ScoredItem, map[string]float64, error) {
+	if req.UserID == "" {
+		return nil, nil, nil
+	}
+
+	fetchK := e.config.PopularityFanout
+	if fetchK <= 0 || fetchK < k {
+		fetchK = k
+	}
+
+	exclude := make([]string, 0, len(existing))
+	for id := range existing {
+		exclude = append(exclude, id)
+	}
+
+	candidates, err := e.store.CollaborativeTopK(
+		ctx,
+		req.OrgID,
+		req.Namespace,
+		req.UserID,
+		fetchK,
+		exclude,
+	)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "42P01" {
+			return nil, nil, nil
+		}
+		return nil, nil, err
+	}
+
+	scores := make(map[string]float64, len(candidates))
+	filtered := make([]types.ScoredItem, 0, len(candidates))
+	for _, cand := range candidates {
+		if cand.ItemID == "" {
+			continue
+		}
+		if cand.Score <= 0 {
+			continue
+		}
+		if _, ok := existing[cand.ItemID]; ok {
+			continue
+		}
+		scores[cand.ItemID] = cand.Score
+		scores[cand.ItemID] = cand.Score
+		filtered = append(filtered, types.ScoredItem{ItemID: cand.ItemID, Score: 0})
+		existing[cand.ItemID] = struct{}{}
+	}
+
+	return filtered, scores, nil
+}
+
+func (e *Engine) getContentBasedCandidates(
+	ctx context.Context,
+	req Request,
+	existing map[string]struct{},
+	k int,
+) ([]types.ScoredItem, map[string]float64, error) {
+	if req.UserID == "" {
+		return nil, nil, nil
+	}
+
+	profile, err := e.store.BuildUserTagProfile(
+		ctx,
+		req.OrgID,
+		req.Namespace,
+		req.UserID,
+		e.config.ProfileWindowDays,
+		e.config.ProfileTopNTags,
+	)
+	if err != nil {
+		return nil, nil, err
+	}
+	if len(profile) == 0 {
+		return nil, nil, nil
+	}
+
+	type tagWeight struct {
+		tag    string
+		weight float64
+	}
+	weights := make([]tagWeight, 0, len(profile))
+	for tag, weight := range profile {
+		if weight <= 0 {
+			continue
+		}
+		weights = append(weights, tagWeight{tag: tag, weight: weight})
+	}
+	if len(weights) == 0 {
+		return nil, nil, nil
+	}
+	sort.Slice(weights, func(i, j int) bool {
+		return weights[i].weight > weights[j].weight
+	})
+	limit := len(weights)
+	if e.config.ProfileTopNTags > 0 && limit > e.config.ProfileTopNTags {
+		limit = e.config.ProfileTopNTags
+	}
+	tags := make([]string, 0, limit)
+	for i := 0; i < limit; i++ {
+		tags = append(tags, weights[i].tag)
+	}
+
+	if len(tags) == 0 {
+		return nil, nil, nil
+	}
+
+	fetchK := e.config.PopularityFanout
+	if fetchK <= 0 || fetchK < k {
+		fetchK = k
+	}
+
+	exclude := make([]string, 0, len(existing))
+	for id := range existing {
+		exclude = append(exclude, id)
+	}
+
+	candidates, err := e.store.ContentSimilarityTopK(
+		ctx,
+		req.OrgID,
+		req.Namespace,
+		tags,
+		fetchK,
+		exclude,
+	)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	scores := make(map[string]float64, len(candidates))
+	filtered := make([]types.ScoredItem, 0, len(candidates))
+	for _, cand := range candidates {
+		if cand.ItemID == "" {
+			continue
+		}
+		if cand.Score <= 0 {
+			continue
+		}
+		if _, ok := existing[cand.ItemID]; ok {
+			continue
+		}
+		scores[cand.ItemID] = cand.Score
+		filtered = append(filtered, types.ScoredItem{ItemID: cand.ItemID, Score: 0})
+		existing[cand.ItemID] = struct{}{}
+	}
+
+	return filtered, scores, nil
+}
+
+func (e *Engine) getSessionCandidates(
+	ctx context.Context,
+	req Request,
+	existing map[string]struct{},
+	k int,
+) ([]types.ScoredItem, map[string]float64, error) {
+	if req.UserID == "" {
+		return nil, nil, nil
+	}
+
+	fetchK := e.config.PopularityFanout
+	if fetchK <= 0 || fetchK < k {
+		fetchK = k
+	}
+
+	exclude := make([]string, 0, len(existing))
+	for id := range existing {
+		exclude = append(exclude, id)
+	}
+
+	lookback := e.config.SessionLookbackEvents
+	if lookback <= 0 {
+		lookback = maxRecentAnchors
+	}
+	horizonMinutes := e.config.SessionLookaheadMinutes
+	if horizonMinutes <= 0 {
+		horizonMinutes = 30
+	}
+
+	candidates, err := e.store.SessionSequenceTopK(
+		ctx,
+		req.OrgID,
+		req.Namespace,
+		req.UserID,
+		lookback,
+		horizonMinutes,
+		exclude,
+		fetchK,
+	)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	scores := make(map[string]float64, len(candidates))
+	filtered := make([]types.ScoredItem, 0, len(candidates))
+	for _, cand := range candidates {
+		if cand.ItemID == "" {
+			continue
+		}
+		if cand.Score <= 0 {
+			continue
+		}
+		if _, ok := existing[cand.ItemID]; ok {
+			continue
+		}
+		scores[cand.ItemID] = cand.Score
+		filtered = append(filtered, types.ScoredItem{ItemID: cand.ItemID, Score: 0})
+		existing[cand.ItemID] = struct{}{}
+	}
+
+	return filtered, scores, nil
 }
 
 // applyExclusions removes excluded items from candidates.
@@ -374,6 +701,9 @@ func (e *Engine) gatherSignals(
 		EmbScores:         make(map[string]float64),
 		UsedCooc:          make(map[string]bool),
 		UsedEmb:           make(map[string]bool),
+		Collaborative:     make(map[string]bool),
+		ContentBased:      make(map[string]bool),
+		SessionBased:      make(map[string]bool),
 		Boosted:           make(map[string]bool),
 		PopNorm:           make(map[string]float64),
 		CoocNorm:          make(map[string]float64),
@@ -814,6 +1144,15 @@ func (e *Engine) buildReasons(
 	if weights.Pop > 0 {
 		reasons = append(reasons, "recent_popularity")
 	}
+	if data.Collaborative[itemID] {
+		reasons = append(reasons, "collaborative")
+	}
+	if data.ContentBased[itemID] {
+		reasons = append(reasons, "content_similarity")
+	}
+	if data.SessionBased[itemID] {
+		reasons = append(reasons, "session_sequence")
+	}
 
 	if data.UsedCooc[itemID] && weights.Cooc > 0 {
 		reasons = append(reasons, "co_visitation")
@@ -1059,4 +1398,81 @@ func deduplicateReasons(reasons []string) []string {
 		out = append(out, reason)
 	}
 	return out
+}
+
+func (e *Engine) mergeCandidates(
+	pop []types.ScoredItem,
+	popScores map[string]float64,
+	collab map[string]float64,
+	content map[string]float64,
+	session map[string]float64,
+	k int,
+) []types.ScoredItem {
+	pool := make([]types.ScoredItem, 0, len(pop)+len(collab)+len(content)+len(session))
+	used := make(map[string]struct{}, cap(pool))
+	quotaPop := maxInt(k, 1)
+	quotaOther := maxInt(k/2, 1)
+
+	appendIfNew := func(itemID string, score float64) bool {
+		if itemID == "" {
+			return false
+		}
+		if _, ok := used[itemID]; ok {
+			return false
+		}
+		used[itemID] = struct{}{}
+		pool = append(pool, types.ScoredItem{ItemID: itemID, Score: score})
+		return true
+	}
+
+	for _, cand := range pop {
+		if quotaPop <= 0 {
+			break
+		}
+		if appendIfNew(cand.ItemID, cand.Score) {
+			quotaPop--
+		}
+	}
+
+	appendFromMap := func(src map[string]float64, quota *int) {
+		if *quota <= 0 {
+			return
+		}
+		type pair struct {
+			id    string
+			score float64
+		}
+		items := make([]pair, 0, len(src))
+		for id, score := range src {
+			items = append(items, pair{id: id, score: score})
+		}
+		sort.Slice(items, func(i, j int) bool {
+			if items[i].score == items[j].score {
+				return items[i].id < items[j].id
+			}
+			return items[i].score > items[j].score
+		})
+		for _, it := range items {
+			if *quota <= 0 {
+				break
+			}
+			score := it.score
+			if base, ok := popScores[it.id]; ok {
+				score = base
+			}
+			if appendIfNew(it.id, score) {
+				*quota--
+			}
+		}
+	}
+
+	appendFromMap(collab, &quotaOther)
+	appendFromMap(content, &quotaOther)
+	appendFromMap(session, &quotaOther)
+
+	if len(pool) > k {
+		pool = pool[:k]
+	}
+
+	return pool
 }

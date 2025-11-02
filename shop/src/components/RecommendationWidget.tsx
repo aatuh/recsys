@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { ProductCard } from "@/components/ProductCard";
 import { RecommendationConstraints } from "@/lib/recommendations/constraints";
+import { BanditMeta } from "@/lib/recommendations/bandit";
 
 interface RecommendationWidgetProps {
   userId: string;
@@ -16,6 +17,9 @@ interface RecommendationItem {
   item_id: string;
   score: number;
   reasons?: string[];
+  metadata?: {
+    cold_start?: boolean;
+  };
 }
 
 interface Product {
@@ -38,6 +42,7 @@ export function RecommendationWidget({
 }: RecommendationWidgetProps) {
   const [items, setItems] = useState<RecommendationItem[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [banditMeta, setBanditMeta] = useState<BanditMeta | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,6 +57,8 @@ export function RecommendationWidget({
           userId: userId,
           k: k.toString(),
           includeReasons: "true",
+          surface,
+          widget,
         });
 
         // Add constraints if provided
@@ -82,6 +89,20 @@ export function RecommendationWidget({
         }
 
         const data = await response.json();
+        if (data.bandit) {
+          setBanditMeta({
+            policyId: data.bandit.chosen_policy_id ?? undefined,
+            requestId: data.bandit.request_id ?? undefined,
+            algorithm: data.bandit.algorithm ?? undefined,
+            bucket:
+              data.bandit.bandit_bucket ?? data.bandit.bucket ?? undefined,
+            explore: data.bandit.explore ?? undefined,
+            experiment: data.bandit.bandit_experiment ?? data.bandit.experiment ?? undefined,
+            variant: data.bandit.bandit_variant ?? data.bandit.variant ?? undefined,
+          });
+        } else {
+          setBanditMeta(null);
+        }
         const recommendationItems = data.items || [];
         setItems(recommendationItems);
 
@@ -109,7 +130,7 @@ export function RecommendationWidget({
     if (userId) {
       fetchRecommendations();
     }
-  }, [userId, k, constraints]);
+  }, [userId, k, constraints, surface, widget]);
 
   if (loading) {
     return (
@@ -156,6 +177,8 @@ export function RecommendationWidget({
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {items.map((item, index) => {
           const product = products.find((p) => p.id === item.item_id);
+          const isColdStart =
+            item.metadata?.cold_start || item.reasons?.includes("cold_start");
 
           // If we have product data, use ProductCard, otherwise show fallback
           if (product) {
@@ -168,27 +191,31 @@ export function RecommendationWidget({
                 recommended={true}
                 rank={index + 1}
                 score={item.score}
+                coldStart={isColdStart}
                 showId={true}
+                banditMeta={banditMeta ?? undefined}
               />
             );
           }
 
-          // Fallback for missing product data
           return (
-            <div key={item.item_id} className="border rounded p-3">
-              <div className="w-full h-36 bg-gray-100 border rounded mb-2 flex items-center justify-center">
-                <span className="text-gray-500 text-sm">No image</span>
-              </div>
-              <div className="text-sm font-medium mb-1">
-                Product {item.item_id}
-              </div>
-              <div className="text-xs text-blue-600 font-medium mb-2">
-                Score: {item.score.toFixed(3)}
-              </div>
-              <div className="text-xs text-gray-500">
-                Product data not found
-              </div>
-            </div>
+            <ProductCard
+              key={item.item_id}
+              product={{
+                id: item.item_id,
+                name: `Product ${item.item_id}`,
+                price: 0,
+                currency: "USD",
+              }}
+              surface={surface}
+              widget={widget}
+              recommended={true}
+              rank={index + 1}
+              score={item.score}
+              coldStart={isColdStart}
+              showId={true}
+              banditMeta={banditMeta ?? undefined}
+            />
           );
         })}
       </div>

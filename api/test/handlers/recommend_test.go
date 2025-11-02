@@ -252,4 +252,39 @@ func TestRecommend_ExplainLevels(t *testing.T) {
 	require.NotEmpty(t, respFull.Items)
 	require.NotNil(t, respFull.Items[0].Explain.Blend.Raw)
 	require.Greater(t, respFull.Items[0].Explain.Blend.Raw.Pop, 0.0)
+
+	bodyTrace := do("POST", endpoints.Recommendations, map[string]any{
+		"user_id":         "u1",
+		"namespace":       "default",
+		"k":               1,
+		"include_reasons": true,
+		"context": map[string]any{
+			"surface": "home",
+		},
+	}, http.StatusOK)
+
+	var respTrace struct {
+		Trace struct {
+			Extras struct {
+				Sources map[string]struct {
+					Count int     `json:"count"`
+					Ms    float64 `json:"duration_ms"`
+				} `json:"candidate_sources"`
+			} `json:"extras"`
+		} `json:"trace"`
+	}
+	require.NoError(t, json.Unmarshal(bodyTrace, &respTrace))
+	require.NotNil(t, respTrace.Trace.Extras.Sources)
+	require.NotZero(t, len(respTrace.Trace.Extras.Sources))
+
+	for src, metric := range respTrace.Trace.Extras.Sources {
+		switch src {
+		case "popularity", "collaborative", "content", "session", "merged", "post_exclusion":
+			// expected sources
+		default:
+			t.Fatalf("unexpected source metric %s", src)
+		}
+		require.GreaterOrEqual(t, metric.Count, 0)
+		require.GreaterOrEqual(t, metric.Ms, 0.0)
+	}
 }

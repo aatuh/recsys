@@ -28,6 +28,7 @@ import (
 	"recsys/internal/rules"
 	"recsys/internal/services/datamanagement"
 	"recsys/internal/services/ingestion"
+	manualsvc "recsys/internal/services/manual"
 	"recsys/internal/services/recommendation"
 	"recsys/internal/store"
 	"recsys/specs/endpoints"
@@ -110,6 +111,23 @@ func New(ctx context.Context, opts Options) (*App, error) {
 		Enabled:         cfg.Rules.Enabled,
 	})
 	recommendationSvc := recommendation.New(st, rulesManager)
+	if len(cfg.Recommendation.BlendOverrides) > 0 {
+		entries := make(map[string]recommendation.ResolvedBlendConfig, len(cfg.Recommendation.BlendOverrides))
+		now := time.Now().UTC()
+		for ns, weights := range cfg.Recommendation.BlendOverrides {
+			entries[ns] = recommendation.ResolvedBlendConfig{
+				Namespace: ns,
+				Alpha:     weights.Alpha,
+				Beta:      weights.Beta,
+				Gamma:     weights.Gamma,
+				Source:    "static_config",
+				UpdatedAt: now,
+			}
+		}
+		if resolver := recommendation.NewStaticBlendResolver(entries); resolver != nil {
+			recommendationSvc = recommendationSvc.WithBlendResolver(resolver)
+		}
+	}
 
 	explainService := newExplainService(cfg.Explain, st, logger)
 
@@ -153,6 +171,15 @@ func New(ctx context.Context, opts Options) (*App, error) {
 		BlendAlpha:          cfg.Recommendation.Blend.Alpha,
 		BlendBeta:           cfg.Recommendation.Blend.Beta,
 		BlendGamma:          cfg.Recommendation.Blend.Gamma,
+		BanditExperiment: handlers.BanditExperimentConfig{
+			Enabled:        cfg.Recommendation.BanditExperiment.Enabled,
+			HoldoutPercent: cfg.Recommendation.BanditExperiment.HoldoutPercent,
+			Label:          cfg.Recommendation.BanditExperiment.Label,
+			Surfaces:       make(map[string]struct{}),
+		},
+	}
+	for _, surface := range cfg.Recommendation.BanditExperiment.Surfaces {
+		recConfig.BanditExperiment.Surfaces[surface] = struct{}{}
 	}
 
 	ingHandler := handlers.NewIngestionHandler(ingestionSvc, cfg.Recommendation.DefaultOrgID, logger)
@@ -161,6 +188,8 @@ func New(ctx context.Context, opts Options) (*App, error) {
 	recoHandler := handlers.NewRecommendationHandler(recommendationSvc, st, recConfig, tracer, cfg.Recommendation.DefaultOrgID, logger)
 	banditHandler := handlers.NewBanditHandler(st, recommendationSvc, recConfig, tracer, cfg.Recommendation.DefaultOrgID, cfg.Recommendation.BanditAlgo, logger)
 	rulesHandler := handlers.NewRulesHandler(st, rulesManager, cfg.Recommendation.DefaultOrgID, cfg.Recommendation.BrandTagPrefixes, cfg.Recommendation.CategoryTagPrefixes)
+	manualSvc := manualsvc.New(st)
+	manualHandler := handlers.NewManualOverridesHandler(manualSvc, cfg.Recommendation.DefaultOrgID)
 	eventTypesHandler := handlers.NewEventTypesHandler(st, cfg.Recommendation.DefaultOrgID)
 	explainHandler := handlers.NewExplainHandler(explainService, cfg.Recommendation.DefaultOrgID)
 	auditHandler := handlers.NewAuditHandler(st, cfg.Recommendation.DefaultOrgID)
@@ -298,6 +327,9 @@ func New(ctx context.Context, opts Options) (*App, error) {
 	protected.Put(endpoints.RuleByID, rulesHandler.RulesUpdate)
 	protected.Get(endpoints.Rules, rulesHandler.RulesList)
 	protected.Post(endpoints.RulesDryRun, rulesHandler.RulesDryRun)
+	protected.Post(endpoints.ManualOverrides, manualHandler.ManualOverrideCreate)
+	protected.Get(endpoints.ManualOverrides, manualHandler.ManualOverrideList)
+	protected.Post(endpoints.ManualOverrideCancel, manualHandler.ManualOverrideCancel)
 
 	protected.Post(endpoints.ExplainLLM, explainHandler.ExplainLLM)
 

@@ -1,6 +1,4 @@
 # RecSys Configuration & Data Ingestion Guide
-**Version:** 1.0  
-**Updated:** October 28, 2025
 
 This guide shows you how to configure the RecSys API and structure your data to get high‑quality recommendations across common business scenarios. It’s written in plain English, with copy‑paste payloads and a clear mapping between environment variables and per-request overrides.
 
@@ -15,13 +13,13 @@ This guide shows you how to configure the RecSys API and structure your data to 
 - Batch **events** (user_id, item_id, type, value, timestamp in RFC3339).
 
 2) **Set global defaults via env**
-- Popularity half‑life, co‑visitation window, diversity (MMR), brand/category caps, exclude‑purchased behavior, personalization knobs (profile window/top‑N/boost), and blend weights.
+- Popularity half-life, co-visitation window, diversity (MMR), brand/category caps, exclude-purchased behavior, personalization knobs (profile window/top-N/boost), blend weights, and bandit holdout settings.
 
 3) **Tune per request**
 - Use `blend` and `overrides` in `/v1/recommendations` so each surface (Home, PDP, Cart, Email) gets the right mix without redeploys.
 
-4) **(Optional) Rules, segments, bandits**
-- Apply pin/boost/block guardrails, target different knob bundles per segment, or let bandits pick between policies automatically.
+4) **(Optional) Rules, manual overrides, segments, bandits**
+- Apply pin/boost/block guardrails, register ad-hoc boosts or suppressions, target different knob bundles per segment, or let bandits pick between policies automatically.
 
 ---
 
@@ -42,9 +40,9 @@ This guide shows you how to configure the RecSys API and structure your data to 
 Set these in your `.env` before starting the service. Invalid values are rejected at boot with a clear error.
 
 ### Windows & decay
-- `POPULARITY_HALFLIFE_DAYS` (float > 0) — recency vs memory for popularity.
-- `COVIS_WINDOW_DAYS` (float > 0) — event lookback window for co‑visitation.
-- `POPULARITY_FANOUT` (int > 0) — how many popularity candidates to prefetch.
+- `POPULARITY_HALFLIFE_DAYS` (float > 0) — recency vs memory for popularity (default 4).
+- `COVIS_WINDOW_DAYS` (float > 0) — event lookback window for co-visitation (default 28).
+- `POPULARITY_FANOUT` (int > 0) — how many popularity candidates to prefetch (default 500).
 
 ### Diversity & business constraints
 - `MMR_LAMBDA` ([0,1]) — 1 = pure relevance, 0 = pure diversity (MMR off if 0).
@@ -57,13 +55,22 @@ Set these in your `.env` before starting the service. Invalid values are rejecte
 - `PURCHASED_WINDOW_DAYS` (float > 0) — lookback window for exclude‑purchased.
 - `PROFILE_WINDOW_DAYS` (float > 0 or -1) — how far back to build user profiles; -1 = all time.
 - `PROFILE_TOP_N` (int > 0) — number of top profile features (e.g., tags) to keep.
-- `PROFILE_BOOST` (float ≥ 0) — strength of profile‑based boosting; 0 disables personalization.
+- `PROFILE_BOOST` (float ≥ 0) — strength of profile-based boosting; 0 disables personalization (default 0.7 for balanced lift).
 
 ### Blending defaults
-- `BLEND_ALPHA`, `BLEND_BETA`, `BLEND_GAMMA` — default weights for popularity/co‑vis/embedding.
+- `BLEND_ALPHA`, `BLEND_BETA`, `BLEND_GAMMA` — default weights for popularity/co-vis/embedding. Current recommended defaults: 0.25 / 0.35 / 0.40 (front-load embeddings for novel items).
 
-### Operational
-- `ORG_ID`, `DATABASE_URL`, `API_PORT` — required infra basics.
+### Bandit experiment controls
+- `BANDIT_ALGO` — online policy selector (`thompson` or `ucb1`).
+- `BANDIT_EXPERIMENT_ENABLED` — toggles exploration holdout for live testing.
+- `BANDIT_EXPERIMENT_HOLDOUT_PERCENT` — fraction (0–1) of traffic routed to control.
+- `BANDIT_EXPERIMENT_SURFACES` — CSV of surfaces that participate in the experiment (`home,cart` by default).
+- `BANDIT_EXPERIMENT_LABEL` — human-readable tag used in logs and dashboards.
+
+- ### Operational
+- `ORG_ID`, `DATABASE_URL`, `API_PORT` — required infra basics. The same `ORG_ID`
+  must be sent by clients in the `X-Org-ID` header (the shop sample reads
+  `RECSYS_ORG_ID` and injects it automatically).
 - Optional tracing/”explain” toggles for debugging and dashboards (implementation dependent).
 
 > Tip: keep a checked‑in `.env.example` describing each variable and safe defaults.
@@ -258,7 +265,12 @@ If exposed by your build: `GET /v1/items/{id}/similar?namespace=default&k=20` us
 
 ### E) Policy selection & A/B via bandits
 - Define several policy bundles (different blends, MMR, caps, personalization).  
-- Call `/v1/bandit/recommendations` using Thompson sampling or UCB1 to auto‑select a policy online.
+- Call `/v1/bandit/recommendations` using Thompson sampling or UCB1 to auto-select a policy online.
+
+### F) Merchandising overrides & promo pushes
+- Use `POST /v1/admin/manual_overrides` to register a boost or suppression for a specific item, namespace, and surface. Include optional expiry and notes so the override auto-expires and remains auditable.
+- List current overrides with `GET /v1/admin/manual_overrides?namespace=...` and cancel with `POST /v1/admin/manual_overrides/{override_id}/cancel` once the campaign ends.
+- Overrides write through the rule engine, so they cooperate with caps, segments, and decision tracing automatically.
 
 ---
 
@@ -300,7 +312,9 @@ Overrides are applied before ranking; they temporarily replace the corresponding
 
 - **Explanations / decision traces**: enable to capture input config, anchors, scoring reasons, MMR decisions, and rule applications per request.
 - **Data management**: list/delete endpoints for users/items/events by namespace/time range for backfills and cleanup.
-- **SLOs**: track p99 latency, 5xx rate, and recommendation “fill rate”. Add counters for rule hits and cap‑induced re‑ranks.
+- **Manual overrides**: the admin endpoints emit audit metadata (`created_by`, `cancelled_by`, timestamps). Monitor override counts and stale entries; expired overrides are auto-marked and can be cleaned regularly.
+- **Catalog freshness**: run `make catalog-backfill` for the initial metadata/embedding backfill, and `make catalog-refresh SINCE=24h` (or your preferred window) on a schedule to keep new products enriched.
+- **SLOs**: track p99 latency, 5xx rate, and recommendation “fill rate”. Add counters for rule hits, override usage, and cap-induced re-ranks.
 
 ---
 

@@ -10,12 +10,14 @@ import (
 
 // Decision represents a chosen policy for a request.
 type Decision struct {
-	PolicyID  string            `json:"policy_id"`
-	Algorithm types.Algorithm   `json:"algorithm"`
-	Surface   string            `json:"surface"`
-	BucketKey string            `json:"bucket_key"`
-	Explore   bool              `json:"explore"`
-	Explain   map[string]string `json:"explain"`
+	PolicyID   string            `json:"policy_id"`
+	Algorithm  types.Algorithm   `json:"algorithm"`
+	Surface    string            `json:"surface"`
+	BucketKey  string            `json:"bucket_key"`
+	Explore    bool              `json:"explore"`
+	Explain    map[string]string `json:"explain"`
+	Experiment string            `json:"experiment,omitempty"`
+	Variant    string            `json:"variant,omitempty"`
 }
 
 // RewardInput is the minimal data needed to update stats.
@@ -25,6 +27,7 @@ type RewardInput struct {
 	BucketKey string
 	Reward    bool
 	Algorithm types.Algorithm
+	Meta      map[string]any
 }
 
 // BucketKeyFromContext builds a canonical key from simple context.

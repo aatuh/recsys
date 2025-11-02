@@ -17,7 +17,9 @@ type TelemetryEvent = {
 function getSessionId(): string {
   let sessionId = window.sessionStorage.getItem("shop_session_id");
   if (!sessionId) {
-    sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    sessionId = `session_${Date.now()}_${Math.random()
+      .toString(36)
+      .substr(2, 9)}`;
     window.sessionStorage.setItem("shop_session_id", sessionId);
   }
   return sessionId;
@@ -40,31 +42,32 @@ export function useTelemetry() {
   const emit = useCallback(async (ev: Omit<TelemetryEvent, "userId">) => {
     const userId = window.localStorage.getItem("shop_user_id");
     if (!userId) return;
-    
-    const sessionId = getSessionId();
-    const requestId = generateRequestId();
-    
-    // Enhance meta with session and request context
-    const enhancedMeta: RecommendationMeta = {
+
+    const sessionId = ev.meta?.session_id ?? getSessionId();
+    const requestId =
+      ev.meta?.request_id ?? ev.meta?.bandit_request_id ?? generateRequestId();
+
+    const baseMeta: RecommendationMeta = {
+      ...(ev.meta ?? {}),
       session_id: sessionId,
       request_id: requestId,
-      referrer: document.referrer || window.location.pathname,
-      ...ev.meta,
+      referrer:
+        ev.meta?.referrer ?? (document.referrer || window.location.pathname),
     };
-    
+
     const payload: TelemetryEvent = {
       userId,
       ts: new Date().toISOString(),
-      meta: enhancedMeta,
+      meta: baseMeta,
       ...ev,
     };
-    
+
     const parsed = telemetryEventSchema.safeParse(payload);
     if (!parsed.success) {
       console.warn("Invalid telemetry event:", parsed.error, payload);
       return;
     }
-    
+
     if (navigator.sendBeacon) {
       try {
         const blob = new Blob([JSON.stringify(payload)], {

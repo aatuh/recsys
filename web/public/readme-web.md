@@ -137,4 +137,5 @@ The seeding system now supports realistic event generation:
 - Root directory `/web/`.
 - Paste env variables.
 - Set branch tracking as `production`.
-- Generate custom domain.
+- Name project as `recsys-web`.
+- Set custom domain and copy to API CORS env file.

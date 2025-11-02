@@ -1,6 +1,10 @@
 package handlers
 
-import "recsys/internal/algorithm"
+import (
+	"strings"
+
+	"recsys/internal/algorithm"
+)
 
 // RecommendationConfig captures the base algorithm tunables used for ranking.
 type RecommendationConfig struct {
@@ -21,6 +25,31 @@ type RecommendationConfig struct {
 	BlendAlpha          float64
 	BlendBeta           float64
 	BlendGamma          float64
+	BanditExperiment    BanditExperimentConfig
+}
+
+// BanditExperimentConfig controls exploration holdouts for experiments.
+type BanditExperimentConfig struct {
+	Enabled        bool
+	HoldoutPercent float64
+	Surfaces       map[string]struct{}
+	Label          string
+}
+
+// Applies returns true if the experiment applies to the given surface.
+func (c BanditExperimentConfig) Applies(surface string) bool {
+	if !c.Enabled {
+		return false
+	}
+	if len(c.Surfaces) == 0 {
+		return true
+	}
+	normalized := strings.ToLower(strings.TrimSpace(surface))
+	if normalized == "" {
+		normalized = "default"
+	}
+	_, ok := c.Surfaces[normalized]
+	return ok
 }
 
 // BaseConfig materializes the config into an algorithm.Config with defensive copies.

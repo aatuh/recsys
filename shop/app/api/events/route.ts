@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/server/db/client";
 import { forwardEventsBatch } from "@/server/services/recsys";
 import { buildEventContract } from "@/lib/contracts/event";
+import { maybeLogColdStart } from "@/server/logging/coldStart";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -48,6 +49,17 @@ export async function POST(req: NextRequest) {
       })
     )
   );
+
+  const validTypes = new Set(["view", "click", "add", "purchase"]);
+  for (const event of events) {
+    if (!validTypes.has(event.type) || !event.productId) continue;
+    // Map "view" to "impression" for cold start logging
+    const coldStartType =
+      event.type === "view"
+        ? "impression"
+        : (event.type as "click" | "add" | "purchase");
+    maybeLogColdStart(coldStartType, event.userId, event.productId, event.meta);
+  }
 
   return NextResponse.json({ inserted: created.length });
 }

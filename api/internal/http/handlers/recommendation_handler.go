@@ -34,6 +34,20 @@ type RecommendationHandler struct {
 	defaultOrg uuid.UUID
 }
 
+type recommendationResponseEnvelope struct {
+	handlerstypes.RecommendResponse
+	Trace *traceDebugPayload `json:"trace,omitempty"`
+}
+
+type traceDebugPayload struct {
+	Extras map[string]any `json:"extras,omitempty"`
+}
+
+type traceSourceMetric struct {
+	Count      int     `json:"count"`
+	DurationMS float64 `json:"duration_ms"`
+}
+
 func NewRecommendationHandler(service RecommendationService, st *store.Store, cfg RecommendationConfig, tracer *decisionTracer, defaultOrg uuid.UUID, logger *zap.Logger) *RecommendationHandler {
 	if logger == nil {
 		logger = zap.NewNop()
@@ -78,8 +92,15 @@ func (h *RecommendationHandler) Recommend(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	respBody := recommendationResponseEnvelope{
+		RecommendResponse: result.Response,
+	}
+	if trace := buildTraceDebugPayload(result.TraceData); trace != nil {
+		respBody.Trace = trace
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(result.Response); err != nil {
+	if err := json.NewEncoder(w).Encode(respBody); err != nil {
 		h.logger.Error("write recommend response", zap.Error(err))
 		return
 	}
@@ -96,6 +117,19 @@ func (h *RecommendationHandler) Recommend(w http.ResponseWriter, r *http.Request
 			Duration:     time.Since(start),
 			Surface:      result.AlgoRequest.Surface,
 		})
+	}
+
+	if len(result.SourceStats) > 0 {
+		for source, metric := range result.SourceStats {
+			h.logger.Info("candidate_source_metrics",
+				zap.String("source", source),
+				zap.Int("count", metric.Count),
+				zap.Float64("duration_ms", durationMillis(metric.Duration)),
+				zap.String("surface", result.AlgoRequest.Surface),
+				zap.String("namespace", result.AlgoRequest.Namespace),
+				zap.Int("k", result.AlgoRequest.K),
+			)
+		}
 	}
 }
 
@@ -156,4 +190,31 @@ func (h *RecommendationHandler) segmentSelector() recommendation.SegmentSelector
 		sel, _, err := resolveSegmentSelection(ctx, h.store, req, httpReq, nil)
 		return sel, err
 	}
+}
+
+func buildTraceDebugPayload(traceData *algorithm.TraceData) *traceDebugPayload {
+	if traceData == nil {
+		return nil
+	}
+
+	extras := make(map[string]any)
+	if len(traceData.SourceMetrics) > 0 {
+		sources := make(map[string]traceSourceMetric, len(traceData.SourceMetrics))
+		for source, metric := range traceData.SourceMetrics {
+			sources[source] = traceSourceMetric{
+				Count:      metric.Count,
+				DurationMS: durationMillis(metric.Duration),
+			}
+		}
+		extras["candidate_sources"] = sources
+	}
+
+	if len(extras) == 0 {
+		return nil
+	}
+	return &traceDebugPayload{Extras: extras}
+}
+
+func durationMillis(d time.Duration) float64 {
+	return float64(d) / float64(time.Millisecond)
 }

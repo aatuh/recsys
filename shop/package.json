@@ -9,8 +9,7 @@
     "start": "next start -p 3002",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "codegen:api": "openapi --input http://swagger:8080/swagger.json --output src/lib/api-client --client fetch",
-    "codegen:api:local": "openapi --input ../swagger-service/public/swagger.json --output src/lib/api-client --client fetch",
+    "codegen:api:local": "pnpm dlx openapi-typescript-codegen --input ../swagger-service/public/swagger.json --output src/lib/api-client --client fetch",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev --name init",
     "seed": "tsx ./scripts/seed.ts"

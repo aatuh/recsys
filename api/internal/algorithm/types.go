@@ -2,6 +2,7 @@ package algorithm
 
 import (
 	"strings"
+	"time"
 
 	"recsys/internal/rules"
 	"recsys/internal/types"
@@ -39,6 +40,10 @@ type Config struct {
 
 	// Popularity fanout
 	PopularityFanout int // Fanout for popularity candidates
+
+	// Session retriever controls
+	SessionLookbackEvents   int     // Number of recent events to seed session retriever
+	SessionLookaheadMinutes float64 // horizon minutes for follow-up events
 }
 
 // Request represents a recommendation request
@@ -107,6 +112,9 @@ type CandidateData struct {
 	EmbScores         map[string]float64
 	UsedCooc          map[string]bool
 	UsedEmb           map[string]bool
+	Collaborative     map[string]bool
+	ContentBased      map[string]bool
+	SessionBased      map[string]bool
 	Boosted           map[string]bool
 	PopNorm           map[string]float64
 	CoocNorm          map[string]float64
@@ -138,6 +146,13 @@ type TraceData struct {
 	RuleEffects    map[string]rules.ItemEffect
 	RuleEvaluated  []uuid.UUID
 	RulePinned     []rules.PinnedItem
+	SourceMetrics  map[string]SourceMetric
+}
+
+// SourceMetric captures coverage and latency for a candidate source.
+type SourceMetric struct {
+	Count    int           `json:"count"`
+	Duration time.Duration `json:"duration"`
 }
 
 // SimilarItemsRequest represents a request for similar items

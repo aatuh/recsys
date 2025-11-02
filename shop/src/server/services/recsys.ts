@@ -1,16 +1,22 @@
+import { randomUUID } from "crypto";
 import { loadConfig } from "./config";
 import { OpenAPI } from "@/lib/api-client/core/OpenAPI";
 import { IngestionService } from "@/lib/api-client/services/IngestionService";
 import { RankingService } from "@/lib/api-client/services/RankingService";
 import { DataManagementService } from "@/lib/api-client/services/DataManagementService";
+import { BanditService } from "@/lib/api-client/services/BanditService";
 import { ItemContract } from "@/lib/contracts/item";
 import { UserContract } from "@/lib/contracts/user";
 import { EventContract } from "@/lib/contracts/event";
 import { prisma } from "@/server/db/client";
+import type { specs_types_ScoredItem } from "@/lib/api-client/models/specs_types_ScoredItem";
 
 export function initRecsysClient() {
   const cfg = loadConfig();
   OpenAPI.BASE = cfg.recsysBaseUrl;
+  OpenAPI.HEADERS = async () => ({
+    "X-Org-ID": cfg.recsysOrgId,
+  });
 }
 
 export function mapEventTypeToCode(
@@ -33,10 +39,57 @@ export function mapEventTypeToCode(
 export async function forwardEventsBatch(events: EventContract[]) {
   const cfg = loadConfig();
   initRecsysClient();
-  return IngestionService.batchEvents({
+  const result = await IngestionService.batchEvents({
     namespace: cfg.recsysNamespace,
     events,
   });
+  if (BANDIT_ENABLED) {
+    const rewardCandidates = events.filter((event) =>
+      shouldSendBanditReward(event)
+    );
+    for (const event of rewardCandidates) {
+      const meta = (event.meta ?? {}) as Record<string, unknown>;
+      const policyId = meta["bandit_policy_id"] as string | undefined;
+      const requestId = meta["bandit_request_id"] as string | undefined;
+      if (!policyId) {
+        continue;
+      }
+      await BanditService.postV1BanditReward({
+        namespace: cfg.recsysNamespace,
+        policy_id: policyId,
+        request_id: requestId,
+        bucket_key: meta["bandit_bucket"] as string | undefined,
+        algorithm: meta["bandit_algorithm"] as string | undefined,
+        surface: meta["surface"] as string | undefined,
+        reward: true,
+        experiment: meta["bandit_experiment"] as string | undefined,
+        variant: meta["bandit_variant"] as string | undefined,
+      }).catch((err) => {
+        console.warn("bandit reward send failed", err);
+      });
+    }
+  }
+  return result;
+}
+
+function shouldSendBanditReward(event: EventContract): boolean {
+  if (!BANDIT_ENABLED) {
+    return false;
+  }
+  const meta = event.meta as Record<string, unknown> | undefined;
+  if (!meta || !meta["bandit_policy_id"]) {
+    return false;
+  }
+  switch (event.type) {
+    case 1:
+      return BANDIT_REWARD_ON_CLICK;
+    case 2:
+      return BANDIT_REWARD_ON_ADD;
+    case 3:
+      return BANDIT_REWARD_ON_PURCHASE;
+    default:
+      return false;
+  }
 }
 
 export async function upsertItems(items: ItemContract[]) {
@@ -83,23 +136,56 @@ export async function upsertEventTypeConfig() {
   return { status: "skipped" };
 }
 
+const BANDIT_ENABLED = process.env.SHOP_BANDIT_ENABLED === "true";
+const BANDIT_POLICY_IDS =
+  process.env.SHOP_BANDIT_POLICY_IDS?.split(",")
+    .map((id) => id.trim())
+    .filter((id) => id.length > 0) ?? [];
+const BANDIT_REWARD_ON_CLICK =
+  process.env.SHOP_BANDIT_REWARD_ON_CLICK !== "false";
+const BANDIT_REWARD_ON_ADD = process.env.SHOP_BANDIT_REWARD_ON_ADD !== "false";
+const BANDIT_REWARD_ON_PURCHASE =
+  process.env.SHOP_BANDIT_REWARD_ON_PURCHASE !== "false";
+
+type RecommendationConstraintsInput = {
+  price_between?: [number, number];
+  include_tags_any?: string[];
+  exclude_tags_any?: string[];
+  brand_cap?: number;
+  category_cap?: number;
+};
+
+export type RecommendationResponse = {
+  items?: Array<{ item_id: string; score: number; reasons?: string[] }>;
+  model_version?: string;
+  segment_id?: string;
+  profile_id?: string;
+  bandit?: {
+    chosen_policy_id?: string;
+    algorithm?: string;
+    bucket?: string;
+    explore?: boolean;
+    explain?: Record<string, string>;
+    request_id?: string;
+    experiment?: string;
+    variant?: string;
+  };
+};
+
 export async function getRecommendations(params: {
   userId: string;
   k?: number;
   includeReasons?: boolean;
-  constraints?: {
-    price_between?: [number, number];
-    include_tags_any?: string[];
-    exclude_tags_any?: string[];
-    brand_cap?: number;
-    category_cap?: number;
-  };
-}) {
+  constraints?: RecommendationConstraintsInput;
+  surface?: string;
+  widget?: string;
+  context?: Record<string, string>;
+}): Promise<RecommendationResponse> {
   const cfg = loadConfig();
   initRecsysClient();
 
   // Build the request payload
-  const requestPayload: Record<string, unknown> = {
+  const basePayload: Record<string, unknown> = {
     user_id: params.userId,
     namespace: cfg.recsysNamespace,
     k: params.k ?? 12,
@@ -123,19 +209,92 @@ export async function getRecommendations(params: {
     }
 
     if (params.constraints.brand_cap) {
-      requestPayload.brand_cap = params.constraints.brand_cap;
+      basePayload.brand_cap = params.constraints.brand_cap;
     }
 
     if (params.constraints.category_cap) {
-      requestPayload.category_cap = params.constraints.category_cap;
+      basePayload.category_cap = params.constraints.category_cap;
     }
 
     if (Object.keys(constraints).length > 0) {
-      requestPayload.constraints = constraints;
+      basePayload.constraints = constraints;
     }
   }
 
-  return RankingService.postV1Recommendations(requestPayload);
+  const surface = params.surface ?? "home";
+  const context: Record<string, string> = {
+    surface,
+    ...(params.widget ? { widget: params.widget } : {}),
+    ...(params.context ?? {}),
+  };
+
+  if (BANDIT_ENABLED) {
+    const requestId = randomUUID();
+    const banditPayload: Record<string, unknown> = {
+      ...basePayload,
+      surface,
+      context,
+      request_id: requestId,
+    };
+    if (BANDIT_POLICY_IDS.length > 0) {
+      banditPayload.candidate_policy_ids = BANDIT_POLICY_IDS;
+    }
+
+    try {
+      const banditResponse = await RankingService.postV1BanditRecommendations(
+        banditPayload
+      );
+
+      return {
+        items: banditResponse.items
+          ?.filter(
+            (item): item is specs_types_ScoredItem & { item_id: string } =>
+              Boolean(item.item_id)
+          )
+          .map((item) => ({
+            item_id: item.item_id,
+            score: item.score ?? 0,
+            reasons: item.reasons,
+          })),
+        model_version: banditResponse.model_version,
+        segment_id: banditResponse.segment_id,
+        profile_id: banditResponse.profile_id,
+        bandit: {
+          chosen_policy_id: banditResponse.chosen_policy_id,
+          algorithm: banditResponse.algorithm ?? undefined,
+          bucket: banditResponse.bandit_bucket ?? undefined,
+          explore: banditResponse.explore ?? undefined,
+          explain: banditResponse.bandit_explain ?? undefined,
+          request_id: banditResponse.request_id ?? requestId,
+          experiment: banditResponse.bandit_experiment ?? undefined,
+          variant: banditResponse.bandit_variant ?? undefined,
+        },
+      };
+    } catch (error) {
+      console.warn(
+        "Bandit recommendations failed, falling back to standard ranking",
+        error
+      );
+    }
+  }
+
+  const recommendationResponse = await RankingService.postV1Recommendations(
+    basePayload
+  );
+  return {
+    items: recommendationResponse.items
+      ?.filter((item): item is specs_types_ScoredItem & { item_id: string } =>
+        Boolean(item.item_id)
+      )
+      .map((item) => ({
+        item_id: item.item_id,
+        score: item.score ?? 0,
+        reasons: item.reasons,
+      })),
+    model_version: recommendationResponse.model_version,
+    segment_id: recommendationResponse.segment_id,
+    profile_id: recommendationResponse.profile_id,
+  };
 }
 
 export async function getSimilar(params: { itemId: string; k?: number }) {

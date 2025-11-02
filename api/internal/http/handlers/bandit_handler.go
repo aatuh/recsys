@@ -172,12 +172,14 @@ func (h *BanditHandler) BanditDecide(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp := handlerstypes.BanditDecideResponse{
-		PolicyID:  dec.PolicyID,
-		Algorithm: string(dec.Algorithm),
-		Surface:   dec.Surface,
-		BucketKey: dec.BucketKey,
-		Explore:   dec.Explore,
-		Explain:   dec.Explain,
+		PolicyID:   dec.PolicyID,
+		Algorithm:  string(dec.Algorithm),
+		Surface:    dec.Surface,
+		BucketKey:  dec.BucketKey,
+		Explore:    dec.Explore,
+		Explain:    dec.Explain,
+		Experiment: dec.Experiment,
+		Variant:    dec.Variant,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -205,12 +207,23 @@ func (h *BanditHandler) BanditReward(w http.ResponseWriter, r *http.Request) {
 
 	orgID := orgIDFromHeader(r, h.defaultOrg).String()
 	mgr := h.newBanditStoreManager(h.banditAlgoOverride(req.Algorithm))
+	var rewardMeta map[string]any
+	if req.Experiment != "" || req.Variant != "" {
+		rewardMeta = make(map[string]any, 2)
+		if req.Experiment != "" {
+			rewardMeta["experiment"] = req.Experiment
+		}
+		if req.Variant != "" {
+			rewardMeta["variant"] = req.Variant
+		}
+	}
 	err := mgr.Reward(r.Context(), orgID, req.Namespace, bandit.RewardInput{
 		PolicyID:  req.PolicyID,
 		Surface:   req.Surface,
 		BucketKey: req.BucketKey,
 		Reward:    req.Reward,
 		Algorithm: h.banditAlgoOverride(req.Algorithm),
+		Meta:      rewardMeta,
 	}, req.RequestID)
 	if err != nil {
 		common.HttpErrorWithLogger(w, r, err, http.StatusBadRequest, h.logger)
@@ -303,6 +316,8 @@ func (h *BanditHandler) RecommendWithBandit(w http.ResponseWriter, r *http.Reque
 		Explore:           dec.Explore,
 		BanditExplain:     dec.Explain,
 		RequestID:         req.RequestID,
+		BanditExperiment:  dec.Experiment,
+		BanditVariant:     dec.Variant,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -316,6 +331,8 @@ func (h *BanditHandler) RecommendWithBandit(w http.ResponseWriter, r *http.Reque
 			BucketKey:      dec.BucketKey,
 			Explore:        dec.Explore,
 			Explain:        dec.Explain,
+			Experiment:     dec.Experiment,
+			Variant:        dec.Variant,
 		}
 		if req.RequestID != "" {
 			banditCtx.RequestID = req.RequestID
@@ -361,7 +378,16 @@ func (h *BanditHandler) banditAlgoOverride(s string) internaltypes.Algorithm {
 
 func (h *BanditHandler) newBanditStoreManager(algo internaltypes.Algorithm) *bandit.Manager {
 	wrapped := &banditStoreAdapter{Store: h.store}
-	return bandit.NewManager(wrapped, algo)
+	exp := bandit.ExperimentConfig{
+		Enabled:        h.config.BanditExperiment.Enabled,
+		HoldoutPercent: h.config.BanditExperiment.HoldoutPercent,
+		Label:          h.config.BanditExperiment.Label,
+		Surfaces:       make(map[string]struct{}, len(h.config.BanditExperiment.Surfaces)),
+	}
+	for k := range h.config.BanditExperiment.Surfaces {
+		exp.Surfaces[k] = struct{}{}
+	}
+	return bandit.NewManager(wrapped, algo, bandit.WithExperiment(exp))
 }
 
 type banditStoreAdapter struct {

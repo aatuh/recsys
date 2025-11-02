@@ -15,6 +15,173 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/v1/admin/manual_overrides": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "List manual overrides",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Namespace",
+                        "name": "namespace",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Surface",
+                        "name": "surface",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by status (active,cancelled,expired)",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by action (boost,suppress)",
+                        "name": "action",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Include expired overrides",
+                        "name": "include_expired",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/types.ManualOverrideResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Create a manual boost/suppression override",
+                "parameters": [
+                    {
+                        "description": "Manual override payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.ManualOverrideRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/types.ManualOverrideResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/admin/manual_overrides/{override_id}/cancel": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Cancel a manual override",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Override ID",
+                        "name": "override_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Optional cancellation metadata",
+                        "name": "payload",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/types.ManualOverrideCancelRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.ManualOverrideResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/admin/rules": {
             "get": {
                 "description": "List merchandising rules with optional filtering",
@@ -1842,6 +2009,9 @@ const docTemplate = `{
                 "chosen_policy_id": {
                     "type": "string"
                 },
+                "experiment": {
+                    "type": "string"
+                },
                 "explain": {
                     "type": "object",
                     "additionalProperties": {
@@ -1852,6 +2022,9 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "request_id": {
+                    "type": "string"
+                },
+                "variant": {
                     "type": "string"
                 }
             }
@@ -2049,6 +2222,9 @@ const docTemplate = `{
                 "bucket_key": {
                     "type": "string"
                 },
+                "experiment": {
+                    "type": "string"
+                },
                 "explain": {
                     "type": "object",
                     "additionalProperties": {
@@ -2062,6 +2238,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "surface": {
+                    "type": "string"
+                },
+                "variant": {
                     "type": "string"
                 }
             }
@@ -2139,6 +2318,9 @@ const docTemplate = `{
                 "bucket_key": {
                     "type": "string"
                 },
+                "experiment": {
+                    "type": "string"
+                },
                 "namespace": {
                     "type": "string"
                 },
@@ -2152,6 +2334,9 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "surface": {
+                    "type": "string"
+                },
+                "variant": {
                     "type": "string"
                 }
             }
@@ -2525,15 +2710,44 @@ const docTemplate = `{
                     "type": "boolean",
                     "example": true
                 },
+                "brand": {
+                    "type": "string",
+                    "example": "Acme"
+                },
+                "category": {
+                    "type": "string",
+                    "example": "Shoes"
+                },
+                "category_path": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[\"Footwear\"",
+                        "\"Running\"]"
+                    ]
+                },
+                "description": {
+                    "type": "string"
+                },
                 "embedding": {
                     "type": "array",
                     "items": {
                         "type": "number"
                     }
                 },
+                "image_url": {
+                    "type": "string",
+                    "example": "https://cdn.example.com/p/sku.jpg"
+                },
                 "item_id": {
                     "type": "string",
                     "example": "i_123"
+                },
+                "metadata_version": {
+                    "type": "string",
+                    "example": "2025-10-01"
                 },
                 "price": {
                     "type": "number",
@@ -2584,6 +2798,93 @@ const docTemplate = `{
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "types.ManualOverrideCancelRequest": {
+            "type": "object",
+            "properties": {
+                "cancelled_by": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.ManualOverrideRequest": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "boost_value": {
+                    "type": "number"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "expires_at": {
+                    "type": "string"
+                },
+                "item_id": {
+                    "type": "string"
+                },
+                "namespace": {
+                    "type": "string"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "priority": {
+                    "type": "integer"
+                },
+                "surface": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.ManualOverrideResponse": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "boost_value": {
+                    "type": "number"
+                },
+                "cancelled_at": {
+                    "type": "string"
+                },
+                "cancelled_by": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "expires_at": {
+                    "type": "string"
+                },
+                "item_id": {
+                    "type": "string"
+                },
+                "namespace": {
+                    "type": "string"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "override_id": {
+                    "type": "string"
+                },
+                "rule_id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "surface": {
+                    "type": "string"
                 }
             }
         },
@@ -2820,11 +3121,17 @@ const docTemplate = `{
                 "bandit_bucket": {
                     "type": "string"
                 },
+                "bandit_experiment": {
+                    "type": "string"
+                },
                 "bandit_explain": {
                     "type": "object",
                     "additionalProperties": {
                         "type": "string"
                     }
+                },
+                "bandit_variant": {
+                    "type": "string"
                 },
                 "chosen_policy_id": {
                     "type": "string"
@@ -3209,12 +3516,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "0.0.1",
-	Host:             "localhost:8000",
-	BasePath:         "/",
-	Schemes:          []string{"https"},
-	Title:            "Recsys API",
-	Description:      "Domain-agnostic recommendation service.",
+	Version:          "",
+	Host:             "",
+	BasePath:         "",
+	Schemes:          []string{},
+	Title:            "",
+	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

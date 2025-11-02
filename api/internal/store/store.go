@@ -150,7 +150,13 @@ type ItemUpsert struct {
 	Tags      []string
 	Props     any
 	// Optional embedding. If provided, stored in items.embedding (pgvector).
-	Embedding *[]float64
+	Embedding       *[]float64
+	Brand           *string
+	Category        *string
+	CategoryPath    *[]string
+	Description     *string
+	ImageURL        *string
+	MetadataVersion *string
 }
 
 type UserUpsert struct {
@@ -221,7 +227,28 @@ func (s *Store) UpsertItems(
 				embText = &t
 			}
 
-			bat.Queue(itemsUpsertSQL, orgID, ns, it.ItemID, it.Available, it.Price, it.Tags, it.Props, embText)
+			var catPath interface{}
+			if it.CategoryPath != nil {
+				catPath = *it.CategoryPath
+			}
+
+			bat.Queue(
+				itemsUpsertSQL,
+				orgID,
+				ns,
+				it.ItemID,
+				it.Available,
+				it.Price,
+				it.Tags,
+				it.Props,
+				embText,
+				it.Brand,
+				it.Category,
+				catPath,
+				it.Description,
+				it.ImageURL,
+				it.MetadataVersion,
+			)
 		}
 		br := s.Pool.SendBatch(ctx, bat)
 		defer br.Close()
@@ -325,7 +352,7 @@ func (s *Store) PopularityTopK(
 				return time.Now()
 			}(),
 		)
-        if err != nil {
+		if err != nil {
 			return err
 		}
 		defer rows.Close()
@@ -446,7 +473,7 @@ func (s *Store) ListEventTypeConfigEffective(ctx context.Context, orgID uuid.UUI
 	})
 	if err != nil {
 		return nil, err
-}
+	}
 	return out, nil
 }
 
@@ -663,7 +690,19 @@ func (s *Store) ListItems(ctx context.Context, orgID uuid.UUID, ns string, limit
 	// Count total
 	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM items %s", whereClause)
 	query := fmt.Sprintf(`
-		SELECT item_id, available, price, tags, props, created_at, updated_at
+		SELECT item_id,
+		       available,
+		       price,
+		       tags,
+		       props,
+		       brand,
+		       category,
+		       category_path,
+		       description,
+		       image_url,
+		       metadata_version,
+		       created_at,
+		       updated_at
 		FROM items %s
 		ORDER BY created_at DESC
 		LIMIT $%d OFFSET $%d
@@ -689,26 +728,53 @@ func (s *Store) ListItems(ctx context.Context, orgID uuid.UUID, ns string, limit
 
 		result := make([]map[string]interface{}, 0)
 		for rows.Next() {
-			var itemID string
-			var available bool
-			var price *float64
-			var tags []string
-			var props []byte
-			var createdAt, updatedAt time.Time
+			var (
+				itemID      string
+				available   bool
+				price       *float64
+				tags        []string
+				props       []byte
+				brand       *string
+				category    *string
+				catPath     []string
+				description *string
+				imageURL    *string
+				metadataVer *string
+				createdAt   time.Time
+				updatedAt   time.Time
+			)
 
-			if err := rows.Scan(&itemID, &available, &price, &tags, &props, &createdAt, &updatedAt); err != nil {
+			if err := rows.Scan(&itemID, &available, &price, &tags, &props, &brand, &category, &catPath, &description, &imageURL, &metadataVer, &createdAt, &updatedAt); err != nil {
 				return err
 			}
 
-			result = append(result, map[string]interface{}{
-				"item_id":    itemID,
-				"available":  available,
-				"price":      price,
-				"tags":       tags,
-				"props":      string(props),
-				"created_at": createdAt.Format(time.RFC3339),
-				"updated_at": updatedAt.Format(time.RFC3339),
-			})
+			entry := map[string]interface{}{
+				"item_id":       itemID,
+				"available":     available,
+				"price":         price,
+				"tags":          tags,
+				"props":         string(props),
+				"category_path": catPath,
+				"created_at":    createdAt.Format(time.RFC3339),
+				"updated_at":    updatedAt.Format(time.RFC3339),
+			}
+			if brand != nil {
+				entry["brand"] = *brand
+			}
+			if category != nil {
+				entry["category"] = *category
+			}
+			if description != nil {
+				entry["description"] = *description
+			}
+			if imageURL != nil {
+				entry["image_url"] = *imageURL
+			}
+			if metadataVer != nil {
+				entry["metadata_version"] = *metadataVer
+			}
+
+			result = append(result, entry)
 		}
 		if err := rows.Err(); err != nil {
 			return err

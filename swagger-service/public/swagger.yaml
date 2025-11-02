@@ -1,4 +1,3 @@
-basePath: /
 definitions:
   common.APIError:
     properties:
@@ -217,6 +216,8 @@ definitions:
         type: string
       chosen_policy_id:
         type: string
+      experiment:
+        type: string
       explain:
         additionalProperties:
           type: string
@@ -224,6 +225,8 @@ definitions:
       explore:
         type: boolean
       request_id:
+        type: string
+      variant:
         type: string
     type: object
   types.AuditTraceCandidate:
@@ -352,6 +355,8 @@ definitions:
         type: string
       bucket_key:
         type: string
+      experiment:
+        type: string
       explain:
         additionalProperties:
           type: string
@@ -361,6 +366,8 @@ definitions:
       policy_id:
         type: string
       surface:
+        type: string
+      variant:
         type: string
     type: object
   types.BanditPoliciesUpsertRequest:
@@ -411,6 +418,8 @@ definitions:
         type: string
       bucket_key:
         type: string
+      experiment:
+        type: string
       namespace:
         type: string
       policy_id:
@@ -420,6 +429,8 @@ definitions:
       reward:
         type: boolean
       surface:
+        type: string
+      variant:
         type: string
     type: object
   types.DeleteRequest:
@@ -668,12 +679,33 @@ definitions:
       available:
         example: true
         type: boolean
+      brand:
+        example: Acme
+        type: string
+      category:
+        example: Shoes
+        type: string
+      category_path:
+        example:
+        - '["Footwear"'
+        - '"Running"]'
+        items:
+          type: string
+        type: array
+      description:
+        type: string
       embedding:
         items:
           type: number
         type: array
+      image_url:
+        example: https://cdn.example.com/p/sku.jpg
+        type: string
       item_id:
         example: i_123
+        type: string
+      metadata_version:
+        example: "2025-10-01"
         type: string
       price:
         example: 19.9
@@ -709,6 +741,63 @@ definitions:
         type: integer
       total:
         type: integer
+    type: object
+  types.ManualOverrideCancelRequest:
+    properties:
+      cancelled_by:
+        type: string
+    type: object
+  types.ManualOverrideRequest:
+    properties:
+      action:
+        type: string
+      boost_value:
+        type: number
+      created_by:
+        type: string
+      expires_at:
+        type: string
+      item_id:
+        type: string
+      namespace:
+        type: string
+      notes:
+        type: string
+      priority:
+        type: integer
+      surface:
+        type: string
+    type: object
+  types.ManualOverrideResponse:
+    properties:
+      action:
+        type: string
+      boost_value:
+        type: number
+      cancelled_at:
+        type: string
+      cancelled_by:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      expires_at:
+        type: string
+      item_id:
+        type: string
+      namespace:
+        type: string
+      notes:
+        type: string
+      override_id:
+        type: string
+      rule_id:
+        type: string
+      status:
+        type: string
+      surface:
+        type: string
     type: object
   types.Overrides:
     properties:
@@ -874,10 +963,14 @@ definitions:
         type: string
       bandit_bucket:
         type: string
+      bandit_experiment:
+        type: string
       bandit_explain:
         additionalProperties:
           type: string
         type: object
+      bandit_variant:
+        type: string
       chosen_policy_id:
         type: string
       explore:
@@ -1127,13 +1220,118 @@ definitions:
           $ref: '#/definitions/types.User'
         type: array
     type: object
-host: localhost:8000
 info:
   contact: {}
-  description: Domain-agnostic recommendation service.
-  title: Recsys API
-  version: 0.0.1
 paths:
+  /v1/admin/manual_overrides:
+    get:
+      parameters:
+      - description: Namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: Surface
+        in: query
+        name: surface
+        type: string
+      - description: Filter by status (active,cancelled,expired)
+        in: query
+        name: status
+        type: string
+      - description: Filter by action (boost,suppress)
+        in: query
+        name: action
+        type: string
+      - description: Include expired overrides
+        in: query
+        name: include_expired
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.ManualOverrideResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.APIError'
+      summary: List manual overrides
+      tags:
+      - admin
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Manual override payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.ManualOverrideRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/types.ManualOverrideResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.APIError'
+      summary: Create a manual boost/suppression override
+      tags:
+      - admin
+  /v1/admin/manual_overrides/{override_id}/cancel:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Override ID
+        in: path
+        name: override_id
+        required: true
+        type: string
+      - description: Optional cancellation metadata
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/types.ManualOverrideCancelRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ManualOverrideResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.APIError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.APIError'
+      summary: Cancel a manual override
+      tags:
+      - admin
   /v1/admin/rules:
     get:
       consumes:
@@ -2119,6 +2317,4 @@ paths:
       summary: Upsert users (batch)
       tags:
       - ingestion
-schemes:
-- https
 swagger: "2.0"

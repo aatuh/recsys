@@ -11,18 +11,35 @@ import (
 
 // Manager is the main bandit manager.
 type Manager struct {
-	Store types.BanditStore
-	Algo  types.Algorithm
-	Rand  *rand.Rand
+	Store      types.BanditStore
+	Algo       types.Algorithm
+	Rand       *rand.Rand
+	Experiment ExperimentConfig
+}
+
+// Option configures the bandit manager.
+type Option func(*Manager)
+
+// WithExperiment enables an exploration experiment.
+func WithExperiment(exp ExperimentConfig) Option {
+	return func(m *Manager) {
+		m.Experiment = exp.Normalized()
+	}
 }
 
 // NewManager creates a new bandit manager.
-func NewManager(s types.BanditStore, algo types.Algorithm) *Manager {
-	return &Manager{
+func NewManager(s types.BanditStore, algo types.Algorithm, opts ...Option) *Manager {
+	mgr := &Manager{
 		Store: s,
 		Algo:  algo,
 		Rand:  rand.New(rand.NewSource(time.Now().UnixNano())),
 	}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(mgr)
+		}
+	}
+	return mgr
 }
 
 // Decide chooses the best policy for this (surface, context bucket).
@@ -78,6 +95,20 @@ func (m *Manager) Decide(
 		if mean > empBestVal {
 			empBestVal = mean
 			empBestID = p.PolicyID
+		}
+	}
+	if empBestID == "" && len(policies) > 0 {
+		empBestID = policies[0].PolicyID
+	}
+
+	holdout := false
+	variant := ""
+	experimentApplies := m.Experiment.Applies(surface)
+	if experimentApplies {
+		variant = "treatment"
+		if m.Rand.Float64() < m.Experiment.HoldoutPercent {
+			holdout = true
+			variant = "control"
 		}
 	}
 
@@ -148,6 +179,30 @@ func (m *Manager) Decide(
 		return Decision{}, errors.New("unknown algorithm")
 	}
 
+	if holdout {
+		chosenPolicy = policies[0]
+		for _, p := range policies {
+			if p.PolicyID == empBestID {
+				chosenPolicy = p
+				break
+			}
+		}
+		explore = false
+	}
+
+	var meta map[string]any
+	if experimentApplies {
+		meta = map[string]any{
+			"experiment":      m.Experiment.Label,
+			"variant":         variant,
+			"holdout":         holdout,
+			"holdout_percent": m.Experiment.HoldoutPercent,
+			"surface":         surface,
+			"bucket":          bucketKey,
+			"empirical_best":  empBestID,
+		}
+	}
+
 	err = m.Store.LogDecision(
 		ctx,
 		orgID,
@@ -158,7 +213,7 @@ func (m *Manager) Decide(
 		chosenPolicy.PolicyID,
 		explore,
 		reqID,
-		nil,
+		meta,
 	)
 	if err != nil {
 		return Decision{}, err
@@ -170,6 +225,13 @@ func (m *Manager) Decide(
 		Surface:   surface,
 		BucketKey: bucketKey,
 		Explore:   explore,
+		Experiment: func() string {
+			if experimentApplies {
+				return m.Experiment.Label
+			}
+			return ""
+		}(),
+		Variant: variant,
 		Explain: map[string]string{
 			"surface":  surface,
 			"bucket":   bucketKey,
@@ -210,7 +272,7 @@ func (m *Manager) Reward(
 		in.PolicyID,
 		in.Reward,
 		reqID,
-		nil,
+		in.Meta,
 	)
 }
 

@@ -99,12 +99,18 @@ func (s *Service) UpsertItems(ctx context.Context, orgID uuid.UUID, req specs.It
 			emb = &tmp
 		}
 		batch = append(batch, store.ItemUpsert{
-			ItemID:    it.ItemID,
-			Available: it.Available,
-			Price:     it.Price,
-			Tags:      it.Tags,
-			Props:     it.Props,
-			Embedding: emb,
+			ItemID:          it.ItemID,
+			Available:       it.Available,
+			Price:           it.Price,
+			Tags:            it.Tags,
+			Props:           it.Props,
+			Embedding:       emb,
+			Brand:           cloneStringPtr(it.Brand),
+			Category:        cloneStringPtr(it.Category),
+			CategoryPath:    cloneStringSlicePtr(it.CategoryPath),
+			Description:     cloneStringPtr(it.Description),
+			ImageURL:        cloneStringPtr(it.ImageURL),
+			MetadataVersion: cloneStringPtr(it.MetadataVersion),
 		})
 	}
 	if s.store == nil {
@@ -169,4 +175,20 @@ func (s *Service) InsertEvents(ctx context.Context, orgID uuid.UUID, req specs.E
 		return errors.New("ingestion service: store is nil")
 	}
 	return s.store.InsertEvents(ctx, orgID, req.Namespace, batch)
+}
+
+func cloneStringPtr(src *string) *string {
+	if src == nil {
+		return nil
+	}
+	val := *src
+	return &val
+}
+
+func cloneStringSlicePtr(src *[]string) *[]string {
+	if src == nil {
+		return nil
+	}
+	cp := append([]string(nil), (*src)...)
+	return &cp
 }

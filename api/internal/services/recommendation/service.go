@@ -50,17 +50,25 @@ type Result struct {
 	AlgoConfig   algorithm.Config
 	AlgoResponse *algorithm.Response
 	TraceData    *algorithm.TraceData
+	SourceStats  map[string]algorithm.SourceMetric
 }
 
 // Service orchestrates recommendation requests.
 type Service struct {
-	store Store
-	rules *rules.Manager
+	store         Store
+	rules         *rules.Manager
+	blendResolver BlendConfigResolver
 }
 
 // New constructs a recommendation service.
 func New(store Store, rulesManager *rules.Manager) *Service {
 	return &Service{store: store, rules: rulesManager}
+}
+
+// WithBlendResolver configures a resolver for runtime blend overrides.
+func (s *Service) WithBlendResolver(resolver BlendConfigResolver) *Service {
+	s.blendResolver = resolver
+	return s
 }
 
 // Recommend executes the ranking pipeline using the provided context.
@@ -93,6 +101,7 @@ func (s *Service) Recommend(
 		algoReq.SegmentID = selection.SegmentID
 	}
 
+	blendOverrides(&cfg, s.resolveBlend(ctx, algoReq.Namespace))
 	applyOverrides(&cfg, req.Overrides)
 
 	engine := algorithm.NewEngine(cfg, s.store, s.rules)
@@ -119,6 +128,7 @@ func (s *Service) Recommend(
 		AlgoConfig:   cfg,
 		AlgoResponse: algoResp,
 		TraceData:    traceData,
+		SourceStats:  traceData.SourceMetrics,
 	}, nil
 }
 
@@ -241,6 +251,17 @@ func applyOverrides(cfg *algorithm.Config, overrides *spectypes.Overrides) {
 	if overrides.PopularityFanout != nil {
 		cfg.PopularityFanout = *overrides.PopularityFanout
 	}
+}
+
+func (s *Service) resolveBlend(ctx context.Context, namespace string) *ResolvedBlendConfig {
+	if s.blendResolver == nil {
+		return nil
+	}
+	resolved, err := s.blendResolver.ResolveBlend(ctx, normalizeNamespace(namespace))
+	if err != nil {
+		return nil
+	}
+	return resolved
 }
 
 func applySegmentProfile(cfg *algorithm.Config, profile types.SegmentProfile) {

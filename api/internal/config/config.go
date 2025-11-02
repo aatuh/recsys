@@ -95,7 +95,9 @@ type RecommendationConfig struct {
 	PurchasedWindowDays float64
 	Profile             ProfileConfig
 	Blend               BlendConfig
+	BlendOverrides      map[string]BlendConfig
 	BanditAlgo          types.Algorithm
+	BanditExperiment    BanditExperimentConfig
 }
 
 type ProfileConfig struct {
@@ -108,6 +110,13 @@ type BlendConfig struct {
 	Alpha float64
 	Beta  float64
 	Gamma float64
+}
+
+type BanditExperimentConfig struct {
+	Enabled        bool
+	HoldoutPercent float64
+	Surfaces       []string
+	Label          string
 }
 
 type RulesConfig struct {
@@ -422,6 +431,41 @@ func Load(ctx context.Context, src Source) (Config, error) {
 		Gamma: l.nonNegativeFloat("BLEND_GAMMA"),
 	}
 
+	cfg.Recommendation.BlendOverrides = map[string]BlendConfig{}
+	if raw := l.optionalString("BLEND_WEIGHTS_OVERRIDES", ""); raw != "" {
+		entries := strings.Split(raw, ",")
+		for _, entry := range entries {
+			entry = strings.TrimSpace(entry)
+			if entry == "" {
+				continue
+			}
+			parts := strings.SplitN(entry, "=", 2)
+			if len(parts) != 2 {
+				l.appendErr("BLEND_WEIGHTS_OVERRIDES", fmt.Errorf("invalid entry %q (expected namespace=alpha|beta|gamma)", entry))
+				continue
+			}
+			namespace := strings.TrimSpace(parts[0])
+			if namespace == "" {
+				l.appendErr("BLEND_WEIGHTS_OVERRIDES", fmt.Errorf("missing namespace in entry %q", entry))
+				continue
+			}
+			weights := strings.Split(parts[1], "|")
+			if len(weights) != 3 {
+				l.appendErr("BLEND_WEIGHTS_OVERRIDES", fmt.Errorf("expected three weights in entry %q", entry))
+				continue
+			}
+			alpha, errA := strconv.ParseFloat(strings.TrimSpace(weights[0]), 64)
+			beta, errB := strconv.ParseFloat(strings.TrimSpace(weights[1]), 64)
+			gamma, errC := strconv.ParseFloat(strings.TrimSpace(weights[2]), 64)
+			if errA != nil || errB != nil || errC != nil {
+				l.appendErr("BLEND_WEIGHTS_OVERRIDES", fmt.Errorf("invalid weights in entry %q", entry))
+				continue
+			}
+			key := strings.TrimSpace(strings.ToLower(namespace))
+			cfg.Recommendation.BlendOverrides[key] = BlendConfig{Alpha: alpha, Beta: beta, Gamma: gamma}
+		}
+	}
+
 	if algo := l.requiredString("BANDIT_ALGO"); algo != "" {
 		parsed, err := types.ParseAlgorithm(algo)
 		if err != nil {
@@ -429,6 +473,41 @@ func Load(ctx context.Context, src Source) (Config, error) {
 		} else {
 			cfg.Recommendation.BanditAlgo = parsed
 		}
+	}
+
+	expEnabled := l.bool("BANDIT_EXPERIMENT_ENABLED", false)
+	holdoutPercent := 0.0
+	if raw, ok := l.lookup("BANDIT_EXPERIMENT_HOLDOUT_PERCENT"); ok && raw != "" {
+		parsed, err := strconv.ParseFloat(raw, 64)
+		if err != nil || parsed < 0 || parsed > 1 {
+			l.appendErr("BANDIT_EXPERIMENT_HOLDOUT_PERCENT", fmt.Errorf("must be between 0 and 1"))
+		} else {
+			holdoutPercent = parsed
+		}
+	}
+	surfacesRaw := l.optionalString("BANDIT_EXPERIMENT_SURFACES", "")
+	var expSurfaces []string
+	if surfacesRaw != "" {
+		parts := strings.Split(surfacesRaw, ",")
+		seen := make(map[string]struct{}, len(parts))
+		for _, part := range parts {
+			trimmed := strings.ToLower(strings.TrimSpace(part))
+			if trimmed == "" {
+				continue
+			}
+			if _, exists := seen[trimmed]; exists {
+				continue
+			}
+			seen[trimmed] = struct{}{}
+			expSurfaces = append(expSurfaces, trimmed)
+		}
+	}
+	expLabel := l.optionalString("BANDIT_EXPERIMENT_LABEL", "bandit_exploration_rt7d")
+	cfg.Recommendation.BanditExperiment = BanditExperimentConfig{
+		Enabled:        expEnabled && holdoutPercent > 0,
+		HoldoutPercent: holdoutPercent,
+		Surfaces:       expSurfaces,
+		Label:          expLabel,
 	}
 
 	cfg.Rules = RulesConfig{

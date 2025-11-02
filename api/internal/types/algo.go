@@ -104,6 +104,37 @@ type RecAlgoStore interface {
 		k int,
 	) ([]ScoredItem, error)
 
+	// CollaborativeTopK returns top-N ALS factor neighbors for a user.
+	CollaborativeTopK(
+		ctx context.Context,
+		orgID uuid.UUID,
+		ns string,
+		userID string,
+		k int,
+		excludeIDs []string,
+	) ([]ScoredItem, error)
+
+	// ContentSimilarityTopK returns items matching the provided tags ordered by overlap.
+	ContentSimilarityTopK(
+		ctx context.Context,
+		orgID uuid.UUID,
+		ns string,
+		tags []string,
+		k int,
+		excludeIDs []string,
+	) ([]ScoredItem, error)
+
+	SessionSequenceTopK(
+		ctx context.Context,
+		orgID uuid.UUID,
+		ns string,
+		userID string,
+		lookback int,
+		horizonMinutes float64,
+		excludeIDs []string,
+		k int,
+	) ([]ScoredItem, error)
+
 	// Personalization
 
 	// BuildUserTagProfile computes a decayed, weighted tag-preference map

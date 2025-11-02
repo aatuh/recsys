@@ -60,6 +60,8 @@ type TraceBandit struct {
 	Explore        bool              `json:"explore"`
 	RequestID      string            `json:"request_id,omitempty"`
 	Explain        map[string]string `json:"explain,omitempty"`
+	Experiment     string            `json:"experiment,omitempty"`
+	Variant        string            `json:"variant,omitempty"`
 }
 
 // TraceCandidate captures score snapshots before MMR/caps enforcement.

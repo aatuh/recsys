@@ -5,10 +5,12 @@
 export type types_BanditRewardRequest = {
     algorithm?: string;
     bucket_key?: string;
+    experiment?: string;
     namespace?: string;
     policy_id?: string;
     request_id?: string;
     reward?: boolean;
     surface?: string;
+    variant?: string;
 };
 

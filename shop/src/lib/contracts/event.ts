@@ -36,6 +36,13 @@ export const RecommendationMeta = z.object({
   widget: z.string().optional(),
   recommended: z.boolean().optional(),
   request_id: z.string().optional(),
+  bandit_request_id: z.string().optional(),
+  bandit_policy_id: z.string().optional(),
+  bandit_algorithm: z.string().optional(),
+  bandit_bucket: z.string().optional(),
+  bandit_explore: z.boolean().optional(),
+  bandit_experiment: z.string().optional(),
+  bandit_variant: z.string().optional(),
   rank: z.number().optional(),
   experiment: z.string().optional(),
   ab_bucket: z.string().optional(),
@@ -50,6 +57,7 @@ export const RecommendationMeta = z.object({
   line_item_id: z.string().optional(),
   kind: z.string().optional(), // for custom events
   total: z.number().optional(),
+  cold_start: z.boolean().optional(),
   items: z
     .array(
       z.object({

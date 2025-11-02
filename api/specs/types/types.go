@@ -13,12 +13,18 @@ type Ack struct {
 // Core domain types
 
 type Item struct {
-	ItemID    string    `json:"item_id" example:"i_123"`
-	Available bool      `json:"available" example:"true"`
-	Price     *float64  `json:"price,omitempty" example:"19.90"`
-	Tags      []string  `json:"tags,omitempty"`
-	Props     any       `json:"props,omitempty"`
-	Embedding []float64 `json:"embedding,omitempty"`
+	ItemID          string    `json:"item_id" example:"i_123"`
+	Available       bool      `json:"available" example:"true"`
+	Price           *float64  `json:"price,omitempty" example:"19.90"`
+	Tags            []string  `json:"tags,omitempty"`
+	Props           any       `json:"props,omitempty"`
+	Embedding       []float64 `json:"embedding,omitempty"`
+	Brand           *string   `json:"brand,omitempty" example:"Acme"`
+	Category        *string   `json:"category,omitempty" example:"Shoes"`
+	CategoryPath    *[]string `json:"category_path,omitempty" example:"[\"Footwear\",\"Running\"]"`
+	Description     *string   `json:"description,omitempty"`
+	ImageURL        *string   `json:"image_url,omitempty" example:"https://cdn.example.com/p/sku.jpg"`
+	MetadataVersion *string   `json:"metadata_version,omitempty" example:"2025-10-01"`
 }
 
 type User struct {
@@ -341,6 +347,8 @@ type AuditTraceBandit struct {
 	Explore        bool              `json:"explore"`
 	RequestID      string            `json:"request_id,omitempty"`
 	Explain        map[string]string `json:"explain,omitempty"`
+	Experiment     string            `json:"experiment,omitempty"`
+	Variant        string            `json:"variant,omitempty"`
 }
 
 type AuditTraceCandidate struct {

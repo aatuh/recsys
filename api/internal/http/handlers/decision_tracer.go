@@ -56,6 +56,8 @@ type banditTraceContext struct {
 	Explore        bool
 	RequestID      string
 	Explain        map[string]string
+	Experiment     string
+	Variant        string
 }
 
 var auditRand = rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -155,6 +157,16 @@ func (dt *decisionTracer) Record(in decisionTraceInput) {
 	if len(in.TraceData.CapsInfo) > 0 {
 		extras["caps_applied"] = true
 	}
+	if len(in.TraceData.SourceMetrics) > 0 {
+		sourceExtras := make(map[string]map[string]any, len(in.TraceData.SourceMetrics))
+		for source, metric := range in.TraceData.SourceMetrics {
+			sourceExtras[source] = map[string]any{
+				"count":       metric.Count,
+				"duration_ms": float64(metric.Duration) / float64(time.Millisecond),
+			}
+		}
+		extras["candidate_sources"] = sourceExtras
+	}
 
 	includeRuleExtras := true
 	switch {
@@ -248,6 +260,12 @@ func (dt *decisionTracer) Record(in decisionTraceInput) {
 			Explore:        in.Bandit.Explore,
 			RequestID:      in.Bandit.RequestID,
 			Explain:        in.Bandit.Explain,
+			Experiment:     in.Bandit.Experiment,
+			Variant:        in.Bandit.Variant,
+		}
+		if in.Bandit.Experiment != "" {
+			extras["bandit_experiment"] = in.Bandit.Experiment
+			extras["bandit_variant"] = in.Bandit.Variant
 		}
 	}
 

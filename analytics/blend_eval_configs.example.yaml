@@ -1,0 +1,16 @@
+configs:
+  - name: baseline
+    description: Current production mix
+    alpha: 0.30
+    beta: 0.50
+    gamma: 0.20
+  - name: pop_focus
+    description: Heavier popularity weight for long-tail testing
+    alpha: 0.55
+    beta: 0.35
+    gamma: 0.10
+  - name: embed_focus
+    description: Emphasise latent factors/content similarity
+    alpha: 0.20
+    beta: 0.25
+    gamma: 0.55

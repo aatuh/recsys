@@ -131,6 +131,7 @@ services:
       - DATABASE_URL=file:./dev.db
       - RECSYS_API_BASE_URL=http://api:8000
       - RECSYS_NAMESPACE=default
+      - RECSYS_ORG_ID=00000000-0000-0000-0000-000000000001
     ports:
       - "3002:3002"
     volumes:

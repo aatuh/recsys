@@ -39,6 +39,8 @@ type BanditDecideResponse struct {
 	BucketKey string            `json:"bucket_key"`
 	Explore   bool              `json:"explore"`
 	Explain   map[string]string `json:"explain"`
+	Experiment string           `json:"experiment,omitempty"`
+	Variant    string           `json:"variant,omitempty"`
 }
 
 type BanditRewardRequest struct {
@@ -49,6 +51,8 @@ type BanditRewardRequest struct {
 	Reward    bool   `json:"reward"`
 	Algorithm string `json:"algorithm,omitempty"`
 	RequestID string `json:"request_id,omitempty"`
+	Experiment string `json:"experiment,omitempty"`
+	Variant    string `json:"variant,omitempty"`
 }
 
 // Wrapper: decide policy, then run ranker with it.
@@ -69,4 +73,6 @@ type RecommendWithBanditResponse struct {
 	Explore        bool              `json:"explore"`
 	BanditExplain  map[string]string `json:"bandit_explain"`
 	RequestID      string            `json:"request_id,omitempty"`
+	BanditExperiment string          `json:"bandit_experiment,omitempty"`
+	BanditVariant    string          `json:"bandit_variant,omitempty"`
 }
