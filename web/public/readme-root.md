@@ -19,6 +19,7 @@ users, items, and events. The service returns top-K recommendations and
 - **"Show me items like this"** using semantic similarity (embeddings).
 
 - **Light personalization** (optional) from a user's recent tags.
+  - Cold-start users now receive a curated starter profile based on their segment traits. The first few interactions still matter: the profile boost is attenuated until a configurable number of events are present, preventing the system from over-fitting to a single click.
 
 - **Diversity & caps** (optional) to avoid showing too many items from
   one brand/category.
@@ -45,6 +46,42 @@ users, items, and events. The service returns top-K recommendations and
   user segments, with optional time limits. The system includes a dry-run mode
   to test which rules would apply to a set of items before making changes.
 
+### Bringing Signals Online
+
+A fresh environment only ships with popularity enabled. Run the following flow
+to activate richer signals during development or evaluation:
+
+1. **Seed catalog + users + events** via the API or demo shop so the popularity
+   candidate pool is non-empty.
+2. **Generate embeddings (gamma signal)** — run `make catalog-backfill` once to
+   populate deterministic embeddings, then `make catalog-refresh SINCE=24h` on a
+   schedule to keep them fresh.
+3. **Synthesize collaborative factors (ALS signal)** — `make collab-factors
+   SINCE=24h` writes `recsys_item_factors` and `recsys_user_factors` using the
+   embedding-backed heuristics so the collaborative retriever returns
+   candidates.
+4. **Allow rule cache refresh** (defaults to `RULES_CACHE_REFRESH=2s`) after
+   creating manual overrides or merchandising rules. Use
+   `/v1/admin/manual_overrides` or `/v1/admin/rules` to confirm activation.
+5. **Verify coverage** by calling `/v1/recommendations` with
+   `"include_reasons": true` and inspecting `trace.extras.candidate_sources`;
+   non-zero counts for `collaborative`, `content`, and `popularity` confirm all
+   signals are live.
+
+Repeat steps 2–3 after large catalog uploads so candidate sources stay fresh.
+
+### Quick regression check
+
+After changing ranking knobs or data, run the scenario harness to validate policy and cold-start behaviour:
+
+```bash
+python analysis/scripts/run_scenarios.py --base-url https://api.pepe.local --org-id "$RECSYS_ORG_ID"
+```
+
+The script saves evidence under `analysis/evidence/` and rewrites `analysis/scenarios.csv`; scenario **S7** now records the starter profile applied to cold-start users, while **S8/S9** confirm boost and trade-off telemetry.
+
+Need the recommended diversity settings for a surface? Call `GET /v1/admin/recommendation/presets` to retrieve the current `mmr_lambda` presets (parsed from `MMR_PRESETS` or the built-in defaults) so tooling can present validated dropdowns.
+
 ## Configuration profiles and feature flags
 
 - The API recognises three configuration profiles: `development`, `test`, and
@@ -61,6 +98,9 @@ users, items, and events. The service returns top-K recommendations and
   starts in a deterministic, offline-friendly mode.
 - `make catalog-backfill` and `make catalog-refresh SINCE=24h` help populate and
   keep catalog metadata/embeddings fresh (run after adjusting the `.env`).
+- `make collab-factors SINCE=24h` materialises collaborative item/user factors
+  so `/v1/bandit/recommendations` and `/v1/recommendations` can draw from the
+  ALS candidate source during development.
 
 ## Recommendation Algorithms Used
 
@@ -755,6 +795,7 @@ Put these in your service environment (see your `.env.example` files).
 | Variable                | Type / Range   | What it does                                    | Notes                           |
 |-------------------------|----------------|-------------------------------------------------|---------------------------------|
 | `MMR_LAMBDA`            | float in [0,1] | MMR trade-off: 1.0 = relevance, 0.0 = diversity | Set `0` to disable              |
+| `MMR_PRESETS`           | string (csv)   | Surface presets such as `home=0.25`.            | Served via `/v1/admin/recommendation/presets`. |
 | `BRAND_CAP`             | int ≥ 0        | Max items per brand in the final top-K.         | `0` disables                    |
 | `CATEGORY_CAP`          | int ≥ 0        | Max items per category in the final top-K.      | `0` disables                    |
 | `RULE_EXCLUDE_EVENTS`   | bool           | Exclude items the user purchased recently.      | Requires `user_id`              |
@@ -784,6 +825,8 @@ Put these in your service environment (see your `.env.example` files).
 | `PROFILE_WINDOW_DAYS` | float > 0 or `-1` | Lookback for building user profile.   |                              |
 | `PROFILE_TOP_N`       | int > 0           | Keep only the strongest N tags.       | Higher N = broader, noisier  |
 | `PROFILE_BOOST`       | float ≥ 0         | Strength of the multiplicative boost. | `0` disables personalization |
+| `PROFILE_MIN_EVENTS_FOR_BOOST` | int ≥ 0 | Minimum recent events required before the full boost applies. | Keeps cold-start users from overpowering the ranking. |
+| `PROFILE_COLD_START_MULTIPLIER` | float in [0,1] | Attenuation factor when event count < min. | `0.5` halves the boost while still nudging results. |
 
 ### Blended scoring weight vars
 

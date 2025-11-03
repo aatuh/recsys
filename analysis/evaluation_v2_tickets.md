@@ -51,8 +51,8 @@ Improve relevance for underserved cohorts while maintaining diversity.
 - [x] **REC-302 – Personalization decay tuning**  
   Introduced configurable `PROFILE_MIN_EVENTS_FOR_BOOST` and `PROFILE_COLD_START_MULTIPLIER`, attenuating personalization when history is sparse. Added engine unit tests to guarantee the new scaling logic.
 
-- [ ] **REC-303 – Diversity knob documentation & presets**  
-  Since MMR overrides work (scenario S4), publish recommended `mmr_lambda` presets per surface and expose through admin tooling with validation.
+- [x] **REC-303 – Diversity knob documentation & presets**  
+  Added `MMR_PRESETS` env parsing, exposed presets via `/v1/admin/recommendation/presets`, and documented the workflow so admin tooling can surface validated `mmr_lambda` options per surface.
 
 ---
 

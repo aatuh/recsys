@@ -96,6 +96,7 @@ type RecommendationConfig struct {
 	Profile             ProfileConfig
 	Blend               BlendConfig
 	BlendOverrides      map[string]BlendConfig
+	MMRPresets          map[string]float64
 	BanditAlgo          types.Algorithm
 	BanditExperiment    BanditExperimentConfig
 }
@@ -438,6 +439,28 @@ func Load(ctx context.Context, src Source) (Config, error) {
 	} else {
 		cfg.Recommendation.Profile.ColdStartMultiplier = 0.5
 	}
+
+	presets := l.optionalStringMap("MMR_PRESETS")
+	if len(presets) > 0 {
+		normalized := make(map[string]float64, len(presets))
+		for surface, value := range presets {
+			key := strings.ToLower(strings.TrimSpace(surface))
+			if key == "" {
+				continue
+			}
+			normalized[key] = value
+		}
+		presets = normalized
+	}
+	if len(presets) == 0 {
+		presets = map[string]float64{
+			"home":           0.25,
+			"product_detail": 0.35,
+			"search":         0.2,
+			"email":          0.3,
+		}
+	}
+	cfg.Recommendation.MMRPresets = presets
 
 	cfg.Recommendation.Blend = BlendConfig{
 		Alpha: l.nonNegativeFloat("BLEND_ALPHA"),

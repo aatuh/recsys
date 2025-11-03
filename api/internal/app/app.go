@@ -166,12 +166,13 @@ func New(ctx context.Context, opts Options) (*App, error) {
 		BrandTagPrefixes:           cfg.Recommendation.BrandTagPrefixes,
 		CategoryTagPrefixes:        cfg.Recommendation.CategoryTagPrefixes,
 		PurchasedWindowDays:        cfg.Recommendation.PurchasedWindowDays,
-		ProfileWindowDays:          cfg.Recommendation.Profile.WindowDays,
-		ProfileBoost:               cfg.Recommendation.Profile.Boost,
-		ProfileTopNTags:            cfg.Recommendation.Profile.TopNTags,
-		ProfileMinEventsForBoost:   cfg.Recommendation.Profile.MinEventsForBoost,
-		ProfileColdStartMultiplier: cfg.Recommendation.Profile.ColdStartMultiplier,
-		BlendAlpha:                 cfg.Recommendation.Blend.Alpha,
+	ProfileWindowDays:          cfg.Recommendation.Profile.WindowDays,
+	ProfileBoost:               cfg.Recommendation.Profile.Boost,
+	ProfileTopNTags:            cfg.Recommendation.Profile.TopNTags,
+	ProfileMinEventsForBoost:   cfg.Recommendation.Profile.MinEventsForBoost,
+	ProfileColdStartMultiplier: cfg.Recommendation.Profile.ColdStartMultiplier,
+	MMRPresets:                 cfg.Recommendation.MMRPresets,
+	BlendAlpha:                 cfg.Recommendation.Blend.Alpha,
 		BlendBeta:                  cfg.Recommendation.Blend.Beta,
 		BlendGamma:                 cfg.Recommendation.Blend.Gamma,
 		RulesEnabled:               cfg.Rules.Enabled,
@@ -340,6 +341,7 @@ func New(ctx context.Context, opts Options) (*App, error) {
 	protected.Post(endpoints.ManualOverrides, manualHandler.ManualOverrideCreate)
 	protected.Get(endpoints.ManualOverrides, manualHandler.ManualOverrideList)
 	protected.Post(endpoints.ManualOverrideCancel, manualHandler.ManualOverrideCancel)
+	protected.Get(endpoints.RecommendationPresets, recoHandler.RecommendationPresets)
 
 	protected.Post(endpoints.ExplainLLM, explainHandler.ExplainLLM)
 

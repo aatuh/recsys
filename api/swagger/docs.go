@@ -182,6 +182,31 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/admin/recommendation/presets": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "recommendation"
+                ],
+                "summary": "List recommendation presets",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.RecommendationPresetsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/admin/rules": {
             "get": {
                 "description": "List merchandising rules with optional filtering",
@@ -1699,6 +1724,18 @@ const docTemplate = `{
                 },
                 "timestamp": {
                     "type": "string"
+                }
+            }
+        },
+        "handlers.RecommendationPresetsResponse": {
+            "type": "object",
+            "properties": {
+                "mmr_presets": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number",
+                        "format": "float64"
+                    }
                 }
             }
         },

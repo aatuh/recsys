@@ -80,6 +80,8 @@ python analysis/scripts/run_scenarios.py --base-url https://api.pepe.local --org
 
 The script saves evidence under `analysis/evidence/` and rewrites `analysis/scenarios.csv`; scenario **S7** now records the starter profile applied to cold-start users, while **S8/S9** confirm boost and trade-off telemetry.
 
+Need the recommended diversity settings for a surface? Call `GET /v1/admin/recommendation/presets` to retrieve the current `mmr_lambda` presets (parsed from `MMR_PRESETS` or the built-in defaults) so tooling can present validated dropdowns.
+
 ## Configuration profiles and feature flags
 
 - The API recognises three configuration profiles: `development`, `test`, and
@@ -793,6 +795,7 @@ Put these in your service environment (see your `.env.example` files).
 | Variable                | Type / Range   | What it does                                    | Notes                           |
 |-------------------------|----------------|-------------------------------------------------|---------------------------------|
 | `MMR_LAMBDA`            | float in [0,1] | MMR trade-off: 1.0 = relevance, 0.0 = diversity | Set `0` to disable              |
+| `MMR_PRESETS`           | string (csv)   | Surface presets such as `home=0.25`.            | Served via `/v1/admin/recommendation/presets`. |
 | `BRAND_CAP`             | int ≥ 0        | Max items per brand in the final top-K.         | `0` disables                    |
 | `CATEGORY_CAP`          | int ≥ 0        | Max items per category in the final top-K.      | `0` disables                    |
 | `RULE_EXCLUDE_EVENTS`   | bool           | Exclude items the user purchased recently.      | Requires `user_id`              |

@@ -39,6 +39,7 @@ const (
 	SegmentProfilesUpsert = V1 + "/segment-profiles:upsert"
 	SegmentProfilesDelete = V1 + "/segment-profiles:delete"
 	SegmentDryRun         = V1 + "/segments:dry-run"
+ 	RecommendationPresets = V1 + "/admin/recommendation/presets"
 )
 
 // Data management endpoints

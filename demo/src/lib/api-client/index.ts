@@ -8,6 +8,7 @@ export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { common_APIError } from './models/common_APIError';
+export type { handlers_RecommendationPresetsResponse } from './models/handlers_RecommendationPresetsResponse';
 export type { specs_types_ScoredItem } from './models/specs_types_ScoredItem';
 export type { specs_types_Segment } from './models/specs_types_Segment';
 export type { specs_types_SegmentProfile } from './models/specs_types_SegmentProfile';
@@ -87,3 +88,4 @@ export { DataManagementService } from './services/DataManagementService';
 export { ExplainService } from './services/ExplainService';
 export { IngestionService } from './services/IngestionService';
 export { RankingService } from './services/RankingService';
+export { RecommendationService } from './services/RecommendationService';

@@ -51,6 +51,7 @@ Set these in your `.env` before starting the service. Invalid values are rejecte
 - `MMR_LAMBDA` ([0,1]) — 1 = pure relevance, 0 = pure diversity (MMR off if 0).
 - `BRAND_CAP`, `CATEGORY_CAP` (int ≥ 0) — limit repeats per brand/category in the final list.
 - `BRAND_TAG_PREFIXES`, `CATEGORY_TAG_PREFIXES` (csv) — how the engine detects brand/category from `tags` (e.g., `brand`, `category,cat`).
+- `MMR_PRESETS` (`surface=value` pairs) — curated `mmr_lambda` presets per surface, served via `GET /v1/admin/recommendation/presets` for admin tooling.
 
 ### Exclude‑purchased & personalization
 - `RULE_EXCLUDE_EVENTS` (bool) — remove items the user already interacted with (e.g., purchases).

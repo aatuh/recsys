@@ -13,6 +13,14 @@ definitions:
       timestamp:
         type: string
     type: object
+  handlers.RecommendationPresetsResponse:
+    properties:
+      mmr_presets:
+        additionalProperties:
+          format: float64
+          type: number
+        type: object
+    type: object
   specs_types.ScoredItem:
     properties:
       explain:
@@ -1332,6 +1340,22 @@ paths:
       summary: Cancel a manual override
       tags:
       - admin
+  /v1/admin/recommendation/presets:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.RecommendationPresetsResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.APIError'
+      summary: List recommendation presets
+      tags:
+      - recommendation
   /v1/admin/rules:
     get:
       consumes:

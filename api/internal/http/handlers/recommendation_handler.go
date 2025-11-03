@@ -36,6 +36,11 @@ type RecommendationHandler struct {
 	policyMetrics *policymetrics.Metrics
 }
 
+// RecommendationPresetsResponse describes preset configuration payloads.
+type RecommendationPresetsResponse struct {
+	MMRPresets map[string]float64 `json:"mmr_presets"`
+}
+
 type recommendationResponseEnvelope struct {
 	handlerstypes.RecommendResponse
 	Trace *traceDebugPayload `json:"trace,omitempty"`
@@ -218,6 +223,24 @@ func (h *RecommendationHandler) segmentSelector() recommendation.SegmentSelector
 	return func(ctx context.Context, req algorithm.Request, httpReq handlerstypes.RecommendRequest) (recommendation.SegmentSelection, error) {
 		sel, _, err := resolveSegmentSelection(ctx, h.store, req, httpReq, nil)
 		return sel, err
+	}
+}
+
+// RecommendationPresets godoc
+// @Summary     List recommendation presets
+// @Tags        recommendation
+// @Produce     json
+// @Success     200 {object} RecommendationPresetsResponse
+// @Failure     500 {object} common.APIError
+// @Router      /v1/admin/recommendation/presets [get]
+func (h *RecommendationHandler) RecommendationPresets(w http.ResponseWriter, r *http.Request) {
+	resp := RecommendationPresetsResponse{MMRPresets: make(map[string]float64)}
+	for surface, value := range h.config.MMRPresets {
+		resp.MMRPresets[surface] = value
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		h.logger.Error("write recommendation presets", zap.Error(err))
 	}
 }
 

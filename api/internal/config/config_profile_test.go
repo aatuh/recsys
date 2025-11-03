@@ -28,6 +28,12 @@ func TestLoadProfileDevelopmentDefaults(t *testing.T) {
 	if cfg.Features.Explain {
 		t.Fatal("expected explain feature flag disabled")
 	}
+	if len(cfg.Recommendation.MMRPresets) == 0 {
+		t.Fatal("expected default MMR presets")
+	}
+	if val, ok := cfg.Recommendation.MMRPresets["home"]; !ok || val == 0 {
+		t.Fatalf("expected home preset, got %#v", cfg.Recommendation.MMRPresets)
+	}
 }
 
 func TestLoadProfileTestDefaults(t *testing.T) {

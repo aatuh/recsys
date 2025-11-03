@@ -24,6 +24,7 @@ type RecommendationConfig struct {
 	ProfileTopNTags            int
 	ProfileMinEventsForBoost   int
 	ProfileColdStartMultiplier float64
+	MMRPresets                 map[string]float64
 	BlendAlpha                 float64
 	BlendBeta                  float64
 	BlendGamma                 float64
