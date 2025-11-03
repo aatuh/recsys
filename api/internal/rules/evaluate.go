@@ -149,10 +149,15 @@ func (e *evaluator) apply(rules []types.Rule, req EvaluateRequest) (*EvaluateRes
 					candidateMap[id] = cand
 					order = append(order, id)
 				}
-				cand.Score += *rule.BoostValue
+				current := cand.Score
+				delta := current * *rule.BoostValue
+				if delta == 0 {
+					delta = *rule.BoostValue
+				}
+				cand.Score += delta
 				candidateMap[id] = cand
-				st.boostDelta += *rule.BoostValue
-				st.boostRules = append(st.boostRules, BoostDetail{RuleID: rule.RuleID, Delta: *rule.BoostValue})
+				st.boostDelta += delta
+				st.boostRules = append(st.boostRules, BoostDetail{RuleID: rule.RuleID, Delta: delta})
 			}
 		}
 	}

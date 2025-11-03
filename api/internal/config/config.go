@@ -101,9 +101,11 @@ type RecommendationConfig struct {
 }
 
 type ProfileConfig struct {
-	WindowDays float64
-	Boost      float64
-	TopNTags   int
+	WindowDays          float64
+	Boost               float64
+	TopNTags            int
+	MinEventsForBoost   int
+	ColdStartMultiplier float64
 }
 
 type BlendConfig struct {
@@ -423,6 +425,18 @@ func Load(ctx context.Context, src Source) (Config, error) {
 		WindowDays: l.positiveFloat("PROFILE_WINDOW_DAYS"),
 		Boost:      l.nonNegativeFloat("PROFILE_BOOST"),
 		TopNTags:   l.intGreaterThan("PROFILE_TOP_N", 0),
+	}
+	cfg.Recommendation.Profile.MinEventsForBoost = l.optionalIntGreaterThan("PROFILE_MIN_EVENTS_FOR_BOOST", -1, 3)
+	if raw := l.optionalString("PROFILE_COLD_START_MULTIPLIER", ""); raw != "" {
+		mult, err := strconv.ParseFloat(raw, 64)
+		if err != nil || mult < 0 || mult > 1 {
+			l.appendErr("PROFILE_COLD_START_MULTIPLIER", fmt.Errorf("must be between 0 and 1"))
+			cfg.Recommendation.Profile.ColdStartMultiplier = 0.5
+		} else {
+			cfg.Recommendation.Profile.ColdStartMultiplier = mult
+		}
+	} else {
+		cfg.Recommendation.Profile.ColdStartMultiplier = 0.5
 	}
 
 	cfg.Recommendation.Blend = BlendConfig{

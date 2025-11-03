@@ -21,7 +21,7 @@
       },
       {
         "item_id": "item_0070",
-        "score": 0.1744644328318537,
+        "score": 0.17446443283185348,
         "reasons": [
           "recent_popularity",
           "diversity"
@@ -29,7 +29,7 @@
       },
       {
         "item_id": "item_0001",
-        "score": 0.17354735799430618,
+        "score": 0.17354735799430587,
         "reasons": [
           "recent_popularity",
           "diversity"
@@ -37,7 +37,7 @@
       },
       {
         "item_id": "item_0196",
-        "score": 0.16165772440286785,
+        "score": 0.16165772440286766,
         "reasons": [
           "recent_popularity",
           "diversity"
@@ -45,7 +45,7 @@
       },
       {
         "item_id": "item_0057",
-        "score": 0.16004387659580904,
+        "score": 0.1600438765958096,
         "reasons": [
           "recent_popularity",
           "diversity"
@@ -53,7 +53,7 @@
       },
       {
         "item_id": "item_0007",
-        "score": 0.1547948057566931,
+        "score": 0.154794805756693,
         "reasons": [
           "recent_popularity",
           "diversity"
@@ -61,7 +61,7 @@
       },
       {
         "item_id": "item_0080",
-        "score": 0.1319196280608169,
+        "score": 0.13191962806081683,
         "reasons": [
           "recent_popularity",
           "diversity"
@@ -69,7 +69,7 @@
       },
       {
         "item_id": "item_0176",
-        "score": 0.12021139492165496,
+        "score": 0.12021139492165457,
         "reasons": [
           "recent_popularity",
           "diversity"
@@ -77,7 +77,7 @@
       },
       {
         "item_id": "item_0211",
-        "score": 0.10454633550764578,
+        "score": 0.10454633550764582,
         "reasons": [
           "recent_popularity",
           "diversity"
@@ -85,7 +85,7 @@
       },
       {
         "item_id": "item_0142",
-        "score": 0.044692171969870416,
+        "score": 0.044692171969870395,
         "reasons": [
           "recent_popularity",
           "diversity"
@@ -97,40 +97,58 @@
         "candidate_sources": {
           "collaborative": {
             "count": 0,
-            "duration_ms": 0.226983
+            "duration_ms": 0.386829
           },
           "content": {
             "count": 0,
-            "duration_ms": 0.18333
+            "duration_ms": 0.159956
           },
           "merged": {
             "count": 300,
-            "duration_ms": 0.01583
+            "duration_ms": 0.011412
           },
           "popularity": {
             "count": 300,
-            "duration_ms": 65.535579
+            "duration_ms": 11.421483
           },
           "post_exclusion": {
             "count": 300,
-            "duration_ms": 1.835078
+            "duration_ms": 1.41797
           },
           "session": {
             "count": 0,
-            "duration_ms": 0.158373
+            "duration_ms": 0.138084
           }
+        },
+        "policy": {
+          "total_candidates": 300,
+          "explicit_exclude_hits": 0,
+          "recent_event_exclude_hits": 0,
+          "after_exclusions": 300,
+          "constraint_filtered_count": 0,
+          "after_constraint_filters": 300,
+          "rule_block_count": 0,
+          "rule_pin_count": 0,
+          "rule_boost_count": 0,
+          "rule_boost_injected": 0,
+          "rule_boost_exposure": 0,
+          "rule_pin_exposure": 0,
+          "after_rules": 300,
+          "final_count": 10,
+          "constraint_leak_count": 0
         }
       }
     }
   },
   "categories": [
-    "Electronics",
-    "Gourmet",
     "Fashion",
-    "Fitness",
-    "Home",
-    "Outdoors",
     "Beauty",
-    "Books"
-  ]
+    "Books",
+    "Home",
+    "Fitness",
+    "Electronics",
+    "Outdoors",
+    "Gourmet"
+  ],
+  "starter_profile": {}
 }

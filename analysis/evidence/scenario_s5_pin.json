@@ -4,18 +4,18 @@
     "items": [
       {
         "item_id": "item_0005",
-        "score": 0.4583133151636035,
+        "score": 0.37316143571768723,
         "reasons": [
           "recent_popularity",
           "co_visitation",
           "diversity",
           "personalization",
-          "rule.pin[8e2d2a4f-bcbf-4d15-8eb2-ccd483209b36]"
+          "rule.pin[c1e2a5c6-9f9c-453d-93fe-6bf0ae6da86c]"
         ]
       },
       {
         "item_id": "item_0209",
-        "score": 0.7232157941939548,
+        "score": 0.8719054981897169,
         "reasons": [
           "recent_popularity",
           "content_similarity",
@@ -26,18 +26,8 @@
         ]
       },
       {
-        "item_id": "item_0001",
-        "score": 0.6240434229354542,
-        "reasons": [
-          "recent_popularity",
-          "co_visitation",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
         "item_id": "item_0101",
-        "score": 0.5924861205824141,
+        "score": 0.7518253112755707,
         "reasons": [
           "recent_popularity",
           "content_similarity",
@@ -49,11 +39,22 @@
       },
       {
         "item_id": "item_0003",
-        "score": 0.5686294409745305,
+        "score": 0.6738039050615622,
         "reasons": [
           "recent_popularity",
           "content_similarity",
           "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0275",
+        "score": 0.6117076384657963,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
           "embedding_similarity",
           "diversity",
           "personalization"
@@ -61,7 +62,7 @@
       },
       {
         "item_id": "item_0037",
-        "score": 0.4872726999972558,
+        "score": 0.6002446546789425,
         "reasons": [
           "recent_popularity",
           "content_similarity",
@@ -72,8 +73,27 @@
         ]
       },
       {
-        "item_id": "item_0175",
-        "score": 0.3128732189841659,
+        "item_id": "item_0001",
+        "score": 0.48237083071151227,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0142",
+        "score": 0.1379757519176085,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity"
+        ]
+      },
+      {
+        "item_id": "item_0092",
+        "score": 0.1199527597272383,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -83,30 +103,11 @@
       },
       {
         "item_id": "item_0057",
-        "score": 0.2100438765958094,
+        "score": 0.09646651856704548,
         "reasons": [
           "recent_popularity",
           "co_visitation",
           "diversity"
-        ]
-      },
-      {
-        "item_id": "item_0142",
-        "score": 0.1696921719698704,
-        "reasons": [
-          "recent_popularity",
-          "co_visitation",
-          "diversity"
-        ]
-      },
-      {
-        "item_id": "item_0104",
-        "score": 0.1638502123536908,
-        "reasons": [
-          "recent_popularity",
-          "co_visitation",
-          "diversity",
-          "personalization"
         ]
       }
     ],
@@ -115,28 +116,45 @@
         "candidate_sources": {
           "collaborative": {
             "count": 0,
-            "duration_ms": 0.225381
+            "duration_ms": 0.117875
           },
           "content": {
-            "count": 21,
-            "duration_ms": 2.061861
+            "count": 20,
+            "duration_ms": 1.921323
           },
           "merged": {
-            "count": 321,
-            "duration_ms": 0.016782
+            "count": 320,
+            "duration_ms": 0.017353
           },
           "popularity": {
             "count": 300,
-            "duration_ms": 66.020635
+            "duration_ms": 11.302276
           },
           "post_exclusion": {
-            "count": 321,
-            "duration_ms": 1.466463
+            "count": 320,
+            "duration_ms": 1.547598
           },
           "session": {
             "count": 0,
-            "duration_ms": 0.976997
+            "duration_ms": 0.271158
           }
+        },
+        "policy": {
+          "total_candidates": 320,
+          "explicit_exclude_hits": 0,
+          "recent_event_exclude_hits": 0,
+          "after_exclusions": 320,
+          "constraint_filtered_count": 0,
+          "after_constraint_filters": 320,
+          "rule_block_count": 0,
+          "rule_pin_count": 1,
+          "rule_boost_count": 0,
+          "rule_boost_injected": 0,
+          "rule_boost_exposure": 0,
+          "rule_pin_exposure": 1,
+          "after_rules": 319,
+          "final_count": 10,
+          "constraint_leak_count": 0
         }
       }
     }
@@ -144,7 +162,7 @@
   "target_item": "item_0005",
   "rank": 0,
   "rule": {
-    "rule_id": "8e2d2a4f-bcbf-4d15-8eb2-ccd483209b36",
+    "rule_id": "c1e2a5c6-9f9c-453d-93fe-6bf0ae6da86c",
     "namespace": "default",
     "surface": "home",
     "name": "scenario_s5_pin_item",
@@ -157,7 +175,7 @@
     "max_pins": 1,
     "priority": 200,
     "enabled": true,
-    "created_at": "2025-11-03T17:06:00Z",
-    "updated_at": "2025-11-03T17:06:00Z"
+    "created_at": "2025-11-03T19:00:26Z",
+    "updated_at": "2025-11-03T19:00:26Z"
   }
 }

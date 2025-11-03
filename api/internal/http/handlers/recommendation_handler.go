@@ -230,6 +230,9 @@ func buildTraceDebugPayload(traceData *algorithm.TraceData) *traceDebugPayload {
 	if traceData.Policy != nil {
 		extras["policy"] = traceData.Policy
 	}
+	if len(traceData.StarterProfile) > 0 {
+		extras["starter_profile"] = traceData.StarterProfile
+	}
 	if len(traceData.SourceMetrics) > 0 {
 		sources := make(map[string]traceSourceMetric, len(traceData.SourceMetrics))
 		for source, metric := range traceData.SourceMetrics {

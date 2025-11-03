@@ -111,6 +111,19 @@ def summarize_policy_samples(samples: List[Dict]) -> Dict[str, float]:
     return agg
 
 
+def extract_starter_profile(resp: Dict) -> Dict:
+    trace = resp.get("trace")
+    if not isinstance(trace, dict):
+        return {}
+    extras = trace.get("extras")
+    if not isinstance(extras, dict):
+        return {}
+    profile = extras.get("starter_profile")
+    if isinstance(profile, dict):
+        return profile
+    return {}
+
+
 def create_rule(session, payload: Dict) -> Dict:
     url = f"{session.base_url}/v1/admin/rules"
     resp = session.post(url, json=payload, timeout=30)
@@ -516,13 +529,22 @@ def scenario_cold_start(session, namespace, catalog) -> ScenarioResult:
     response = recommend(session, namespace, payload)
     items = response.get("items", [])
     categories = {catalog.get(item["item_id"], {}).get("category") for item in items}
+    starter_profile = extract_starter_profile(response)
 
     write_evidence(
         "scenario_s7_cold_start.json",
-        {"request": payload, "response": response, "categories": list(categories)},
+        {
+            "request": payload,
+            "response": response,
+            "categories": list(categories),
+            "starter_profile": starter_profile,
+        },
     )
 
-    observed = f"Returned {len(items)} items across {len(categories)} categories."
+    observed = (
+        f"Returned {len(items)} items across {len(categories)} categories; "
+        f"Starter profile tags={list(starter_profile.keys()) if starter_profile else []}."
+    )
     passed = len(items) >= 5 and len([c for c in categories if c]) >= 4
     return ScenarioResult(
         id="S7",

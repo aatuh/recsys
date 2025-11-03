@@ -19,6 +19,7 @@ users, items, and events. The service returns top-K recommendations and
 - **"Show me items like this"** using semantic similarity (embeddings).
 
 - **Light personalization** (optional) from a user's recent tags.
+  - Cold-start users now receive a curated starter profile based on their segment traits. The first few interactions still matter: the profile boost is attenuated until a configurable number of events are present, preventing the system from over-fitting to a single click.
 
 - **Diversity & caps** (optional) to avoid showing too many items from
   one brand/category.
@@ -68,6 +69,16 @@ to activate richer signals during development or evaluation:
    signals are live.
 
 Repeat steps 2–3 after large catalog uploads so candidate sources stay fresh.
+
+### Quick regression check
+
+After changing ranking knobs or data, run the scenario harness to validate policy and cold-start behaviour:
+
+```bash
+python analysis/scripts/run_scenarios.py --base-url https://api.pepe.local --org-id "$RECSYS_ORG_ID"
+```
+
+The script saves evidence under `analysis/evidence/` and rewrites `analysis/scenarios.csv`; scenario **S7** now records the starter profile applied to cold-start users, while **S8/S9** confirm boost and trade-off telemetry.
 
 ## Configuration profiles and feature flags
 
@@ -811,6 +822,8 @@ Put these in your service environment (see your `.env.example` files).
 | `PROFILE_WINDOW_DAYS` | float > 0 or `-1` | Lookback for building user profile.   |                              |
 | `PROFILE_TOP_N`       | int > 0           | Keep only the strongest N tags.       | Higher N = broader, noisier  |
 | `PROFILE_BOOST`       | float ≥ 0         | Strength of the multiplicative boost. | `0` disables personalization |
+| `PROFILE_MIN_EVENTS_FOR_BOOST` | int ≥ 0 | Minimum recent events required before the full boost applies. | Keeps cold-start users from overpowering the ranking. |
+| `PROFILE_COLD_START_MULTIPLIER` | float in [0,1] | Attenuation factor when event count < min. | `0.5` halves the boost while still nudging results. |
 
 ### Blended scoring weight vars
 

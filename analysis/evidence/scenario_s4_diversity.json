@@ -4,7 +4,7 @@
     "items": [
       {
         "item_id": "item_0210",
-        "score": 0.8186043069125503,
+        "score": 1.024532004582963,
         "reasons": [
           "recent_popularity",
           "content_similarity",
@@ -16,7 +16,7 @@
       },
       {
         "item_id": "item_0209",
-        "score": 0.7548491567837464,
+        "score": 0.8829761074121285,
         "reasons": [
           "recent_popularity",
           "content_similarity",
@@ -28,19 +28,7 @@
       },
       {
         "item_id": "item_0197",
-        "score": 0.5206980986323654,
-        "reasons": [
-          "recent_popularity",
-          "content_similarity",
-          "co_visitation",
-          "embedding_similarity",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0036",
-        "score": 0.49681776317988996,
+        "score": 0.6547620088987869,
         "reasons": [
           "recent_popularity",
           "content_similarity",
@@ -52,7 +40,7 @@
       },
       {
         "item_id": "item_0130",
-        "score": 0.48769167923189005,
+        "score": 0.6262813491045566,
         "reasons": [
           "recent_popularity",
           "content_similarity",
@@ -62,8 +50,32 @@
         ]
       },
       {
+        "item_id": "item_0036",
+        "score": 0.618992550982248,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0242",
+        "score": 0.6037590933705028,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
         "item_id": "item_0005",
-        "score": 0.4580355279085487,
+        "score": 0.38344235219026096,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -72,8 +84,32 @@
         ]
       },
       {
-        "item_id": "item_0080",
-        "score": 0.3295253600540523,
+        "item_id": "item_0003",
+        "score": 0.28525808495608435,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0021",
+        "score": 0.2761894508713664,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0046",
+        "score": 0.21781059516319806,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -83,16 +119,46 @@
       },
       {
         "item_id": "item_0007",
-        "score": 0.28604480575669294,
+        "score": 0.1761925574061158,
         "reasons": [
           "recent_popularity",
           "co_visitation",
           "diversity"
+        ]
+      },
+      {
+        "item_id": "item_0236",
+        "score": 0.17047290421873015,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0154",
+        "score": 0.1655601958954898,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0006",
+        "score": 0.13831015875135935,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
         ]
       },
       {
         "item_id": "item_0070",
-        "score": 0.2619644328318532,
+        "score": 0.13815336494685312,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -100,28 +166,8 @@
         ]
       },
       {
-        "item_id": "item_0003",
-        "score": 0.2611221693071105,
-        "reasons": [
-          "recent_popularity",
-          "content_similarity",
-          "co_visitation",
-          "embedding_similarity",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0175",
-        "score": 0.25,
-        "reasons": [
-          "recent_popularity",
-          "diversity"
-        ]
-      },
-      {
-        "item_id": "item_0046",
-        "score": 0.24884239571488825,
+        "item_id": "item_0081",
+        "score": 0.12928174720492433,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -130,20 +176,8 @@
         ]
       },
       {
-        "item_id": "item_0021",
-        "score": 0.22533935282104395,
-        "reasons": [
-          "recent_popularity",
-          "content_similarity",
-          "co_visitation",
-          "embedding_similarity",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0211",
-        "score": 0.21382507286986255,
+        "item_id": "item_0167",
+        "score": 0.1239589550232287,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -152,28 +186,8 @@
         ]
       },
       {
-        "item_id": "item_0050",
-        "score": 0.19482332932886964,
-        "reasons": [
-          "recent_popularity",
-          "co_visitation",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0123",
-        "score": 0.16833501616802266,
-        "reasons": [
-          "recent_popularity",
-          "co_visitation",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0176",
-        "score": 0.16396139492165437,
+        "item_id": "item_0049",
+        "score": 0.11490281357216256,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -182,7 +196,7 @@
       },
       {
         "item_id": "item_0104",
-        "score": 0.09732195738176214,
+        "score": 0.045372831156310446,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -191,19 +205,8 @@
         ]
       },
       {
-        "item_id": "item_new_explore",
-        "score": 0.08847969490036008,
-        "reasons": [
-          "recent_popularity",
-          "content_similarity",
-          "embedding_similarity",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
         "item_id": "item_0193",
-        "score": 0.06893253784715703,
+        "score": 0.020013620768480848,
         "reasons": [
           "recent_popularity",
           "diversity",
@@ -216,28 +219,45 @@
         "candidate_sources": {
           "collaborative": {
             "count": 0,
-            "duration_ms": 0.17258
+            "duration_ms": 0.288421
           },
           "content": {
-            "count": 21,
-            "duration_ms": 2.899883
+            "count": 20,
+            "duration_ms": 2.077942
           },
           "merged": {
-            "count": 321,
-            "duration_ms": 0.015489
+            "count": 320,
+            "duration_ms": 0.019818
           },
           "popularity": {
             "count": 300,
-            "duration_ms": 65.953988
+            "duration_ms": 11.520232
           },
           "post_exclusion": {
-            "count": 319,
-            "duration_ms": 1.99781
+            "count": 318,
+            "duration_ms": 1.578778
           },
           "session": {
             "count": 0,
-            "duration_ms": 1.455612
+            "duration_ms": 0.394665
           }
+        },
+        "policy": {
+          "total_candidates": 320,
+          "explicit_exclude_hits": 0,
+          "recent_event_exclude_hits": 2,
+          "after_exclusions": 318,
+          "constraint_filtered_count": 0,
+          "after_constraint_filters": 318,
+          "rule_block_count": 0,
+          "rule_pin_count": 0,
+          "rule_boost_count": 0,
+          "rule_boost_injected": 0,
+          "rule_boost_exposure": 0,
+          "rule_pin_exposure": 0,
+          "after_rules": 318,
+          "final_count": 20,
+          "constraint_leak_count": 0
         }
       }
     }
@@ -246,8 +266,20 @@
     "model_version": "popularity_v1",
     "items": [
       {
+        "item_id": "item_0209",
+        "score": 0.8829761074121285,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
         "item_id": "item_0080",
-        "score": 0.32952536005405236,
+        "score": 0.20167463736218946,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -257,7 +289,7 @@
       },
       {
         "item_id": "item_0007",
-        "score": 0.286044805756693,
+        "score": 0.17619255420133773,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -265,8 +297,30 @@
         ]
       },
       {
+        "item_id": "item_0285",
+        "score": 0.1751400742193606,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0142",
+        "score": 0.1587330222058896,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
         "item_id": "item_0001",
-        "score": 0.2639560960023048,
+        "score": 0.1394235176402975,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -276,64 +330,16 @@
       },
       {
         "item_id": "item_0070",
-        "score": 0.26196443283185344,
+        "score": 0.13815336133484699,
         "reasons": [
           "recent_popularity",
           "co_visitation",
           "diversity"
-        ]
-      },
-      {
-        "item_id": "item_0175",
-        "score": 0.25,
-        "reasons": [
-          "recent_popularity",
-          "diversity"
-        ]
-      },
-      {
-        "item_id": "item_0196",
-        "score": 0.21645337079350818,
-        "reasons": [
-          "recent_popularity",
-          "co_visitation",
-          "diversity",
-          "personalization"
         ]
       },
       {
         "item_id": "item_0211",
-        "score": 0.2138250728698624,
-        "reasons": [
-          "recent_popularity",
-          "co_visitation",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0057",
-        "score": 0.20633601799123355,
-        "reasons": [
-          "recent_popularity",
-          "co_visitation",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0142",
-        "score": 0.193639697580081,
-        "reasons": [
-          "recent_popularity",
-          "co_visitation",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0281",
-        "score": 0.18805442317318335,
+        "score": 0.13121861541406515,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -343,26 +349,7 @@
       },
       {
         "item_id": "item_0123",
-        "score": 0.16833501616802268,
-        "reasons": [
-          "recent_popularity",
-          "co_visitation",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0176",
-        "score": 0.16396139492165462,
-        "reasons": [
-          "recent_popularity",
-          "co_visitation",
-          "diversity"
-        ]
-      },
-      {
-        "item_id": "item_0269",
-        "score": 0.16337380785678962,
+        "score": 0.11734069192038878,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -372,7 +359,7 @@
       },
       {
         "item_id": "item_0019",
-        "score": 0.15967334735038397,
+        "score": 0.11534482298696441,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -381,20 +368,75 @@
         ]
       },
       {
-        "item_id": "item_0285",
-        "score": 0.15100416272429995,
+        "item_id": "item_0281",
+        "score": 0.10035410510267247,
         "reasons": [
           "recent_popularity",
-          "content_similarity",
           "co_visitation",
-          "embedding_similarity",
           "diversity",
           "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0269",
+        "score": 0.096279185117199,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0196",
+        "score": 0.09556163248124941,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0057",
+        "score": 0.09134191869549908,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0176",
+        "score": 0.07865173397921837,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity"
+        ]
+      },
+      {
+        "item_id": "item_0175",
+        "score": 0.07258407990765951,
+        "reasons": [
+          "recent_popularity",
+          "diversity"
         ]
       },
       {
         "item_id": "item_0020",
-        "score": 0.11293885188156123,
+        "score": 0.06877750289231326,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0286",
+        "score": 0.05388497825172166,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -404,40 +446,19 @@
       },
       {
         "item_id": "item_0104",
-        "score": 0.09732195738176232,
+        "score": 0.045372829640770954,
         "reasons": [
           "recent_popularity",
           "co_visitation",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_new_explore",
-        "score": 0.08847969922771749,
-        "reasons": [
-          "recent_popularity",
-          "content_similarity",
-          "embedding_similarity",
           "diversity",
           "personalization"
         ]
       },
       {
         "item_id": "item_0193",
-        "score": 0.06893253784715712,
+        "score": 0.02001361934134326,
         "reasons": [
           "recent_popularity",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0286",
-        "score": 0.06149505472402002,
-        "reasons": [
-          "recent_popularity",
-          "co_visitation",
           "diversity",
           "personalization"
         ]
@@ -448,34 +469,51 @@
         "candidate_sources": {
           "collaborative": {
             "count": 0,
-            "duration_ms": 0.196225
+            "duration_ms": 0.302047
           },
           "content": {
-            "count": 21,
-            "duration_ms": 3.054329
+            "count": 20,
+            "duration_ms": 2.156062
           },
           "merged": {
-            "count": 321,
-            "duration_ms": 0.017744
+            "count": 320,
+            "duration_ms": 0.01577
           },
           "popularity": {
             "count": 300,
-            "duration_ms": 66.364833
+            "duration_ms": 11.424469
           },
           "post_exclusion": {
-            "count": 319,
-            "duration_ms": 1.634003
+            "count": 318,
+            "duration_ms": 1.494808
           },
           "session": {
             "count": 0,
-            "duration_ms": 1.7843
+            "duration_ms": 0.184863
           }
+        },
+        "policy": {
+          "total_candidates": 320,
+          "explicit_exclude_hits": 0,
+          "recent_event_exclude_hits": 2,
+          "after_exclusions": 318,
+          "constraint_filtered_count": 0,
+          "after_constraint_filters": 318,
+          "rule_block_count": 0,
+          "rule_pin_count": 0,
+          "rule_boost_count": 0,
+          "rule_boost_injected": 0,
+          "rule_boost_exposure": 0,
+          "rule_pin_exposure": 0,
+          "after_rules": 318,
+          "final_count": 20,
+          "constraint_leak_count": 0
         }
       }
     }
   },
   "ndcg_base": 0.0,
-  "ndcg_diverse": 0.15498630734064361,
-  "similarity_base": 0.06541606541606541,
-  "similarity_diverse": 0.039047619047619046
+  "ndcg_diverse": 0.12320147154369117,
+  "similarity_base": 0.13271043771043772,
+  "similarity_diverse": 0.060865800865800866
 }

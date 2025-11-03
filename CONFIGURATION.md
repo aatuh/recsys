@@ -21,6 +21,9 @@ This guide shows you how to configure the RecSys API and structure your data to 
 4) **(Optional) Rules, manual overrides, segments, bandits**
 - Apply pin/boost/block guardrails, register ad-hoc boosts or suppressions, target different knob bundles per segment, or let bandits pick between policies automatically.
 
+5) **Validate scenarios**
+- Once the service is up with your `.env`, execute `python analysis/scripts/run_scenarios.py` (point it at your base URL / org). The harness now asserts on the cold-start starter profile (S7) and the boost exposure counters (S8/S9).
+
 ---
 
 ## 1) Mental model & data flow
@@ -56,6 +59,8 @@ Set these in your `.env` before starting the service. Invalid values are rejecte
 - `PROFILE_WINDOW_DAYS` (float > 0 or -1) — how far back to build user profiles; -1 = all time.
 - `PROFILE_TOP_N` (int > 0) — number of top profile features (e.g., tags) to keep.
 - `PROFILE_BOOST` (float ≥ 0) — strength of profile-based boosting; 0 disables personalization (default 0.7 for balanced lift).
+- `PROFILE_MIN_EVENTS_FOR_BOOST` (int ≥ 0) — minimum recent interactions required before the full profile boost applies. If the user has fewer events, we attenuate the boost.
+- `PROFILE_COLD_START_MULTIPLIER` (0–1) — attenuation factor used when the event count is below the minimum. For example, `0.5` halves the boost for sparsely observed users while still nudging cold-start results.
 
 ### Blending defaults
 - `BLEND_ALPHA`, `BLEND_BETA`, `BLEND_GAMMA` — default weights for popularity/co-vis/embedding. Current recommended defaults: 0.25 / 0.35 / 0.40 (front-load embeddings for novel items).

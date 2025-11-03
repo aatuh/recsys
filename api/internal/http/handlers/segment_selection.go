@@ -27,14 +27,7 @@ func resolveSegmentSelection(
 ) (recommendation.SegmentSelection, int64, error) {
 	selection := recommendation.SegmentSelection{}
 
-	segmentsList, err := store.ListActiveSegmentsWithRules(ctx, req.OrgID, req.Namespace)
-	if err != nil {
-		return selection, 0, err
-	}
-	if len(segmentsList) == 0 {
-		return selection, 0, nil
-	}
-
+	var userCreated time.Time
 	traits := traitsOverride
 	if traits == nil && req.UserID != "" {
 		userRec, err := store.GetUser(ctx, req.OrgID, req.Namespace, req.UserID)
@@ -43,7 +36,22 @@ func resolveSegmentSelection(
 		}
 		if userRec != nil && userRec.Traits != nil {
 			traits = userRec.Traits
+			userCreated = userRec.CreatedAt
 		}
+	}
+	if traits != nil {
+		selection.UserTraits = traits
+	}
+	if !userCreated.IsZero() {
+		selection.UserCreated = userCreated
+	}
+
+	segmentsList, err := store.ListActiveSegmentsWithRules(ctx, req.OrgID, req.Namespace)
+	if err != nil {
+		return selection, 0, err
+	}
+	if len(segmentsList) == 0 {
+		return selection, 0, nil
 	}
 
 	data := buildSegmentContextData(req, httpReq.Context, traits)
@@ -68,10 +76,17 @@ func resolveSegmentSelection(
 			selection.Profile = profile
 			selection.ProfileID = profile.ProfileID
 		}
+		if selection.UserTraits == nil && traits != nil {
+			selection.UserTraits = traits
+		}
+		if selection.UserCreated.IsZero() && !userCreated.IsZero() {
+			selection.UserCreated = userCreated
+		}
 		var ruleID int64
 		if matchedRule != nil {
 			ruleID = matchedRule.RuleID
 		}
+		selection.RuleID = ruleID
 		return selection, ruleID, nil
 	}
 
@@ -84,6 +99,12 @@ func resolveSegmentSelection(
 		if profile != nil {
 			selection.Profile = profile
 			selection.ProfileID = profile.ProfileID
+		}
+		if selection.UserTraits == nil && traits != nil {
+			selection.UserTraits = traits
+		}
+		if selection.UserCreated.IsZero() && !userCreated.IsZero() {
+			selection.UserCreated = userCreated
 		}
 		return selection, 0, nil
 	}

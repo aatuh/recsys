@@ -288,6 +288,7 @@ func (e *Engine) Recommend(
 		ExplainLevel:   req.ExplainLevel,
 		ModelVersion:   modelVersion,
 		SourceMetrics:  sourceMetrics,
+		StarterProfile: copyFloatMap(req.StarterProfile),
 	}
 	reasonSink := make(map[string][]string)
 	response := e.buildResponse(
@@ -1228,16 +1229,24 @@ func (e *Engine) applyPersonalizationBoost(
 		e.config.ProfileWindowDays,
 		maxInt(e.config.ProfileTopNTags, 1),
 	)
-	if err != nil || len(profile) == 0 {
+	if err != nil {
+		profile = nil
+	}
+	if len(profile) == 0 && len(req.StarterProfile) > 0 {
+		profile = req.StarterProfile
+	}
+	if len(profile) == 0 {
 		return
 	}
+
+	anchorCount := effectiveAnchorCount(data.Anchors)
+	minEvents := e.config.ProfileMinEventsForBoost
+	coldScale := clampFloat(e.config.ProfileColdStartMultiplier, 0, 1)
 
 	for i := range data.Candidates {
 		itemId := data.Candidates[i].ItemID
 		tags := data.Tags[itemId]
 
-		// For every candidate tag get the matching tag weight from the profile.
-		// Add the weight to the overlap if it exists.
 		overlap := 0.0
 		for _, tag := range tags.Tags {
 			if weight, ok := profile[tag]; ok {
@@ -1247,6 +1256,15 @@ func (e *Engine) applyPersonalizationBoost(
 
 		if overlap > 0 {
 			multiplier := 1.0 + e.config.ProfileBoost*overlap
+			attenuation := 1.0
+			if minEvents > 0 {
+				if anchorCount == 0 || anchorCount < minEvents {
+					attenuation = coldScale
+				}
+			}
+			if attenuation < 1.0 {
+				multiplier = 1.0 + (multiplier-1.0)*attenuation
+			}
 			data.Candidates[i].Score *= multiplier
 			data.Boosted[itemId] = true
 			data.ProfileOverlap[itemId] = overlap
@@ -1616,6 +1634,37 @@ func copyBoolMap(src map[string]bool) map[string]bool {
 		out[k] = v
 	}
 	return out
+}
+
+func copyFloatMap(src map[string]float64) map[string]float64 {
+	if len(src) == 0 {
+		return nil
+	}
+	out := make(map[string]float64, len(src))
+	for k, v := range src {
+		out[k] = v
+	}
+	return out
+}
+
+func effectiveAnchorCount(anchors []string) int {
+	if len(anchors) == 0 {
+		return 0
+	}
+	if len(anchors) == 1 && anchors[0] == "(no_recent_activity)" {
+		return 0
+	}
+	return len(anchors)
+}
+
+func clampFloat(val, min, max float64) float64 {
+	if val < min {
+		return min
+	}
+	if val > max {
+		return max
+	}
+	return val
 }
 
 // maxInt returns the maximum of two integers.

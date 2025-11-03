@@ -34,10 +34,12 @@ type Store interface {
 
 // SegmentSelection describes the resolved segment context.
 type SegmentSelection struct {
-	Profile   *types.SegmentProfile
-	SegmentID string
-	ProfileID string
-	RuleID    int64
+	Profile     *types.SegmentProfile
+	SegmentID   string
+	ProfileID   string
+	RuleID      int64
+	UserTraits  map[string]any
+	UserCreated time.Time
 }
 
 // SegmentSelector resolves segment information prior to ranking.
@@ -103,6 +105,10 @@ func (s *Service) Recommend(
 
 	blendOverrides(&cfg, s.resolveBlend(ctx, algoReq.Namespace))
 	applyOverrides(&cfg, req.Overrides)
+
+	if starter := s.buildStarterProfile(ctx, cfg, algoReq, selection); len(starter) > 0 {
+		algoReq.StarterProfile = starter
+	}
 
 	engine := algorithm.NewEngine(cfg, s.store, s.rules)
 	algoResp, traceData, err := engine.Recommend(ctx, algoReq)

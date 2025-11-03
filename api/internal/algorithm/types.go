@@ -18,9 +18,11 @@ type Config struct {
 	BlendGamma float64 // Embedding weight
 
 	// Personalization
-	ProfileBoost      float64 // Multiplier for tag overlap
-	ProfileWindowDays float64 // Days to look back for user profile
-	ProfileTopNTags   int     // Max tags in user profile
+	ProfileBoost               float64 // Multiplier for tag overlap
+	ProfileWindowDays          float64 // Days to look back for user profile
+	ProfileTopNTags            int     // Max tags in user profile
+	ProfileMinEventsForBoost   int     // Minimum recent events before full boost applies
+	ProfileColdStartMultiplier float64 // Attenuation factor for sparse history
 
 	// MMR and diversity
 	MMRLambda   float64 // MMR balance (0=diversity, 1=relevance)
@@ -58,6 +60,7 @@ type Request struct {
 	Blend          *BlendWeights
 	IncludeReasons bool
 	ExplainLevel   ExplainLevel
+	StarterProfile map[string]float64
 }
 
 // BlendWeights represents the blending weights for different signals
@@ -148,6 +151,7 @@ type TraceData struct {
 	RulePinned     []rules.PinnedItem
 	SourceMetrics  map[string]SourceMetric
 	Policy         *PolicySummary
+	StarterProfile map[string]float64
 }
 
 // SourceMetric captures coverage and latency for a candidate source.

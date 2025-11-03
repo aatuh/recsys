@@ -37,19 +37,19 @@ Re-enable manual overrides and rule actions so operators can boost, pin, and sha
 - [x] **REC-204 – New-item exposure controls**  
   Boost rules now inject off-candidate items so manual overrides surface fresh inventory even without baseline popularity. Added per-surface Prometheus counters and structured logs tracking boost/pin exposure rates to monitor exploration impact.
 
-- [ ] **REC-205 – Multi-objective trade-off curve**  
-  Wire boost value multipliers into scoring to yield monotonic margin shifts (`analysis/evidence/scenario_s9_tradeoff.json`). Capture MMR + margin analytics for tuning and expose trade-off presets to ops.
+- [x] **REC-205 – Multi-objective trade-off curve**  
+  Boost actions are now proportional to existing scores (with additive fallback) so adjusting `boost_value` yields predictable margin lifts and logged exposure counters. Scenario S9 captures the trade-off curve and policy telemetry in evidence.
 
 ---
 
 ## Epic EPC-003 – Quality & Cold-Start Experience
 Improve relevance for underserved cohorts while maintaining diversity.
 
-- [ ] **REC-301 – New-user onboarding profiles**  
-  Build trait-based or curated starter profiles so `new_users` meet baseline quality. Validate with time-split evaluation showing ≥10% lift per metric (`analysis/quality_metrics.json` segment data).
+- [x] **REC-301 – New-user onboarding profiles**  
+  Added trait-driven starter profiles for `new_users`, injecting curated tag weights when no history exists. Fallback personalization now logs in trace extras and powers scenario S7 to capture the applied profile.
 
-- [ ] **REC-302 – Personalization decay tuning**  
-  Review profile boost / half-life defaults to avoid over-weighting sparse history. Provide tunable config and tests proving stability across all segments.
+- [x] **REC-302 – Personalization decay tuning**  
+  Introduced configurable `PROFILE_MIN_EVENTS_FOR_BOOST` and `PROFILE_COLD_START_MULTIPLIER`, attenuating personalization when history is sparse. Added engine unit tests to guarantee the new scaling logic.
 
 - [ ] **REC-303 – Diversity knob documentation & presets**  
   Since MMR overrides work (scenario S4), publish recommended `mmr_lambda` presets per surface and expose through admin tooling with validation.

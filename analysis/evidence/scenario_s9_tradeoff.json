@@ -2,22 +2,22 @@
   "curve": [
     {
       "boost_value": 0.0,
-      "ndcg": 0.06979932493385801,
-      "margin": 0.38902625
+      "ndcg": 0.0760656303388599,
+      "margin": 0.38793848684210525
     },
     {
       "boost_value": 0.4,
-      "ndcg": 0.046668568581572346,
-      "margin": 0.46299375
+      "ndcg": 0.06450375296683374,
+      "margin": 0.4032488815789474
     },
     {
       "boost_value": 0.8,
-      "ndcg": 0.030127328714803617,
-      "margin": 0.5050225
+      "ndcg": 0.06320467622943904,
+      "margin": 0.40869355263157897
     }
   ],
   "rule": {
-    "rule_id": "1ff82dab-6c81-4c20-8a65-846c03d01e1e",
+    "rule_id": "f01fddb9-730f-4997-b7f6-719053427650",
     "namespace": "default",
     "surface": "home",
     "name": "scenario_s9_margin_boost",
@@ -28,7 +28,7 @@
     "boost_value": 0.2,
     "priority": 120,
     "enabled": true,
-    "created_at": "2025-11-03T17:06:19Z",
-    "updated_at": "2025-11-03T17:06:19Z"
+    "created_at": "2025-11-03T19:00:39Z",
+    "updated_at": "2025-11-03T19:00:39Z"
   }
 }
