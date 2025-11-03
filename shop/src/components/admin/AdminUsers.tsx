@@ -2,7 +2,35 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useToast } from "@/components/ToastProvider";
 
-type User = { id: string; displayName: string };
+type User = { id: string; displayName: string; traitsText?: string | null };
+
+function formatTraits(raw?: string | null): string {
+  if (!raw) return "";
+  try {
+    return JSON.stringify(JSON.parse(raw), null, 2);
+  } catch {
+    return raw;
+  }
+}
+
+function prepareTraitsPayload(
+  raw: string
+): Record<string, unknown> | string | undefined {
+  const trimmed = raw.trim();
+  if (!trimmed) return undefined;
+  try {
+    return JSON.parse(trimmed);
+  } catch {
+    return trimmed;
+  }
+}
+
+function parseCsv(value: string): string[] {
+  return value
+    .split(/[,;]/)
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
 
 export default function AdminUsers() {
   const toast = useToast();
@@ -14,17 +42,29 @@ export default function AdminUsers() {
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(false);
   const [batchCount, setBatchCount] = useState(20);
-  const [form, setForm] = useState({ displayName: "" });
+  const [form, setForm] = useState({ displayName: "", traits: "" });
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [showSeedOptions, setShowSeedOptions] = useState(false);
+  const [seedLocales, setSeedLocales] = useState("en-US,en-GB,en-CA");
+  const [seedCountries, setSeedCountries] = useState("US,GB,CA,DE,FR,AU");
+  const [seedLoyalty, setSeedLoyalty] = useState("bronze,silver,gold,vip");
+  const [seedCategories, setSeedCategories] = useState(
+    "electronics,audio,fitness,home,wellness"
+  );
+  const [seedDevices, setSeedDevices] = useState("mobile,desktop");
+  const [seedPriceSensitivity, setSeedPriceSensitivity] = useState("low,mid,high");
+  const [seedInterests, setSeedInterests] = useState(
+    "running,cycling,gaming,cooking,travel,yoga,wellness"
+  );
 
   const selectedIds = useMemo(
     () => Object.keys(selected).filter((k) => selected[k]),
     [selected]
   );
 
-  function setField(val: string) {
-    setForm({ displayName: val });
-    setTouched({ displayName: true });
+  function setField<K extends keyof typeof form>(key: K, value: string) {
+    setForm((prev) => ({ ...prev, [key]: value }));
+    setTouched((prev) => ({ ...prev, [key]: true }));
   }
 
   const load = useCallback(async () => {
@@ -36,7 +76,14 @@ export default function AdminUsers() {
       if (q) url.searchParams.set("q", q);
       const res = await fetch(url);
       const data = await res.json();
-      setItems(data.items || []);
+      setItems(
+        (data.items || []).map(
+          (item: User): User => ({
+            ...item,
+            traitsText: item.traitsText ?? null,
+          })
+        )
+      );
       setTotal(data.total || 0);
       setSelected({});
     } finally {
@@ -54,15 +101,24 @@ export default function AdminUsers() {
     setTouched({});
     if (selectedIds.length === 1) {
       const u = items.find((x) => x.id === selectedIds[0]);
-      setForm({ displayName: u?.displayName || "" });
+      setForm({
+        displayName: u?.displayName || "",
+        traits: formatTraits(u?.traitsText),
+      });
     } else if (selectedIds.length > 1) {
       const sel = items.filter((x) => selected[x.id]);
-      const allEq =
+      const allNamesEqual =
         sel.length > 0 &&
         sel.every((s) => s.displayName === sel[0].displayName);
-      setForm({ displayName: allEq ? sel[0].displayName : "" });
+      const allTraitsEqual =
+        sel.length > 0 &&
+        sel.every((s) => (s.traitsText ?? "") === (sel[0].traitsText ?? ""));
+      setForm({
+        displayName: allNamesEqual ? sel[0].displayName : "",
+        traits: allTraitsEqual ? formatTraits(sel[0].traitsText) : "",
+      });
     } else {
-      setForm({ displayName: "" });
+      setForm({ displayName: "", traits: "" });
     }
   }, [selectedIdsString, items, selected, selectedIds]);
 
@@ -81,6 +137,18 @@ export default function AdminUsers() {
     if (!selectedIds.length) return;
     const data: Record<string, unknown> = {};
     if (touched.displayName) data.displayName = form.displayName;
+    if (touched.traits) {
+      const trimmed = form.traits.trim();
+      if (!trimmed) {
+        data.traitsText = "";
+      } else {
+        const traitsPayload = prepareTraitsPayload(form.traits);
+        if (traitsPayload !== undefined) {
+          data.traits = traitsPayload;
+        }
+        data.traitsText = form.traits;
+      }
+    }
     if (!Object.keys(data).length) return toast("No changes to apply");
     await fetch("/api/users/batch", {
       method: "POST",
@@ -93,10 +161,30 @@ export default function AdminUsers() {
   }
 
   async function onSeed(count: number) {
+    const payload: Record<string, unknown> = { count };
+    const locales = parseCsv(seedLocales);
+    if (locales.length > 0) payload.locales = locales;
+    const countries = parseCsv(seedCountries);
+    if (countries.length > 0) payload.countries = countries;
+    const loyalty = parseCsv(seedLoyalty);
+    if (loyalty.length > 0) payload.loyaltyTiers = loyalty;
+    const categories = parseCsv(seedCategories);
+    if (categories.length > 0) payload.preferredCategories = categories;
+    const devices = parseCsv(seedDevices)
+      .map((device) => device.toLowerCase())
+      .filter((device) => device === "mobile" || device === "desktop");
+    if (devices.length > 0) payload.devices = devices;
+    const priceSensitivity = parseCsv(seedPriceSensitivity)
+      .map((value) => value.toLowerCase())
+      .filter((value) => value === "low" || value === "mid" || value === "high");
+    if (priceSensitivity.length > 0) payload.priceSensitivity = priceSensitivity;
+    const interests = parseCsv(seedInterests);
+    if (interests.length > 0) payload.interests = interests;
+
     await fetch("/api/users/seed", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ count }),
+      body: JSON.stringify(payload),
     });
     toast(`Inserted ${count} users`);
     load();
@@ -116,13 +204,23 @@ export default function AdminUsers() {
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!selectedIds.length) {
+      const payload: Record<string, unknown> = {
+        displayName: form.displayName,
+      };
+      if (form.traits.trim()) {
+        const traitsPayload = prepareTraitsPayload(form.traits);
+        if (traitsPayload !== undefined) {
+          payload.traits = traitsPayload;
+        }
+        payload.traitsText = form.traits;
+      }
       await fetch("/api/users", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ displayName: form.displayName }),
+        body: JSON.stringify(payload),
       });
       toast("User created");
-      setForm({ displayName: "" });
+      setForm({ displayName: "", traits: "" });
       load();
       return;
     }
@@ -165,6 +263,13 @@ export default function AdminUsers() {
             Create batch
           </button>
           <button
+            type="button"
+            className="border rounded px-3 py-2 text-xs"
+            onClick={() => setShowSeedOptions((prev) => !prev)}
+          >
+            {showSeedOptions ? "Hide seed options" : "Seed options"}
+          </button>
+          <button
             className="border rounded px-3 py-2 text-sm"
             onClick={onDeleteSelected}
             disabled={!selectedIds.length}
@@ -176,6 +281,72 @@ export default function AdminUsers() {
           </button>
         </div>
       </div>
+
+      {showSeedOptions ? (
+        <div className="border rounded p-4 bg-gray-50 space-y-3">
+          <h3 className="text-sm font-semibold text-gray-700">
+            Seed generator options
+          </h3>
+          <div className="grid gap-3 md:grid-cols-2">
+            <label className="text-xs text-gray-700">
+              Locales (comma separated)
+              <input
+                className="mt-1 w-full border rounded p-2 text-sm"
+                value={seedLocales}
+                onChange={(e) => setSeedLocales(e.target.value)}
+              />
+            </label>
+            <label className="text-xs text-gray-700">
+              Countries (comma separated)
+              <input
+                className="mt-1 w-full border rounded p-2 text-sm"
+                value={seedCountries}
+                onChange={(e) => setSeedCountries(e.target.value)}
+              />
+            </label>
+            <label className="text-xs text-gray-700">
+              Loyalty tiers
+              <input
+                className="mt-1 w-full border rounded p-2 text-sm"
+                value={seedLoyalty}
+                onChange={(e) => setSeedLoyalty(e.target.value)}
+              />
+            </label>
+            <label className="text-xs text-gray-700">
+              Preferred categories
+              <input
+                className="mt-1 w-full border rounded p-2 text-sm"
+                value={seedCategories}
+                onChange={(e) => setSeedCategories(e.target.value)}
+              />
+            </label>
+            <label className="text-xs text-gray-700">
+              Devices
+              <input
+                className="mt-1 w-full border rounded p-2 text-sm"
+                value={seedDevices}
+                onChange={(e) => setSeedDevices(e.target.value)}
+              />
+            </label>
+            <label className="text-xs text-gray-700">
+              Price sensitivity
+              <input
+                className="mt-1 w-full border rounded p-2 text-sm"
+                value={seedPriceSensitivity}
+                onChange={(e) => setSeedPriceSensitivity(e.target.value)}
+              />
+            </label>
+            <label className="text-xs text-gray-700 md:col-span-2">
+              Interests
+              <input
+                className="mt-1 w-full border rounded p-2 text-sm"
+                value={seedInterests}
+                onChange={(e) => setSeedInterests(e.target.value)}
+              />
+            </label>
+          </div>
+        </div>
+      ) : null}
 
       <table className="w-full text-sm border">
         <thead>
@@ -195,6 +366,7 @@ export default function AdminUsers() {
               />
             </th>
             <th className="p-2 border">Display name</th>
+            <th className="p-2 border">Traits</th>
             <th className="p-2 border">ID</th>
           </tr>
         </thead>
@@ -211,6 +383,16 @@ export default function AdminUsers() {
                 />
               </td>
               <td className="p-2 border">{u.displayName}</td>
+              <td className="p-2 border text-xs font-mono text-gray-600">
+                {(() => {
+                  const traits = formatTraits(u.traitsText);
+                  if (!traits) return "";
+                  const trimmed = traits.replace(/\s+/g, " ").trim();
+                  return trimmed.length > 60
+                    ? `${trimmed.slice(0, 60)}…`
+                    : trimmed;
+                })()}
+              </td>
               <td className="p-2 border text-xs text-gray-600">{u.id}</td>
             </tr>
           ))}
@@ -261,7 +443,14 @@ export default function AdminUsers() {
                 : "Display name"
             }
             value={form.displayName}
-            onChange={(e) => setField(e.target.value)}
+            onChange={(e) => setField("displayName", e.target.value)}
+          />
+          <textarea
+            className="border p-2 md:col-span-3 font-mono text-xs"
+            name="traits"
+            placeholder='{"locale":"en-US","preferred_categories":["electronics"]}'
+            value={form.traits}
+            onChange={(e) => setField("traits", e.target.value)}
           />
           <div className="md:col-span-3">
             <button className="border rounded px-3 py-2 text-sm">

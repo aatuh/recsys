@@ -1408,12 +1408,24 @@ func (e *Engine) mergeCandidates(
 	session map[string]float64,
 	k int,
 ) []types.ScoredItem {
-	pool := make([]types.ScoredItem, 0, len(pop)+len(collab)+len(content)+len(session))
-	used := make(map[string]struct{}, cap(pool))
-	quotaPop := maxInt(k, 1)
-	quotaOther := maxInt(k/2, 1)
+	maxKeep := len(pop)
+	if k > maxKeep {
+		maxKeep = k
+	}
+	if e.config.PopularityFanout > maxKeep {
+		maxKeep = e.config.PopularityFanout
+	}
+	if maxKeep <= 0 {
+		maxKeep = 1
+	}
+
+	pool := make([]types.ScoredItem, 0, maxKeep)
+	used := make(map[string]struct{}, maxKeep)
 
 	appendIfNew := func(itemID string, score float64) bool {
+		if len(pool) >= maxKeep {
+			return false
+		}
 		if itemID == "" {
 			return false
 		}
@@ -1426,16 +1438,14 @@ func (e *Engine) mergeCandidates(
 	}
 
 	for _, cand := range pop {
-		if quotaPop <= 0 {
+		if !appendIfNew(cand.ItemID, cand.Score) && len(pool) >= maxKeep {
 			break
-		}
-		if appendIfNew(cand.ItemID, cand.Score) {
-			quotaPop--
 		}
 	}
 
-	appendFromMap := func(src map[string]float64, quota *int) {
-		if *quota <= 0 {
+	quotaOther := maxKeep - len(pool)
+	appendFromMap := func(src map[string]float64) {
+		if quotaOther <= 0 {
 			return
 		}
 		type pair struct {
@@ -1453,7 +1463,7 @@ func (e *Engine) mergeCandidates(
 			return items[i].score > items[j].score
 		})
 		for _, it := range items {
-			if *quota <= 0 {
+			if quotaOther <= 0 {
 				break
 			}
 			score := it.score
@@ -1461,18 +1471,14 @@ func (e *Engine) mergeCandidates(
 				score = base
 			}
 			if appendIfNew(it.id, score) {
-				*quota--
+				quotaOther--
 			}
 		}
 	}
 
-	appendFromMap(collab, &quotaOther)
-	appendFromMap(content, &quotaOther)
-	appendFromMap(session, &quotaOther)
-
-	if len(pool) > k {
-		pool = pool[:k]
-	}
+	appendFromMap(collab)
+	appendFromMap(content)
+	appendFromMap(session)
 
 	return pool
 }

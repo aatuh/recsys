@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/server/db/client";
 import { upsertUsers } from "@/server/services/recsys";
 import { buildUserContract } from "@/lib/contracts/user";
+import { normalizeUserPayload } from "@/server/normalizers/user";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -26,7 +27,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const item = await prisma.user.create({ data: body });
+  const data = normalizeUserPayload(body);
+  const item = await prisma.user.create({ data });
   void upsertUsers([buildUserContract(item)]).catch(() => null);
   return NextResponse.json(item, { status: 201 });
 }

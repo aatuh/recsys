@@ -20,6 +20,7 @@ model Product {
   imageUrl    String
   stockCount  Int      @default(0)
   tagsCsv     String   @default("")
+  attributesJson String @default("{}")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

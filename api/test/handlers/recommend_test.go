@@ -288,3 +288,96 @@ func TestRecommend_ExplainLevels(t *testing.T) {
 		require.GreaterOrEqual(t, metric.Ms, 0.0)
 	}
 }
+
+func TestManualOverrideBoostSurfacedItem(t *testing.T) {
+	client := shared.NewTestClient(t)
+
+	pool := shared.MustPool(t)
+	shared.CleanTables(t, pool)
+	shared.MustHaveEventTypeDefaults(t, pool)
+
+	do := func(method, path string, body any, want int) []byte {
+		return client.DoRequestWithStatus(t, method, path, body, want)
+	}
+
+	do(http.MethodPost, endpoints.ItemsUpsert, map[string]any{
+		"namespace": "default",
+		"items": []map[string]any{
+			{"item_id": "shoe_a", "available": true},
+			{"item_id": "shoe_b", "available": true},
+			{"item_id": "shoe_c", "available": true},
+			{"item_id": "watch_gps", "available": true},
+		},
+	}, http.StatusAccepted)
+
+	do(http.MethodPost, endpoints.UsersUpsert, map[string]any{
+		"namespace": "default",
+		"users":     []map[string]any{{"user_id": "runner"}},
+	}, http.StatusAccepted)
+
+	now := time.Now().UTC().Format(time.RFC3339)
+	do(http.MethodPost, endpoints.EventsBatch, map[string]any{
+		"namespace": "default",
+		"events": []map[string]any{
+			{"user_id": "runner", "item_id": "shoe_a", "type": 3, "value": 1, "ts": now},
+			{"user_id": "runner", "item_id": "shoe_b", "type": 3, "value": 1, "ts": now},
+			{"user_id": "runner", "item_id": "shoe_c", "type": 3, "value": 1, "ts": now},
+			{"user_id": "runner", "item_id": "watch_gps", "type": 0, "value": 1, "ts": now},
+		},
+	}, http.StatusAccepted)
+
+	type recItem struct {
+		ItemID string  `json:"item_id"`
+		Score  float64 `json:"score"`
+	}
+	parseItems := func(b []byte) []recItem {
+		var resp struct {
+			Items []recItem `json:"items"`
+		}
+		require.NoError(t, json.Unmarshal(b, &resp))
+		return resp.Items
+	}
+
+	req := map[string]any{
+		"user_id":   "runner",
+		"namespace": "default",
+		"k":         3,
+		"context":   map[string]any{"surface": "home"},
+		"overrides": map[string]any{
+			"rule_exclude_events": false,
+		},
+	}
+	initial := do(http.MethodPost, endpoints.Recommendations, req, http.StatusOK)
+	itemsBefore := parseItems(initial)
+	require.GreaterOrEqual(t, len(itemsBefore), 3)
+	initialTopScore := itemsBefore[0].Score
+	for _, it := range itemsBefore {
+		require.NotEqual(t, "watch_gps", it.ItemID)
+	}
+
+	boostValue := 5.0
+	do(http.MethodPost, endpoints.ManualOverrides, types.ManualOverrideRequest{
+		Namespace:  "default",
+		Surface:    "home",
+		ItemID:     "watch_gps",
+		Action:     "boost",
+		BoostValue: &boostValue,
+		CreatedBy:  "test-suite",
+	}, http.StatusCreated)
+
+	time.Sleep(3 * time.Second)
+
+	after := do(http.MethodPost, endpoints.Recommendations, req, http.StatusOK)
+	itemsAfter := parseItems(after)
+	require.GreaterOrEqual(t, len(itemsAfter), 3)
+
+	var boosted *recItem
+	for _, it := range itemsAfter {
+		if it.ItemID == "watch_gps" {
+			boosted = &it
+			break
+		}
+	}
+	require.NotNil(t, boosted, "boosted item should appear in results")
+	require.Greater(t, boosted.Score, initialTopScore, "boosted item should outrank previous best score")
+}

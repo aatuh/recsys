@@ -359,3 +359,9 @@ export async function deleteAlgorithmProfile(profileId: string): Promise<void> {
   clearAlgorithmProfileCache();
   await ensureDefaultProfile();
 }
+
+export async function deleteAllAlgorithmProfiles(): Promise<void> {
+  await prisma.recommendationProfile.deleteMany({});
+  clearAlgorithmProfileCache();
+  await ensureDefaultProfile();
+}

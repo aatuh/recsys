@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/server/db/client";
 import { upsertItems } from "@/server/services/recsys";
 import { buildItemContract } from "@/lib/contracts/item";
+import { normalizeProductPayload } from "@/server/normalizers/product";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -38,7 +39,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const item = await prisma.product.create({ data: body });
+  const data = normalizeProductPayload(body);
+  const item = await prisma.product.create({ data });
   // Fire-and-forget upsert to recsys (non-blocking)
   void upsertItems([buildItemContract(item)]).catch((error) => {
     console.error("Failed to sync product to recsys:", error);

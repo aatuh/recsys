@@ -78,9 +78,9 @@ type RecommendationSettingsForm = {
 };
 
 const DEFAULT_FORM_VALUES: RecommendationSettingsForm = {
-  profileId: "",
-  name: "",
-  description: "",
+  profileId: "default",
+  name: "Default profile",
+  description: "Seeded defaults",
   surface: "",
   isDefault: false,
   blendAlpha: "0.25",
@@ -159,41 +159,36 @@ export default function AdminRecommendationSettings() {
   const [banditStatus, setBanditStatus] = useState<BanditStatus | null>(null);
   const [configuredPolicies, setConfiguredPolicies] = useState<string[]>([]);
 
-  const loadSettings = useCallback(
-    async (profileId?: string) => {
-      setLoading(true);
-      setError(null);
-      try {
-        const url = new URL(
-          "/api/admin/recommendation-settings",
-          window.location.origin
-        );
-        if (profileId) {
-          url.searchParams.set("profileId", profileId);
-        }
-        const response = await fetch(url.toString(), { cache: "no-store" });
-        if (!response.ok) {
-          throw new Error(`Failed to load profiles: ${response.status}`);
-        }
-        const data: SettingsResponse = await response.json();
-        setProfiles(data.profiles ?? []);
-        setBanditStatus(data.bandit ?? null);
-        setConfiguredPolicies(data.configuredPolicies ?? []);
-        setProfileSource(data.profile_source ?? "default");
-        setForm(toFormState(data.profile));
-        setSelectedProfileId(data.profile.profileId);
-        setIsCreating(false);
-      } catch (err) {
-        console.error("Failed to load recommendation profiles", err);
-        setError(
-          err instanceof Error ? err.message : "Failed to load profiles"
-        );
-      } finally {
-        setLoading(false);
+  const loadSettings = useCallback(async (profileId?: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const url = new URL(
+        "/api/admin/recommendation-settings",
+        window.location.origin
+      );
+      if (profileId) {
+        url.searchParams.set("profileId", profileId);
       }
-    },
-    []
-  );
+      const response = await fetch(url.toString(), { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`Failed to load profiles: ${response.status}`);
+      }
+      const data: SettingsResponse = await response.json();
+      setProfiles(data.profiles ?? []);
+      setBanditStatus(data.bandit ?? null);
+      setConfiguredPolicies(data.configuredPolicies ?? []);
+      setProfileSource(data.profile_source ?? "default");
+      setForm(toFormState(data.profile));
+      setSelectedProfileId(data.profile.profileId);
+      setIsCreating(false);
+    } catch (err) {
+      console.error("Failed to load recommendation profiles", err);
+      setError(err instanceof Error ? err.message : "Failed to load profiles");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     loadSettings();
@@ -282,6 +277,97 @@ export default function AdminRecommendationSettings() {
     });
   }, []);
 
+  const handleDeleteProfile = useCallback(async () => {
+    if (!selectedProfileId) return;
+    if (
+      !confirm(
+        `Delete profile '${selectedProfileId}'? A default profile will be restored automatically.`
+      )
+    ) {
+      return;
+    }
+    try {
+      setSaving(true);
+      const response = await fetch(
+        `/api/admin/recommendation-settings?profileId=${encodeURIComponent(
+          selectedProfileId
+        )}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (!response.ok) {
+        const result = await response.json().catch(() => ({}));
+        const message =
+          (result && result.error) ||
+          `Failed to delete profile (status ${response.status})`;
+        throw new Error(message);
+      }
+      const data: SettingsResponse = await response.json();
+      setProfiles(data.profiles ?? []);
+      setBanditStatus(data.bandit ?? null);
+      setConfiguredPolicies(data.configuredPolicies ?? []);
+      const fallbackProfile = data.profiles?.[0];
+      if (fallbackProfile) {
+        setSelectedProfileId(fallbackProfile.profileId);
+        setForm(toFormState(fallbackProfile));
+      } else {
+        setSelectedProfileId(null);
+        setForm({ ...DEFAULT_FORM_VALUES });
+      }
+      toast("Profile deleted");
+    } catch (err) {
+      console.error("Failed to delete profile", err);
+      toast(err instanceof Error ? err.message : "Failed to delete profile");
+    } finally {
+      setSaving(false);
+    }
+  }, [selectedProfileId, toast]);
+
+  const handleDeleteAllProfiles = useCallback(async () => {
+    if (
+      !confirm(
+        "Delete all profiles (defaults will be re-created)? This removes any custom overrides."
+      )
+    ) {
+      return;
+    }
+    try {
+      setSaving(true);
+      const response = await fetch(
+        `/api/admin/recommendation-settings?profileId=all`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (!response.ok) {
+        const result = await response.json().catch(() => ({}));
+        const message =
+          (result && result.error) ||
+          `Failed to delete profiles (status ${response.status})`;
+        throw new Error(message);
+      }
+      const data: SettingsResponse = await response.json();
+      setProfiles(data.profiles ?? []);
+      setBanditStatus(data.bandit ?? null);
+      setConfiguredPolicies(data.configuredPolicies ?? []);
+      const fallbackProfile = data.profiles?.[0];
+      if (fallbackProfile) {
+        setSelectedProfileId(fallbackProfile.profileId);
+        setForm(toFormState(fallbackProfile));
+      } else {
+        setSelectedProfileId(null);
+        setForm({ ...DEFAULT_FORM_VALUES });
+      }
+      toast("All profiles deleted");
+    } catch (err) {
+      console.error("Failed to delete profiles", err);
+      toast(err instanceof Error ? err.message : "Failed to delete profiles");
+    } finally {
+      setSaving(false);
+    }
+  }, [toast]);
+
   const onSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -291,56 +377,116 @@ export default function AdminRecommendationSettings() {
         setSaving(true);
         setError(null);
 
+        const fallbackNumber = (
+          value: string,
+          fallback: string,
+          parser: (label: string, value: string) => number,
+          label: string
+        ) => parser(label, value.trim() === "" ? fallback : value);
+
+        const profileId =
+          form.profileId.trim() || DEFAULT_FORM_VALUES.profileId;
+        const name = form.name.trim() || profileId;
         const payload = {
-          profileId: form.profileId.trim(),
-          name: form.name.trim(),
+          profileId,
+          name,
           description: form.description.trim() || undefined,
           surface: form.surface.trim() || undefined,
           isDefault: form.isDefault,
-          blendAlpha: parseFloatField("Blend alpha", form.blendAlpha),
-          blendBeta: parseFloatField("Blend beta", form.blendBeta),
-          blendGamma: parseFloatField("Blend gamma", form.blendGamma),
-          popularityHalflifeDays: parseFloatField(
-            "Popularity halflife days",
-            form.popularityHalflifeDays
+          blendAlpha: fallbackNumber(
+            form.blendAlpha,
+            DEFAULT_FORM_VALUES.blendAlpha,
+            parseFloatField,
+            "Blend alpha"
           ),
-          covisWindowDays: parseFloatField(
-            "Co-visitation window days",
-            form.covisWindowDays
+          blendBeta: fallbackNumber(
+            form.blendBeta,
+            DEFAULT_FORM_VALUES.blendBeta,
+            parseFloatField,
+            "Blend beta"
           ),
-          popularityFanout: parseIntField(
-            "Popularity fanout",
-            form.popularityFanout
+          blendGamma: fallbackNumber(
+            form.blendGamma,
+            DEFAULT_FORM_VALUES.blendGamma,
+            parseFloatField,
+            "Blend gamma"
           ),
-          mmrLambda: parseFloatField("MMR lambda", form.mmrLambda),
-          brandCap: parseIntField("Brand cap", form.brandCap),
-          categoryCap: parseIntField("Category cap", form.categoryCap),
+          popularityHalflifeDays: fallbackNumber(
+            form.popularityHalflifeDays,
+            DEFAULT_FORM_VALUES.popularityHalflifeDays,
+            parseFloatField,
+            "Popularity halflife days"
+          ),
+          covisWindowDays: fallbackNumber(
+            form.covisWindowDays,
+            DEFAULT_FORM_VALUES.covisWindowDays,
+            parseFloatField,
+            "Co-visitation window days"
+          ),
+          popularityFanout: fallbackNumber(
+            form.popularityFanout,
+            DEFAULT_FORM_VALUES.popularityFanout,
+            parseIntField,
+            "Popularity fanout"
+          ),
+          mmrLambda: fallbackNumber(
+            form.mmrLambda,
+            DEFAULT_FORM_VALUES.mmrLambda,
+            parseFloatField,
+            "MMR lambda"
+          ),
+          brandCap: fallbackNumber(
+            form.brandCap,
+            DEFAULT_FORM_VALUES.brandCap,
+            parseIntField,
+            "Brand cap"
+          ),
+          categoryCap: fallbackNumber(
+            form.categoryCap,
+            DEFAULT_FORM_VALUES.categoryCap,
+            parseIntField,
+            "Category cap"
+          ),
           ruleExcludeEvents: Boolean(form.ruleExcludeEvents),
-          purchasedWindowDays: parseFloatField(
-            "Purchased window days",
-            form.purchasedWindowDays
+          purchasedWindowDays: fallbackNumber(
+            form.purchasedWindowDays,
+            DEFAULT_FORM_VALUES.purchasedWindowDays,
+            parseFloatField,
+            "Purchased window days"
           ),
-          profileWindowDays: parseFloatField(
-            "Profile window days",
-            form.profileWindowDays
+          profileWindowDays: fallbackNumber(
+            form.profileWindowDays,
+            DEFAULT_FORM_VALUES.profileWindowDays,
+            parseFloatField,
+            "Profile window days"
           ),
-          profileTopN: parseIntField("Profile top N", form.profileTopN),
-          profileBoost: parseFloatField("Profile boost", form.profileBoost),
-          excludeEventTypes: form.excludeEventTypes,
+          profileTopN: fallbackNumber(
+            form.profileTopN,
+            DEFAULT_FORM_VALUES.profileTopN,
+            parseIntField,
+            "Profile top N"
+          ),
+          profileBoost: fallbackNumber(
+            form.profileBoost,
+            DEFAULT_FORM_VALUES.profileBoost,
+            parseFloatField,
+            "Profile boost"
+          ),
+          excludeEventTypes:
+            form.excludeEventTypes.length > 0
+              ? form.excludeEventTypes
+              : DEFAULT_FORM_VALUES.excludeEventTypes,
         };
 
         if (!payload.profileId) {
           throw new Error("Profile ID is required");
         }
 
-        const response = await fetch(
-          "/api/admin/recommendation-settings",
-          {
-            method: isCreating ? "POST" : "PUT",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify(payload),
-          }
-        );
+        const response = await fetch("/api/admin/recommendation-settings", {
+          method: isCreating ? "POST" : "PUT",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(payload),
+        });
 
         if (!response.ok) {
           const result = await response.json().catch(() => ({}));
@@ -401,8 +547,8 @@ export default function AdminRecommendationSettings() {
             <h2 className="text-lg font-semibold">Recommendation Profiles</h2>
             <p className="text-sm text-gray-600">
               Manage blend weights, diversity caps, and recency windows applied
-              to recommendation requests. Profiles can be selected per-request or
-              marked as defaults for a surface.
+              to recommendation requests. Profiles can be selected per-request
+              or marked as defaults for a surface.
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -427,6 +573,22 @@ export default function AdminRecommendationSettings() {
               onClick={handleNewProfile}
             >
               New profile
+            </button>
+            <button
+              type="button"
+              className="px-3 py-1 text-sm border rounded disabled:opacity-60"
+              onClick={handleDeleteProfile}
+              disabled={saving || !selectedProfileId}
+            >
+              Delete
+            </button>
+            <button
+              type="button"
+              className="px-3 py-1 text-sm border rounded disabled:opacity-60"
+              onClick={handleDeleteAllProfiles}
+              disabled={saving || profiles.length === 0}
+            >
+              Nuke all
             </button>
           </div>
         </div>
@@ -454,13 +616,15 @@ export default function AdminRecommendationSettings() {
           </p>
           <p className="mt-1 text-xs opacity-80">
             Checked {new Date(banditStatus.checkedAt).toLocaleTimeString()} ·
-            Configured policies: {configuredPolicies.length > 0
+            Configured policies:{" "}
+            {configuredPolicies.length > 0
               ? configuredPolicies.join(", ")
               : "—"}
           </p>
           {!banditStatus.enabled && banditStatus.missingPolicies?.length ? (
             <p className="mt-1 text-xs opacity-80">
-              Missing policies in recsys: {banditStatus.missingPolicies.join(", ")}
+              Missing policies in recsys:{" "}
+              {banditStatus.missingPolicies.join(", ")}
             </p>
           ) : null}
         </div>
@@ -496,7 +660,9 @@ export default function AdminRecommendationSettings() {
               type="text"
               value={form.name}
               onChange={(event) =>
-                setForm((prev) => (prev ? { ...prev, name: event.target.value } : prev))
+                setForm((prev) =>
+                  prev ? { ...prev, name: event.target.value } : prev
+                )
               }
               className="mt-1 w-full rounded border px-2 py-1 text-sm"
               placeholder="Homepage default"
@@ -629,7 +795,7 @@ export default function AdminRecommendationSettings() {
             <NumberField
               label="Popularity fanout"
               value={form.popularityFanout}
-              step="10"
+              step="1"
               min="1"
               onChange={handleNumberChange("popularityFanout")}
             />
@@ -728,17 +894,11 @@ export default function AdminRecommendationSettings() {
             className="px-4 py-2 text-sm border rounded bg-blue-600 text-white disabled:opacity-60"
             disabled={saving}
           >
-            {saving ? "Saving…" : isCreating ? "Create profile" : "Save profile"}
-          </button>
-          <button
-            type="button"
-            className="px-4 py-2 text-sm border rounded disabled:opacity-60"
-            disabled={saving}
-            onClick={() =>
-              loadSettings(isCreating ? undefined : selectedProfileId ?? undefined)
-            }
-          >
-            Reset
+            {saving
+              ? "Saving…"
+              : isCreating
+              ? "Create profile"
+              : "Save profile"}
           </button>
         </div>
       </form>

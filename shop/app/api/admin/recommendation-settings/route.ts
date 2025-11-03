@@ -6,6 +6,8 @@ import {
   createAlgorithmProfile,
   updateAlgorithmProfile,
   AlgorithmProfileInput,
+  deleteAlgorithmProfile,
+  deleteAllAlgorithmProfiles,
 } from "@/server/services/recommendationProfiles";
 import {
   getBanditFeatureStatus,
@@ -147,6 +149,44 @@ export async function POST(req: NextRequest) {
     console.error("Failed to create algorithm profile", error);
     return NextResponse.json(
       { error: "Failed to create profile" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    let profileId = searchParams.get("profileId");
+    if (!profileId) {
+      const body = await req.json().catch(() => ({}));
+      profileId = body?.profileId ?? body?.id ?? undefined;
+    }
+
+    if (!profileId) {
+      return NextResponse.json(
+        { error: "profileId is required" },
+        { status: 400 }
+      );
+    }
+
+    if (profileId === "all") {
+      await deleteAllAlgorithmProfiles();
+    } else {
+      await deleteAlgorithmProfile(profileId);
+    }
+
+    const profiles = await listAlgorithmProfiles();
+    const bandit = await getBanditFeatureStatus();
+    return NextResponse.json({
+      profiles,
+      bandit,
+      configuredPolicies: getConfiguredBanditPolicyIds(),
+    });
+  } catch (error) {
+    console.error("Failed to delete recommendation profile", error);
+    return NextResponse.json(
+      { error: "Failed to delete profile" },
       { status: 500 }
     );
   }

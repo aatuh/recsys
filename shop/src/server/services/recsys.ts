@@ -51,6 +51,11 @@ type BanditStatusCache = {
 let cachedBanditStatus: BanditStatusCache | null = null;
 let lastLoggedBanditMessage: string | undefined;
 
+export function resetBanditFeatureStatus() {
+  cachedBanditStatus = null;
+  lastLoggedBanditMessage = undefined;
+}
+
 export function initRecsysClient() {
   const cfg = loadConfig();
   OpenAPI.BASE = cfg.recsysBaseUrl;

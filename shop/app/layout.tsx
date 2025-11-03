@@ -22,7 +22,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </Link>
             <a href="/cart">Cart</a>
             <a href="/orders">My Orders</a>
-            <Link href="/events">Events</Link>
             <a href="/admin">Admin</a>
             <div className="ml-auto flex items-center gap-3">
               <ThemeToggle />

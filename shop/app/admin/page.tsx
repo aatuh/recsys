@@ -1,6 +1,6 @@
 "use client";
-import { useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useMemo, useEffect } from "react";
 import Link from "next/link";
 import AdminProducts from "@/components/admin/AdminProducts";
 import AdminUsers from "@/components/admin/AdminUsers";
@@ -10,6 +10,7 @@ import AdminOrders from "@/components/admin/AdminOrders";
 import { AnalyticsDashboard } from "@/components/AnalyticsDashboard";
 import { AdminTools } from "@/components/AdminTools";
 import AdminRecommendationSettings from "@/components/admin/AdminRecommendationSettings";
+import { AdminBanditPolicies } from "@/components/admin/AdminBanditPolicies";
 
 const tabs = [
   "Products",
@@ -18,6 +19,7 @@ const tabs = [
   "Carts",
   "Orders",
   "Recommendations",
+  "Bandit",
   "Analytics",
   "Tools",
 ] as const;
@@ -34,12 +36,39 @@ function getTabFromSlug(slug: string | null): TabName {
   return found ?? "Products";
 }
 
+const ADMIN_TAB_STORAGE_KEY = "admin_last_tab";
+
 export default function AdminHub() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const tab = useMemo(
     () => getTabFromSlug(searchParams.get("tab")),
     [searchParams]
   );
+
+  // On mount, if no tab in URL, redirect to last accessed tab
+  useEffect(() => {
+    if (!searchParams.get("tab")) {
+      try {
+        const lastTab = localStorage.getItem(ADMIN_TAB_STORAGE_KEY);
+        if (lastTab) {
+          const lastTabName = getTabFromSlug(lastTab);
+          router.replace(`/admin?tab=${getTabSlug(lastTabName)}`);
+        }
+      } catch (err) {
+        // Ignore localStorage errors
+      }
+    }
+  }, [searchParams, router]);
+
+  // Save current tab to localStorage when it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(ADMIN_TAB_STORAGE_KEY, getTabSlug(tab));
+    } catch (err) {
+      // Ignore localStorage errors
+    }
+  }, [tab]);
 
   const handleAdminAction = async (
     action: string,
@@ -94,6 +123,7 @@ export default function AdminHub() {
       {tab === "Carts" && <AdminCarts />}
       {tab === "Orders" && <AdminOrders />}
       {tab === "Recommendations" && <AdminRecommendationSettings />}
+      {tab === "Bandit" && <AdminBanditPolicies />}
       {tab === "Analytics" && <AnalyticsDashboard />}
       {tab === "Tools" && <AdminTools onAction={handleAdminAction} />}
     </main>

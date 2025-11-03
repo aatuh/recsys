@@ -96,6 +96,7 @@ function computeMetadataVersion(product: {
   price: number;
   currency: string;
   updatedAt?: Date;
+  attributesJson?: string | null;
 }): string {
   const payload = JSON.stringify({
     id: product.id,
@@ -106,12 +107,34 @@ function computeMetadataVersion(product: {
     imageUrl: product.imageUrl ?? "",
     price: product.price,
     currency: product.currency,
+    attributesJson: product.attributesJson ?? "",
     updatedAt: product.updatedAt
       ? product.updatedAt.toISOString()
       : undefined,
   });
 
   return createHash("sha256").update(payload).digest("hex").slice(0, 16);
+}
+
+function parseAttributes(attributesJson?: string | null):
+  | Record<string, string>
+  | undefined {
+  if (!attributesJson) {
+    return undefined;
+  }
+  try {
+    const parsed = JSON.parse(attributesJson) as Record<string, unknown>;
+    const result: Record<string, string> = {};
+    for (const [key, value] of Object.entries(parsed)) {
+      if (value === null || value === undefined) {
+        continue;
+      }
+      result[key] = String(value);
+    }
+    return Object.keys(result).length > 0 ? result : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 export function buildItemContract(product: {
@@ -126,9 +149,11 @@ export function buildItemContract(product: {
   imageUrl?: string | null;
   stockCount: number;
   tagsCsv?: string | null;
+  attributesJson?: string | null;
   updatedAt?: Date;
 }): ItemContract {
   const categoryPath = buildCategoryPath(product.category);
+  const attributes = parseAttributes(product.attributesJson);
   const metadataVersion = computeMetadataVersion(product);
 
   return {
@@ -152,6 +177,7 @@ export function buildItemContract(product: {
       currency: product.currency,
       description: product.description || undefined,
       metadata_version: metadataVersion,
+      attributes,
     },
   };
 }

@@ -141,8 +141,9 @@ export function AdminTools({ onAction }: AdminToolsProps) {
               ? "Validating..."
               : "Validate Data Integrity"}
           </button>
-        </div>
       </div>
     </div>
-  );
+
+  </div>
+);
 }

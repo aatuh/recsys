@@ -3,6 +3,7 @@ import { prisma } from "@/server/db/client";
 import { forwardEventsBatch } from "@/server/services/recsys";
 import { buildEventContract } from "@/lib/contracts/event";
 import { maybeLogColdStart } from "@/server/logging/coldStart";
+import { normalizeEventPayload } from "@/server/normalizers/event";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -33,33 +34,32 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const events = Array.isArray(body) ? body : [body];
+  const normalized = events.map((event) => normalizeEventPayload(event));
   const created = await prisma.$transaction(
-    events.map((e) =>
+    normalized.map((item) =>
       prisma.event.create({
-        data: {
-          userId: e.userId,
-          productId: e.productId ?? null,
-          type: e.type,
-          value: e.value ?? 1,
-          ts: e.ts ? new Date(e.ts) : undefined,
-          metaText: e.meta ? JSON.stringify(e.meta) : null,
-          sourceEventId: e.sourceEventId ?? null,
-          recsysStatus: "pending",
-        },
+        data: item.data,
       })
     )
   );
 
   const validTypes = new Set(["view", "click", "add", "purchase"]);
-  for (const event of events) {
-    if (!validTypes.has(event.type) || !event.productId) continue;
+  normalized.forEach(({ data, meta }) => {
+    if (!validTypes.has(data.type) || !data.productId) {
+      return;
+    }
     // Map "view" to "impression" for cold start logging
     const coldStartType =
-      event.type === "view"
+      data.type === "view"
         ? "impression"
-        : (event.type as "click" | "add" | "purchase");
-    maybeLogColdStart(coldStartType, event.userId, event.productId, event.meta);
-  }
+        : (data.type as "click" | "add" | "purchase");
+    maybeLogColdStart(
+      coldStartType,
+      data.userId,
+      data.productId,
+      meta as Record<string, unknown> | undefined
+    );
+  });
 
   return NextResponse.json({ inserted: created.length });
 }

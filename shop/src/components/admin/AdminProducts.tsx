@@ -10,8 +10,68 @@ type Product = {
   currency: string;
   brand: string;
   category: string;
+  imageUrl: string | null;
   stockCount: number;
+  tagsCsv: string;
+  description: string | null;
+  attributesJson: string | null;
 };
+
+function formatAttributes(raw: string | null | undefined): string {
+  if (!raw) return "";
+  try {
+    return JSON.stringify(JSON.parse(raw), null, 2);
+  } catch {
+    return raw;
+  }
+}
+
+function parseCsvList(value: string): string[] {
+  return value
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
+function parseCategoryLines(value: string): string[] {
+  return value
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+function parseAttributesConfig(
+  value: string
+): Record<string, string[]> | undefined {
+  const trimmed = value.trim();
+  if (!trimmed) return undefined;
+  try {
+    const parsed = JSON.parse(trimmed) as Record<string, unknown>;
+    const result: Record<string, string[]> = {};
+    Object.entries(parsed).forEach(([key, entry]) => {
+      if (Array.isArray(entry)) {
+        result[key] = entry.map((item) => String(item));
+      } else if (entry !== null && entry !== undefined) {
+        result[key] = [String(entry)];
+      }
+    });
+    return Object.keys(result).length > 0 ? result : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function prepareAttributesPayload(
+  raw: string
+): Record<string, unknown> | string | undefined {
+  const trimmed = raw.trim();
+  if (!trimmed) return undefined;
+  try {
+    return JSON.parse(trimmed);
+  } catch {
+    return trimmed;
+  }
+}
 
 export default function AdminProducts() {
   const toast = useToast();
@@ -30,12 +90,34 @@ export default function AdminProducts() {
     currency: "USD",
     brand: "",
     category: "",
+    categoryPath: "",
     imageUrl: "",
     stockCount: "",
     tagsCsv: "",
     description: "",
+    attributesJson: "",
   });
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [showSeedOptions, setShowSeedOptions] = useState(false);
+  const [seedBrands, setSeedBrands] = useState("");
+  const [seedCategories, setSeedCategories] = useState(
+    ["Electronics > Audio > Headphones", "Fitness > Wearables > Smartwatch", "Wellness > Yoga > Accessories"].join(
+      "\n"
+    )
+  );
+  const [seedTags, setSeedTags] = useState("featured,seasonal,recommended");
+  const [seedMinPrice, setSeedMinPrice] = useState("12");
+  const [seedMaxPrice, setSeedMaxPrice] = useState("320");
+  const [seedAttributes, setSeedAttributes] = useState(
+    JSON.stringify(
+      {
+        audience: ["beginner", "enthusiast", "professional"],
+        sustainability: ["recycled", "low_impact"],
+      },
+      null,
+      2
+    )
+  );
 
   function setField<K extends keyof typeof form>(key: K, val: string) {
     setForm((f) => ({ ...f, [key]: val }));
@@ -56,7 +138,15 @@ export default function AdminProducts() {
       if (q) url.searchParams.set("q", q);
       const res = await fetch(url);
       const data = await res.json();
-      setItems(data.items || []);
+      setItems(
+        (data.items || []).map((item: Product) => ({
+          ...item,
+          imageUrl: item.imageUrl ?? "",
+          tagsCsv: item.tagsCsv ?? "",
+          description: item.description ?? "",
+          attributesJson: item.attributesJson ?? "",
+        }))
+      );
       setTotal(data.total || 0);
       setSelected({});
     } finally {
@@ -83,10 +173,12 @@ export default function AdminProducts() {
           currency: p.currency || "USD",
           brand: p.brand || "",
           category: p.category || "",
-          imageUrl: "",
+          categoryPath: p.category || "",
+          imageUrl: p.imageUrl || "",
           stockCount: String(p.stockCount ?? ""),
-          tagsCsv: "",
-          description: "",
+          tagsCsv: p.tagsCsv || "",
+          description: p.description || "",
+          attributesJson: formatAttributes(p.attributesJson),
         });
       }
     } else if (ids.length > 1) {
@@ -104,10 +196,12 @@ export default function AdminProducts() {
         currency: allEq((p) => p.currency) || "USD",
         brand: allEq((p) => p.brand) || "",
         category: allEq((p) => p.category) || "",
-        imageUrl: "",
+        categoryPath: allEq((p) => p.category) || "",
+        imageUrl: allEq((p) => p.imageUrl ?? "") || "",
         stockCount: allEq((p) => String(p.stockCount)) || "",
-        tagsCsv: "",
-        description: "",
+        tagsCsv: allEq((p) => p.tagsCsv ?? "") || "",
+        description: allEq((p) => p.description ?? "") || "",
+        attributesJson: "",
       });
     } else {
       setForm({
@@ -117,10 +211,12 @@ export default function AdminProducts() {
         currency: "USD",
         brand: "",
         category: "",
+        categoryPath: "",
         imageUrl: "",
         stockCount: "",
         tagsCsv: "",
         description: "",
+        attributesJson: "",
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -149,10 +245,60 @@ export default function AdminProducts() {
   }
 
   async function onSeed(count = 50) {
+    const payload: Record<string, unknown> = { count };
+    const brands = parseCsvList(seedBrands);
+    if (brands.length > 0) {
+      payload.brands = brands;
+    }
+    const categoryLines = parseCategoryLines(seedCategories);
+    if (categoryLines.length > 0) {
+      payload.categories = categoryLines;
+    }
+    const tagList = parseCsvList(seedTags);
+    if (tagList.length > 0) {
+      payload.tags = tagList;
+    }
+    const priceRange: { min?: number; max?: number } = {};
+    if (seedMinPrice.trim()) {
+      const parsed = Number(seedMinPrice);
+      if (Number.isNaN(parsed)) {
+        toast("Invalid minimum price");
+        return;
+      }
+      priceRange.min = parsed;
+    }
+    if (seedMaxPrice.trim()) {
+      const parsed = Number(seedMaxPrice);
+      if (Number.isNaN(parsed)) {
+        toast("Invalid maximum price");
+        return;
+      }
+      priceRange.max = parsed;
+    }
+    if (
+      priceRange.min !== undefined &&
+      priceRange.max !== undefined &&
+      priceRange.min > priceRange.max
+    ) {
+      toast("Minimum price must be less than maximum price");
+      return;
+    }
+    if (Object.keys(priceRange).length > 0) {
+      payload.priceRange = priceRange;
+    }
+    if (seedAttributes.trim()) {
+      const parsedAttributes = parseAttributesConfig(seedAttributes);
+      if (!parsedAttributes) {
+        toast("Seed attributes must be valid JSON (object of arrays).");
+        return;
+      }
+      payload.attributes = parsedAttributes;
+    }
+
     await fetch("/api/products/seed", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ count }),
+      body: JSON.stringify(payload),
     });
     toast(`Inserted ${count} products`);
     load();
@@ -196,7 +342,7 @@ export default function AdminProducts() {
     e.preventDefault();
     const ids = selectedIds;
     if (!ids.length) {
-      const payload = {
+      const payload: Record<string, unknown> = {
         name: form.name,
         sku: form.sku,
         price: form.price ? parseFloat(form.price) : 0,
@@ -208,6 +354,16 @@ export default function AdminProducts() {
         tagsCsv: form.tagsCsv,
         description: form.description,
       };
+      if (form.categoryPath.trim()) {
+        payload.categoryPath = form.categoryPath;
+      }
+      const attributesPayload = prepareAttributesPayload(form.attributesJson);
+      if (attributesPayload !== undefined) {
+        payload.attributes = attributesPayload;
+        payload.attributesJson = form.attributesJson;
+      } else if (form.attributesJson.trim() === "") {
+        payload.attributesJson = "";
+      }
       await fetch("/api/products", {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -221,10 +377,12 @@ export default function AdminProducts() {
         currency: "USD",
         brand: "",
         category: "",
+        categoryPath: "",
         imageUrl: "",
         stockCount: "",
         tagsCsv: "",
         description: "",
+        attributesJson: "",
       });
       load();
       return;
@@ -236,11 +394,24 @@ export default function AdminProducts() {
     if (touched.currency) data.currency = form.currency || "USD";
     if (touched.brand) data.brand = form.brand;
     if (touched.category) data.category = form.category;
+    if (touched.categoryPath) data.categoryPath = form.categoryPath;
     if (touched.imageUrl) data.imageUrl = form.imageUrl;
     if (touched.stockCount)
       data.stockCount = form.stockCount ? parseInt(form.stockCount, 10) : 0;
     if (touched.tagsCsv) data.tagsCsv = form.tagsCsv;
     if (touched.description) data.description = form.description;
+    if (touched.attributesJson) {
+      const trimmed = form.attributesJson.trim();
+      if (!trimmed) {
+        data.attributesJson = "";
+      } else {
+        const attributesPayload = prepareAttributesPayload(form.attributesJson);
+        if (attributesPayload !== undefined) {
+          data.attributes = attributesPayload;
+        }
+        data.attributesJson = form.attributesJson;
+      }
+    }
     if (!Object.keys(data).length) return toast("No changes to apply");
     await fetch("/api/products/batch", {
       method: "POST",
@@ -288,6 +459,13 @@ export default function AdminProducts() {
             Create batch
           </button>
           <button
+            type="button"
+            className="border rounded px-3 py-2 text-xs"
+            onClick={() => setShowSeedOptions((prev) => !prev)}
+          >
+            {showSeedOptions ? "Hide seed options" : "Seed options"}
+          </button>
+          <button
             className="border rounded px-3 py-2 text-sm"
             onClick={onDeleteSelected}
             disabled={!selectedIds.length}
@@ -313,6 +491,71 @@ export default function AdminProducts() {
           </button>
         </div>
       </div>
+
+      {showSeedOptions ? (
+        <div className="border rounded p-4 bg-gray-50 space-y-3">
+          <h3 className="text-sm font-semibold text-gray-700">
+            Seed generator options
+          </h3>
+          <div className="grid gap-3 md:grid-cols-2">
+            <label className="text-xs text-gray-700">
+              Brands (comma separated)
+              <input
+                className="mt-1 w-full border rounded p-2 text-sm"
+                placeholder="Acme, Globex, Umbrella"
+                value={seedBrands}
+                onChange={(e) => setSeedBrands(e.target.value)}
+              />
+            </label>
+            <label className="text-xs text-gray-700">
+              Tags (comma separated)
+              <input
+                className="mt-1 w-full border rounded p-2 text-sm"
+                placeholder="featured, seasonal, recommended"
+                value={seedTags}
+                onChange={(e) => setSeedTags(e.target.value)}
+              />
+            </label>
+            <label className="text-xs text-gray-700 md:col-span-2">
+              Category paths (one per line)
+              <textarea
+                className="mt-1 w-full border rounded p-2 text-sm h-24"
+                placeholder="Electronics > Audio > Headphones"
+                value={seedCategories}
+                onChange={(e) => setSeedCategories(e.target.value)}
+              />
+            </label>
+            <label className="text-xs text-gray-700">
+              Minimum price
+              <input
+                className="mt-1 w-full border rounded p-2 text-sm"
+                type="number"
+                min={1}
+                value={seedMinPrice}
+                onChange={(e) => setSeedMinPrice(e.target.value)}
+              />
+            </label>
+            <label className="text-xs text-gray-700">
+              Maximum price
+              <input
+                className="mt-1 w-full border rounded p-2 text-sm"
+                type="number"
+                min={1}
+                value={seedMaxPrice}
+                onChange={(e) => setSeedMaxPrice(e.target.value)}
+              />
+            </label>
+            <label className="text-xs text-gray-700 md:col-span-2">
+              Attribute pools (JSON object of arrays)
+              <textarea
+                className="mt-1 w-full border rounded p-2 text-sm h-28 font-mono"
+                value={seedAttributes}
+                onChange={(e) => setSeedAttributes(e.target.value)}
+              />
+            </label>
+          </div>
+        </div>
+      ) : null}
 
       <table className="w-full text-sm border">
         <thead>
@@ -452,6 +695,13 @@ export default function AdminProducts() {
             onChange={(e) => setField("category", e.target.value)}
           />
           <input
+            className="border p-2 md:col-span-2"
+            name="categoryPath"
+            placeholder="Category path (e.g. Electronics > Audio > Headphones)"
+            value={form.categoryPath}
+            onChange={(e) => setField("categoryPath", e.target.value)}
+          />
+          <input
             className="border p-2"
             name="imageUrl"
             placeholder="Image URL"
@@ -469,9 +719,16 @@ export default function AdminProducts() {
           <input
             className="border p-2"
             name="tagsCsv"
-            placeholder="Tags CSV"
+            placeholder="Tags (comma separated)"
             value={form.tagsCsv}
             onChange={(e) => setField("tagsCsv", e.target.value)}
+          />
+          <textarea
+            className="border p-2 md:col-span-3 font-mono text-xs"
+            name="attributesJson"
+            placeholder='{"color":"black","usage":"commute"}'
+            value={form.attributesJson}
+            onChange={(e) => setField("attributesJson", e.target.value)}
           />
           <textarea
             className="border p-2 md:col-span-3"

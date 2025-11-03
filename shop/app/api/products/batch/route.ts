@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/server/db/client";
 import { deleteItems } from "@/server/services/recsys";
+import { normalizeProductPatch } from "@/server/normalizers/product";
 
 type BatchPayload = {
   action: "update" | "delete";
@@ -34,9 +35,16 @@ export async function POST(req: NextRequest) {
     const { data } = body;
     if (!data)
       return NextResponse.json({ error: "data required" }, { status: 400 });
+    const normalized = normalizeProductPatch(data);
+    if (Object.keys(normalized).length === 0) {
+      return NextResponse.json(
+        { error: "no valid fields to update" },
+        { status: 400 }
+      );
+    }
     const tx = body.ids.map((id) =>
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      prisma.product.update({ where: { id }, data: data as any })
+      prisma.product.update({ where: { id }, data: normalized as any })
     );
     await prisma.$transaction(tx);
     return NextResponse.json({ updated: body.ids.length });
