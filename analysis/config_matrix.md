@@ -7,6 +7,6 @@
 | Brand whitelist                          | Missing    | `POST /v1/recommendations` with `constraints.include_tags_any=['acmetech']` | Returned 10 mixed-brand items (no enforcement), see `analysis/evidence/scenario_s6_whitelist.json`. |
 | Diversity knob (MMR lambda)              | Partial    | `/v1/recommendations` override `{mmr_lambda:0.1}` | Similarity dropped 0.108→0.093 with neutral NDCG impact (`analysis/evidence/scenario_s4_diversity.json`). |
 | Cold-start user defaults                 | Supported  | Upsert new user then `/v1/recommendations` | 10-item list covering 9 categories (`analysis/evidence/scenario_s7_cold_start.json`). |
-| New-item exposure controls               | Missing    | Manual boost vs baseline on fresh item | Exposure rate stayed 88% after boost, no controllability (`analysis/evidence/scenario_s8_new_item.json`). |
+| New-item exposure controls               | Supported  | Manual boost vs baseline on fresh item | Boost rules now inject off-candidate items and Prometheus counters/logs expose boost & pin exposure rates (`analysis/evidence/scenario_s8_new_item.json`). |
 | Margin vs relevance trade-off            | Missing    | BOOST rule on `high_margin` tag, boost_values {0.0,0.4,0.8} | Margin & NDCG unchanged across knobs (`analysis/evidence/scenario_s9_tradeoff.json`). |
 | Explainability & trace                   | Supported  | `/v1/recommendations` with `include_reasons=true`, `explain_level=full` | Responses include model_version, reasons, explain blocks (`analysis/evidence/scenario_s10_explainability.json`). |

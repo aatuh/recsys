@@ -145,7 +145,9 @@ func (e *evaluator) apply(rules []types.Rule, req EvaluateRequest) (*EvaluateRes
 				}
 				cand, ok := candidateMap[id]
 				if !ok {
-					continue
+					cand = types.ScoredItem{ItemID: id, Score: 0}
+					candidateMap[id] = cand
+					order = append(order, id)
 				}
 				cand.Score += *rule.BoostValue
 				candidateMap[id] = cand

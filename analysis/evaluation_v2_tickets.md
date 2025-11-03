@@ -34,8 +34,8 @@ Re-enable manual overrides and rule actions so operators can boost, pin, and sha
 - [x] **REC-203 – BOOST/PIN/Block conflict resolution**  
   Formalize deterministic ordering between conflicting rules. Document precedence, add tests covering rule mixtures, and update explanations to expose active rule IDs.
 
-- [ ] **REC-204 – New-item exposure controls**  
-  Implement controllable exploration/boost logic so manual actions measurably change appearance rates (`analysis/evidence/scenario_s8_new_item.json`). Provide monitoring on exploration rates by surface.
+- [x] **REC-204 – New-item exposure controls**  
+  Boost rules now inject off-candidate items so manual overrides surface fresh inventory even without baseline popularity. Added per-surface Prometheus counters and structured logs tracking boost/pin exposure rates to monitor exploration impact.
 
 - [ ] **REC-205 – Multi-objective trade-off curve**  
   Wire boost value multipliers into scoring to yield monotonic margin shifts (`analysis/evidence/scenario_s9_tradeoff.json`). Capture MMR + margin analytics for tuning and expose trade-off presets to ops.

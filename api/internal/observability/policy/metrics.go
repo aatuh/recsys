@@ -16,6 +16,8 @@ type Metrics struct {
 	explicitHits    *prometheus.CounterVec
 	recentHits      *prometheus.CounterVec
 	ruleActions     *prometheus.CounterVec
+	ruleExposure    *prometheus.CounterVec
+	responseItems   *prometheus.CounterVec
 }
 
 // NewMetrics registers policy metrics with the provided Prometheus registerer.
@@ -54,7 +56,17 @@ func NewMetrics(reg prometheus.Registerer) *Metrics {
 		Help: "Count of applied rule actions by type",
 	}, []string{"namespace", "surface", "action"})
 
-	reg.MustRegister(includeRequests, includeDropped, includeLeak, explicitHits, recentHits, ruleActions)
+	ruleExposure := prometheus.NewCounterVec(prometheus.CounterOpts{
+		Name: "policy_rule_exposure_total",
+		Help: "Items delivered in responses due to rule actions",
+	}, []string{"namespace", "surface", "action"})
+
+	responseItems := prometheus.NewCounterVec(prometheus.CounterOpts{
+		Name: "policy_response_items_total",
+		Help: "Total recommendation items returned per namespace/surface",
+	}, []string{"namespace", "surface"})
+
+	reg.MustRegister(includeRequests, includeDropped, includeLeak, explicitHits, recentHits, ruleActions, ruleExposure, responseItems)
 
 	return &Metrics{
 		includeRequests: includeRequests,
@@ -63,6 +75,8 @@ func NewMetrics(reg prometheus.Registerer) *Metrics {
 		explicitHits:    explicitHits,
 		recentHits:      recentHits,
 		ruleActions:     ruleActions,
+		ruleExposure:    ruleExposure,
+		responseItems:   responseItems,
 	}
 }
 
@@ -100,6 +114,16 @@ func (m *Metrics) Observe(req algorithm.Request, summary *algorithm.PolicySummar
 	}
 	if summary.RuleBoostCount > 0 {
 		m.ruleActions.WithLabelValues(ns, surface, "boost").Add(float64(summary.RuleBoostCount))
+	}
+
+	if summary.FinalCount > 0 {
+		m.responseItems.WithLabelValues(ns, surface).Add(float64(summary.FinalCount))
+	}
+	if summary.RuleBoostExposure > 0 {
+		m.ruleExposure.WithLabelValues(ns, surface, "boost").Add(float64(summary.RuleBoostExposure))
+	}
+	if summary.RulePinExposure > 0 {
+		m.ruleExposure.WithLabelValues(ns, surface, "pin").Add(float64(summary.RulePinExposure))
 	}
 }
 

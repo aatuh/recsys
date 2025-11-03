@@ -196,6 +196,12 @@ func (e *Engine) Recommend(
 	// Apply personalization boost.
 	e.applyPersonalizationBoost(ctx, candidateData, req)
 
+	// Snapshot candidates before rule application to detect injected items.
+	preRuleIDs := make(map[string]struct{}, len(candidateData.Candidates))
+	for _, cand := range candidateData.Candidates {
+		preRuleIDs[cand.ItemID] = struct{}{}
+	}
+
 	// Apply rule engine adjustments before MMR/caps.
 	var ruleResult *rules.EvaluateResult
 	if e.rulesManager != nil && e.config.RulesEnabled {
@@ -218,12 +224,26 @@ func (e *Engine) Recommend(
 		}
 		policySummary.RuleBlockCount = blockCount
 		policySummary.RuleBoostCount = boostCount
+		// Track candidates injected by rules (e.g., manual boosts on new items).
+		injected := 0
+		for _, cand := range candidateData.Candidates {
+			if _, ok := preRuleIDs[cand.ItemID]; !ok {
+				injected++
+			}
+		}
+		policySummary.RuleBoostInjected = injected
 	} else {
 		policySummary.RulePinCount = 0
 		policySummary.RuleBlockCount = 0
 		policySummary.RuleBoostCount = 0
+		policySummary.RuleBoostInjected = 0
 	}
 	policySummary.AfterRules = len(candidateData.Candidates)
+
+	// Ensure tags exist for any new candidates introduced by rules.
+	if err := e.populateMissingTags(ctx, candidateData, req); err != nil {
+		return nil, nil, err
+	}
 
 	// Determine model version.
 	// Default requests (no explicit blend provided) are reported as
@@ -280,7 +300,7 @@ func (e *Engine) Recommend(
 		reasonSink,
 		ruleResult,
 	)
-	finalizePolicySummary(&policySummary, response)
+	finalizePolicySummary(&policySummary, response, ruleResult)
 	trace.Policy = &policySummary
 	if len(trace.Anchors) == 0 && candidateData.AnchorsFetched {
 		trace.Anchors = append(trace.Anchors, "(no_recent_activity)")
@@ -768,18 +788,15 @@ func (e *Engine) applyConstraintFilters(
 			} else {
 				summary.ConstraintFilteredIDs = append([]string(nil), removed...)
 			}
+			lookup := make(map[string]struct{}, len(removed))
+			for _, id := range removed {
+				lookup[id] = struct{}{}
+			}
+			summary.constraintFilteredLookup = lookup
 		} else {
 			summary.ConstraintFilteredIDs = nil
+			summary.constraintFilteredLookup = nil
 		}
-	if len(removed) > 0 {
-		lookup := make(map[string]struct{}, len(removed))
-		for _, id := range removed {
-			lookup[id] = struct{}{}
-		}
-		summary.constraintFilteredLookup = lookup
-	} else {
-		summary.constraintFilteredLookup = nil
-	}
 		summary.AfterConstraintFilters = len(candidates)
 	}
 
@@ -798,7 +815,44 @@ func hasAnyTag(candidateTags []string, required map[string]struct{}) bool {
 	return false
 }
 
-func finalizePolicySummary(summary *PolicySummary, resp *Response) {
+func (e *Engine) populateMissingTags(
+	ctx context.Context,
+	data *CandidateData,
+	req Request,
+) error {
+	if data == nil {
+		return nil
+	}
+	if e.store == nil {
+		return nil
+	}
+
+	missing := make([]string, 0)
+	for _, cand := range data.Candidates {
+		if _, ok := data.Tags[cand.ItemID]; !ok {
+			missing = append(missing, cand.ItemID)
+		}
+	}
+
+	if len(missing) == 0 {
+		return nil
+	}
+
+	tags, err := e.store.ListItemsTags(ctx, req.OrgID, req.Namespace, missing)
+	if err != nil {
+		return err
+	}
+
+	if data.Tags == nil {
+		data.Tags = make(map[string]types.ItemTags, len(tags))
+	}
+	for id, info := range tags {
+		data.Tags[id] = info
+	}
+	return nil
+}
+
+func finalizePolicySummary(summary *PolicySummary, resp *Response, ruleResult *rules.EvaluateResult) {
 	if summary == nil {
 		return
 	}
@@ -824,6 +878,26 @@ func finalizePolicySummary(summary *PolicySummary, resp *Response) {
 		} else {
 			summary.ConstraintLeakCount = 0
 			summary.ConstraintLeakIDs = nil
+		}
+
+		if ruleResult != nil && len(ruleResult.ItemEffects) > 0 {
+			boostExposure := 0
+			pinExposure := 0
+			for _, item := range resp.Items {
+				if eff, ok := ruleResult.ItemEffects[item.ItemID]; ok {
+					if eff.BoostDelta != 0 {
+						boostExposure++
+					}
+					if eff.Pinned {
+						pinExposure++
+					}
+				}
+			}
+			summary.RuleBoostExposure = boostExposure
+			summary.RulePinExposure = pinExposure
+		} else {
+			summary.RuleBoostExposure = 0
+			summary.RulePinExposure = 0
 		}
 	}
 	summary.constraintFilteredLookup = nil

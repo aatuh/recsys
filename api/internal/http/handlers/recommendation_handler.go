@@ -136,6 +136,16 @@ func (h *RecommendationHandler) Recommend(w http.ResponseWriter, r *http.Request
 				zap.Strings("leaked_items", summary.ConstraintLeakIDs),
 			)
 		}
+		if summary.RuleBoostExposure > 0 || summary.RulePinExposure > 0 {
+			h.logger.Info("policy_rule_exposure",
+				zap.String("namespace", result.AlgoRequest.Namespace),
+				zap.String("surface", result.AlgoRequest.Surface),
+				zap.Int("k", result.AlgoRequest.K),
+				zap.Int("boost_exposure", summary.RuleBoostExposure),
+				zap.Int("pin_exposure", summary.RulePinExposure),
+				zap.Int("boost_injected", summary.RuleBoostInjected),
+			)
+		}
 	}
 
 	if len(result.SourceStats) > 0 {

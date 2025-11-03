@@ -170,6 +170,9 @@ type PolicySummary struct {
 	RuleBlockCount           int                 `json:"rule_block_count"`
 	RulePinCount             int                 `json:"rule_pin_count"`
 	RuleBoostCount           int                 `json:"rule_boost_count"`
+	RuleBoostInjected        int                 `json:"rule_boost_injected"`
+	RuleBoostExposure        int                 `json:"rule_boost_exposure"`
+	RulePinExposure          int                 `json:"rule_pin_exposure"`
 	AfterRules               int                 `json:"after_rules"`
 	FinalCount               int                 `json:"final_count"`
 	ConstraintLeakCount      int                 `json:"constraint_leak_count"`

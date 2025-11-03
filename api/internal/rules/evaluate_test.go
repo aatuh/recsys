@@ -144,6 +144,51 @@ func TestEvaluatorBoostAdjustsScore(t *testing.T) {
 	}
 }
 
+func TestEvaluatorBoostInjectsMissingCandidate(t *testing.T) {
+	boost := 2.0
+	rules := []types.Rule{
+		{
+			RuleID:     uuid.New(),
+			Action:     types.RuleActionBoost,
+			TargetType: types.RuleTargetItem,
+			ItemIDs:    []string{"new"},
+			BoostValue: &boost,
+			Priority:   50,
+		},
+	}
+	eval := evaluator{maxPinSlots: 3}
+	req := EvaluateRequest{
+		Candidates: []types.ScoredItem{{ItemID: "existing", Score: 1.0}},
+	}
+	res, err := eval.apply(rules, req)
+	if err != nil {
+		t.Fatalf("apply: %v", err)
+	}
+	if len(res.Candidates) != 2 {
+		t.Fatalf("expected 2 candidates after injection, got %d", len(res.Candidates))
+	}
+	var injected *types.ScoredItem
+	for i := range res.Candidates {
+		if res.Candidates[i].ItemID == "new" {
+			injected = &res.Candidates[i]
+			break
+		}
+	}
+	if injected == nil {
+		t.Fatalf("expected new candidate to be appended, got %#v", res.Candidates)
+	}
+	if injected.Score != boost {
+		t.Fatalf("expected injected score %f, got %f", boost, injected.Score)
+	}
+	eff, ok := res.ItemEffects["new"]
+	if !ok || eff.BoostDelta != boost {
+		t.Fatalf("expected boost effect recorded for new item, got %#v", eff)
+	}
+	if len(res.ReasonTags["new"]) == 0 {
+		t.Fatalf("expected reason tags for injected item")
+	}
+}
+
 func TestEvaluatorPinsExternalItems(t *testing.T) {
 	rules := []types.Rule{
 		{

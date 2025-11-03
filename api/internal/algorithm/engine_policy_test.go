@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"recsys/internal/rules"
 	"recsys/internal/types"
 
 	"github.com/google/uuid"
@@ -125,7 +126,7 @@ func TestFinalizePolicySummaryDetectsLeaks(t *testing.T) {
 	}
 	resp := &Response{Items: []ScoredItem{{ItemID: "leaked"}, {ItemID: "ok"}}}
 
-	finalizePolicySummary(&summary, resp)
+	finalizePolicySummary(&summary, resp, nil)
 
 	if summary.FinalCount != 2 {
 		t.Fatalf("expected final count 2, got %d", summary.FinalCount)
@@ -138,5 +139,26 @@ func TestFinalizePolicySummaryDetectsLeaks(t *testing.T) {
 	}
 	if summary.constraintFilteredLookup != nil {
 		t.Fatalf("expected lookup cleared after finalize")
+	}
+}
+
+func TestFinalizePolicySummaryTracksRuleExposure(t *testing.T) {
+	summary := PolicySummary{}
+	resp := &Response{Items: []ScoredItem{{ItemID: "boosted"}, {ItemID: "pinned"}, {ItemID: "plain"}}}
+	ruleResult := &rules.EvaluateResult{
+		ItemEffects: map[string]rules.ItemEffect{
+			"boosted": {BoostDelta: 1.0},
+			"pinned":  {Pinned: true},
+			"other":   {BoostDelta: 2.0},
+		},
+	}
+
+	finalizePolicySummary(&summary, resp, ruleResult)
+
+	if summary.RuleBoostExposure != 1 {
+		t.Fatalf("expected boost exposure 1, got %d", summary.RuleBoostExposure)
+	}
+	if summary.RulePinExposure != 1 {
+		t.Fatalf("expected pin exposure 1, got %d", summary.RulePinExposure)
 	}
 }
