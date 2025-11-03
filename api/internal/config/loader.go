@@ -209,6 +209,19 @@ func (l *loader) optionalIntGreaterThan(key string, min int, def int) int {
 	return i
 }
 
+func (l *loader) optionalFloatBetween(key string, min, max, def float64) float64 {
+	v, ok := l.lookup(key)
+	if !ok || v == "" {
+		return def
+	}
+	f, err := strconv.ParseFloat(v, 64)
+	if err != nil || f < min || f > max {
+		l.appendErr(key, fmt.Errorf("must be between %.2f and %.2f", min, max))
+		return def
+	}
+	return f
+}
+
 func (l *loader) optionalPositiveFloat(key string, def float64) float64 {
 	v, ok := l.lookup(key)
 	if !ok || v == "" {

@@ -3,6 +3,9 @@
 PROFILE ?= dev
 SINCE ?= 24h
 NAMESPACE ?= default
+SCENARIO_BASE_URL ?= http://localhost:8000
+SCENARIO_ORG_ID ?= 00000000-0000-0000-0000-000000000001
+SCENARIO_NAMESPACE ?= default
 
 help: ## Show this help message
 	@echo "Available targets:"
@@ -56,6 +59,12 @@ fmt: ## Format UI (eslint --fix)
 typecheck: ## Typecheck UI
 	@echo "🔎 Typechecking UI..."
 	@cd web && pnpm run typecheck
+
+.PHONY: scenario-suite
+scenario-suite: ## Seed sample data and run S1-S10 scenario regression suite
+	@echo "🎯 Running end-to-end scenario suite..."
+	@python analysis/scripts/seed_dataset.py --base-url $(SCENARIO_BASE_URL) --org-id $(SCENARIO_ORG_ID) --namespace $(SCENARIO_NAMESPACE)
+	@python analysis/scripts/run_scenarios.py --base-url $(SCENARIO_BASE_URL) --org-id $(SCENARIO_ORG_ID) --namespace $(SCENARIO_NAMESPACE)
 
 prod-build: ## Build production Docker image
 	@echo "🏗️  Building production image..."

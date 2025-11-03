@@ -23,6 +23,7 @@ type Config struct {
 	ProfileTopNTags            int     // Max tags in user profile
 	ProfileMinEventsForBoost   int     // Minimum recent events before full boost applies
 	ProfileColdStartMultiplier float64 // Attenuation factor for sparse history
+	ProfileStarterBlendWeight  float64 // Weight (0-1) given to starter presets when blending with sparse history
 
 	// MMR and diversity
 	MMRLambda   float64 // MMR balance (0=diversity, 1=relevance)
@@ -50,17 +51,19 @@ type Config struct {
 
 // Request represents a recommendation request
 type Request struct {
-	OrgID          uuid.UUID
-	UserID         string
-	Namespace      string
-	Surface        string
-	SegmentID      string
-	K              int
-	Constraints    *types.PopConstraints
-	Blend          *BlendWeights
-	IncludeReasons bool
-	ExplainLevel   ExplainLevel
-	StarterProfile map[string]float64
+	OrgID              uuid.UUID
+	UserID             string
+	Namespace          string
+	Surface            string
+	SegmentID          string
+	K                  int
+	Constraints        *types.PopConstraints
+	Blend              *BlendWeights
+	IncludeReasons     bool
+	ExplainLevel       ExplainLevel
+	StarterProfile     map[string]float64
+	StarterBlendWeight float64
+	RecentEventCount   int
 }
 
 // BlendWeights represents the blending weights for different signals
@@ -135,23 +138,25 @@ type CandidateData struct {
 
 // TraceData aggregates algorithm internals for audit logging.
 type TraceData struct {
-	K              int
-	CandidatesPre  []types.ScoredItem
-	MMRInfo        map[string]MMRExplain
-	CapsInfo       map[string]CapsExplain
-	Anchors        []string
-	Boosted        map[string]bool
-	Reasons        map[string][]string
-	IncludeReasons bool
-	ExplainLevel   ExplainLevel
-	ModelVersion   string
-	RuleMatches    []rules.Match
-	RuleEffects    map[string]rules.ItemEffect
-	RuleEvaluated  []uuid.UUID
-	RulePinned     []rules.PinnedItem
-	SourceMetrics  map[string]SourceMetric
-	Policy         *PolicySummary
-	StarterProfile map[string]float64
+	K                  int
+	CandidatesPre      []types.ScoredItem
+	MMRInfo            map[string]MMRExplain
+	CapsInfo           map[string]CapsExplain
+	Anchors            []string
+	Boosted            map[string]bool
+	Reasons            map[string][]string
+	IncludeReasons     bool
+	ExplainLevel       ExplainLevel
+	ModelVersion       string
+	RuleMatches        []rules.Match
+	RuleEffects        map[string]rules.ItemEffect
+	RuleEvaluated      []uuid.UUID
+	RulePinned         []rules.PinnedItem
+	SourceMetrics      map[string]SourceMetric
+	Policy             *PolicySummary
+	StarterProfile     map[string]float64
+	StarterBlendWeight float64
+	RecentEventCount   int
 }
 
 // SourceMetric captures coverage and latency for a candidate source.

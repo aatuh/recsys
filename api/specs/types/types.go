@@ -81,21 +81,22 @@ type RecommendBlend struct {
 }
 
 type Overrides struct {
-	PopularityHalfLifeDays *int     `json:"popularity_halflife_days,omitempty"`
-	CoVisWindowDays        *int     `json:"covis_window_days,omitempty"`
-	PopularityFanout       *int     `json:"popularity_fanout,omitempty"`
-	MMRLambda              *float64 `json:"mmr_lambda,omitempty"`
-	BrandCap               *int     `json:"brand_cap,omitempty"`
-	CategoryCap            *int     `json:"category_cap,omitempty"`
-	RuleExcludeEvents      *bool    `json:"rule_exclude_events,omitempty"`
-	PurchasedWindowDays    *int     `json:"purchased_window_days,omitempty"`
-	ProfileWindowDays      *int     `json:"profile_window_days,omitempty"`
-	ProfileBoost           *float64 `json:"profile_boost,omitempty"`
-	ProfileTopN            *int     `json:"profile_top_n,omitempty"`
-	BlendAlpha             *float64 `json:"blend_alpha,omitempty"`
-	BlendBeta              *float64 `json:"blend_beta,omitempty"`
-	BlendGamma             *float64 `json:"blend_gamma,omitempty"`
-	BanditAlgo             *string  `json:"bandit_algo,omitempty"`
+	PopularityHalfLifeDays    *int     `json:"popularity_halflife_days,omitempty"`
+	CoVisWindowDays           *int     `json:"covis_window_days,omitempty"`
+	PopularityFanout          *int     `json:"popularity_fanout,omitempty"`
+	MMRLambda                 *float64 `json:"mmr_lambda,omitempty"`
+	BrandCap                  *int     `json:"brand_cap,omitempty"`
+	CategoryCap               *int     `json:"category_cap,omitempty"`
+	RuleExcludeEvents         *bool    `json:"rule_exclude_events,omitempty"`
+	PurchasedWindowDays       *int     `json:"purchased_window_days,omitempty"`
+	ProfileWindowDays         *int     `json:"profile_window_days,omitempty"`
+	ProfileBoost              *float64 `json:"profile_boost,omitempty"`
+	ProfileTopN               *int     `json:"profile_top_n,omitempty"`
+	ProfileStarterBlendWeight *float64 `json:"profile_starter_blend_weight,omitempty"`
+	BlendAlpha                *float64 `json:"blend_alpha,omitempty"`
+	BlendBeta                 *float64 `json:"blend_beta,omitempty"`
+	BlendGamma                *float64 `json:"blend_gamma,omitempty"`
+	BanditAlgo                *string  `json:"bandit_algo,omitempty"`
 }
 
 type RecommendRequest struct {

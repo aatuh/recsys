@@ -36,6 +36,13 @@ This guide shows you how to configure the RecSys API and structure your data to 
 - **Diversity & caps**: Maximal Marginal Relevance (MMR) plus brand/category caps prevent monotony.  
 - **Rules**: pin/boost/block ops run near the end so business guardrails win when needed.
 
+### Candidate source reference
+- **Popularity retriever**: trending pool honoured by `POPULARITY_HALFLIFE_DAYS` and `POPULARITY_FANOUT`; forms the backbone when other signals are sparse.
+- **Collaborative retriever**: ALS top-N (`CollaborativeTopK`) for the requesting user; respects the merge exclusion list so it only contributes new inventory.
+- **Content retriever**: tag-driven lookup (`ContentSimilarityTopK`) seeded from the user's profile, ideal when embeddings are thin.
+- **Session retriever**: sequence-aware follow-ups (`SessionSequenceTopK`) that replay popular next clicks for the most recent sessions.
+- **Observability**: every recommendation trace now includes per-source counts and timings (see `sourceMetrics` in the decision trace and scenario evidence) so you can confirm coverage in dashboards or alerts.
+
 ---
 
 ## 2) Environment variables (global defaults)
@@ -82,6 +89,9 @@ Set these in your `.env` before starting the service. Invalid values are rejecte
 > Tip: keep a checked‑in `.env.example` describing each variable and safe defaults.
 
 ---
+
+> Need operational guidance? See `docs/rules-runbook.md` for the full
+> troubleshooting playbook covering logs, metrics, and scenario checks.
 
 ## 3) The *same knobs*, per request (no redeploy)
 

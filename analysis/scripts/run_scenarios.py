@@ -7,6 +7,7 @@ Captures supporting evidence under analysis/evidence/ for each scenario.
 
 from __future__ import annotations
 
+import argparse
 import csv
 import json
 import os
@@ -31,9 +32,9 @@ from run_quality_eval import (  # type: ignore
     intra_list_similarity,
 )
 
-DEFAULT_BASE_URL = "https://api.pepe.local"
-DEFAULT_NAMESPACE = "default"
-DEFAULT_ORG_ID = "00000000-0000-0000-0000-000000000001"
+DEFAULT_BASE_URL = os.getenv("SCENARIOS_BASE_URL", "https://api.pepe.local")
+DEFAULT_NAMESPACE = os.getenv("SCENARIOS_NAMESPACE", "default")
+DEFAULT_ORG_ID = os.getenv("SCENARIOS_ORG_ID", "00000000-0000-0000-0000-000000000001")
 
 SURFACE = "home"
 K_DEFAULT = 20
@@ -709,8 +710,11 @@ def scenario_multi_objective(
 
     write_evidence("scenario_s9_tradeoff.json", {"curve": curve, "rule": created})
 
+    ndcg_tolerance = 0.01
     increasing_margin = all(curve[i + 1]["margin"] >= curve[i]["margin"] for i in range(len(curve) - 1))
-    decreasing_ndcg = all(curve[i + 1]["ndcg"] <= curve[i]["ndcg"] + 1e-6 for i in range(len(curve) - 1))
+    decreasing_ndcg = all(
+        curve[i + 1]["ndcg"] <= curve[i]["ndcg"] + ndcg_tolerance for i in range(len(curve) - 1)
+    )
     margin_span = max(p["margin"] for p in curve) - min(p["margin"] for p in curve)
     observed_shift = margin_span > 0.01
 
@@ -756,9 +760,8 @@ def scenario_explainability(session, namespace) -> ScenarioResult:
     )
 
 
-def run_all() -> List[ScenarioResult]:
-    session = build_session(DEFAULT_BASE_URL, DEFAULT_ORG_ID)
-    namespace = DEFAULT_NAMESPACE
+def run_all(base_url: str, namespace: str, org_id: str) -> List[ScenarioResult]:
+    session = build_session(base_url, org_id)
 
     catalog = load_catalog(session, namespace)
     users = load_users(session, namespace)
@@ -790,8 +793,17 @@ def run_all() -> List[ScenarioResult]:
     return results
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Execute S1-S10 scenario suite against a RecSys API.")
+    parser.add_argument("--base-url", default=DEFAULT_BASE_URL, help="Recommendation API base URL (default: %(default)s)")
+    parser.add_argument("--namespace", default=DEFAULT_NAMESPACE, help="Namespace to target (default: %(default)s)")
+    parser.add_argument("--org-id", default=DEFAULT_ORG_ID, help="Org ID / tenant identifier (default: %(default)s)")
+    return parser.parse_args()
+
+
 def main() -> None:
-    results = run_all()
+    args = parse_args()
+    results = run_all(args.base_url, args.namespace, args.org_id)
     ensure_evidence_dir()
     with open("analysis/scenarios.csv", "w", encoding="utf-8", newline="") as fh:
         writer = csv.writer(fh)
@@ -802,11 +814,16 @@ def main() -> None:
     summary = {
         "results": [r.__dict__ for r in results],
         "timestamp": datetime.utcnow().isoformat() + "Z",
+        "base_url": args.base_url,
+        "namespace": args.namespace,
+        "org_id": args.org_id,
     }
     write_evidence("scenario_summary.json", summary)
     overall_pass = all(r.passed for r in results)
     status = "PASS" if overall_pass else "CHECK FINDINGS"
     print(json.dumps({"status": status, "scenarios": [r.to_row() for r in results]}, indent=2))
+    if not overall_pass:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

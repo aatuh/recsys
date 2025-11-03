@@ -24,6 +24,7 @@ type RecommendationConfig struct {
 	ProfileTopNTags            int
 	ProfileMinEventsForBoost   int
 	ProfileColdStartMultiplier float64
+	ProfileStarterBlendWeight  float64
 	MMRPresets                 map[string]float64
 	BlendAlpha                 float64
 	BlendBeta                  float64
@@ -67,6 +68,7 @@ func (c RecommendationConfig) BaseConfig() algorithm.Config {
 		ProfileTopNTags:            c.ProfileTopNTags,
 		ProfileMinEventsForBoost:   c.ProfileMinEventsForBoost,
 		ProfileColdStartMultiplier: c.ProfileColdStartMultiplier,
+		ProfileStarterBlendWeight:  c.ProfileStarterBlendWeight,
 		MMRLambda:                  c.MMRLambda,
 		BrandCap:                   c.BrandCap,
 		CategoryCap:                c.CategoryCap,

@@ -6,13 +6,16 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"recsys/internal/algorithm"
 	"recsys/internal/http/common"
 	policymetrics "recsys/internal/observability/policy"
+	"recsys/internal/rules"
 	"recsys/internal/services/recommendation"
 	"recsys/internal/store"
+	"recsys/internal/types"
 	handlerstypes "recsys/specs/types"
 
 	"github.com/go-chi/chi/v5"
@@ -132,6 +135,17 @@ func (h *RecommendationHandler) Recommend(w http.ResponseWriter, r *http.Request
 		if h.policyMetrics != nil {
 			h.policyMetrics.Observe(result.AlgoRequest, summary)
 		}
+		if summary.RuleBoostCount > 0 || summary.RulePinCount > 0 || summary.RuleBlockCount > 0 {
+			h.logger.Info("policy_rule_actions",
+				zap.String("namespace", result.AlgoRequest.Namespace),
+				zap.String("surface", result.AlgoRequest.Surface),
+				zap.Int("k", result.AlgoRequest.K),
+				zap.Int("boost_count", summary.RuleBoostCount),
+				zap.Int("pin_count", summary.RulePinCount),
+				zap.Int("block_count", summary.RuleBlockCount),
+				zap.Strings("rule_ids", collectRuleIDs(result.TraceData.RuleMatches)),
+			)
+		}
 		if summary.ConstraintLeakCount > 0 {
 			h.logger.Warn("policy_constraint_leak",
 				zap.String("namespace", result.AlgoRequest.Namespace),
@@ -149,6 +163,24 @@ func (h *RecommendationHandler) Recommend(w http.ResponseWriter, r *http.Request
 				zap.Int("boost_exposure", summary.RuleBoostExposure),
 				zap.Int("pin_exposure", summary.RulePinExposure),
 				zap.Int("boost_injected", summary.RuleBoostInjected),
+			)
+		}
+		if summary.RuleBoostCount > 0 && summary.RuleBoostExposure == 0 {
+			h.logger.Warn("policy_rule_zero_effect",
+				zap.String("namespace", result.AlgoRequest.Namespace),
+				zap.String("surface", result.AlgoRequest.Surface),
+				zap.Int("k", result.AlgoRequest.K),
+				zap.String("type", "boost"),
+				zap.Strings("rule_ids", collectRuleIDsByAction(result.TraceData.RuleMatches, types.RuleActionBoost)),
+			)
+		}
+		if summary.RulePinCount > 0 && summary.RulePinExposure == 0 {
+			h.logger.Warn("policy_rule_zero_effect",
+				zap.String("namespace", result.AlgoRequest.Namespace),
+				zap.String("surface", result.AlgoRequest.Surface),
+				zap.Int("k", result.AlgoRequest.K),
+				zap.String("type", "pin"),
+				zap.Strings("rule_ids", collectRuleIDsByAction(result.TraceData.RuleMatches, types.RuleActionPin)),
 			)
 		}
 	}
@@ -255,6 +287,12 @@ func buildTraceDebugPayload(traceData *algorithm.TraceData) *traceDebugPayload {
 	}
 	if len(traceData.StarterProfile) > 0 {
 		extras["starter_profile"] = traceData.StarterProfile
+		if traceData.StarterBlendWeight > 0 {
+			extras["starter_profile_weight"] = traceData.StarterBlendWeight
+		}
+	}
+	if traceData.RecentEventCount >= 0 {
+		extras["recent_event_count"] = traceData.RecentEventCount
 	}
 	if len(traceData.SourceMetrics) > 0 {
 		sources := make(map[string]traceSourceMetric, len(traceData.SourceMetrics))
@@ -275,4 +313,41 @@ func buildTraceDebugPayload(traceData *algorithm.TraceData) *traceDebugPayload {
 
 func durationMillis(d time.Duration) float64 {
 	return float64(d) / float64(time.Millisecond)
+}
+
+func collectRuleIDs(matches []rules.Match) []string {
+	if len(matches) == 0 {
+		return nil
+	}
+	seen := make(map[string]struct{}, len(matches))
+	ids := make([]string, 0, len(matches))
+	for _, match := range matches {
+		id := strings.ToLower(match.RuleID.String())
+		if _, ok := seen[id]; ok {
+			continue
+		}
+		seen[id] = struct{}{}
+		ids = append(ids, id)
+	}
+	return ids
+}
+
+func collectRuleIDsByAction(matches []rules.Match, action types.RuleAction) []string {
+	if len(matches) == 0 {
+		return nil
+	}
+	seen := make(map[string]struct{}, len(matches))
+	ids := make([]string, 0, len(matches))
+	for _, match := range matches {
+		if match.Action != action {
+			continue
+		}
+		id := strings.ToLower(match.RuleID.String())
+		if _, ok := seen[id]; ok {
+			continue
+		}
+		seen[id] = struct{}{}
+		ids = append(ids, id)
+	}
+	return ids
 }

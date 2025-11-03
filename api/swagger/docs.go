@@ -2961,6 +2961,9 @@ const docTemplate = `{
                 "profile_boost": {
                     "type": "number"
                 },
+                "profile_starter_blend_weight": {
+                    "type": "number"
+                },
                 "profile_top_n": {
                     "type": "integer"
                 },

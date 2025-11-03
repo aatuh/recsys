@@ -59,16 +59,16 @@ Improve relevance for underserved cohorts while maintaining diversity.
 ## Epic EPC-004 – Observability & Regression Guardrails
 Codify verification so policy and merchandising features stay healthy.
 
-- [ ] **REC-401 – Automated scenario suite**  
-  Turn S1–S10 scripts (`analysis/scripts/run_scenarios.py`) into CI checks. Fail pipelines when any scenario regresses, storing evidence as build artifacts.
+- [x] **REC-401 – Automated scenario suite**  
+  Added a dedicated GitHub Actions workflow (`.github/workflows/scenario-suite.yml`) that spins up the stack, seeds baseline data, runs the S1–S10 harness via `make scenario-suite`, fails on regressions, and uploads the updated evidence.
 
-- [ ] **REC-402 – Production telemetry for rules/overrides**  
-  Log applied rule IDs, boost deltas, and pin placements in decision traces. Build dashboards to monitor rule hit rates and override efficacy.
+- [x] **REC-402 – Production telemetry for rules/overrides**  
+  Added structured `policy_rule_actions` / `policy_rule_exposure` logs, Prometheus counters (observed via `policyMetrics.Observe`), and documented the metrics so ops can monitor rule hit rates and surface override issues from production traffic.
 
-- [ ] **REC-403 – Alerting on zero-effect overrides**  
-  Detect when boosts/pins are created but produce no ranking change within defined windows, notifying ops teams to investigate.
+- [x] **REC-403 – Alerting on zero-effect overrides**  
+  Added `policy_rule_zero_effect` warnings plus the `policy_rule_zero_effect_total` Prometheus counter so ops can alert on boosts/pins that never impact the ranking.
 
-- [ ] **REC-404 – Documentation & runbooks refresh**  
+- [x] **REC-404 – Documentation & runbooks refresh**  
   Update README/config docs once fixes land, ensuring merchants understand override precedence, policy guarantees, and troubleshooting steps.
 
 ---

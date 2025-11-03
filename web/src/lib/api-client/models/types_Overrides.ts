@@ -14,6 +14,7 @@ export type types_Overrides = {
     popularity_fanout?: number;
     popularity_halflife_days?: number;
     profile_boost?: number;
+    profile_starter_blend_weight?: number;
     profile_top_n?: number;
     profile_window_days?: number;
     purchased_window_days?: number;

@@ -18,6 +18,7 @@ type Metrics struct {
 	ruleActions     *prometheus.CounterVec
 	ruleExposure    *prometheus.CounterVec
 	responseItems   *prometheus.CounterVec
+	ruleZeroEffect  *prometheus.CounterVec
 }
 
 // NewMetrics registers policy metrics with the provided Prometheus registerer.
@@ -66,7 +67,12 @@ func NewMetrics(reg prometheus.Registerer) *Metrics {
 		Help: "Total recommendation items returned per namespace/surface",
 	}, []string{"namespace", "surface"})
 
-	reg.MustRegister(includeRequests, includeDropped, includeLeak, explicitHits, recentHits, ruleActions, ruleExposure, responseItems)
+	ruleZeroEffect := prometheus.NewCounterVec(prometheus.CounterOpts{
+		Name: "policy_rule_zero_effect_total",
+		Help: "Rules that matched but produced zero exposure",
+	}, []string{"namespace", "surface", "action"})
+
+	reg.MustRegister(includeRequests, includeDropped, includeLeak, explicitHits, recentHits, ruleActions, ruleExposure, responseItems, ruleZeroEffect)
 
 	return &Metrics{
 		includeRequests: includeRequests,
@@ -77,6 +83,7 @@ func NewMetrics(reg prometheus.Registerer) *Metrics {
 		ruleActions:     ruleActions,
 		ruleExposure:    ruleExposure,
 		responseItems:   responseItems,
+		ruleZeroEffect:  ruleZeroEffect,
 	}
 }
 
@@ -124,6 +131,12 @@ func (m *Metrics) Observe(req algorithm.Request, summary *algorithm.PolicySummar
 	}
 	if summary.RulePinExposure > 0 {
 		m.ruleExposure.WithLabelValues(ns, surface, "pin").Add(float64(summary.RulePinExposure))
+	}
+	if summary.RuleBoostCount > 0 && summary.RuleBoostExposure == 0 {
+		m.ruleZeroEffect.WithLabelValues(ns, surface, "boost").Inc()
+	}
+	if summary.RulePinCount > 0 && summary.RulePinExposure == 0 {
+		m.ruleZeroEffect.WithLabelValues(ns, surface, "pin").Inc()
 	}
 }
 

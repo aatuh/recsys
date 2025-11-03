@@ -2,6 +2,7 @@ package recommendation
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"time"
 
@@ -106,8 +107,44 @@ func (s *Service) Recommend(
 	blendOverrides(&cfg, s.resolveBlend(ctx, algoReq.Namespace))
 	applyOverrides(&cfg, req.Overrides)
 
-	if starter := s.buildStarterProfile(ctx, cfg, algoReq, selection); len(starter) > 0 {
+	isNewSegment := strings.EqualFold(selection.SegmentID, "new_users")
+	if !isNewSegment && selection.UserTraits != nil {
+		if seg, ok := selection.UserTraits["segment"].(string); ok {
+			isNewSegment = strings.EqualFold(seg, "new_users")
+		}
+	}
+	if isNewSegment {
+		cfg.RuleExcludeEvents = false
+		if cfg.PopularityFanout < 1000 {
+			cfg.PopularityFanout = 1000
+		}
+	}
+
+	recentItems, err := s.recentInteractionItems(ctx, cfg, algoReq)
+	if err != nil {
+		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+			return nil, err
+		}
+		recentItems = nil
+	}
+
+	recentEventCount := len(recentItems)
+	recentCountKnown := recentItems != nil
+	effectiveEventCount := recentEventCount
+	if !recentCountKnown {
+		effectiveEventCount = -1
+	}
+	if isNewSegment && cfg.ProfileMinEventsForBoost > 0 && effectiveEventCount >= cfg.ProfileMinEventsForBoost {
+		effectiveEventCount = cfg.ProfileMinEventsForBoost - 1
+		if effectiveEventCount < 0 {
+			effectiveEventCount = 0
+		}
+	}
+	algoReq.RecentEventCount = effectiveEventCount
+
+	if starter := s.buildStarterProfile(ctx, cfg, algoReq, selection, recentEventCount, recentCountKnown, recentItems); len(starter) > 0 {
 		algoReq.StarterProfile = starter
+		algoReq.StarterBlendWeight = cfg.ProfileStarterBlendWeight
 	}
 
 	engine := algorithm.NewEngine(cfg, s.store, s.rules)
@@ -232,6 +269,15 @@ func applyOverrides(cfg *algorithm.Config, overrides *spectypes.Overrides) {
 	}
 	if overrides.ProfileTopN != nil {
 		cfg.ProfileTopNTags = *overrides.ProfileTopN
+	}
+	if overrides.ProfileStarterBlendWeight != nil {
+		weight := *overrides.ProfileStarterBlendWeight
+		if weight < 0 {
+			weight = 0
+		} else if weight > 1 {
+			weight = 1
+		}
+		cfg.ProfileStarterBlendWeight = weight
 	}
 	if overrides.MMRLambda != nil {
 		cfg.MMRLambda = *overrides.MMRLambda

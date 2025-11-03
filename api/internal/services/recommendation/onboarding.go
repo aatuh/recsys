@@ -35,12 +35,11 @@ func (s *Service) buildStarterProfile(
 	cfg algorithm.Config,
 	req algorithm.Request,
 	selection SegmentSelection,
+	recentEventCount int,
+	recentCountKnown bool,
+	recentItemIDs []string,
 ) map[string]float64 {
 	if req.UserID == "" {
-		return nil
-	}
-
-	if s.userHasHistory(ctx, cfg, req) {
 		return nil
 	}
 
@@ -54,9 +53,47 @@ func (s *Service) buildStarterProfile(
 		return nil
 	}
 
+	isNewSegment := segmentID == "new_users"
+	if !isNewSegment {
+		maxEvents := cfg.ProfileMinEventsForBoost
+		if maxEvents < 0 {
+			maxEvents = 0
+		}
+		if recentCountKnown && maxEvents > 0 && recentEventCount > maxEvents {
+			return nil
+		}
+		if !recentCountKnown && recentEventCount < 0 {
+			return nil
+		}
+	}
+
 	tagProfile := starterTagProfileForSegment(segmentID)
 	if len(tagProfile) == 0 {
 		return nil
+	}
+
+	if isNewSegment && len(recentItemIDs) > 0 {
+		tagsByItem, err := s.store.ListItemsTags(ctx, req.OrgID, req.Namespace, recentItemIDs)
+		if err == nil && len(tagsByItem) > 0 {
+			recentProfile := make(map[string]float64)
+			for _, tags := range tagsByItem {
+				if len(tags.Tags) == 0 {
+					continue
+				}
+				weight := 1.0 / float64(len(tags.Tags))
+				for _, tag := range tags.Tags {
+					key := strings.ToLower(strings.TrimSpace(tag))
+					if key == "" {
+						continue
+					}
+					recentProfile[key] += weight
+				}
+			}
+			normalizeWeights(recentProfile)
+			if len(recentProfile) > 0 {
+				tagProfile = blendProfiles(tagProfile, recentProfile, 0.5)
+			}
+		}
 	}
 
 	topN := cfg.ProfileTopNTags
@@ -67,20 +104,27 @@ func (s *Service) buildStarterProfile(
 	return tagProfile
 }
 
-func (s *Service) userHasHistory(ctx context.Context, cfg algorithm.Config, req algorithm.Request) bool {
+func (s *Service) recentInteractionItems(ctx context.Context, cfg algorithm.Config, req algorithm.Request) ([]string, error) {
 	if s.store == nil || req.UserID == "" {
-		return false
+		return nil, nil
 	}
 	days := cfg.ProfileWindowDays
 	if days <= 0 {
 		days = 30
 	}
 	since := time.Now().UTC().Add(-time.Duration(days*24.0) * time.Hour)
-	items, err := s.store.ListUserRecentItemIDs(ctx, req.OrgID, req.Namespace, req.UserID, since, 1)
-	if err != nil {
-		return true
+	limit := cfg.ProfileMinEventsForBoost + 1
+	if limit <= 0 {
+		limit = 1
 	}
-	return len(items) > 0
+	if limit < 10 {
+		limit = 10
+	}
+	items, err := s.store.ListUserRecentItemIDs(ctx, req.OrgID, req.Namespace, req.UserID, since, limit)
+	if err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 func starterTagProfileForSegment(segment string) map[string]float64 {
@@ -148,4 +192,76 @@ func trimTagProfile(profile map[string]float64, topN int) map[string]float64 {
 		selected[k] = v / total
 	}
 	return selected
+}
+
+func normalizeWeights(values map[string]float64) {
+	if len(values) == 0 {
+		return
+	}
+	sum := 0.0
+	for _, v := range values {
+		if v > 0 {
+			sum += v
+		}
+	}
+	if sum <= 0 {
+		for k := range values {
+			delete(values, k)
+		}
+		return
+	}
+	for k, v := range values {
+		if v <= 0 {
+			delete(values, k)
+			continue
+		}
+		values[k] = v / sum
+	}
+}
+
+func blendProfiles(primary, secondary map[string]float64, weight float64) map[string]float64 {
+	w := weight
+	if w < 0 {
+		w = 0
+	}
+	if w > 1 {
+		w = 1
+	}
+	if w == 0 {
+		return copyWeights(primary)
+	}
+	if len(primary) == 0 {
+		return copyWeights(secondary)
+	}
+	blended := make(map[string]float64, len(primary)+len(secondary))
+	primaryWeight := 1 - w
+	if primaryWeight > 0 {
+		for k, v := range primary {
+			if v <= 0 {
+				continue
+			}
+			blended[k] = v * primaryWeight
+		}
+	}
+	if w > 0 {
+		for k, v := range secondary {
+			if v <= 0 {
+				continue
+			}
+			blended[k] += v * w
+		}
+	}
+	normalizeWeights(blended)
+	return blended
+}
+
+func copyWeights(src map[string]float64) map[string]float64 {
+	if len(src) == 0 {
+		return nil
+	}
+	out := make(map[string]float64, len(src))
+	for k, v := range src {
+		out[k] = v
+	}
+	return out
 }

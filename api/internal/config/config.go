@@ -107,6 +107,7 @@ type ProfileConfig struct {
 	TopNTags            int
 	MinEventsForBoost   int
 	ColdStartMultiplier float64
+	StarterBlendWeight  float64
 }
 
 type BlendConfig struct {
@@ -439,6 +440,7 @@ func Load(ctx context.Context, src Source) (Config, error) {
 	} else {
 		cfg.Recommendation.Profile.ColdStartMultiplier = 0.5
 	}
+	cfg.Recommendation.Profile.StarterBlendWeight = l.optionalFloatBetween("PROFILE_STARTER_BLEND_WEIGHT", 0, 1, 0.6)
 
 	presets := l.optionalStringMap("MMR_PRESETS")
 	if len(presets) > 0 {

@@ -76,6 +76,8 @@ After changing ranking knobs or data, run the scenario harness to validate polic
 
 ```bash
 python analysis/scripts/run_scenarios.py --base-url https://api.pepe.local --org-id "$RECSYS_ORG_ID"
+# or locally (with the dockerized API running):
+make scenario-suite SCENARIO_BASE_URL=http://localhost:8000 SCENARIO_ORG_ID="$RECSYS_ORG_ID"
 ```
 
 The script saves evidence under `analysis/evidence/` and rewrites `analysis/scenarios.csv`; scenario **S7** now records the starter profile applied to cold-start users, while **S8/S9** confirm boost and trade-off telemetry.
@@ -154,10 +156,18 @@ many items per brand/category make it to the final top-K.
    - Small multiplicative boost if the user's tag profile overlaps with the
    item's tags.
 5) Re‑rank (MMR + caps)
-   - MMR re-ranking plus brand/category.
+  - MMR re-ranking plus brand/category.
 6) Output and reasons
-   - See why items ranked (e.g., popularity, co-visitation, embeddings,
-   personalization, diversity).
+  - See why items ranked (e.g., popularity, co-visitation, embeddings,
+  personalization, diversity).
+
+#### Candidate sources
+
+- **Popularity retriever** pulls the global trending pool using the configured half-life and fanout; it's the baseline when we lack other signals.
+- **Collaborative retriever** queries ALS factors via `CollaborativeTopK` to surface user-specific recommendations that the popularity pool missed.
+- **Content retriever** reuses the user tag profile and `ContentSimilarityTopK` to add catalog-rich items that align with declared interests.
+- **Session retriever** (`SessionSequenceTopK`) looks at the most recent interactions and adds frequently-followed items for short-term intent.
+- **Source telemetry**: every request records per-source counts/durations in the decision trace (`sourceMetrics`) so dashboards and scenario evidence show which retrievers contributed and how long they took.
 
 ### Data + Algorithm Relationships
 
@@ -801,6 +811,20 @@ Put these in your service environment (see your `.env.example` files).
 | `RULE_EXCLUDE_EVENTS`   | bool           | Exclude items the user purchased recently.      | Requires `user_id`              |
 | `PURCHASED_WINDOW_DAYS` | float > 0      | Lookback for the exclude-purchased rule.        | Required if the rule is enabled |
 | `EXCLUDE_EVENT_TYPES`   | string (csv)   | Event type IDs to exclude when the rule is on.  | Comma-separated int16 values    |
+
+### Rule telemetry
+
+Every recommendation response emits structured policy summary data:
+
+- `policy_rule_actions` log lines capture boost/pin/block counts and the rule IDs that fired.
+- `policy_rule_exposure` logs report how many boosted or pinned items reached the final list.
+- Prometheus counters prefixed with `policy_` (e.g., `policy_rule_actions_total`, `policy_rule_exposure_total`) mirror the same data for dashboards and alerts.
+- `policy_rule_zero_effect` logs/counters warn when boosts or pins fire but the item never surfaces (see the runbook below).
+
+Expose the `/metrics` endpoint or ship the JSON logs into your observability stack to watch override health in production.
+
+> Need a deeper playbook? See [docs/rules-runbook.md](docs/rules-runbook.md) for
+detailed troubleshooting steps and operational checklists.
 
 ### Tag prefix vars
 

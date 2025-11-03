@@ -63,7 +63,7 @@ func (s onboardingStoreStub) BuildUserTagProfile(ctx context.Context, orgID uuid
 
 func TestBuildStarterProfileForNewUser(t *testing.T) {
 	svc := &Service{store: onboardingStoreStub{}}
-	cfg := algorithm.Config{ProfileTopNTags: 8, ProfileWindowDays: 30}
+	cfg := algorithm.Config{ProfileTopNTags: 8, ProfileWindowDays: 30, ProfileMinEventsForBoost: 3}
 	req := algorithm.Request{
 		OrgID:     uuid.New(),
 		UserID:    "newbie",
@@ -71,7 +71,7 @@ func TestBuildStarterProfileForNewUser(t *testing.T) {
 	}
 	selection := SegmentSelection{UserTraits: map[string]any{"segment": "new_users"}}
 
-	starter := svc.buildStarterProfile(context.Background(), cfg, req, selection)
+	starter := svc.buildStarterProfile(context.Background(), cfg, req, selection, 0, true, nil)
 	if len(starter) == 0 {
 		t.Fatalf("expected starter profile for new user")
 	}
@@ -87,25 +87,25 @@ func TestBuildStarterProfileForNewUser(t *testing.T) {
 	}
 }
 
-func TestBuildStarterProfileSkipsWhenHistory(t *testing.T) {
+func TestBuildStarterProfileSkipsWhenHistoryForNonNewSegment(t *testing.T) {
 	svc := &Service{store: onboardingStoreStub{recent: []string{"item_a"}}}
-	cfg := algorithm.Config{ProfileTopNTags: 8, ProfileWindowDays: 30}
+	cfg := algorithm.Config{ProfileTopNTags: 8, ProfileWindowDays: 30, ProfileMinEventsForBoost: 3}
 	req := algorithm.Request{
 		OrgID:     uuid.New(),
 		UserID:    "existing",
 		Namespace: "default",
 	}
-	selection := SegmentSelection{UserTraits: map[string]any{"segment": "new_users"}}
+	selection := SegmentSelection{UserTraits: map[string]any{"segment": "trend_seekers"}}
 
-	starter := svc.buildStarterProfile(context.Background(), cfg, req, selection)
+	starter := svc.buildStarterProfile(context.Background(), cfg, req, selection, 4, true, []string{"item_a"})
 	if starter != nil {
-		t.Fatalf("expected no starter profile when history exists")
+		t.Fatalf("expected no starter profile when history exists for non-new segment")
 	}
 }
 
 func TestStarterProfileUnknownSegment(t *testing.T) {
 	svc := &Service{store: onboardingStoreStub{}}
-	cfg := algorithm.Config{ProfileTopNTags: 8, ProfileWindowDays: 30}
+	cfg := algorithm.Config{ProfileTopNTags: 8, ProfileWindowDays: 30, ProfileMinEventsForBoost: 3}
 	req := algorithm.Request{
 		OrgID:     uuid.New(),
 		UserID:    "newbie",
@@ -113,8 +113,28 @@ func TestStarterProfileUnknownSegment(t *testing.T) {
 	}
 	selection := SegmentSelection{UserTraits: map[string]any{"segment": "unknown"}}
 
-	starter := svc.buildStarterProfile(context.Background(), cfg, req, selection)
+	starter := svc.buildStarterProfile(context.Background(), cfg, req, selection, 0, true, nil)
 	if starter != nil {
 		t.Fatalf("expected nil starter profile for unknown segment")
+	}
+}
+
+func TestBuildStarterProfileForNewUserEvenWithHistory(t *testing.T) {
+	svc := &Service{store: onboardingStoreStub{recent: []string{"item_a", "item_b", "item_c", "item_d", "item_e"}}}
+	cfg := algorithm.Config{ProfileTopNTags: 8, ProfileWindowDays: 30, ProfileMinEventsForBoost: 3}
+	req := algorithm.Request{
+		OrgID:     uuid.New(),
+		UserID:    "newbie",
+		Namespace: "default",
+	}
+	selection := SegmentSelection{UserTraits: map[string]any{"segment": "new_users"}}
+
+	if profile := starterTagProfileForSegment("new_users"); len(profile) == 0 {
+		t.Fatalf("expected preset for new_users")
+	}
+
+	starter := svc.buildStarterProfile(context.Background(), cfg, req, selection, 5, true, []string{"item_a", "item_b"})
+	if len(starter) == 0 {
+		t.Fatalf("expected starter profile for new user despite recent history")
 	}
 }
