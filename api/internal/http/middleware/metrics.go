@@ -75,6 +75,11 @@ func (m *HTTPMetrics) Handler() http.Handler {
 	return promhttp.HandlerFor(m.registry, promhttp.HandlerOpts{})
 }
 
+// Registerer exposes the underlying registry for custom collectors.
+func (m *HTTPMetrics) Registerer() prometheus.Registerer {
+	return m.registry
+}
+
 // SetMetricsPath configures the metrics endpoint to avoid double counting.
 func (m *HTTPMetrics) SetMetricsPath(path string) {
 	if path == "" {

@@ -16,6 +16,7 @@ import (
 
 	"recsys/internal/config"
 	httpmetrics "recsys/internal/http/middleware"
+	policymetrics "recsys/internal/observability/policy"
 )
 
 const serviceName = "recsys-api"
@@ -26,6 +27,7 @@ type Provider struct {
 	MetricsHandler    http.Handler
 	TraceMiddleware   func(http.Handler) http.Handler
 	Shutdown          func(context.Context) error
+	PolicyMetrics     *policymetrics.Metrics
 }
 
 // Setup initializes observability components based on configuration.
@@ -38,6 +40,7 @@ func Setup(ctx context.Context, cfg config.ObservabilityConfig, logger *zap.Logg
 		metrics.SetMetricsPath(cfg.MetricsPath)
 		prov.MetricsMiddleware = metrics.Middleware
 		prov.MetricsHandler = metrics.Handler()
+		prov.PolicyMetrics = policymetrics.NewMetrics(metrics.Registerer())
 	}
 
 	if cfg.TracingEnabled {

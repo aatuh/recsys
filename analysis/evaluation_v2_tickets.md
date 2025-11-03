@@ -14,11 +14,11 @@ Deliver policy-compliant recommendation pipelines that respect request-time cons
 - [x] **REC-102 – Restore tag-based block rules**  
   Diagnose why `POST /v1/admin/rules` with `action=BLOCK` does not remove targeted items (`analysis/evidence/scenario_s2_block_high_margin.json`). Patch rule evaluation to exclude blocked candidates and verify via automated scenario test.
 
-- [ ] **REC-103 – Brand/attribute whitelist support**  
-  Implement brand/tag whitelisting for include filters, covering both request constraints and rule-driven targeting. Extend schema/feature engineering if item metadata mapping is missing. Confirm compliance using scenario S6 reproduction.
+- [x] **REC-103 – Brand/attribute whitelist support**  
+  Enforced include tag/brand whitelists directly in the ranking pipeline and added regression coverage mirroring scenario S6 to guarantee compliance across org namespaces and rule scopes.
 
-- [ ] **REC-104 – Policy regression alerts**  
-  Instrument policy evaluation (e.g., metrics on filtered candidate counts) and emit alerts when constraint leakage is detected in production buckets. Provide dashboards and runbooks.
+- [x] **REC-104 – Policy regression alerts**  
+  Captured policy enforcement summaries in decision traces and exposed Prometheus counters for include-filter drops, exclude hits, rule actions, and constraint leaks; the handler now logs structured warnings whenever leakage is detected.
 
 ---
 

@@ -10,6 +10,7 @@ import (
 
 	"recsys/internal/algorithm"
 	"recsys/internal/http/common"
+	policymetrics "recsys/internal/observability/policy"
 	"recsys/internal/services/recommendation"
 	"recsys/internal/store"
 	handlerstypes "recsys/specs/types"
@@ -26,12 +27,13 @@ type RecommendationService interface {
 
 // RecommendationHandler exposes ranking endpoints backed by the recommendation service.
 type RecommendationHandler struct {
-	service    RecommendationService
-	store      *store.Store
-	config     RecommendationConfig
-	tracer     *decisionTracer
-	logger     *zap.Logger
-	defaultOrg uuid.UUID
+	service       RecommendationService
+	store         *store.Store
+	config        RecommendationConfig
+	tracer        *decisionTracer
+	logger        *zap.Logger
+	defaultOrg    uuid.UUID
+	policyMetrics *policymetrics.Metrics
 }
 
 type recommendationResponseEnvelope struct {
@@ -48,17 +50,18 @@ type traceSourceMetric struct {
 	DurationMS float64 `json:"duration_ms"`
 }
 
-func NewRecommendationHandler(service RecommendationService, st *store.Store, cfg RecommendationConfig, tracer *decisionTracer, defaultOrg uuid.UUID, logger *zap.Logger) *RecommendationHandler {
+func NewRecommendationHandler(service RecommendationService, st *store.Store, cfg RecommendationConfig, tracer *decisionTracer, defaultOrg uuid.UUID, logger *zap.Logger, policyMetrics *policymetrics.Metrics) *RecommendationHandler {
 	if logger == nil {
 		logger = zap.NewNop()
 	}
 	return &RecommendationHandler{
-		service:    service,
-		store:      st,
-		config:     cfg,
-		tracer:     tracer,
-		logger:     logger,
-		defaultOrg: defaultOrg,
+		service:       service,
+		store:         st,
+		config:        cfg,
+		tracer:        tracer,
+		logger:        logger,
+		defaultOrg:    defaultOrg,
+		policyMetrics: policyMetrics,
 	}
 }
 
@@ -117,6 +120,22 @@ func (h *RecommendationHandler) Recommend(w http.ResponseWriter, r *http.Request
 			Duration:     time.Since(start),
 			Surface:      result.AlgoRequest.Surface,
 		})
+	}
+
+	if result.TraceData != nil && result.TraceData.Policy != nil {
+		summary := result.TraceData.Policy
+		if h.policyMetrics != nil {
+			h.policyMetrics.Observe(result.AlgoRequest, summary)
+		}
+		if summary.ConstraintLeakCount > 0 {
+			h.logger.Warn("policy_constraint_leak",
+				zap.String("namespace", result.AlgoRequest.Namespace),
+				zap.String("surface", result.AlgoRequest.Surface),
+				zap.Int("k", result.AlgoRequest.K),
+				zap.Int("leak_count", summary.ConstraintLeakCount),
+				zap.Strings("leaked_items", summary.ConstraintLeakIDs),
+			)
+		}
 	}
 
 	if len(result.SourceStats) > 0 {

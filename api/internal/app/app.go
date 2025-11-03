@@ -25,6 +25,7 @@ import (
 	httpmiddleware "recsys/internal/http/middleware"
 	"recsys/internal/migrator"
 	"recsys/internal/observability"
+	policymetrics "recsys/internal/observability/policy"
 	"recsys/internal/rules"
 	"recsys/internal/services/datamanagement"
 	"recsys/internal/services/ingestion"
@@ -186,7 +187,6 @@ func New(ctx context.Context, opts Options) (*App, error) {
 	ingHandler := handlers.NewIngestionHandler(ingestionSvc, cfg.Recommendation.DefaultOrgID, logger)
 	dataHandler := handlers.NewDataManagementHandler(dataSvc, cfg.Recommendation.DefaultOrgID, logger)
 	segmentsHandler := handlers.NewSegmentsHandler(st, cfg.Recommendation.DefaultOrgID)
-	recoHandler := handlers.NewRecommendationHandler(recommendationSvc, st, recConfig, tracer, cfg.Recommendation.DefaultOrgID, logger)
 	banditHandler := handlers.NewBanditHandler(st, recommendationSvc, recConfig, tracer, cfg.Recommendation.DefaultOrgID, cfg.Recommendation.BanditAlgo, logger)
 	rulesHandler := handlers.NewRulesHandler(st, rulesManager, cfg.Recommendation.DefaultOrgID, cfg.Recommendation.BrandTagPrefixes, cfg.Recommendation.CategoryTagPrefixes)
 	manualSvc := manualsvc.New(st)
@@ -205,6 +205,13 @@ func New(ctx context.Context, opts Options) (*App, error) {
 	if obs != nil && obs.Shutdown != nil {
 		closers = append(closers, obs.Shutdown)
 	}
+
+	var policyMetrics *policymetrics.Metrics
+	if obs != nil {
+		policyMetrics = obs.PolicyMetrics
+	}
+
+	recoHandler := handlers.NewRecommendationHandler(recommendationSvc, st, recConfig, tracer, cfg.Recommendation.DefaultOrgID, logger, policyMetrics)
 
 	router := chi.NewRouter()
 	if obs != nil {

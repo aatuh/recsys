@@ -30,6 +30,9 @@ const maxCovisNeighbors = 200
 // Limit embedding neighbors for performance.
 const maxEmbNeighbors = 200
 
+// Maximum stored sample IDs for policy diagnostics.
+const maxPolicySampleIDs = 20
+
 // Model versions.
 const modelVersionPopularity = "popularity_v1"
 const modelVersionBlend = "blend_v1"
@@ -124,9 +127,12 @@ func (e *Engine) Recommend(
 	merged := e.mergeCandidates(popCandidates, popScores, collabScores, contentScores, sessionScores, k)
 	sourceMetrics["merged"] = SourceMetric{Count: len(merged), Duration: time.Since(mergeStart)}
 
+	// Track policy enforcement stats for observability.
+	policySummary := PolicySummary{TotalCandidates: len(merged)}
+
 	// Apply exclusions.
 	excludeStart := time.Now()
-	candidates, err := e.applyExclusions(ctx, merged, req)
+	candidates, err := e.applyExclusions(ctx, merged, req, &policySummary)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -139,7 +145,7 @@ func (e *Engine) Recommend(
 	}
 
 	// Enforce positive constraints that require item metadata (e.g., tag whitelists).
-	candidates, tags = e.applyConstraintFilters(candidates, tags, req)
+	candidates, tags = e.applyConstraintFilters(candidates, tags, req, &policySummary)
 	sourceMetrics["post_exclusion"] = SourceMetric{Count: len(candidates), Duration: time.Since(excludeStart)}
 
 	// Align secondary score maps with filtered candidates.
@@ -198,6 +204,26 @@ func (e *Engine) Recommend(
 			return nil, nil, err
 		}
 	}
+	if ruleResult != nil {
+		policySummary.RulePinCount = len(ruleResult.Pinned)
+		blockCount := 0
+		boostCount := 0
+		for _, effect := range ruleResult.ItemEffects {
+			if effect.Blocked {
+				blockCount++
+			}
+			if effect.BoostDelta != 0 {
+				boostCount++
+			}
+		}
+		policySummary.RuleBlockCount = blockCount
+		policySummary.RuleBoostCount = boostCount
+	} else {
+		policySummary.RulePinCount = 0
+		policySummary.RuleBlockCount = 0
+		policySummary.RuleBoostCount = 0
+	}
+	policySummary.AfterRules = len(candidateData.Candidates)
 
 	// Determine model version.
 	// Default requests (no explicit blend provided) are reported as
@@ -254,6 +280,8 @@ func (e *Engine) Recommend(
 		reasonSink,
 		ruleResult,
 	)
+	finalizePolicySummary(&policySummary, response)
+	trace.Policy = &policySummary
 	if len(trace.Anchors) == 0 && candidateData.AnchorsFetched {
 		trace.Anchors = append(trace.Anchors, "(no_recent_activity)")
 	}
@@ -573,19 +601,27 @@ func (e *Engine) applyExclusions(
 	ctx context.Context,
 	candidates []types.ScoredItem,
 	req Request,
+	summary *PolicySummary,
 ) ([]types.ScoredItem, error) {
 	exclude := make(map[string]struct{})
+	explicit := make(map[string]struct{})
 
 	// Add constraint exclusions.
 	if req.Constraints != nil {
 		for _, id := range req.Constraints.ExcludeItemIDs {
-			exclude[id] = struct{}{}
+			trimmed := strings.TrimSpace(id)
+			if trimmed == "" {
+				continue
+			}
+			exclude[trimmed] = struct{}{}
+			explicit[trimmed] = struct{}{}
 		}
 	}
 
 	// Add exclusions from configured user events if enabled.
+	var recent map[string]struct{}
 	var err error
-	exclude, err = e.excludeRecentEventItems(ctx, req, exclude)
+	exclude, recent, err = e.excludeRecentEventItems(ctx, req, exclude)
 	if err != nil {
 		return nil, err
 	}
@@ -593,10 +629,23 @@ func (e *Engine) applyExclusions(
 	// Filter candidates by excluding excluded items.
 	filtered := make([]types.ScoredItem, 0, len(candidates))
 	for _, candidate := range candidates {
-		if _, skip := exclude[candidate.ItemID]; skip {
+		_, skipExplicit := explicit[candidate.ItemID]
+		_, skipRecent := recent[candidate.ItemID]
+		if skipExplicit || skipRecent {
+			if summary != nil {
+				if skipExplicit {
+					summary.ExplicitExcludeHits++
+				} else if skipRecent {
+					summary.RecentEventExcludeHits++
+				}
+			}
 			continue
 		}
 		filtered = append(filtered, candidate)
+	}
+
+	if summary != nil {
+		summary.AfterExclusions = len(filtered)
 	}
 
 	return filtered, nil
@@ -607,9 +656,9 @@ func (e *Engine) excludeRecentEventItems(
 	ctx context.Context,
 	req Request,
 	exclude map[string]struct{},
-) (map[string]struct{}, error) {
+) (map[string]struct{}, map[string]struct{}, error) {
 	if !e.config.RuleExcludeEvents || req.UserID == "" {
-		return exclude, nil
+		return exclude, make(map[string]struct{}), nil
 	}
 
 	// Exclude purchased items in a time window.
@@ -624,15 +673,17 @@ func (e *Engine) excludeRecentEventItems(
 		e.config.ExcludeEventTypes,
 	)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Add purchased items to exclude.
+	recent := make(map[string]struct{}, len(bought))
 	for _, id := range bought {
 		exclude[id] = struct{}{}
+		recent[id] = struct{}{}
 	}
 
-	return exclude, nil
+	return exclude, recent, nil
 }
 
 // getCandidateTags fetches tags for all candidates.
@@ -657,13 +708,19 @@ func (e *Engine) applyConstraintFilters(
 	candidates []types.ScoredItem,
 	tags map[string]types.ItemTags,
 	req Request,
+	summary *PolicySummary,
 ) ([]types.ScoredItem, map[string]types.ItemTags) {
 	if req.Constraints == nil {
+		if summary != nil {
+			summary.AfterConstraintFilters = len(candidates)
+		}
 		return candidates, tags
 	}
 
 	filtered := candidates[:0]
 	prunedTags := tags
+	removed := make([]string, 0)
+	includeNormalized := make([]string, 0)
 
 	if len(req.Constraints.IncludeTagsAny) > 0 {
 		required := make(map[string]struct{}, len(req.Constraints.IncludeTagsAny))
@@ -671,6 +728,9 @@ func (e *Engine) applyConstraintFilters(
 			normalized := strings.ToLower(strings.TrimSpace(tag))
 			if normalized == "" {
 				continue
+			}
+			if _, exists := required[normalized]; !exists {
+				includeNormalized = append(includeNormalized, normalized)
 			}
 			required[normalized] = struct{}{}
 		}
@@ -680,16 +740,47 @@ func (e *Engine) applyConstraintFilters(
 			for _, cand := range candidates {
 				itemTags, ok := tags[cand.ItemID]
 				if !ok {
+					removed = append(removed, cand.ItemID)
 					continue
 				}
 				if hasAnyTag(itemTags.Tags, required) {
 					filtered = append(filtered, cand)
 					pruned[cand.ItemID] = itemTags
+				} else {
+					removed = append(removed, cand.ItemID)
 				}
 			}
 			candidates = filtered
 			prunedTags = pruned
 		}
+	}
+
+	if summary != nil {
+		if len(includeNormalized) > 0 {
+			summary.ConstraintIncludeTags = append([]string(nil), includeNormalized...)
+		} else {
+			summary.ConstraintIncludeTags = nil
+		}
+		summary.ConstraintFilteredCount = len(removed)
+		if len(removed) > 0 {
+			if len(removed) > maxPolicySampleIDs {
+				summary.ConstraintFilteredIDs = append([]string(nil), removed[:maxPolicySampleIDs]...)
+			} else {
+				summary.ConstraintFilteredIDs = append([]string(nil), removed...)
+			}
+		} else {
+			summary.ConstraintFilteredIDs = nil
+		}
+	if len(removed) > 0 {
+		lookup := make(map[string]struct{}, len(removed))
+		for _, id := range removed {
+			lookup[id] = struct{}{}
+		}
+		summary.constraintFilteredLookup = lookup
+	} else {
+		summary.constraintFilteredLookup = nil
+	}
+		summary.AfterConstraintFilters = len(candidates)
 	}
 
 	return candidates, prunedTags
@@ -705,6 +796,37 @@ func hasAnyTag(candidateTags []string, required map[string]struct{}) bool {
 		}
 	}
 	return false
+}
+
+func finalizePolicySummary(summary *PolicySummary, resp *Response) {
+	if summary == nil {
+		return
+	}
+	if resp != nil {
+		summary.FinalCount = len(resp.Items)
+		if len(summary.constraintFilteredLookup) > 0 && len(resp.Items) > 0 {
+			leaks := make([]string, 0)
+			for _, item := range resp.Items {
+				if _, ok := summary.constraintFilteredLookup[item.ItemID]; ok {
+					leaks = append(leaks, item.ItemID)
+				}
+			}
+			summary.ConstraintLeakCount = len(leaks)
+			if len(leaks) > 0 {
+				if len(leaks) > maxPolicySampleIDs {
+					summary.ConstraintLeakIDs = append([]string(nil), leaks[:maxPolicySampleIDs]...)
+				} else {
+					summary.ConstraintLeakIDs = append([]string(nil), leaks...)
+				}
+			} else {
+				summary.ConstraintLeakIDs = nil
+			}
+		} else {
+			summary.ConstraintLeakCount = 0
+			summary.ConstraintLeakIDs = nil
+		}
+	}
+	summary.constraintFilteredLookup = nil
 }
 
 func filterScoreMapByCandidates(scores map[string]float64, candidates []types.ScoredItem) map[string]float64 {

@@ -147,12 +147,33 @@ type TraceData struct {
 	RuleEvaluated  []uuid.UUID
 	RulePinned     []rules.PinnedItem
 	SourceMetrics  map[string]SourceMetric
+	Policy         *PolicySummary
 }
 
 // SourceMetric captures coverage and latency for a candidate source.
 type SourceMetric struct {
 	Count    int           `json:"count"`
 	Duration time.Duration `json:"duration"`
+}
+
+// PolicySummary captures enforcement stats for constraints and rule actions.
+type PolicySummary struct {
+	TotalCandidates          int                 `json:"total_candidates"`
+	ExplicitExcludeHits      int                 `json:"explicit_exclude_hits"`
+	RecentEventExcludeHits   int                 `json:"recent_event_exclude_hits"`
+	AfterExclusions          int                 `json:"after_exclusions"`
+	ConstraintIncludeTags    []string            `json:"constraint_include_tags,omitempty"`
+	ConstraintFilteredCount  int                 `json:"constraint_filtered_count"`
+	ConstraintFilteredIDs    []string            `json:"constraint_filtered_ids,omitempty"`
+	constraintFilteredLookup map[string]struct{} `json:"-"`
+	AfterConstraintFilters   int                 `json:"after_constraint_filters"`
+	RuleBlockCount           int                 `json:"rule_block_count"`
+	RulePinCount             int                 `json:"rule_pin_count"`
+	RuleBoostCount           int                 `json:"rule_boost_count"`
+	AfterRules               int                 `json:"after_rules"`
+	FinalCount               int                 `json:"final_count"`
+	ConstraintLeakCount      int                 `json:"constraint_leak_count"`
+	ConstraintLeakIDs        []string            `json:"constraint_leak_ids,omitempty"`
 }
 
 // SimilarItemsRequest represents a request for similar items
