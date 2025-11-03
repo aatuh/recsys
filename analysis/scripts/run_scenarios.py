@@ -83,6 +83,34 @@ def recommend(session, namespace: str, payload: Dict) -> Dict:
     return response.json()
 
 
+def extract_policy_summary(resp: Dict) -> Dict:
+    trace = resp.get("trace")
+    if not isinstance(trace, dict):
+        return {}
+    extras = trace.get("extras")
+    if not isinstance(extras, dict):
+        return {}
+    policy = extras.get("policy")
+    if isinstance(policy, dict):
+        return policy
+    return {}
+
+
+def summarize_policy_samples(samples: List[Dict]) -> Dict[str, float]:
+    if not samples:
+        return {}
+    agg: Dict[str, float] = {}
+    for sample in samples:
+        for key, value in sample.items():
+            if isinstance(value, (int, float)):
+                agg[key] = agg.get(key, 0.0) + float(value)
+    # Average values to smooth across users
+    count = float(len(samples))
+    for key in list(agg.keys()):
+        agg[key] = agg[key] / count
+    return agg
+
+
 def create_rule(session, payload: Dict) -> Dict:
     url = f"{session.base_url}/v1/admin/rules"
     resp = session.post(url, json=payload, timeout=30)
@@ -522,6 +550,7 @@ def scenario_new_item_exposure(session, namespace, catalog, users_sample: List[s
 
     def collect_exposure(override: bool) -> Dict:
         exposures = []
+        policy_samples: List[Dict] = []
         payload_base = {
             "namespace": namespace,
             "k": 15,
@@ -554,26 +583,41 @@ def scenario_new_item_exposure(session, namespace, catalog, users_sample: List[s
                     "recommended": item_id in items,
                 }
             )
+            policy = extract_policy_summary(response)
+            if policy is not None:
+                policy_samples.append(policy)
             time.sleep(SLEEP_BETWEEN_CALLS)
 
         if manual:
             cancel_manual_override(session, manual["override_id"])
 
-        return {"exposures": exposures}
+        return {"exposures": exposures, "policy_samples": policy_samples}
 
     baseline = collect_exposure(override=False)
     boosted = collect_exposure(override=True)
 
     write_evidence(
         "scenario_s8_new_item.json",
-        {"baseline": baseline, "boosted": boosted, "item": new_item},
+        {
+            "baseline": baseline,
+            "boosted": boosted,
+            "item": new_item,
+        },
     )
 
     base_rate = sum(1 for e in baseline["exposures"] if e["recommended"]) / len(baseline["exposures"])
     boost_rate = sum(1 for e in boosted["exposures"] if e["recommended"]) / len(boosted["exposures"])
 
-    observed = f"Baseline exposure={base_rate:.0%}; Boosted exposure={boost_rate:.0%}"
-    passed = boost_rate > base_rate and boost_rate >= 0.2
+    boosted_policy = summarize_policy_samples(boosted["policy_samples"])
+    observed = (
+        f"Baseline exposure={base_rate:.0%}; Boosted exposure={boost_rate:.0%}; "
+        f"Boost policy: {boosted_policy}"
+    )
+    passed = (
+        boost_rate > base_rate
+        and boost_rate >= 0.2
+        and boosted_policy.get("rule_boost_exposure", 0) > 0
+    )
     return ScenarioResult(
         id="S8",
         name="New item exposure",
