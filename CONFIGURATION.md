@@ -315,7 +315,7 @@ Overrides are applied before ranking; they temporarily replace the corresponding
 - **Explanations / decision traces**: enable to capture input config, anchors, scoring reasons, MMR decisions, and rule applications per request.
 - **Data management**: list/delete endpoints for users/items/events by namespace/time range for backfills and cleanup.
 - **Manual overrides**: the admin endpoints emit audit metadata (`created_by`, `cancelled_by`, timestamps). Monitor override counts and stale entries; expired overrides are auto-marked and can be cleaned regularly.
-- **Catalog freshness**: run `make catalog-backfill` for the initial metadata/embedding backfill, and `make catalog-refresh SINCE=24h` (or your preferred window) on a schedule to keep new products enriched.
+- **Catalog freshness**: run `make catalog-backfill` for the initial metadata/embedding backfill, and `make catalog-refresh SINCE=24h` (or your preferred window) on a schedule to keep new products enriched. Follow up with `make collab-factors SINCE=24h` to synthesise collaborative item/user factors so the ALS retriever is active during testing.
 - **SLOs**: track p99 latency, 5xx rate, and recommendation “fill rate”. Add counters for rule hits, override usage, and cap-induced re-ranks.
 
 ---

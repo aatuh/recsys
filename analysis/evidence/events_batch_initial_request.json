@@ -1,0 +1,11 @@
+{
+  "namespace": "default",
+  "events": [
+    {
+      "user_id": "u_test_1",
+      "item_id": "i_test_1",
+      "type": 3,
+      "ts": "2025-01-01T00:00:00Z"
+    }
+  ]
+}

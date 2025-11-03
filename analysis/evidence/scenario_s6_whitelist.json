@@ -1,0 +1,90 @@
+{
+  "request": {
+    "namespace": "default",
+    "user_id": "user_0008",
+    "k": 10,
+    "context": {
+      "surface": "home"
+    },
+    "constraints": {
+      "include_tags_any": [
+        "acmetech"
+      ]
+    }
+  },
+  "response": {
+    "model_version": "popularity_v1",
+    "items": [
+      {
+        "item_id": "item_0005",
+        "score": 1.2080036515474732
+      },
+      {
+        "item_id": "item_0019",
+        "score": 1.034716207685526
+      },
+      {
+        "item_id": "item_0197",
+        "score": 0.8986550594259898
+      },
+      {
+        "item_id": "item_0233",
+        "score": 0.8091332618750805
+      },
+      {
+        "item_id": "item_0167",
+        "score": 0.7774748591691923
+      },
+      {
+        "item_id": "item_0210",
+        "score": 0.34467230466091625
+      },
+      {
+        "item_id": "item_0003",
+        "score": 0.3199426134084771
+      },
+      {
+        "item_id": "item_0170",
+        "score": 0.2637325089325423
+      },
+      {
+        "item_id": "item_0062",
+        "score": 0.17540104661063818
+      },
+      {
+        "item_id": "item_0133",
+        "score": 0.1287306905227316
+      }
+    ],
+    "trace": {
+      "extras": {
+        "candidate_sources": {
+          "collaborative": {
+            "count": 0,
+            "duration_ms": 0.068901
+          },
+          "content": {
+            "count": 194,
+            "duration_ms": 3.172417
+          },
+          "merged": {
+            "count": 203,
+            "duration_ms": 0.043753
+          },
+          "popularity": {
+            "count": 9,
+            "duration_ms": 0.694506
+          },
+          "post_exclusion": {
+            "count": 199,
+            "duration_ms": 0.156699
+          },
+          "session": {
+            "count": 0,
+            "duration_ms": 0.266349
+          }
+        }
+      }
+    }
+  }
+}

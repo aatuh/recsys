@@ -2,6 +2,7 @@
 
 PROFILE ?= dev
 SINCE ?= 24h
+NAMESPACE ?= default
 
 help: ## Show this help message
 	@echo "Available targets:"
@@ -76,3 +77,7 @@ catalog-backfill: ## Backfill catalog metadata and refresh embeddings
 catalog-refresh: ## Refresh catalog metadata since duration (use SINCE=24h or RFC3339)
 	@echo "♻️ Refreshing catalog metadata..."
 	@cd api && go run ./cmd/catalog_backfill --mode refresh --batch 200 --since $(SINCE)
+
+collab-factors: ## Generate collaborative filtering factors for items and users
+	@echo "🤝 Generating collaborative factors..."
+	@cd api && go run ./cmd/collab_factors --namespace $(NAMESPACE) --since $(SINCE)

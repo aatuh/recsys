@@ -425,6 +425,13 @@ func deterministicEmbedding(text string) []float64 {
 	return vec
 }
 
+// DeterministicEmbeddingFromText returns a synthetic embedding for the provided text.
+// It mirrors the internal fallback used during catalog backfills so other pipelines
+// (e.g. collaborative factor generation) can reuse the same deterministic signal.
+func DeterministicEmbeddingFromText(text string) []float64 {
+	return deterministicEmbedding(text)
+}
+
 func embeddingEqual(existing, candidate []float64) bool {
 	if len(existing) == 0 && len(candidate) == 0 {
 		return true

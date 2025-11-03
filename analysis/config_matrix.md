@@ -1,0 +1,12 @@
+| Capability                               | Status     | Request / Config Details | Notes |
+|------------------------------------------|------------|---------------------------|-------|
+| Tag include filter                       | Missing    | `POST /v1/recommendations` with `constraints.include_tags_any=['books']` | Response returned 15 items with zero `books` tags (see `analysis/evidence/scenario_s1_response.json`). |
+| Tag exclude (hard block)                 | Missing    | `POST /v1/admin/rules` (`action=BLOCK`, `target_type=TAG`, `target_key=high_margin`) + `/v1/recommendations` | Block rule had no effect; same high_margin items before/after (`analysis/evidence/scenario_s2_block_high_margin.json`). |
+| Manual item boost                        | Missing    | `POST /v1/admin/manual_overrides` (`action=boost`, `boost_value=3.0`) | Target item rank unchanged after boost (`analysis/evidence/scenario_s3_boost.json`). |
+| Pin to position                          | Missing    | `POST /v1/admin/rules` (`action=PIN`, `item_ids=['item_0005']`) | Pinned item absent from top-K; rank `None` (`analysis/evidence/scenario_s5_pin.json`). |
+| Brand whitelist                          | Missing    | `POST /v1/recommendations` with `constraints.include_tags_any=['acmetech']` | Returned 10 mixed-brand items (no enforcement), see `analysis/evidence/scenario_s6_whitelist.json`. |
+| Diversity knob (MMR lambda)              | Partial    | `/v1/recommendations` override `{mmr_lambda:0.1}` | Similarity dropped 0.108→0.093 with neutral NDCG impact (`analysis/evidence/scenario_s4_diversity.json`). |
+| Cold-start user defaults                 | Supported  | Upsert new user then `/v1/recommendations` | 10-item list covering 9 categories (`analysis/evidence/scenario_s7_cold_start.json`). |
+| New-item exposure controls               | Missing    | Manual boost vs baseline on fresh item | Exposure rate stayed 88% after boost, no controllability (`analysis/evidence/scenario_s8_new_item.json`). |
+| Margin vs relevance trade-off            | Missing    | BOOST rule on `high_margin` tag, boost_values {0.0,0.4,0.8} | Margin & NDCG unchanged across knobs (`analysis/evidence/scenario_s9_tradeoff.json`). |
+| Explainability & trace                   | Supported  | `/v1/recommendations` with `include_reasons=true`, `explain_level=full` | Responses include model_version, reasons, explain blocks (`analysis/evidence/scenario_s10_explainability.json`). |

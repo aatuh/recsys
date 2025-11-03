@@ -181,6 +181,16 @@ type EventTypeConfig struct {
 	IsActive     *bool
 }
 
+type ItemFactorUpsert struct {
+	ItemID  string
+	Factors []float64
+}
+
+type UserFactorUpsert struct {
+	UserID  string
+	Factors []float64
+}
+
 //go:embed queries/popularity.sql
 var popularitySQL string
 
@@ -207,6 +217,12 @@ var itemsTagsSQL string
 
 //go:embed queries/user_events_since.sql
 var userEventsSinceSQL string
+
+//go:embed queries/item_factors_upsert.sql
+var itemFactorsUpsertSQL string
+
+//go:embed queries/user_factors_upsert.sql
+var userFactorsUpsertSQL string
 
 func (s *Store) UpsertItems(
 	ctx context.Context,
@@ -293,6 +309,52 @@ func (s *Store) InsertEvents(ctx context.Context, orgID uuid.UUID, ns string, ev
 		br := s.Pool.SendBatch(ctx, bat)
 		defer br.Close()
 		for range evs {
+			if _, err := br.Exec(); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
+func (s *Store) UpsertItemFactors(ctx context.Context, orgID uuid.UUID, ns string, factors []ItemFactorUpsert) error {
+	if len(factors) == 0 {
+		return nil
+	}
+	return s.withRetry(ctx, func(ctx context.Context) error {
+		bat := &pgx.Batch{}
+		for _, f := range factors {
+			if err := validateFactorVector(f.Factors); err != nil {
+				return fmt.Errorf("item %s: %w", f.ItemID, err)
+			}
+			bat.Queue(itemFactorsUpsertSQL, orgID, ns, f.ItemID, vectorLiteral(f.Factors))
+		}
+		br := s.Pool.SendBatch(ctx, bat)
+		defer br.Close()
+		for range factors {
+			if _, err := br.Exec(); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
+func (s *Store) UpsertUserFactors(ctx context.Context, orgID uuid.UUID, ns string, factors []UserFactorUpsert) error {
+	if len(factors) == 0 {
+		return nil
+	}
+	return s.withRetry(ctx, func(ctx context.Context) error {
+		bat := &pgx.Batch{}
+		for _, f := range factors {
+			if err := validateFactorVector(f.Factors); err != nil {
+				return fmt.Errorf("user %s: %w", f.UserID, err)
+			}
+			bat.Queue(userFactorsUpsertSQL, orgID, ns, f.UserID, vectorLiteral(f.Factors))
+		}
+		br := s.Pool.SendBatch(ctx, bat)
+		defer br.Close()
+		for range factors {
 			if _, err := br.Exec(); err != nil {
 				return err
 			}
@@ -575,6 +637,16 @@ func vectorLiteral(v []float64) string {
 	}
 	sb.WriteByte(']')
 	return sb.String()
+}
+
+func validateFactorVector(vec []float64) error {
+	if len(vec) == 0 {
+		return fmt.Errorf("vector must not be empty")
+	}
+	if len(vec) != EmbeddingDims {
+		return fmt.Errorf("vector length %d != %d", len(vec), EmbeddingDims)
+	}
+	return nil
 }
 
 // List and Delete methods

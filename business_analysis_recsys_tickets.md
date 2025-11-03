@@ -49,8 +49,8 @@ Once those are in place, re-run the evaluation script—candidate_sources should
 - [x] **RS-002 – Preserve candidate fanout for rule overrides**  
   Adjust `Engine.mergeCandidates` (and related call sites) to retain at least the configured `POPULARITY_FANOUT` before exclusions/MMR, ensuring manual boosts and caps have inventory to work with. Add integration test proving a boost rule elevates the target item.
 
-- [ ] **RS-003 – Provision collaborative factors pipeline**  
+- [x] **RS-003 – Provision collaborative factors pipeline**  
   Deliver a batch job (or documented process) that writes user/item factors into `recsys_user_factors` & `recsys_item_factors`, or gate the collaborative retriever behind a feature flag with degraded docs. Acceptance: `candidate_sources.collaborative.count > 0` in a seeded environment.
 
-- [ ] **RS-004 – Document signal activation workflow**  
+- [x] **RS-004 – Document signal activation workflow**  
   Update README/CONFIGURATION to include a “Bring signals online” checklist (catalog backfill, factor job status, rule cache behaviour). Call out prerequisites for embeddings, collaborative data, and rule propagation so evaluators can reproduce expected behaviour.

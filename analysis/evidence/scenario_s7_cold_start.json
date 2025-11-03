@@ -1,0 +1,137 @@
+{
+  "request": {
+    "namespace": "default",
+    "user_id": "user_cold_start",
+    "k": 10,
+    "context": {
+      "surface": "home"
+    },
+    "include_reasons": true
+  },
+  "response": {
+    "model_version": "popularity_v1",
+    "items": [
+      {
+        "item_id": "item_0175",
+        "score": 0.25,
+        "reasons": [
+          "recent_popularity",
+          "diversity"
+        ]
+      },
+      {
+        "item_id": "item_0070",
+        "score": 0.1744644328318535,
+        "reasons": [
+          "recent_popularity",
+          "diversity"
+        ]
+      },
+      {
+        "item_id": "item_0001",
+        "score": 0.17354735799430585,
+        "reasons": [
+          "recent_popularity",
+          "diversity"
+        ]
+      },
+      {
+        "item_id": "item_0196",
+        "score": 0.16165772440286771,
+        "reasons": [
+          "recent_popularity",
+          "diversity"
+        ]
+      },
+      {
+        "item_id": "item_0057",
+        "score": 0.1600438765958096,
+        "reasons": [
+          "recent_popularity",
+          "diversity"
+        ]
+      },
+      {
+        "item_id": "item_0007",
+        "score": 0.15479480575669308,
+        "reasons": [
+          "recent_popularity",
+          "diversity"
+        ]
+      },
+      {
+        "item_id": "item_0080",
+        "score": 0.13191962806081683,
+        "reasons": [
+          "recent_popularity",
+          "diversity"
+        ]
+      },
+      {
+        "item_id": "item_0176",
+        "score": 0.12021139492165464,
+        "reasons": [
+          "recent_popularity",
+          "diversity"
+        ]
+      },
+      {
+        "item_id": "item_0142",
+        "score": 0.04469217196987041,
+        "reasons": [
+          "recent_popularity",
+          "diversity"
+        ]
+      },
+      {
+        "item_id": "i_test_1",
+        "score": 0,
+        "reasons": [
+          "recent_popularity",
+          "diversity"
+        ]
+      }
+    ],
+    "trace": {
+      "extras": {
+        "candidate_sources": {
+          "collaborative": {
+            "count": 0,
+            "duration_ms": 0.164383
+          },
+          "content": {
+            "count": 0,
+            "duration_ms": 0.106563
+          },
+          "merged": {
+            "count": 301,
+            "duration_ms": 0.012714
+          },
+          "popularity": {
+            "count": 301,
+            "duration_ms": 11.532557
+          },
+          "post_exclusion": {
+            "count": 301,
+            "duration_ms": 0.106473
+          },
+          "session": {
+            "count": 0,
+            "duration_ms": 0.540271
+          }
+        }
+      }
+    }
+  },
+  "categories": [
+    "Electronics",
+    "Books",
+    "Beauty",
+    "Fashion",
+    "Gourmet",
+    "Outdoors",
+    "Home",
+    "Test",
+    "Fitness"
+  ]
+}

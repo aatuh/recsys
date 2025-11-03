@@ -1,0 +1,85 @@
+{
+  "results": [
+    {
+      "id": "S1",
+      "name": "Strict include filter",
+      "input": "POST /v1/recommendations include_tags_any=['books'] for user_0003",
+      "expected": "All results belong to category/tag 'books'; zero leakage.",
+      "observed": "Returned 15 items; offending items=['item_0233', 'item_0123', 'item_0046', 'item_0240', 'item_0043', 'item_0092', 'item_0010', 'item_0031', 'item_0104', 'item_0186', 'item_0023', 'item_0148', 'item_0170']",
+      "passed": false
+    },
+    {
+      "id": "S2",
+      "name": "Hard exclude tag",
+      "input": "Create BLOCK rule on tag 'high_margin', request /v1/recommendations user_0001",
+      "expected": "No items tagged 'high_margin' appear in ranked list.",
+      "observed": "Before block: ['item_0210', 'item_0101', 'item_0242', 'item_0275', 'item_0209', 'item_0025']; After block: ['item_0210', 'item_0101', 'item_0242', 'item_0275', 'item_0209', 'item_0025']",
+      "passed": false
+    },
+    {
+      "id": "S3",
+      "name": "Boost monotonicity",
+      "input": "Manual override boost +3.0 for item_0003 on surface home",
+      "expected": "Boosted item ranks higher (lower position number).",
+      "observed": "Target item_0003 moved from 2 to 2",
+      "passed": false
+    },
+    {
+      "id": "S4",
+      "name": "Diversity budget",
+      "input": "Override mmr_lambda=0.1 vs default for user_0005",
+      "expected": "Higher diversity (lower similarity) with \u22645% NDCG loss.",
+      "observed": "Similarity 0.108 -> 0.093; NDCG 0.000 -> 0.000 (+0.00%).",
+      "passed": true
+    },
+    {
+      "id": "S5",
+      "name": "Pin position",
+      "input": "PIN rule for item_0005 on surface home",
+      "expected": "Pinned item appears at requested top slot.",
+      "observed": "Target item rank=None; recommendation count=10",
+      "passed": false
+    },
+    {
+      "id": "S6",
+      "name": "Whitelist brand",
+      "input": "/v1/recommendations include_tags_any=['acmetech'] user_0008",
+      "expected": "All items belong to brand 'AcmeTech'.",
+      "observed": "Returned 10 items; non-whitelisted=['item_0005', 'item_0019', 'item_0197', 'item_0233', 'item_0167', 'item_0210', 'item_0003', 'item_0170', 'item_0062']",
+      "passed": false
+    },
+    {
+      "id": "S7",
+      "name": "Cold-start user",
+      "input": "Upsert new user with no history then call /v1/recommendations",
+      "expected": "List is non-empty, diverse, adheres to business rules.",
+      "observed": "Returned 10 items across 9 categories.",
+      "passed": true
+    },
+    {
+      "id": "S8",
+      "name": "New item exposure",
+      "input": "Insert fresh item and measure exposure before/after boost",
+      "expected": "Boost controls increase exposure materially without manual data load.",
+      "observed": "Baseline exposure=88%; Boosted exposure=88%",
+      "passed": false
+    },
+    {
+      "id": "S9",
+      "name": "Multi-objective trade-off",
+      "input": "Boost rule on tag 'high_margin' with varying boost_value",
+      "expected": "Higher boost lifts margin share while relevance drops smoothly.",
+      "observed": "boost 0.0: margin=0.395, ndcg=0.078; boost 0.4: margin=0.395, ndcg=0.078; boost 0.8: margin=0.395, ndcg=0.078",
+      "passed": false
+    },
+    {
+      "id": "S10",
+      "name": "Explainability",
+      "input": "Request recommendations with include_reasons=true & explain_level=full",
+      "expected": "Response includes reasons, explain blocks, and model identifier.",
+      "observed": "model_version=popularity_v1, reasons=True, explain_blocks=True",
+      "passed": true
+    }
+  ],
+  "timestamp": "2025-11-03T15:43:15.810891Z"
+}

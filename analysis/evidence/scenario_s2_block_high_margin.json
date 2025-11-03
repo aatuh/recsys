@@ -1,0 +1,436 @@
+{
+  "baseline": {
+    "model_version": "popularity_v1",
+    "items": [
+      {
+        "item_id": "item_0210",
+        "score": 1.1056680646944115,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0101",
+        "score": 1.0879618073183643,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0242",
+        "score": 0.9323403818704239,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0130",
+        "score": 0.7753521728819917,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0003",
+        "score": 0.7751261402546559,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0037",
+        "score": 0.752129800336523,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0068",
+        "score": 0.7517248243467566,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0275",
+        "score": 0.6752105236074323,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0209",
+        "score": 0.6213224049297951,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_new_explore",
+        "score": 0.45531008901908204,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0001",
+        "score": 0.4034909499490401,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0236",
+        "score": 0.27309895837459297,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0041",
+        "score": 0.19917545719900873,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0025",
+        "score": 0.14647335447786594,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "i_test_1",
+        "score": 0,
+        "reasons": [
+          "recent_popularity",
+          "diversity"
+        ]
+      }
+    ],
+    "trace": {
+      "extras": {
+        "candidate_sources": {
+          "collaborative": {
+            "count": 0,
+            "duration_ms": 0.183881
+          },
+          "content": {
+            "count": 21,
+            "duration_ms": 1.479795
+          },
+          "merged": {
+            "count": 322,
+            "duration_ms": 0.01553
+          },
+          "popularity": {
+            "count": 301,
+            "duration_ms": 11.548656
+          },
+          "post_exclusion": {
+            "count": 315,
+            "duration_ms": 0.131932
+          },
+          "session": {
+            "count": 0,
+            "duration_ms": 0.200944
+          }
+        }
+      }
+    }
+  },
+  "after_block": {
+    "model_version": "popularity_v1",
+    "items": [
+      {
+        "item_id": "item_0210",
+        "score": 1.1056680646944115,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0101",
+        "score": 1.0879618073183643,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0242",
+        "score": 0.9323403818704239,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0130",
+        "score": 0.7753521728819917,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0003",
+        "score": 0.7751261402546559,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0037",
+        "score": 0.752129800336523,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0068",
+        "score": 0.7517248243467566,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0275",
+        "score": 0.6752105236074323,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0209",
+        "score": 0.6213224049297951,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_new_explore",
+        "score": 0.45531008901908204,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0001",
+        "score": 0.40349091549236277,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0236",
+        "score": 0.2730989493744261,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0041",
+        "score": 0.1991754461093076,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0025",
+        "score": 0.1464733497554057,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "i_test_1",
+        "score": 0,
+        "reasons": [
+          "recent_popularity",
+          "diversity"
+        ]
+      }
+    ],
+    "trace": {
+      "extras": {
+        "candidate_sources": {
+          "collaborative": {
+            "count": 0,
+            "duration_ms": 0.215231
+          },
+          "content": {
+            "count": 21,
+            "duration_ms": 1.483462
+          },
+          "merged": {
+            "count": 322,
+            "duration_ms": 0.01541
+          },
+          "popularity": {
+            "count": 301,
+            "duration_ms": 11.97461
+          },
+          "post_exclusion": {
+            "count": 315,
+            "duration_ms": 0.144115
+          },
+          "session": {
+            "count": 0,
+            "duration_ms": 0.229117
+          }
+        }
+      }
+    }
+  },
+  "before_high_margin": [
+    "item_0210",
+    "item_0101",
+    "item_0242",
+    "item_0275",
+    "item_0209",
+    "item_0025"
+  ],
+  "after_high_margin": [
+    "item_0210",
+    "item_0101",
+    "item_0242",
+    "item_0275",
+    "item_0209",
+    "item_0025"
+  ],
+  "rule": {
+    "rule_id": "d6dcea6d-a63a-4f03-904d-fefbe89e811a",
+    "namespace": "default",
+    "surface": "home",
+    "name": "scenario_s2_block_high_margin",
+    "description": "Scenario S2 hard exclude high margin tag",
+    "action": "BLOCK",
+    "target_type": "TAG",
+    "target_key": "high_margin",
+    "priority": 100,
+    "enabled": true,
+    "created_at": "2025-11-03T15:42:43Z",
+    "updated_at": "2025-11-03T15:42:43Z"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "namespace": "default",
+  "items": [
+    {
+      "item_id": "i_test_1",
+      "category": "Test",
+      "price": 9.99,
+      "tags": ["test"],
+      "available": true
+    }
+  ]
+}

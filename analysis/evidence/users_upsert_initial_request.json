@@ -1,0 +1,11 @@
+{
+  "namespace": "default",
+  "users": [
+    {
+      "user_id": "u_test_1",
+      "traits": {
+        "segment": "testers"
+      }
+    }
+  ]
+}

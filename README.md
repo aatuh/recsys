@@ -45,6 +45,30 @@ users, items, and events. The service returns top-K recommendations and
   user segments, with optional time limits. The system includes a dry-run mode
   to test which rules would apply to a set of items before making changes.
 
+### Bringing Signals Online
+
+A fresh environment only ships with popularity enabled. Run the following flow
+to activate richer signals during development or evaluation:
+
+1. **Seed catalog + users + events** via the API or demo shop so the popularity
+   candidate pool is non-empty.
+2. **Generate embeddings (gamma signal)** — run `make catalog-backfill` once to
+   populate deterministic embeddings, then `make catalog-refresh SINCE=24h` on a
+   schedule to keep them fresh.
+3. **Synthesize collaborative factors (ALS signal)** — `make collab-factors
+   SINCE=24h` writes `recsys_item_factors` and `recsys_user_factors` using the
+   embedding-backed heuristics so the collaborative retriever returns
+   candidates.
+4. **Allow rule cache refresh** (defaults to `RULES_CACHE_REFRESH=2s`) after
+   creating manual overrides or merchandising rules. Use
+   `/v1/admin/manual_overrides` or `/v1/admin/rules` to confirm activation.
+5. **Verify coverage** by calling `/v1/recommendations` with
+   `"include_reasons": true` and inspecting `trace.extras.candidate_sources`;
+   non-zero counts for `collaborative`, `content`, and `popularity` confirm all
+   signals are live.
+
+Repeat steps 2–3 after large catalog uploads so candidate sources stay fresh.
+
 ## Configuration profiles and feature flags
 
 - The API recognises three configuration profiles: `development`, `test`, and
@@ -61,6 +85,9 @@ users, items, and events. The service returns top-K recommendations and
   starts in a deterministic, offline-friendly mode.
 - `make catalog-backfill` and `make catalog-refresh SINCE=24h` help populate and
   keep catalog metadata/embeddings fresh (run after adjusting the `.env`).
+- `make collab-factors SINCE=24h` materialises collaborative item/user factors
+  so `/v1/bandit/recommendations` and `/v1/recommendations` can draw from the
+  ALS candidate source during development.
 
 ## Recommendation Algorithms Used
 
