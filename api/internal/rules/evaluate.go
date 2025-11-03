@@ -16,12 +16,14 @@ type evaluator struct {
 }
 
 type itemState struct {
-	blocked    bool
-	blockRules []uuid.UUID
-	pinned     bool
-	pinRules   []uuid.UUID
-	boostDelta float64
-	boostRules []BoostDetail
+	blocked      bool
+	blockRules   []uuid.UUID
+	pinned       bool
+	pinRules     []uuid.UUID
+	boostDelta   float64
+	boostRules   []BoostDetail
+	pinPriority  int
+	highestBoost BoostDetail
 }
 
 func (e *evaluator) apply(rules []types.Rule, req EvaluateRequest) (*EvaluateResult, error) {
@@ -54,6 +56,13 @@ func (e *evaluator) apply(rules []types.Rule, req EvaluateRequest) (*EvaluateRes
 
 	matches := make([]Match, 0, len(rules))
 	evaluated := make([]uuid.UUID, 0, len(rules))
+
+	sort.SliceStable(rules, func(i, j int) bool {
+		if rules[i].Priority == rules[j].Priority {
+			return i < j
+		}
+		return rules[i].Priority > rules[j].Priority
+	})
 
 	for _, rule := range rules {
 		evaluated = append(evaluated, rule.RuleID)
@@ -113,6 +122,7 @@ func (e *evaluator) apply(rules []types.Rule, req EvaluateRequest) (*EvaluateRes
 					continue
 				}
 				st.pinned = true
+				st.pinPriority = rule.Priority
 				if !containsUUID(st.pinRules, rule.RuleID) {
 					st.pinRules = append(st.pinRules, rule.RuleID)
 				}

@@ -171,6 +171,7 @@ func New(ctx context.Context, opts Options) (*App, error) {
 		BlendAlpha:          cfg.Recommendation.Blend.Alpha,
 		BlendBeta:           cfg.Recommendation.Blend.Beta,
 		BlendGamma:          cfg.Recommendation.Blend.Gamma,
+		RulesEnabled:        cfg.Rules.Enabled,
 		BanditExperiment: handlers.BanditExperimentConfig{
 			Enabled:        cfg.Recommendation.BanditExperiment.Enabled,
 			HoldoutPercent: cfg.Recommendation.BanditExperiment.HoldoutPercent,
@@ -189,7 +190,7 @@ func New(ctx context.Context, opts Options) (*App, error) {
 	banditHandler := handlers.NewBanditHandler(st, recommendationSvc, recConfig, tracer, cfg.Recommendation.DefaultOrgID, cfg.Recommendation.BanditAlgo, logger)
 	rulesHandler := handlers.NewRulesHandler(st, rulesManager, cfg.Recommendation.DefaultOrgID, cfg.Recommendation.BrandTagPrefixes, cfg.Recommendation.CategoryTagPrefixes)
 	manualSvc := manualsvc.New(st)
-	manualHandler := handlers.NewManualOverridesHandler(manualSvc, cfg.Recommendation.DefaultOrgID)
+	manualHandler := handlers.NewManualOverridesHandler(manualSvc, rulesManager, cfg.Recommendation.DefaultOrgID)
 	eventTypesHandler := handlers.NewEventTypesHandler(st, cfg.Recommendation.DefaultOrgID)
 	explainHandler := handlers.NewExplainHandler(explainService, cfg.Recommendation.DefaultOrgID)
 	auditHandler := handlers.NewAuditHandler(st, cfg.Recommendation.DefaultOrgID)

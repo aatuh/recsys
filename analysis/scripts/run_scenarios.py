@@ -349,7 +349,7 @@ def scenario_diversity_knob(
     base_items = [item["item_id"] for item in baseline.get("items", [])]
 
     diversity_payload = dict(base_payload)
-    diversity_payload["overrides"] = {"mmr_lambda": 0.1}
+    diversity_payload["overrides"] = {"mmr_lambda": 0.0}
     diversified = recommend(session, namespace, diversity_payload)
     diverse_items = [item["item_id"] for item in diversified.get("items", [])]
 
@@ -377,7 +377,7 @@ def scenario_diversity_knob(
         f"Similarity {sim_base:.3f} -> {sim_diverse:.3f}; "
         f"NDCG {ndcg_base:.3f} -> {ndcg_diverse:.3f} ({change:+.2%})."
     )
-    passed = sim_diverse < sim_base and change >= -0.05
+    passed = sim_diverse + 0.0001 < sim_base and change >= -0.05
     return ScenarioResult(
         id="S4",
         name="Diversity budget",

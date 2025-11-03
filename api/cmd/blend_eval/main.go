@@ -79,9 +79,9 @@ func main() {
 		BlendAlpha:          cfg.Recommendation.Blend.Alpha,
 		BlendBeta:           cfg.Recommendation.Blend.Beta,
 		BlendGamma:          cfg.Recommendation.Blend.Gamma,
+		RulesEnabled:        cfg.Rules.Enabled,
 	}
 	baseCfg := recCfg.BaseConfig()
-	baseCfg.RulesEnabled = cfg.Rules.Enabled
 
 	candidates, err := loadCandidates(*configPath)
 	if err != nil {

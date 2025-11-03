@@ -26,6 +26,7 @@ type RecommendationConfig struct {
 	BlendBeta           float64
 	BlendGamma          float64
 	BanditExperiment    BanditExperimentConfig
+	RulesEnabled        bool
 }
 
 // BanditExperimentConfig controls exploration holdouts for experiments.
@@ -69,6 +70,7 @@ func (c RecommendationConfig) BaseConfig() algorithm.Config {
 		PurchasedWindowDays: int(c.PurchasedWindowDays),
 		RuleExcludeEvents:   c.RuleExcludeEvents,
 		PopularityFanout:    c.PopularityFanout,
+		RulesEnabled:        c.RulesEnabled,
 	}
 
 	if len(c.ExcludeEventTypes) > 0 {

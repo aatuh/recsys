@@ -184,7 +184,7 @@ var defaultProfiles = map[string]profileDefaults{
 	"development": {
 		AppDebug:             true,
 		AuthEnabled:          false,
-		RulesEnabled:         false,
+		RulesEnabled:         true,
 		DecisionTraceEnabled: false,
 		ExplainEnabled:       false,
 		MetricsEnabled:       true,
@@ -193,7 +193,7 @@ var defaultProfiles = map[string]profileDefaults{
 	"test": {
 		AppDebug:             false,
 		AuthEnabled:          false,
-		RulesEnabled:         false,
+		RulesEnabled:         true,
 		DecisionTraceEnabled: false,
 		ExplainEnabled:       false,
 		MetricsEnabled:       false,

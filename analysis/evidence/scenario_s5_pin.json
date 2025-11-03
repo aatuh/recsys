@@ -3,44 +3,19 @@
     "model_version": "popularity_v1",
     "items": [
       {
+        "item_id": "item_0005",
+        "score": 0.4583133151636035,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization",
+          "rule.pin[8e2d2a4f-bcbf-4d15-8eb2-ccd483209b36]"
+        ]
+      },
+      {
         "item_id": "item_0209",
-        "score": 0.8684708226553827,
-        "reasons": [
-          "recent_popularity",
-          "content_similarity",
-          "co_visitation",
-          "embedding_similarity",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0101",
-        "score": 0.7529309714178212,
-        "reasons": [
-          "recent_popularity",
-          "content_similarity",
-          "co_visitation",
-          "embedding_similarity",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0003",
-        "score": 0.6750360165556283,
-        "reasons": [
-          "recent_popularity",
-          "content_similarity",
-          "co_visitation",
-          "embedding_similarity",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0037",
-        "score": 0.6179952912170754,
+        "score": 0.7232157941939548,
         "reasons": [
           "recent_popularity",
           "content_similarity",
@@ -52,7 +27,7 @@
       },
       {
         "item_id": "item_0001",
-        "score": 0.4786883710767141,
+        "score": 0.6240434229354542,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -61,17 +36,44 @@
         ]
       },
       {
-        "item_id": "item_0142",
-        "score": 0.13828818799636208,
+        "item_id": "item_0101",
+        "score": 0.5924861205824141,
         "reasons": [
           "recent_popularity",
+          "content_similarity",
           "co_visitation",
-          "diversity"
+          "embedding_similarity",
+          "diversity",
+          "personalization"
         ]
       },
       {
-        "item_id": "item_0092",
-        "score": 0.1191172573679578,
+        "item_id": "item_0003",
+        "score": 0.5686294409745305,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0037",
+        "score": 0.4872726999972558,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0175",
+        "score": 0.3128732189841659,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -81,7 +83,7 @@
       },
       {
         "item_id": "item_0057",
-        "score": 0.09758536061539856,
+        "score": 0.2100438765958094,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -89,8 +91,8 @@
         ]
       },
       {
-        "item_id": "item_0221",
-        "score": 0.0675909462908352,
+        "item_id": "item_0142",
+        "score": 0.1696921719698704,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -98,11 +100,13 @@
         ]
       },
       {
-        "item_id": "i_test_1",
-        "score": 0,
+        "item_id": "item_0104",
+        "score": 0.1638502123536908,
         "reasons": [
           "recent_popularity",
-          "diversity"
+          "co_visitation",
+          "diversity",
+          "personalization"
         ]
       }
     ],
@@ -111,36 +115,36 @@
         "candidate_sources": {
           "collaborative": {
             "count": 0,
-            "duration_ms": 0.182579
+            "duration_ms": 0.225381
           },
           "content": {
             "count": 21,
-            "duration_ms": 1.014187
+            "duration_ms": 2.061861
           },
           "merged": {
-            "count": 322,
-            "duration_ms": 0.01612
+            "count": 321,
+            "duration_ms": 0.016782
           },
           "popularity": {
-            "count": 301,
-            "duration_ms": 11.427876
+            "count": 300,
+            "duration_ms": 66.020635
           },
           "post_exclusion": {
-            "count": 322,
-            "duration_ms": 0.109338
+            "count": 321,
+            "duration_ms": 1.466463
           },
           "session": {
             "count": 0,
-            "duration_ms": 0.198128
+            "duration_ms": 0.976997
           }
         }
       }
     }
   },
   "target_item": "item_0005",
-  "rank": null,
+  "rank": 0,
   "rule": {
-    "rule_id": "46ce9c7f-6f1e-4cd8-8998-2dfc4a8d549c",
+    "rule_id": "8e2d2a4f-bcbf-4d15-8eb2-ccd483209b36",
     "namespace": "default",
     "surface": "home",
     "name": "scenario_s5_pin_item",
@@ -153,7 +157,7 @@
     "max_pins": 1,
     "priority": 200,
     "enabled": true,
-    "created_at": "2025-11-03T15:42:43Z",
-    "updated_at": "2025-11-03T15:42:43Z"
+    "created_at": "2025-11-03T17:06:00Z",
+    "updated_at": "2025-11-03T17:06:00Z"
   }
 }

@@ -8,10 +8,10 @@ Recent evaluation (`analysis/report.md`) concludes Recsys fails essential policy
 ## Epic EPC-001 – Policy & Filter Enforcement
 Deliver policy-compliant recommendation pipelines that respect request-time constraints and business exclusion rules.
 
-- [ ] **REC-101 – Enforce tag include/exclude constraints**  
+- [x] **REC-101 – Enforce tag include/exclude constraints**  
   Ensure `constraints.include_tags_any` / `exclude_item_ids` are honored end-to-end. Add integration test mirroring S1 payload (`analysis/evidence/scenario_s1_response.json`) to confirm zero leakage and guard against regressions.
 
-- [ ] **REC-102 – Restore tag-based block rules**  
+- [x] **REC-102 – Restore tag-based block rules**  
   Diagnose why `POST /v1/admin/rules` with `action=BLOCK` does not remove targeted items (`analysis/evidence/scenario_s2_block_high_margin.json`). Patch rule evaluation to exclude blocked candidates and verify via automated scenario test.
 
 - [ ] **REC-103 – Brand/attribute whitelist support**  
@@ -25,13 +25,13 @@ Deliver policy-compliant recommendation pipelines that respect request-time cons
 ## Epic EPC-002 – Merchandising Controls Reliability
 Re-enable manual overrides and rule actions so operators can boost, pin, and shape exposure predictably.
 
-- [ ] **REC-201 – Manual boost effect propagation**  
+- [x] **REC-201 – Manual boost effect propagation**  
   Trace manual override path (`analysis/evidence/scenario_s3_boost.json`) to algorithm scoring. Fix score injection and add unit/contract tests that assert rank delta > 0 after applying boosts.
 
-- [ ] **REC-202 – Pin rules placement logic**  
+- [x] **REC-202 – Pin rules placement logic**  
   Investigate why PIN actions never surface target items (`analysis/evidence/scenario_s5_pin.json`). Repair evaluator and ensure pinned slots respect max pins and don’t get filtered downstream.
 
-- [ ] **REC-203 – BOOST/PIN/Block conflict resolution**  
+- [x] **REC-203 – BOOST/PIN/Block conflict resolution**  
   Formalize deterministic ordering between conflicting rules. Document precedence, add tests covering rule mixtures, and update explanations to expose active rule IDs.
 
 - [ ] **REC-204 – New-item exposure controls**  

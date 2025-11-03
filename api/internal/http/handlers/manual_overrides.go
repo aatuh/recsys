@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 
 	"recsys/internal/http/common"
+	"recsys/internal/rules"
 	"recsys/internal/services/manual"
 	"recsys/internal/types"
 	specstypes "recsys/specs/types"
@@ -18,15 +19,16 @@ import (
 
 // ManualOverridesHandler exposes endpoints for manual merchandising overrides.
 type ManualOverridesHandler struct {
-	service    *manual.Service
-	defaultOrg uuid.UUID
+	service      *manual.Service
+	rulesManager *rules.Manager
+	defaultOrg   uuid.UUID
 }
 
 var errServiceUnavailable = errors.New("manual override service unavailable")
 
 // NewManualOverridesHandler constructs the handler.
-func NewManualOverridesHandler(service *manual.Service, defaultOrg uuid.UUID) *ManualOverridesHandler {
-	return &ManualOverridesHandler{service: service, defaultOrg: defaultOrg}
+func NewManualOverridesHandler(service *manual.Service, manager *rules.Manager, defaultOrg uuid.UUID) *ManualOverridesHandler {
+	return &ManualOverridesHandler{service: service, rulesManager: manager, defaultOrg: defaultOrg}
 }
 
 // ManualOverrideCreate godoc
@@ -97,6 +99,10 @@ func (h *ManualOverridesHandler) ManualOverrideCreate(w http.ResponseWriter, r *
 	if err != nil {
 		common.HttpError(w, r, err, http.StatusBadRequest)
 		return
+	}
+
+	if h.rulesManager != nil {
+		h.rulesManager.Invalidate(record.Namespace, record.Surface)
 	}
 
 	resp := toManualOverrideResponse(*record)
@@ -227,6 +233,10 @@ func (h *ManualOverridesHandler) ManualOverrideCancel(w http.ResponseWriter, r *
 	if record == nil {
 		writeAPIError(w, r, http.StatusNotFound, "override_not_found", "override not found or already inactive")
 		return
+	}
+
+	if h.rulesManager != nil {
+		h.rulesManager.Invalidate(record.Namespace, record.Surface)
 	}
 
 	w.Header().Set("Content-Type", "application/json")

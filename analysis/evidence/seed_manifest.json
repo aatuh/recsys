@@ -19,10 +19,10 @@
               "price": 123.23,
               "available": true,
               "tags": [
-                "leafpress",
                 "reading",
-                "books",
-                "literature"
+                "leafpress",
+                "literature",
+                "books"
               ],
               "props": {
                 "margin": 0.439,
@@ -38,10 +38,10 @@
               "price": 155.56,
               "available": true,
               "tags": [
-                "fitness",
-                "health",
                 "stride",
-                "active"
+                "health",
+                "active",
+                "fitness"
               ],
               "props": {
                 "margin": 0.356,
@@ -58,8 +58,8 @@
               "available": false,
               "tags": [
                 "fashion",
-                "aurathreads",
                 "apparel",
+                "aurathreads",
                 "style",
                 "backorder"
               ],
@@ -79,8 +79,8 @@
               "tags": [
                 "quanta",
                 "reading",
-                "books",
                 "literature",
+                "books",
                 "new_arrival"
               ],
               "props": {
@@ -99,8 +99,8 @@
               "tags": [
                 "quanta",
                 "reading",
-                "books",
-                "literature"
+                "literature",
+                "books"
               ],
               "props": {
                 "margin": 0.371,
@@ -116,10 +116,10 @@
               "price": 98.01,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
+                "travel",
                 "skyline",
-                "travel"
+                "adventure",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.162,
@@ -137,8 +137,8 @@
               "tags": [
                 "gadgets",
                 "nimbus",
-                "electronics",
-                "smart"
+                "smart",
+                "electronics"
               ],
               "props": {
                 "margin": 0.158,
@@ -154,10 +154,10 @@
               "price": 42.77,
               "available": true,
               "tags": [
-                "couturex",
                 "fashion",
                 "apparel",
-                "style"
+                "style",
+                "couturex"
               ],
               "props": {
                 "margin": 0.444,
@@ -173,10 +173,10 @@
               "price": 127.22,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
+                "travel",
                 "skyline",
-                "travel"
+                "adventure",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.226,
@@ -192,10 +192,10 @@
               "price": 44.63,
               "available": true,
               "tags": [
-                "decor",
-                "home",
                 "living",
+                "decor",
                 "urbandwelling",
+                "home",
                 "high_margin"
               ],
               "props": {
@@ -212,10 +212,10 @@
               "price": 14.26,
               "available": true,
               "tags": [
-                "leafpress",
                 "reading",
-                "books",
-                "literature"
+                "leafpress",
+                "literature",
+                "books"
               ],
               "props": {
                 "margin": 0.392,
@@ -231,9 +231,9 @@
               "price": 210.98,
               "available": true,
               "tags": [
-                "midnightlane",
                 "fashion",
                 "apparel",
+                "midnightlane",
                 "style"
               ],
               "props": {
@@ -250,10 +250,10 @@
               "price": 201.07,
               "available": true,
               "tags": [
+                "living",
                 "cozynest",
                 "decor",
                 "home",
-                "living",
                 "high_margin",
                 "new_arrival"
               ],
@@ -271,10 +271,10 @@
               "price": 228.49,
               "available": true,
               "tags": [
+                "living",
                 "cozynest",
                 "decor",
                 "home",
-                "living",
                 "new_arrival"
               ],
               "props": {
@@ -291,10 +291,10 @@
               "price": 76.21,
               "available": true,
               "tags": [
-                "radianthue",
-                "skincare",
                 "wellness",
                 "beauty",
+                "skincare",
+                "radianthue",
                 "new_arrival"
               ],
               "props": {
@@ -311,10 +311,10 @@
               "price": 114.33,
               "available": true,
               "tags": [
-                "fitness",
-                "health",
                 "stride",
-                "active"
+                "health",
+                "active",
+                "fitness"
               ],
               "props": {
                 "margin": 0.384,
@@ -330,10 +330,10 @@
               "price": 219.5,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
-                "terraquest"
+                "adventure",
+                "terraquest",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.221,
@@ -349,10 +349,10 @@
               "price": 232.13,
               "available": true,
               "tags": [
-                "fitness",
                 "pulsegear",
                 "health",
                 "active",
+                "fitness",
                 "high_margin"
               ],
               "props": {
@@ -371,8 +371,8 @@
               "tags": [
                 "pioneerwords",
                 "reading",
-                "books",
                 "literature",
+                "books",
                 "high_margin",
                 "new_arrival"
               ],
@@ -390,10 +390,10 @@
               "price": 228.55,
               "available": true,
               "tags": [
-                "gourmet",
-                "food",
-                "harvestbite",
                 "kitchen",
+                "gourmet",
+                "harvestbite",
+                "food",
                 "high_margin"
               ],
               "props": {
@@ -411,9 +411,9 @@
               "available": false,
               "tags": [
                 "gadgets",
-                "circuitlab",
-                "electronics",
                 "smart",
+                "electronics",
+                "circuitlab",
                 "high_margin",
                 "backorder"
               ],
@@ -431,10 +431,10 @@
               "price": 131.17,
               "available": true,
               "tags": [
-                "fitness",
                 "zenmotion",
                 "health",
-                "active"
+                "active",
+                "fitness"
               ],
               "props": {
                 "margin": 0.306,
@@ -450,10 +450,10 @@
               "price": 110.82,
               "available": true,
               "tags": [
-                "fitness",
                 "pulsegear",
                 "health",
                 "active",
+                "fitness",
                 "high_margin"
               ],
               "props": {
@@ -470,10 +470,10 @@
               "price": 126.08,
               "available": true,
               "tags": [
-                "fitness",
                 "zenmotion",
                 "health",
-                "active"
+                "active",
+                "fitness"
               ],
               "props": {
                 "margin": 0.237,
@@ -489,10 +489,10 @@
               "price": 213.89,
               "available": true,
               "tags": [
-                "spicetrail",
-                "gourmet",
-                "food",
                 "kitchen",
+                "gourmet",
+                "spicetrail",
+                "food",
                 "high_margin"
               ],
               "props": {
@@ -510,9 +510,9 @@
               "available": true,
               "tags": [
                 "gadgets",
-                "circuitlab",
+                "smart",
                 "electronics",
-                "smart"
+                "circuitlab"
               ],
               "props": {
                 "margin": 0.384,
@@ -529,9 +529,9 @@
               "available": true,
               "tags": [
                 "brightliving",
+                "living",
                 "decor",
                 "home",
-                "living",
                 "high_margin"
               ],
               "props": {
@@ -548,10 +548,10 @@
               "price": 202.73,
               "available": true,
               "tags": [
-                "fitness",
                 "zenmotion",
                 "health",
                 "active",
+                "fitness",
                 "high_margin",
                 "new_arrival"
               ],
@@ -569,9 +569,9 @@
               "price": 75.83,
               "available": true,
               "tags": [
-                "midnightlane",
                 "fashion",
                 "apparel",
+                "midnightlane",
                 "style",
                 "high_margin"
               ],
@@ -589,10 +589,10 @@
               "price": 149.11,
               "available": true,
               "tags": [
-                "velvetsky",
-                "skincare",
                 "wellness",
                 "beauty",
+                "skincare",
+                "velvetsky",
                 "new_arrival"
               ],
               "props": {
@@ -609,10 +609,10 @@
               "price": 135.29,
               "available": false,
               "tags": [
-                "spicetrail",
-                "gourmet",
-                "food",
                 "kitchen",
+                "gourmet",
+                "spicetrail",
+                "food",
                 "backorder"
               ],
               "props": {
@@ -629,10 +629,10 @@
               "price": 147.01,
               "available": true,
               "tags": [
-                "fitness",
-                "health",
                 "stride",
-                "active"
+                "health",
+                "active",
+                "fitness"
               ],
               "props": {
                 "margin": 0.225,
@@ -648,9 +648,9 @@
               "price": 34.1,
               "available": true,
               "tags": [
-                "midnightlane",
                 "fashion",
                 "apparel",
+                "midnightlane",
                 "style"
               ],
               "props": {
@@ -667,9 +667,9 @@
               "price": 217.38,
               "available": true,
               "tags": [
-                "midnightlane",
                 "fashion",
                 "apparel",
+                "midnightlane",
                 "style"
               ],
               "props": {
@@ -688,8 +688,8 @@
               "tags": [
                 "gadgets",
                 "nimbus",
-                "electronics",
-                "smart"
+                "smart",
+                "electronics"
               ],
               "props": {
                 "margin": 0.404,
@@ -705,10 +705,10 @@
               "price": 96.91,
               "available": false,
               "tags": [
-                "fitness",
-                "health",
                 "ironworks",
+                "health",
                 "active",
+                "fitness",
                 "backorder"
               ],
               "props": {
@@ -725,10 +725,10 @@
               "price": 24.46,
               "available": false,
               "tags": [
-                "velvetsky",
-                "skincare",
                 "wellness",
                 "beauty",
+                "skincare",
+                "velvetsky",
                 "backorder"
               ],
               "props": {
@@ -745,10 +745,10 @@
               "price": 120.69,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
-                "trailblaze"
+                "adventure",
+                "trailblaze",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.321,
@@ -764,10 +764,10 @@
               "price": 134.96,
               "available": false,
               "tags": [
-                "couturex",
                 "fashion",
                 "apparel",
                 "style",
+                "couturex",
                 "backorder"
               ],
               "props": {
@@ -784,10 +784,10 @@
               "price": 173.42,
               "available": true,
               "tags": [
-                "epicurean",
+                "kitchen",
                 "gourmet",
-                "food",
-                "kitchen"
+                "epicurean",
+                "food"
               ],
               "props": {
                 "margin": 0.345,
@@ -803,10 +803,10 @@
               "price": 92.8,
               "available": true,
               "tags": [
-                "decor",
-                "home",
                 "living",
-                "havencraft"
+                "decor",
+                "havencraft",
+                "home"
               ],
               "props": {
                 "margin": 0.29,
@@ -823,9 +823,9 @@
               "available": true,
               "tags": [
                 "gadgets",
+                "smart",
                 "electronics",
-                "acmetech",
-                "smart"
+                "acmetech"
               ],
               "props": {
                 "margin": 0.147,
@@ -841,10 +841,10 @@
               "price": 56.71,
               "available": true,
               "tags": [
+                "living",
                 "cozynest",
                 "decor",
                 "home",
-                "living",
                 "new_arrival"
               ],
               "props": {
@@ -861,9 +861,9 @@
               "price": 56.77,
               "available": true,
               "tags": [
-                "loomlab",
                 "fashion",
                 "apparel",
+                "loomlab",
                 "style"
               ],
               "props": {
@@ -880,10 +880,10 @@
               "price": 142.23,
               "available": true,
               "tags": [
+                "kitchen",
                 "gourmet",
-                "food",
                 "harvestbite",
-                "kitchen"
+                "food"
               ],
               "props": {
                 "margin": 0.169,
@@ -899,10 +899,10 @@
               "price": 193.59,
               "available": true,
               "tags": [
-                "epicurean",
-                "gourmet",
-                "food",
                 "kitchen",
+                "gourmet",
+                "epicurean",
+                "food",
                 "high_margin"
               ],
               "props": {
@@ -919,10 +919,10 @@
               "price": 23.08,
               "available": true,
               "tags": [
+                "living",
                 "cozynest",
                 "decor",
                 "home",
-                "living",
                 "high_margin"
               ],
               "props": {
@@ -940,9 +940,9 @@
               "available": true,
               "tags": [
                 "gadgets",
-                "voltify",
-                "electronics",
                 "smart",
+                "electronics",
+                "voltify",
                 "high_margin"
               ],
               "props": {
@@ -959,9 +959,9 @@
               "price": 25.33,
               "available": true,
               "tags": [
-                "loomlab",
                 "fashion",
                 "apparel",
+                "loomlab",
                 "style"
               ],
               "props": {
@@ -978,10 +978,10 @@
               "price": 45.35,
               "available": true,
               "tags": [
-                "fitness",
-                "health",
                 "stride",
-                "active"
+                "health",
+                "active",
+                "fitness"
               ],
               "props": {
                 "margin": 0.206,
@@ -1007,10 +1007,10 @@
               "price": 136.3,
               "available": true,
               "tags": [
-                "fitness",
                 "zenmotion",
                 "health",
-                "active"
+                "active",
+                "fitness"
               ],
               "props": {
                 "margin": 0.311,
@@ -1026,10 +1026,10 @@
               "price": 52.67,
               "available": true,
               "tags": [
-                "fitness",
                 "zenmotion",
                 "health",
                 "active",
+                "fitness",
                 "high_margin",
                 "new_arrival"
               ],
@@ -1049,8 +1049,8 @@
               "tags": [
                 "gadgets",
                 "nimbus",
-                "electronics",
                 "smart",
+                "electronics",
                 "high_margin"
               ],
               "props": {
@@ -1067,10 +1067,10 @@
               "price": 220.32,
               "available": true,
               "tags": [
-                "decor",
-                "home",
                 "living",
+                "decor",
                 "havencraft",
+                "home",
                 "high_margin",
                 "new_arrival"
               ],
@@ -1089,9 +1089,9 @@
               "available": true,
               "tags": [
                 "brightliving",
+                "living",
                 "decor",
-                "home",
-                "living"
+                "home"
               ],
               "props": {
                 "margin": 0.396,
@@ -1107,10 +1107,10 @@
               "price": 89.32,
               "available": true,
               "tags": [
-                "spicetrail",
-                "gourmet",
-                "food",
                 "kitchen",
+                "gourmet",
+                "spicetrail",
+                "food",
                 "high_margin"
               ],
               "props": {
@@ -1127,10 +1127,10 @@
               "price": 137.52,
               "available": true,
               "tags": [
-                "fitness",
-                "health",
                 "ironworks",
-                "active"
+                "health",
+                "active",
+                "fitness"
               ],
               "props": {
                 "margin": 0.443,
@@ -1146,10 +1146,10 @@
               "price": 13.67,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
+                "travel",
                 "skyline",
-                "travel"
+                "adventure",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.351,
@@ -1165,10 +1165,10 @@
               "price": 219.05,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
+                "travel",
                 "skyline",
-                "travel"
+                "adventure",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.402,
@@ -1185,9 +1185,9 @@
               "available": true,
               "tags": [
                 "savoryco",
+                "kitchen",
                 "gourmet",
-                "food",
-                "kitchen"
+                "food"
               ],
               "props": {
                 "margin": 0.283,
@@ -1203,10 +1203,10 @@
               "price": 38.47,
               "available": true,
               "tags": [
+                "living",
                 "cozynest",
                 "decor",
-                "home",
-                "living"
+                "home"
               ],
               "props": {
                 "margin": 0.366,
@@ -1222,10 +1222,10 @@
               "price": 113.7,
               "available": true,
               "tags": [
-                "fitness",
-                "health",
                 "ironworks",
+                "health",
                 "active",
+                "fitness",
                 "high_margin",
                 "new_arrival"
               ],
@@ -1243,10 +1243,10 @@
               "price": 40.89,
               "available": true,
               "tags": [
+                "living",
                 "cozynest",
                 "decor",
-                "home",
-                "living"
+                "home"
               ],
               "props": {
                 "margin": 0.435,
@@ -1262,10 +1262,10 @@
               "price": 84.89,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
+                "travel",
                 "skyline",
-                "travel"
+                "adventure",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.112,
@@ -1281,9 +1281,9 @@
               "price": 105.05,
               "available": true,
               "tags": [
-                "skincare",
                 "wellness",
                 "beauty",
+                "skincare",
                 "luxeglow"
               ],
               "props": {
@@ -1300,10 +1300,10 @@
               "price": 206.48,
               "available": true,
               "tags": [
-                "fitness",
-                "health",
                 "stride",
-                "active"
+                "health",
+                "active",
+                "fitness"
               ],
               "props": {
                 "margin": 0.216,
@@ -1320,9 +1320,9 @@
               "available": true,
               "tags": [
                 "brightliving",
+                "living",
                 "decor",
                 "home",
-                "living",
                 "high_margin"
               ],
               "props": {
@@ -1340,9 +1340,9 @@
               "available": false,
               "tags": [
                 "gadgets",
-                "voltify",
-                "electronics",
                 "smart",
+                "electronics",
+                "voltify",
                 "backorder"
               ],
               "props": {
@@ -1359,10 +1359,10 @@
               "price": 46.93,
               "available": true,
               "tags": [
-                "fitness",
                 "zenmotion",
                 "health",
-                "active"
+                "active",
+                "fitness"
               ],
               "props": {
                 "margin": 0.393,
@@ -1378,10 +1378,10 @@
               "price": 143.31,
               "available": true,
               "tags": [
-                "velvetsky",
-                "skincare",
                 "wellness",
-                "beauty"
+                "beauty",
+                "skincare",
+                "velvetsky"
               ],
               "props": {
                 "margin": 0.334,
@@ -1397,10 +1397,10 @@
               "price": 15.09,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
-                "trailblaze"
+                "adventure",
+                "trailblaze",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.188,
@@ -1416,10 +1416,10 @@
               "price": 60.73,
               "available": true,
               "tags": [
+                "kitchen",
                 "gourmet",
-                "food",
                 "harvestbite",
-                "kitchen"
+                "food"
               ],
               "props": {
                 "margin": 0.443,
@@ -1436,9 +1436,9 @@
               "available": true,
               "tags": [
                 "brightliving",
+                "living",
                 "decor",
                 "home",
-                "living",
                 "high_margin",
                 "new_arrival"
               ],
@@ -1456,10 +1456,10 @@
               "price": 199.02,
               "available": true,
               "tags": [
-                "decor",
-                "home",
                 "living",
+                "decor",
                 "urbandwelling",
+                "home",
                 "high_margin",
                 "new_arrival"
               ],
@@ -1478,9 +1478,9 @@
               "available": true,
               "tags": [
                 "savoryco",
+                "kitchen",
                 "gourmet",
                 "food",
-                "kitchen",
                 "new_arrival"
               ],
               "props": {
@@ -1499,8 +1499,8 @@
               "tags": [
                 "atlasreads",
                 "reading",
-                "books",
                 "literature",
+                "books",
                 "high_margin"
               ],
               "props": {
@@ -1519,8 +1519,8 @@
               "tags": [
                 "quanta",
                 "reading",
-                "books",
-                "literature"
+                "literature",
+                "books"
               ],
               "props": {
                 "margin": 0.152,
@@ -1536,10 +1536,10 @@
               "price": 237.6,
               "available": true,
               "tags": [
-                "velvetsky",
-                "skincare",
                 "wellness",
-                "beauty"
+                "beauty",
+                "skincare",
+                "velvetsky"
               ],
               "props": {
                 "margin": 0.295,
@@ -1555,10 +1555,10 @@
               "price": 37.09,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
-                "trailblaze"
+                "adventure",
+                "trailblaze",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.393,
@@ -1574,10 +1574,10 @@
               "price": 234.31,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
-                "terraquest"
+                "adventure",
+                "terraquest",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.18,
@@ -1593,10 +1593,10 @@
               "price": 35.64,
               "available": true,
               "tags": [
-                "leafpress",
                 "reading",
-                "books",
+                "leafpress",
                 "literature",
+                "books",
                 "new_arrival"
               ],
               "props": {
@@ -1613,9 +1613,9 @@
               "price": 132.67,
               "available": true,
               "tags": [
-                "loomlab",
                 "fashion",
                 "apparel",
+                "loomlab",
                 "style",
                 "high_margin"
               ],
@@ -1633,10 +1633,10 @@
               "price": 17.51,
               "available": true,
               "tags": [
-                "couturex",
                 "fashion",
                 "apparel",
                 "style",
+                "couturex",
                 "new_arrival"
               ],
               "props": {
@@ -1653,10 +1653,10 @@
               "price": 52.59,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
-                "summitpeak"
+                "adventure",
+                "summitpeak",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.409,
@@ -1674,8 +1674,8 @@
               "tags": [
                 "gadgets",
                 "nimbus",
-                "electronics",
                 "smart",
+                "electronics",
                 "high_margin",
                 "new_arrival"
               ],
@@ -1693,10 +1693,10 @@
               "price": 236.29,
               "available": true,
               "tags": [
-                "spicetrail",
-                "gourmet",
-                "food",
                 "kitchen",
+                "gourmet",
+                "spicetrail",
+                "food",
                 "high_margin"
               ],
               "props": {
@@ -1714,9 +1714,9 @@
               "available": true,
               "tags": [
                 "gadgets",
-                "circuitlab",
-                "electronics",
                 "smart",
+                "electronics",
+                "circuitlab",
                 "high_margin"
               ],
               "props": {
@@ -1734,9 +1734,9 @@
               "available": true,
               "tags": [
                 "brightliving",
+                "living",
                 "decor",
-                "home",
-                "living"
+                "home"
               ],
               "props": {
                 "margin": 0.156,
@@ -1752,10 +1752,10 @@
               "price": 83.83,
               "available": true,
               "tags": [
-                "purebloom",
-                "skincare",
                 "wellness",
-                "beauty"
+                "purebloom",
+                "beauty",
+                "skincare"
               ],
               "props": {
                 "margin": 0.337,
@@ -1772,9 +1772,9 @@
               "available": true,
               "tags": [
                 "gadgets",
-                "circuitlab",
-                "electronics",
                 "smart",
+                "electronics",
+                "circuitlab",
                 "new_arrival"
               ],
               "props": {
@@ -1791,10 +1791,10 @@
               "price": 222.41,
               "available": true,
               "tags": [
-                "purebloom",
-                "skincare",
                 "wellness",
-                "beauty"
+                "purebloom",
+                "beauty",
+                "skincare"
               ],
               "props": {
                 "margin": 0.319,
@@ -1811,9 +1811,9 @@
               "available": true,
               "tags": [
                 "brightliving",
+                "living",
                 "decor",
-                "home",
-                "living"
+                "home"
               ],
               "props": {
                 "margin": 0.38,
@@ -1829,10 +1829,10 @@
               "price": 12.41,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
+                "adventure",
                 "summitpeak",
+                "outdoors",
                 "high_margin",
                 "new_arrival"
               ],
@@ -1850,9 +1850,9 @@
               "price": 29.52,
               "available": true,
               "tags": [
-                "loomlab",
                 "fashion",
                 "apparel",
+                "loomlab",
                 "style"
               ],
               "props": {
@@ -1869,10 +1869,10 @@
               "price": 62.2,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
+                "adventure",
                 "summitpeak",
+                "outdoors",
                 "high_margin"
               ],
               "props": {
@@ -1889,10 +1889,10 @@
               "price": 188.19,
               "available": true,
               "tags": [
-                "epicurean",
+                "kitchen",
                 "gourmet",
-                "food",
-                "kitchen"
+                "epicurean",
+                "food"
               ],
               "props": {
                 "margin": 0.416,
@@ -1908,10 +1908,10 @@
               "price": 189.85,
               "available": true,
               "tags": [
-                "epicurean",
+                "kitchen",
                 "gourmet",
-                "food",
-                "kitchen"
+                "epicurean",
+                "food"
               ],
               "props": {
                 "margin": 0.105,
@@ -1927,10 +1927,10 @@
               "price": 137.96,
               "available": true,
               "tags": [
-                "purebloom",
-                "skincare",
                 "wellness",
-                "beauty"
+                "purebloom",
+                "beauty",
+                "skincare"
               ],
               "props": {
                 "margin": 0.183,
@@ -1946,10 +1946,10 @@
               "price": 171.54,
               "available": true,
               "tags": [
-                "decor",
-                "home",
                 "living",
+                "decor",
                 "urbandwelling",
+                "home",
                 "new_arrival"
               ],
               "props": {
@@ -1966,10 +1966,10 @@
               "price": 59.28,
               "available": true,
               "tags": [
-                "leafpress",
                 "reading",
-                "books",
-                "literature"
+                "leafpress",
+                "literature",
+                "books"
               ],
               "props": {
                 "margin": 0.351,
@@ -1996,9 +1996,9 @@
               "available": false,
               "tags": [
                 "gadgets",
+                "smart",
                 "electronics",
                 "acmetech",
-                "smart",
                 "high_margin",
                 "backorder"
               ],
@@ -2016,10 +2016,10 @@
               "price": 199.94,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
+                "travel",
                 "skyline",
-                "travel"
+                "adventure",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.201,
@@ -2036,9 +2036,9 @@
               "available": true,
               "tags": [
                 "savoryco",
+                "kitchen",
                 "gourmet",
-                "food",
-                "kitchen"
+                "food"
               ],
               "props": {
                 "margin": 0.124,
@@ -2054,9 +2054,9 @@
               "price": 223.56,
               "available": true,
               "tags": [
-                "midnightlane",
                 "fashion",
                 "apparel",
+                "midnightlane",
                 "style",
                 "high_margin",
                 "new_arrival"
@@ -2075,10 +2075,10 @@
               "price": 220.97,
               "available": true,
               "tags": [
-                "velvetsky",
-                "skincare",
                 "wellness",
-                "beauty"
+                "beauty",
+                "skincare",
+                "velvetsky"
               ],
               "props": {
                 "margin": 0.432,
@@ -2094,10 +2094,10 @@
               "price": 24.34,
               "available": true,
               "tags": [
-                "epicurean",
+                "kitchen",
                 "gourmet",
-                "food",
-                "kitchen"
+                "epicurean",
+                "food"
               ],
               "props": {
                 "margin": 0.194,
@@ -2113,10 +2113,10 @@
               "price": 139.47,
               "available": true,
               "tags": [
-                "fitness",
                 "pulsegear",
                 "health",
-                "active"
+                "active",
+                "fitness"
               ],
               "props": {
                 "margin": 0.278,
@@ -2134,8 +2134,8 @@
               "tags": [
                 "gadgets",
                 "nimbus",
-                "electronics",
-                "smart"
+                "smart",
+                "electronics"
               ],
               "props": {
                 "margin": 0.376,
@@ -2151,10 +2151,10 @@
               "price": 142.12,
               "available": true,
               "tags": [
-                "decor",
-                "home",
                 "living",
-                "havencraft"
+                "decor",
+                "havencraft",
+                "home"
               ],
               "props": {
                 "margin": 0.216,
@@ -2170,10 +2170,10 @@
               "price": 192.99,
               "available": true,
               "tags": [
-                "fitness",
-                "health",
                 "stride",
-                "active"
+                "health",
+                "active",
+                "fitness"
               ],
               "props": {
                 "margin": 0.298,
@@ -2189,10 +2189,10 @@
               "price": 204.93,
               "available": true,
               "tags": [
-                "couturex",
                 "fashion",
                 "apparel",
                 "style",
+                "couturex",
                 "new_arrival"
               ],
               "props": {
@@ -2209,10 +2209,10 @@
               "price": 121.64,
               "available": true,
               "tags": [
-                "spicetrail",
+                "kitchen",
                 "gourmet",
-                "food",
-                "kitchen"
+                "spicetrail",
+                "food"
               ],
               "props": {
                 "margin": 0.238,
@@ -2228,10 +2228,10 @@
               "price": 182.66,
               "available": true,
               "tags": [
+                "living",
                 "cozynest",
                 "decor",
-                "home",
-                "living"
+                "home"
               ],
               "props": {
                 "margin": 0.396,
@@ -2247,10 +2247,10 @@
               "price": 83.15,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
-                "terraquest"
+                "adventure",
+                "terraquest",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.344,
@@ -2267,8 +2267,8 @@
               "available": true,
               "tags": [
                 "fashion",
-                "aurathreads",
                 "apparel",
+                "aurathreads",
                 "style",
                 "high_margin"
               ],
@@ -2286,10 +2286,10 @@
               "price": 37.18,
               "available": true,
               "tags": [
-                "purebloom",
-                "skincare",
                 "wellness",
-                "beauty"
+                "purebloom",
+                "beauty",
+                "skincare"
               ],
               "props": {
                 "margin": 0.217,
@@ -2305,9 +2305,9 @@
               "price": 223.17,
               "available": true,
               "tags": [
-                "skincare",
                 "wellness",
                 "beauty",
+                "skincare",
                 "luxeglow",
                 "new_arrival"
               ],
@@ -2325,10 +2325,10 @@
               "price": 66.93,
               "available": true,
               "tags": [
-                "couturex",
                 "fashion",
                 "apparel",
-                "style"
+                "style",
+                "couturex"
               ],
               "props": {
                 "margin": 0.34,
@@ -2346,8 +2346,8 @@
               "tags": [
                 "quanta",
                 "reading",
-                "books",
                 "literature",
+                "books",
                 "new_arrival"
               ],
               "props": {
@@ -2364,10 +2364,10 @@
               "price": 117.97,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
+                "adventure",
                 "trailblaze",
+                "outdoors",
                 "high_margin"
               ],
               "props": {
@@ -2384,10 +2384,10 @@
               "price": 193.49,
               "available": true,
               "tags": [
+                "living",
                 "cozynest",
                 "decor",
-                "home",
-                "living"
+                "home"
               ],
               "props": {
                 "margin": 0.419,
@@ -2403,10 +2403,10 @@
               "price": 209.8,
               "available": true,
               "tags": [
+                "living",
                 "cozynest",
                 "decor",
-                "home",
-                "living"
+                "home"
               ],
               "props": {
                 "margin": 0.292,
@@ -2422,10 +2422,10 @@
               "price": 15.31,
               "available": true,
               "tags": [
-                "decor",
-                "home",
                 "living",
+                "decor",
                 "havencraft",
+                "home",
                 "high_margin",
                 "new_arrival"
               ],
@@ -2443,10 +2443,10 @@
               "price": 150.48,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
+                "adventure",
                 "trailblaze",
+                "outdoors",
                 "high_margin"
               ],
               "props": {
@@ -2463,10 +2463,10 @@
               "price": 72.06,
               "available": true,
               "tags": [
-                "epicurean",
-                "gourmet",
-                "food",
                 "kitchen",
+                "gourmet",
+                "epicurean",
+                "food",
                 "new_arrival"
               ],
               "props": {
@@ -2483,10 +2483,10 @@
               "price": 83.57,
               "available": true,
               "tags": [
-                "decor",
-                "home",
                 "living",
-                "havencraft"
+                "decor",
+                "havencraft",
+                "home"
               ],
               "props": {
                 "margin": 0.261,
@@ -2502,10 +2502,10 @@
               "price": 14.1,
               "available": true,
               "tags": [
-                "leafpress",
                 "reading",
-                "books",
-                "literature"
+                "leafpress",
+                "literature",
+                "books"
               ],
               "props": {
                 "margin": 0.221,
@@ -2521,9 +2521,9 @@
               "price": 140.79,
               "available": true,
               "tags": [
-                "loomlab",
                 "fashion",
                 "apparel",
+                "loomlab",
                 "style",
                 "new_arrival"
               ],
@@ -2541,10 +2541,10 @@
               "price": 91.0,
               "available": true,
               "tags": [
-                "epicurean",
+                "kitchen",
                 "gourmet",
-                "food",
-                "kitchen"
+                "epicurean",
+                "food"
               ],
               "props": {
                 "margin": 0.32,
@@ -2561,9 +2561,9 @@
               "available": false,
               "tags": [
                 "savoryco",
+                "kitchen",
                 "gourmet",
                 "food",
-                "kitchen",
                 "new_arrival",
                 "backorder"
               ],
@@ -2581,9 +2581,9 @@
               "price": 193.92,
               "available": true,
               "tags": [
-                "skincare",
                 "wellness",
                 "beauty",
+                "skincare",
                 "luxeglow"
               ],
               "props": {
@@ -2601,8 +2601,8 @@
               "available": true,
               "tags": [
                 "fashion",
-                "aurathreads",
                 "apparel",
+                "aurathreads",
                 "style"
               ],
               "props": {
@@ -2620,9 +2620,9 @@
               "available": true,
               "tags": [
                 "gadgets",
+                "smart",
                 "electronics",
-                "acmetech",
-                "smart"
+                "acmetech"
               ],
               "props": {
                 "margin": 0.381,
@@ -2638,10 +2638,10 @@
               "price": 150.52,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
+                "travel",
                 "skyline",
-                "travel"
+                "adventure",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.31,
@@ -2657,10 +2657,10 @@
               "price": 140.84,
               "available": true,
               "tags": [
-                "decor",
-                "home",
                 "living",
+                "decor",
                 "havencraft",
+                "home",
                 "high_margin"
               ],
               "props": {
@@ -2677,9 +2677,9 @@
               "price": 84.17,
               "available": true,
               "tags": [
-                "midnightlane",
                 "fashion",
                 "apparel",
+                "midnightlane",
                 "style",
                 "new_arrival"
               ],
@@ -2699,8 +2699,8 @@
               "tags": [
                 "quanta",
                 "reading",
-                "books",
-                "literature"
+                "literature",
+                "books"
               ],
               "props": {
                 "margin": 0.314,
@@ -2718,8 +2718,8 @@
               "tags": [
                 "atlasreads",
                 "reading",
-                "books",
-                "literature"
+                "literature",
+                "books"
               ],
               "props": {
                 "margin": 0.432,
@@ -2736,8 +2736,8 @@
               "available": true,
               "tags": [
                 "fashion",
-                "aurathreads",
                 "apparel",
+                "aurathreads",
                 "style"
               ],
               "props": {
@@ -2755,9 +2755,9 @@
               "available": true,
               "tags": [
                 "savoryco",
+                "kitchen",
                 "gourmet",
-                "food",
-                "kitchen"
+                "food"
               ],
               "props": {
                 "margin": 0.414,
@@ -2775,8 +2775,8 @@
               "tags": [
                 "atlasreads",
                 "reading",
-                "books",
-                "literature"
+                "literature",
+                "books"
               ],
               "props": {
                 "margin": 0.132,
@@ -2793,9 +2793,9 @@
               "available": true,
               "tags": [
                 "savoryco",
+                "kitchen",
                 "gourmet",
-                "food",
-                "kitchen"
+                "food"
               ],
               "props": {
                 "margin": 0.19,
@@ -2812,9 +2812,9 @@
               "available": true,
               "tags": [
                 "gadgets",
+                "smart",
                 "electronics",
-                "acmetech",
-                "smart"
+                "acmetech"
               ],
               "props": {
                 "margin": 0.361,
@@ -2830,10 +2830,10 @@
               "price": 147.49,
               "available": true,
               "tags": [
+                "living",
                 "cozynest",
                 "decor",
-                "home",
-                "living"
+                "home"
               ],
               "props": {
                 "margin": 0.402,
@@ -2851,8 +2851,8 @@
               "tags": [
                 "pioneerwords",
                 "reading",
-                "books",
-                "literature"
+                "literature",
+                "books"
               ],
               "props": {
                 "margin": 0.168,
@@ -2868,9 +2868,9 @@
               "price": 49.01,
               "available": true,
               "tags": [
-                "midnightlane",
                 "fashion",
                 "apparel",
+                "midnightlane",
                 "style"
               ],
               "props": {
@@ -2888,9 +2888,9 @@
               "available": true,
               "tags": [
                 "gadgets",
+                "smart",
                 "electronics",
-                "acmetech",
-                "smart"
+                "acmetech"
               ],
               "props": {
                 "margin": 0.368,
@@ -2906,10 +2906,10 @@
               "price": 95.27,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
+                "adventure",
                 "terraquest",
+                "outdoors",
                 "new_arrival"
               ],
               "props": {
@@ -2926,10 +2926,10 @@
               "price": 30.91,
               "available": true,
               "tags": [
+                "kitchen",
                 "gourmet",
-                "food",
                 "harvestbite",
-                "kitchen"
+                "food"
               ],
               "props": {
                 "margin": 0.155,
@@ -2945,9 +2945,9 @@
               "price": 171.53,
               "available": true,
               "tags": [
-                "loomlab",
                 "fashion",
                 "apparel",
+                "loomlab",
                 "style",
                 "high_margin"
               ],
@@ -2977,8 +2977,8 @@
               "tags": [
                 "gadgets",
                 "nimbus",
-                "electronics",
                 "smart",
+                "electronics",
                 "high_margin",
                 "new_arrival"
               ],
@@ -2997,8 +2997,8 @@
               "available": true,
               "tags": [
                 "fashion",
-                "aurathreads",
                 "apparel",
+                "aurathreads",
                 "style"
               ],
               "props": {
@@ -3015,10 +3015,10 @@
               "price": 222.89,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
+                "adventure",
                 "summitpeak",
+                "outdoors",
                 "new_arrival"
               ],
               "props": {
@@ -3035,10 +3035,10 @@
               "price": 99.64,
               "available": true,
               "tags": [
-                "decor",
-                "home",
                 "living",
+                "decor",
                 "urbandwelling",
+                "home",
                 "new_arrival"
               ],
               "props": {
@@ -3056,9 +3056,9 @@
               "available": true,
               "tags": [
                 "gadgets",
-                "voltify",
+                "smart",
                 "electronics",
-                "smart"
+                "voltify"
               ],
               "props": {
                 "margin": 0.332,
@@ -3075,9 +3075,9 @@
               "available": true,
               "tags": [
                 "savoryco",
+                "kitchen",
                 "gourmet",
-                "food",
-                "kitchen"
+                "food"
               ],
               "props": {
                 "margin": 0.245,
@@ -3093,10 +3093,10 @@
               "price": 97.18,
               "available": true,
               "tags": [
-                "decor",
-                "home",
                 "living",
+                "decor",
                 "havencraft",
+                "home",
                 "new_arrival"
               ],
               "props": {
@@ -3113,10 +3113,10 @@
               "price": 58.84,
               "available": true,
               "tags": [
-                "velvetsky",
-                "skincare",
                 "wellness",
                 "beauty",
+                "skincare",
+                "velvetsky",
                 "high_margin"
               ],
               "props": {
@@ -3133,10 +3133,10 @@
               "price": 17.89,
               "available": true,
               "tags": [
-                "radianthue",
-                "skincare",
                 "wellness",
-                "beauty"
+                "beauty",
+                "skincare",
+                "radianthue"
               ],
               "props": {
                 "margin": 0.3,
@@ -3152,10 +3152,10 @@
               "price": 74.81,
               "available": true,
               "tags": [
-                "decor",
-                "home",
                 "living",
-                "urbandwelling"
+                "decor",
+                "urbandwelling",
+                "home"
               ],
               "props": {
                 "margin": 0.198,
@@ -3171,10 +3171,10 @@
               "price": 15.4,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
+                "adventure",
                 "terraquest",
+                "outdoors",
                 "high_margin"
               ],
               "props": {
@@ -3193,8 +3193,8 @@
               "tags": [
                 "pioneerwords",
                 "reading",
-                "books",
-                "literature"
+                "literature",
+                "books"
               ],
               "props": {
                 "margin": 0.362,
@@ -3211,9 +3211,9 @@
               "available": true,
               "tags": [
                 "gadgets",
+                "smart",
                 "electronics",
                 "acmetech",
-                "smart",
                 "high_margin"
               ],
               "props": {
@@ -3232,8 +3232,8 @@
               "tags": [
                 "quanta",
                 "reading",
-                "books",
                 "literature",
+                "books",
                 "high_margin",
                 "new_arrival"
               ],
@@ -3251,10 +3251,10 @@
               "price": 97.8,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
-                "summitpeak"
+                "adventure",
+                "summitpeak",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.141,
@@ -3270,10 +3270,10 @@
               "price": 141.49,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
+                "adventure",
                 "summitpeak",
+                "outdoors",
                 "high_margin",
                 "new_arrival"
               ],
@@ -3292,9 +3292,9 @@
               "available": true,
               "tags": [
                 "brightliving",
+                "living",
                 "decor",
                 "home",
-                "living",
                 "high_margin"
               ],
               "props": {
@@ -3311,10 +3311,10 @@
               "price": 163.16,
               "available": true,
               "tags": [
-                "gourmet",
-                "food",
-                "harvestbite",
                 "kitchen",
+                "gourmet",
+                "harvestbite",
+                "food",
                 "high_margin"
               ],
               "props": {
@@ -3333,8 +3333,8 @@
               "tags": [
                 "quanta",
                 "reading",
-                "books",
-                "literature"
+                "literature",
+                "books"
               ],
               "props": {
                 "margin": 0.227,
@@ -3350,9 +3350,9 @@
               "price": 117.95,
               "available": true,
               "tags": [
-                "skincare",
                 "wellness",
                 "beauty",
+                "skincare",
                 "luxeglow",
                 "high_margin"
               ],
@@ -3371,9 +3371,9 @@
               "available": true,
               "tags": [
                 "gadgets",
+                "smart",
                 "electronics",
-                "acmetech",
-                "smart"
+                "acmetech"
               ],
               "props": {
                 "margin": 0.429,
@@ -3389,10 +3389,10 @@
               "price": 98.55,
               "available": true,
               "tags": [
-                "fitness",
                 "pulsegear",
                 "health",
-                "active"
+                "active",
+                "fitness"
               ],
               "props": {
                 "margin": 0.236,
@@ -3408,10 +3408,10 @@
               "price": 79.79,
               "available": true,
               "tags": [
-                "decor",
-                "home",
                 "living",
-                "urbandwelling"
+                "decor",
+                "urbandwelling",
+                "home"
               ],
               "props": {
                 "margin": 0.177,
@@ -3429,8 +3429,8 @@
               "tags": [
                 "quanta",
                 "reading",
-                "books",
-                "literature"
+                "literature",
+                "books"
               ],
               "props": {
                 "margin": 0.272,
@@ -3447,9 +3447,9 @@
               "available": true,
               "tags": [
                 "brightliving",
+                "living",
                 "decor",
-                "home",
-                "living"
+                "home"
               ],
               "props": {
                 "margin": 0.116,
@@ -3465,9 +3465,9 @@
               "price": 80.96,
               "available": true,
               "tags": [
-                "loomlab",
                 "fashion",
                 "apparel",
+                "loomlab",
                 "style"
               ],
               "props": {
@@ -3484,10 +3484,10 @@
               "price": 86.28,
               "available": true,
               "tags": [
+                "living",
                 "cozynest",
                 "decor",
-                "home",
-                "living"
+                "home"
               ],
               "props": {
                 "margin": 0.237,
@@ -3503,10 +3503,10 @@
               "price": 162.83,
               "available": true,
               "tags": [
-                "radianthue",
-                "skincare",
                 "wellness",
                 "beauty",
+                "skincare",
+                "radianthue",
                 "high_margin"
               ],
               "props": {
@@ -3523,10 +3523,10 @@
               "price": 13.55,
               "available": true,
               "tags": [
-                "couturex",
                 "fashion",
                 "apparel",
                 "style",
+                "couturex",
                 "new_arrival"
               ],
               "props": {
@@ -3543,10 +3543,10 @@
               "price": 56.53,
               "available": true,
               "tags": [
-                "velvetsky",
-                "skincare",
                 "wellness",
                 "beauty",
+                "skincare",
+                "velvetsky",
                 "high_margin"
               ],
               "props": {
@@ -3563,10 +3563,10 @@
               "price": 136.58,
               "available": true,
               "tags": [
-                "velvetsky",
-                "skincare",
                 "wellness",
                 "beauty",
+                "skincare",
+                "velvetsky",
                 "high_margin"
               ],
               "props": {
@@ -3583,9 +3583,9 @@
               "price": 57.93,
               "available": true,
               "tags": [
-                "midnightlane",
                 "fashion",
                 "apparel",
+                "midnightlane",
                 "style"
               ],
               "props": {
@@ -3602,10 +3602,10 @@
               "price": 24.89,
               "available": true,
               "tags": [
-                "leafpress",
                 "reading",
-                "books",
+                "leafpress",
                 "literature",
+                "books",
                 "high_margin"
               ],
               "props": {
@@ -3622,10 +3622,10 @@
               "price": 46.64,
               "available": true,
               "tags": [
-                "fitness",
                 "zenmotion",
                 "health",
                 "active",
+                "fitness",
                 "high_margin"
               ],
               "props": {
@@ -3642,10 +3642,10 @@
               "price": 70.93,
               "available": true,
               "tags": [
-                "decor",
-                "home",
                 "living",
+                "decor",
                 "havencraft",
+                "home",
                 "high_margin"
               ],
               "props": {
@@ -3663,9 +3663,9 @@
               "available": true,
               "tags": [
                 "gadgets",
+                "smart",
                 "electronics",
                 "acmetech",
-                "smart",
                 "new_arrival"
               ],
               "props": {
@@ -3682,9 +3682,9 @@
               "price": 37.24,
               "available": true,
               "tags": [
-                "loomlab",
                 "fashion",
                 "apparel",
+                "loomlab",
                 "style"
               ],
               "props": {
@@ -3701,10 +3701,10 @@
               "price": 113.38,
               "available": true,
               "tags": [
-                "decor",
-                "home",
                 "living",
-                "havencraft"
+                "decor",
+                "havencraft",
+                "home"
               ],
               "props": {
                 "margin": 0.293,
@@ -3720,10 +3720,10 @@
               "price": 135.86,
               "available": true,
               "tags": [
-                "decor",
-                "home",
                 "living",
-                "havencraft"
+                "decor",
+                "havencraft",
+                "home"
               ],
               "props": {
                 "margin": 0.216,
@@ -3741,8 +3741,8 @@
               "tags": [
                 "gadgets",
                 "nimbus",
-                "electronics",
                 "smart",
+                "electronics",
                 "high_margin"
               ],
               "props": {
@@ -3761,8 +3761,8 @@
               "tags": [
                 "gadgets",
                 "nimbus",
-                "electronics",
-                "smart"
+                "smart",
+                "electronics"
               ],
               "props": {
                 "margin": 0.209,
@@ -3778,10 +3778,10 @@
               "price": 194.04,
               "available": true,
               "tags": [
-                "decor",
-                "home",
                 "living",
-                "urbandwelling"
+                "decor",
+                "urbandwelling",
+                "home"
               ],
               "props": {
                 "margin": 0.329,
@@ -3797,9 +3797,9 @@
               "price": 233.88,
               "available": true,
               "tags": [
-                "skincare",
                 "wellness",
                 "beauty",
+                "skincare",
                 "luxeglow",
                 "high_margin",
                 "new_arrival"
@@ -3819,9 +3819,9 @@
               "available": true,
               "tags": [
                 "brightliving",
+                "living",
                 "decor",
                 "home",
-                "living",
                 "high_margin"
               ],
               "props": {
@@ -3840,8 +3840,8 @@
               "tags": [
                 "quanta",
                 "reading",
-                "books",
                 "literature",
+                "books",
                 "high_margin"
               ],
               "props": {
@@ -3859,9 +3859,9 @@
               "available": true,
               "tags": [
                 "gadgets",
-                "voltify",
-                "electronics",
                 "smart",
+                "electronics",
+                "voltify",
                 "high_margin"
               ],
               "props": {
@@ -3878,10 +3878,10 @@
               "price": 96.87,
               "available": false,
               "tags": [
-                "spicetrail",
-                "gourmet",
-                "food",
                 "kitchen",
+                "gourmet",
+                "spicetrail",
+                "food",
                 "backorder"
               ],
               "props": {
@@ -3898,10 +3898,10 @@
               "price": 190.89,
               "available": true,
               "tags": [
-                "couturex",
                 "fashion",
                 "apparel",
-                "style"
+                "style",
+                "couturex"
               ],
               "props": {
                 "margin": 0.261,
@@ -3917,10 +3917,10 @@
               "price": 164.46,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
+                "adventure",
                 "trailblaze",
+                "outdoors",
                 "high_margin"
               ],
               "props": {
@@ -3937,10 +3937,10 @@
               "price": 80.48,
               "available": true,
               "tags": [
+                "living",
                 "cozynest",
                 "decor",
-                "home",
-                "living"
+                "home"
               ],
               "props": {
                 "margin": 0.303,
@@ -3967,9 +3967,9 @@
               "available": false,
               "tags": [
                 "gadgets",
-                "circuitlab",
-                "electronics",
                 "smart",
+                "electronics",
+                "circuitlab",
                 "high_margin",
                 "backorder"
               ],
@@ -3987,10 +3987,10 @@
               "price": 23.19,
               "available": true,
               "tags": [
-                "fitness",
                 "pulsegear",
                 "health",
                 "active",
+                "fitness",
                 "high_margin"
               ],
               "props": {
@@ -4007,10 +4007,10 @@
               "price": 97.77,
               "available": true,
               "tags": [
-                "decor",
-                "home",
                 "living",
+                "decor",
                 "havencraft",
+                "home",
                 "high_margin"
               ],
               "props": {
@@ -4027,10 +4027,10 @@
               "price": 98.07,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
+                "adventure",
                 "summitpeak",
+                "outdoors",
                 "high_margin"
               ],
               "props": {
@@ -4048,9 +4048,9 @@
               "available": true,
               "tags": [
                 "brightliving",
+                "living",
                 "decor",
                 "home",
-                "living",
                 "high_margin"
               ],
               "props": {
@@ -4067,9 +4067,9 @@
               "price": 186.44,
               "available": true,
               "tags": [
-                "loomlab",
                 "fashion",
                 "apparel",
+                "loomlab",
                 "style",
                 "high_margin"
               ],
@@ -4087,10 +4087,10 @@
               "price": 177.76,
               "available": true,
               "tags": [
-                "fitness",
                 "zenmotion",
                 "health",
-                "active"
+                "active",
+                "fitness"
               ],
               "props": {
                 "margin": 0.165,
@@ -4106,10 +4106,10 @@
               "price": 135.1,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
-                "terraquest"
+                "adventure",
+                "terraquest",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.29,
@@ -4127,8 +4127,8 @@
               "tags": [
                 "atlasreads",
                 "reading",
-                "books",
                 "literature",
+                "books",
                 "high_margin",
                 "backorder"
               ],
@@ -4146,10 +4146,10 @@
               "price": 39.23,
               "available": false,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
+                "adventure",
                 "summitpeak",
+                "outdoors",
                 "high_margin",
                 "backorder"
               ],
@@ -4167,10 +4167,10 @@
               "price": 55.95,
               "available": true,
               "tags": [
-                "fitness",
                 "pulsegear",
                 "health",
                 "active",
+                "fitness",
                 "high_margin",
                 "new_arrival"
               ],
@@ -4188,10 +4188,10 @@
               "price": 38.09,
               "available": true,
               "tags": [
-                "fitness",
                 "pulsegear",
                 "health",
-                "active"
+                "active",
+                "fitness"
               ],
               "props": {
                 "margin": 0.167,
@@ -4207,9 +4207,9 @@
               "price": 224.07,
               "available": true,
               "tags": [
-                "midnightlane",
                 "fashion",
                 "apparel",
+                "midnightlane",
                 "style"
               ],
               "props": {
@@ -4226,10 +4226,10 @@
               "price": 220.18,
               "available": true,
               "tags": [
-                "fitness",
-                "health",
                 "ironworks",
-                "active"
+                "health",
+                "active",
+                "fitness"
               ],
               "props": {
                 "margin": 0.384,
@@ -4245,10 +4245,10 @@
               "price": 59.0,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
+                "travel",
                 "skyline",
-                "travel"
+                "adventure",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.211,
@@ -4264,10 +4264,10 @@
               "price": 20.6,
               "available": true,
               "tags": [
-                "spicetrail",
+                "kitchen",
                 "gourmet",
-                "food",
-                "kitchen"
+                "spicetrail",
+                "food"
               ],
               "props": {
                 "margin": 0.269,
@@ -4283,10 +4283,10 @@
               "price": 16.0,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
+                "adventure",
                 "trailblaze",
+                "outdoors",
                 "new_arrival"
               ],
               "props": {
@@ -4303,10 +4303,10 @@
               "price": 122.07,
               "available": true,
               "tags": [
-                "spicetrail",
-                "gourmet",
-                "food",
                 "kitchen",
+                "gourmet",
+                "spicetrail",
+                "food",
                 "high_margin"
               ],
               "props": {
@@ -4325,8 +4325,8 @@
               "tags": [
                 "gadgets",
                 "nimbus",
-                "electronics",
-                "smart"
+                "smart",
+                "electronics"
               ],
               "props": {
                 "margin": 0.377,
@@ -4343,9 +4343,9 @@
               "available": true,
               "tags": [
                 "gadgets",
-                "circuitlab",
-                "electronics",
                 "smart",
+                "electronics",
+                "circuitlab",
                 "new_arrival"
               ],
               "props": {
@@ -4362,10 +4362,10 @@
               "price": 37.21,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
-                "summitpeak"
+                "adventure",
+                "summitpeak",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.313,
@@ -4381,10 +4381,10 @@
               "price": 115.56,
               "available": true,
               "tags": [
-                "spicetrail",
+                "kitchen",
                 "gourmet",
-                "food",
-                "kitchen"
+                "spicetrail",
+                "food"
               ],
               "props": {
                 "margin": 0.251,
@@ -4400,10 +4400,10 @@
               "price": 36.28,
               "available": true,
               "tags": [
-                "couturex",
                 "fashion",
                 "apparel",
-                "style"
+                "style",
+                "couturex"
               ],
               "props": {
                 "margin": 0.305,
@@ -4421,8 +4421,8 @@
               "tags": [
                 "quanta",
                 "reading",
-                "books",
                 "literature",
+                "books",
                 "new_arrival"
               ],
               "props": {
@@ -4439,10 +4439,10 @@
               "price": 27.58,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
+                "travel",
                 "skyline",
-                "travel"
+                "adventure",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.197,
@@ -4459,9 +4459,9 @@
               "available": true,
               "tags": [
                 "brightliving",
+                "living",
                 "decor",
-                "home",
-                "living"
+                "home"
               ],
               "props": {
                 "margin": 0.135,
@@ -4477,10 +4477,10 @@
               "price": 105.02,
               "available": true,
               "tags": [
-                "spicetrail",
+                "kitchen",
                 "gourmet",
-                "food",
-                "kitchen"
+                "spicetrail",
+                "food"
               ],
               "props": {
                 "margin": 0.295,
@@ -4496,10 +4496,10 @@
               "price": 32.1,
               "available": true,
               "tags": [
-                "decor",
-                "home",
                 "living",
+                "decor",
                 "urbandwelling",
+                "home",
                 "high_margin",
                 "new_arrival"
               ],
@@ -4518,9 +4518,9 @@
               "available": true,
               "tags": [
                 "brightliving",
+                "living",
                 "decor",
                 "home",
-                "living",
                 "high_margin"
               ],
               "props": {
@@ -4537,10 +4537,10 @@
               "price": 84.86,
               "available": true,
               "tags": [
-                "radianthue",
-                "skincare",
                 "wellness",
                 "beauty",
+                "skincare",
+                "radianthue",
                 "high_margin"
               ],
               "props": {
@@ -4557,9 +4557,9 @@
               "price": 214.7,
               "available": true,
               "tags": [
-                "loomlab",
                 "fashion",
                 "apparel",
+                "loomlab",
                 "style"
               ],
               "props": {
@@ -4577,9 +4577,9 @@
               "available": true,
               "tags": [
                 "savoryco",
+                "kitchen",
                 "gourmet",
-                "food",
-                "kitchen"
+                "food"
               ],
               "props": {
                 "margin": 0.428,
@@ -4596,9 +4596,9 @@
               "available": true,
               "tags": [
                 "savoryco",
+                "kitchen",
                 "gourmet",
                 "food",
-                "kitchen",
                 "high_margin",
                 "new_arrival"
               ],
@@ -4616,10 +4616,10 @@
               "price": 163.03,
               "available": true,
               "tags": [
-                "couturex",
                 "fashion",
                 "apparel",
-                "style"
+                "style",
+                "couturex"
               ],
               "props": {
                 "margin": 0.275,
@@ -4635,9 +4635,9 @@
               "price": 222.85,
               "available": true,
               "tags": [
-                "loomlab",
                 "fashion",
                 "apparel",
+                "loomlab",
                 "style",
                 "new_arrival"
               ],
@@ -4655,10 +4655,10 @@
               "price": 231.84,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
+                "adventure",
                 "terraquest",
+                "outdoors",
                 "new_arrival"
               ],
               "props": {
@@ -4675,10 +4675,10 @@
               "price": 126.92,
               "available": true,
               "tags": [
-                "fitness",
                 "zenmotion",
                 "health",
-                "active"
+                "active",
+                "fitness"
               ],
               "props": {
                 "margin": 0.193,
@@ -4694,10 +4694,10 @@
               "price": 20.05,
               "available": true,
               "tags": [
-                "velvetsky",
-                "skincare",
                 "wellness",
                 "beauty",
+                "skincare",
+                "velvetsky",
                 "new_arrival"
               ],
               "props": {
@@ -4714,10 +4714,10 @@
               "price": 92.82,
               "available": true,
               "tags": [
-                "decor",
-                "home",
                 "living",
-                "urbandwelling"
+                "decor",
+                "urbandwelling",
+                "home"
               ],
               "props": {
                 "margin": 0.316,
@@ -4733,10 +4733,10 @@
               "price": 221.38,
               "available": true,
               "tags": [
-                "gourmet",
-                "food",
-                "harvestbite",
                 "kitchen",
+                "gourmet",
+                "harvestbite",
+                "food",
                 "new_arrival"
               ],
               "props": {
@@ -4753,9 +4753,9 @@
               "price": 184.33,
               "available": true,
               "tags": [
-                "loomlab",
                 "fashion",
                 "apparel",
+                "loomlab",
                 "style"
               ],
               "props": {
@@ -4772,10 +4772,10 @@
               "price": 233.08,
               "available": false,
               "tags": [
-                "fitness",
                 "pulsegear",
                 "health",
                 "active",
+                "fitness",
                 "high_margin",
                 "backorder"
               ],
@@ -4793,9 +4793,9 @@
               "price": 84.9,
               "available": true,
               "tags": [
-                "skincare",
                 "wellness",
                 "beauty",
+                "skincare",
                 "luxeglow"
               ],
               "props": {
@@ -4812,10 +4812,10 @@
               "price": 229.66,
               "available": true,
               "tags": [
-                "purebloom",
-                "skincare",
                 "wellness",
-                "beauty"
+                "purebloom",
+                "beauty",
+                "skincare"
               ],
               "props": {
                 "margin": 0.177,
@@ -4833,8 +4833,8 @@
               "tags": [
                 "pioneerwords",
                 "reading",
-                "books",
                 "literature",
+                "books",
                 "high_margin"
               ],
               "props": {
@@ -4851,10 +4851,10 @@
               "price": 19.53,
               "available": true,
               "tags": [
-                "leafpress",
                 "reading",
-                "books",
-                "literature"
+                "leafpress",
+                "literature",
+                "books"
               ],
               "props": {
                 "margin": 0.327,
@@ -4870,10 +4870,10 @@
               "price": 223.75,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
-                "trailblaze"
+                "adventure",
+                "trailblaze",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.357,
@@ -4889,10 +4889,10 @@
               "price": 17.85,
               "available": true,
               "tags": [
-                "gourmet",
-                "food",
-                "harvestbite",
                 "kitchen",
+                "gourmet",
+                "harvestbite",
+                "food",
                 "high_margin"
               ],
               "props": {
@@ -4911,8 +4911,8 @@
               "tags": [
                 "quanta",
                 "reading",
-                "books",
-                "literature"
+                "literature",
+                "books"
               ],
               "props": {
                 "margin": 0.139,
@@ -4928,9 +4928,9 @@
               "price": 81.02,
               "available": false,
               "tags": [
-                "midnightlane",
                 "fashion",
                 "apparel",
+                "midnightlane",
                 "style",
                 "backorder"
               ],
@@ -4959,9 +4959,9 @@
               "available": true,
               "tags": [
                 "gadgets",
-                "circuitlab",
+                "smart",
                 "electronics",
-                "smart"
+                "circuitlab"
               ],
               "props": {
                 "margin": 0.197,
@@ -4979,8 +4979,8 @@
               "tags": [
                 "quanta",
                 "reading",
-                "books",
                 "literature",
+                "books",
                 "high_margin"
               ],
               "props": {
@@ -4999,8 +4999,8 @@
               "tags": [
                 "pioneerwords",
                 "reading",
-                "books",
-                "literature"
+                "literature",
+                "books"
               ],
               "props": {
                 "margin": 0.35,
@@ -5018,8 +5018,8 @@
               "tags": [
                 "atlasreads",
                 "reading",
-                "books",
-                "literature"
+                "literature",
+                "books"
               ],
               "props": {
                 "margin": 0.431,
@@ -5035,9 +5035,9 @@
               "price": 214.4,
               "available": true,
               "tags": [
-                "skincare",
                 "wellness",
                 "beauty",
+                "skincare",
                 "luxeglow"
               ],
               "props": {
@@ -5054,10 +5054,10 @@
               "price": 135.87,
               "available": true,
               "tags": [
+                "kitchen",
                 "gourmet",
-                "food",
                 "harvestbite",
-                "kitchen"
+                "food"
               ],
               "props": {
                 "margin": 0.262,
@@ -5073,9 +5073,9 @@
               "price": 214.1,
               "available": true,
               "tags": [
-                "midnightlane",
                 "fashion",
                 "apparel",
+                "midnightlane",
                 "style",
                 "new_arrival"
               ],
@@ -5093,10 +5093,10 @@
               "price": 109.11,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
+                "travel",
                 "skyline",
-                "travel"
+                "adventure",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.392,
@@ -5112,10 +5112,10 @@
               "price": 97.37,
               "available": true,
               "tags": [
-                "fitness",
-                "health",
                 "ironworks",
-                "active"
+                "health",
+                "active",
+                "fitness"
               ],
               "props": {
                 "margin": 0.317,
@@ -5132,9 +5132,9 @@
               "available": true,
               "tags": [
                 "gadgets",
-                "circuitlab",
-                "electronics",
                 "smart",
+                "electronics",
+                "circuitlab",
                 "high_margin"
               ],
               "props": {
@@ -5151,10 +5151,10 @@
               "price": 90.27,
               "available": true,
               "tags": [
-                "fitness",
                 "pulsegear",
                 "health",
-                "active"
+                "active",
+                "fitness"
               ],
               "props": {
                 "margin": 0.301,
@@ -5171,8 +5171,8 @@
               "available": true,
               "tags": [
                 "fashion",
-                "aurathreads",
                 "apparel",
+                "aurathreads",
                 "style",
                 "high_margin"
               ],
@@ -5192,8 +5192,8 @@
               "tags": [
                 "atlasreads",
                 "reading",
-                "books",
                 "literature",
+                "books",
                 "backorder"
               ],
               "props": {
@@ -5210,10 +5210,10 @@
               "price": 52.43,
               "available": true,
               "tags": [
-                "decor",
-                "home",
                 "living",
-                "havencraft"
+                "decor",
+                "havencraft",
+                "home"
               ],
               "props": {
                 "margin": 0.256,
@@ -5230,8 +5230,8 @@
               "available": true,
               "tags": [
                 "fashion",
-                "aurathreads",
                 "apparel",
+                "aurathreads",
                 "style"
               ],
               "props": {
@@ -5249,9 +5249,9 @@
               "available": true,
               "tags": [
                 "gadgets",
-                "circuitlab",
+                "smart",
                 "electronics",
-                "smart"
+                "circuitlab"
               ],
               "props": {
                 "margin": 0.228,
@@ -5267,10 +5267,10 @@
               "price": 155.87,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
-                "terraquest"
+                "adventure",
+                "terraquest",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.324,
@@ -5287,9 +5287,9 @@
               "available": true,
               "tags": [
                 "gadgets",
-                "circuitlab",
-                "electronics",
                 "smart",
+                "electronics",
+                "circuitlab",
                 "high_margin",
                 "new_arrival"
               ],
@@ -5308,9 +5308,9 @@
               "available": true,
               "tags": [
                 "gadgets",
+                "smart",
                 "electronics",
                 "acmetech",
-                "smart",
                 "new_arrival"
               ],
               "props": {
@@ -5327,10 +5327,10 @@
               "price": 222.17,
               "available": true,
               "tags": [
+                "kitchen",
                 "gourmet",
-                "food",
                 "harvestbite",
-                "kitchen"
+                "food"
               ],
               "props": {
                 "margin": 0.147,
@@ -5346,10 +5346,10 @@
               "price": 187.72,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
+                "travel",
                 "skyline",
-                "travel"
+                "adventure",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.288,
@@ -5366,9 +5366,9 @@
               "available": true,
               "tags": [
                 "gadgets",
-                "voltify",
-                "electronics",
                 "smart",
+                "electronics",
+                "voltify",
                 "new_arrival"
               ],
               "props": {
@@ -5386,9 +5386,9 @@
               "available": true,
               "tags": [
                 "gadgets",
-                "voltify",
-                "electronics",
                 "smart",
+                "electronics",
+                "voltify",
                 "high_margin"
               ],
               "props": {
@@ -5405,10 +5405,10 @@
               "price": 221.91,
               "available": true,
               "tags": [
-                "spicetrail",
+                "kitchen",
                 "gourmet",
-                "food",
-                "kitchen"
+                "spicetrail",
+                "food"
               ],
               "props": {
                 "margin": 0.294,
@@ -5424,9 +5424,9 @@
               "price": 104.36,
               "available": false,
               "tags": [
-                "loomlab",
                 "fashion",
                 "apparel",
+                "loomlab",
                 "style",
                 "high_margin",
                 "backorder"
@@ -5447,8 +5447,8 @@
               "tags": [
                 "pioneerwords",
                 "reading",
-                "books",
-                "literature"
+                "literature",
+                "books"
               ],
               "props": {
                 "margin": 0.309,
@@ -5464,10 +5464,10 @@
               "price": 80.49,
               "available": true,
               "tags": [
+                "living",
                 "cozynest",
                 "decor",
-                "home",
-                "living"
+                "home"
               ],
               "props": {
                 "margin": 0.209,
@@ -5484,9 +5484,9 @@
               "available": true,
               "tags": [
                 "brightliving",
+                "living",
                 "decor",
                 "home",
-                "living",
                 "high_margin"
               ],
               "props": {
@@ -5503,10 +5503,10 @@
               "price": 192.16,
               "available": true,
               "tags": [
-                "fitness",
                 "zenmotion",
                 "health",
                 "active",
+                "fitness",
                 "high_margin",
                 "new_arrival"
               ],
@@ -5526,8 +5526,8 @@
               "tags": [
                 "atlasreads",
                 "reading",
-                "books",
-                "literature"
+                "literature",
+                "books"
               ],
               "props": {
                 "margin": 0.14,
@@ -5543,10 +5543,10 @@
               "price": 137.79,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
+                "adventure",
                 "summitpeak",
+                "outdoors",
                 "high_margin",
                 "new_arrival"
               ],
@@ -5566,8 +5566,8 @@
               "tags": [
                 "atlasreads",
                 "reading",
-                "books",
                 "literature",
+                "books",
                 "new_arrival"
               ],
               "props": {
@@ -5584,9 +5584,9 @@
               "price": 17.05,
               "available": true,
               "tags": [
-                "midnightlane",
                 "fashion",
                 "apparel",
+                "midnightlane",
                 "style"
               ],
               "props": {
@@ -5604,9 +5604,9 @@
               "available": true,
               "tags": [
                 "gadgets",
-                "voltify",
+                "smart",
                 "electronics",
-                "smart"
+                "voltify"
               ],
               "props": {
                 "margin": 0.302,
@@ -5623,9 +5623,9 @@
               "available": false,
               "tags": [
                 "gadgets",
-                "circuitlab",
-                "electronics",
                 "smart",
+                "electronics",
+                "circuitlab",
                 "backorder"
               ],
               "props": {
@@ -5642,10 +5642,10 @@
               "price": 213.94,
               "available": true,
               "tags": [
-                "spicetrail",
-                "gourmet",
-                "food",
                 "kitchen",
+                "gourmet",
+                "spicetrail",
+                "food",
                 "new_arrival"
               ],
               "props": {
@@ -5664,8 +5664,8 @@
               "tags": [
                 "quanta",
                 "reading",
-                "books",
-                "literature"
+                "literature",
+                "books"
               ],
               "props": {
                 "margin": 0.266,
@@ -5682,9 +5682,9 @@
               "available": true,
               "tags": [
                 "gadgets",
-                "voltify",
-                "electronics",
                 "smart",
+                "electronics",
+                "voltify",
                 "high_margin",
                 "new_arrival"
               ],
@@ -5702,10 +5702,10 @@
               "price": 23.44,
               "available": true,
               "tags": [
-                "fitness",
                 "zenmotion",
                 "health",
                 "active",
+                "fitness",
                 "high_margin"
               ],
               "props": {
@@ -5723,9 +5723,9 @@
               "available": true,
               "tags": [
                 "gadgets",
-                "voltify",
-                "electronics",
                 "smart",
+                "electronics",
+                "voltify",
                 "high_margin"
               ],
               "props": {
@@ -5742,10 +5742,10 @@
               "price": 83.96,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
-                "skyline",
                 "travel",
+                "skyline",
+                "adventure",
+                "outdoors",
                 "high_margin"
               ],
               "props": {
@@ -5762,10 +5762,10 @@
               "price": 55.02,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
+                "adventure",
                 "trailblaze",
+                "outdoors",
                 "new_arrival"
               ],
               "props": {
@@ -5782,10 +5782,10 @@
               "price": 158.99,
               "available": true,
               "tags": [
-                "couturex",
                 "fashion",
                 "apparel",
-                "style"
+                "style",
+                "couturex"
               ],
               "props": {
                 "margin": 0.433,
@@ -5801,9 +5801,9 @@
               "price": 233.77,
               "available": true,
               "tags": [
-                "midnightlane",
                 "fashion",
                 "apparel",
+                "midnightlane",
                 "style",
                 "high_margin"
               ],
@@ -5821,10 +5821,10 @@
               "price": 101.92,
               "available": true,
               "tags": [
-                "gourmet",
-                "food",
-                "harvestbite",
                 "kitchen",
+                "gourmet",
+                "harvestbite",
+                "food",
                 "high_margin"
               ],
               "props": {
@@ -5841,10 +5841,10 @@
               "price": 231.83,
               "available": false,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
+                "adventure",
                 "summitpeak",
+                "outdoors",
                 "backorder"
               ],
               "props": {
@@ -5861,10 +5861,10 @@
               "price": 103.68,
               "available": true,
               "tags": [
-                "radianthue",
-                "skincare",
                 "wellness",
                 "beauty",
+                "skincare",
+                "radianthue",
                 "new_arrival"
               ],
               "props": {
@@ -5881,10 +5881,10 @@
               "price": 204.64,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
-                "summitpeak"
+                "adventure",
+                "summitpeak",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.317,
@@ -5900,9 +5900,9 @@
               "price": 91.76,
               "available": true,
               "tags": [
-                "midnightlane",
                 "fashion",
                 "apparel",
+                "midnightlane",
                 "style"
               ],
               "props": {
@@ -5919,10 +5919,10 @@
               "price": 211.23,
               "available": true,
               "tags": [
+                "living",
                 "cozynest",
                 "decor",
                 "home",
-                "living",
                 "high_margin"
               ],
               "props": {
@@ -5949,10 +5949,10 @@
               "price": 57.6,
               "available": true,
               "tags": [
-                "leafpress",
                 "reading",
-                "books",
+                "leafpress",
                 "literature",
+                "books",
                 "new_arrival"
               ],
               "props": {
@@ -5969,10 +5969,10 @@
               "price": 195.14,
               "available": true,
               "tags": [
-                "leafpress",
                 "reading",
-                "books",
+                "leafpress",
                 "literature",
+                "books",
                 "high_margin"
               ],
               "props": {
@@ -5989,10 +5989,10 @@
               "price": 195.08,
               "available": true,
               "tags": [
-                "fitness",
                 "pulsegear",
                 "health",
-                "active"
+                "active",
+                "fitness"
               ],
               "props": {
                 "margin": 0.168,
@@ -6008,9 +6008,9 @@
               "price": 39.12,
               "available": true,
               "tags": [
-                "midnightlane",
                 "fashion",
                 "apparel",
+                "midnightlane",
                 "style",
                 "high_margin",
                 "new_arrival"
@@ -6029,10 +6029,10 @@
               "price": 90.46,
               "available": true,
               "tags": [
-                "fitness",
-                "health",
                 "ironworks",
+                "health",
                 "active",
+                "fitness",
                 "high_margin",
                 "new_arrival"
               ],
@@ -6051,9 +6051,9 @@
               "available": true,
               "tags": [
                 "gadgets",
-                "circuitlab",
+                "smart",
                 "electronics",
-                "smart"
+                "circuitlab"
               ],
               "props": {
                 "margin": 0.445,
@@ -6069,10 +6069,10 @@
               "price": 108.45,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
-                "skyline",
                 "travel",
+                "skyline",
+                "adventure",
+                "outdoors",
                 "new_arrival"
               ],
               "props": {
@@ -6089,10 +6089,10 @@
               "price": 86.59,
               "available": true,
               "tags": [
+                "living",
                 "cozynest",
                 "decor",
                 "home",
-                "living",
                 "high_margin"
               ],
               "props": {
@@ -6109,10 +6109,10 @@
               "price": 105.92,
               "available": true,
               "tags": [
-                "velvetsky",
-                "skincare",
                 "wellness",
                 "beauty",
+                "skincare",
+                "velvetsky",
                 "high_margin",
                 "new_arrival"
               ],
@@ -6131,9 +6131,9 @@
               "available": true,
               "tags": [
                 "brightliving",
+                "living",
                 "decor",
                 "home",
-                "living",
                 "high_margin"
               ],
               "props": {
@@ -6150,10 +6150,10 @@
               "price": 199.79,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
-                "trailblaze"
+                "adventure",
+                "trailblaze",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.344,
@@ -6169,10 +6169,10 @@
               "price": 141.4,
               "available": true,
               "tags": [
-                "velvetsky",
-                "skincare",
                 "wellness",
                 "beauty",
+                "skincare",
+                "velvetsky",
                 "high_margin"
               ],
               "props": {
@@ -6189,10 +6189,10 @@
               "price": 206.31,
               "available": true,
               "tags": [
-                "outdoors",
-                "adventure",
                 "travel",
-                "summitpeak"
+                "adventure",
+                "summitpeak",
+                "outdoors"
               ],
               "props": {
                 "margin": 0.197,
@@ -6208,10 +6208,10 @@
               "price": 133.08,
               "available": true,
               "tags": [
+                "living",
                 "cozynest",
                 "decor",
-                "home",
-                "living"
+                "home"
               ],
               "props": {
                 "margin": 0.164,
@@ -6227,9 +6227,9 @@
               "price": 87.44,
               "available": false,
               "tags": [
-                "skincare",
                 "wellness",
                 "beauty",
+                "skincare",
                 "luxeglow",
                 "backorder"
               ],
@@ -6248,8 +6248,8 @@
               "available": true,
               "tags": [
                 "fashion",
-                "aurathreads",
                 "apparel",
+                "aurathreads",
                 "style"
               ],
               "props": {
@@ -6267,9 +6267,9 @@
               "available": true,
               "tags": [
                 "gadgets",
+                "smart",
                 "electronics",
-                "acmetech",
-                "smart"
+                "acmetech"
               ],
               "props": {
                 "margin": 0.316,
@@ -6285,10 +6285,10 @@
               "price": 153.84,
               "available": true,
               "tags": [
-                "leafpress",
                 "reading",
-                "books",
+                "leafpress",
                 "literature",
+                "books",
                 "high_margin"
               ],
               "props": {
@@ -6305,9 +6305,9 @@
               "price": 168.9,
               "available": true,
               "tags": [
-                "skincare",
                 "wellness",
                 "beauty",
+                "skincare",
                 "luxeglow",
                 "high_margin"
               ],
@@ -6325,10 +6325,10 @@
               "price": 96.31,
               "available": true,
               "tags": [
-                "fitness",
-                "health",
                 "stride",
+                "health",
                 "active",
+                "fitness",
                 "high_margin"
               ],
               "props": {

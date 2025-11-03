@@ -381,3 +381,227 @@ func TestManualOverrideBoostSurfacedItem(t *testing.T) {
 	require.NotNil(t, boosted, "boosted item should appear in results")
 	require.Greater(t, boosted.Score, initialTopScore, "boosted item should outrank previous best score")
 }
+
+func TestRecommend_IncludeTagConstraints(t *testing.T) {
+	client := shared.NewTestClient(t)
+
+	pool := shared.MustPool(t)
+	shared.CleanTables(t, pool)
+	shared.MustHaveEventTypeDefaults(t, pool)
+
+	do := func(method, path string, body any, want int) []byte {
+		return client.DoRequestWithStatus(t, method, path, body, want)
+	}
+
+	do(http.MethodPost, endpoints.ItemsUpsert, map[string]any{
+		"namespace": "default",
+		"items": []map[string]any{
+			{"item_id": "book-1", "available": true, "tags": []string{"books", "reading"}},
+			{"item_id": "book-2", "available": true, "tags": []string{"books", "literature"}},
+			{"item_id": "other-1", "available": true, "tags": []string{"gourmet", "food"}},
+		},
+	}, http.StatusAccepted)
+
+	do(http.MethodPost, endpoints.UsersUpsert, map[string]any{
+		"namespace": "default",
+		"users":     []map[string]any{{"user_id": "u-books"}},
+	}, http.StatusAccepted)
+
+	now := time.Now().UTC().Format(time.RFC3339)
+	do(http.MethodPost, endpoints.EventsBatch, map[string]any{
+		"namespace": "default",
+		"events": []map[string]any{
+			{"user_id": "u-books", "item_id": "book-1", "type": 3, "value": 1, "ts": now},
+			{"user_id": "u-books", "item_id": "book-2", "type": 0, "value": 1, "ts": now},
+			{"user_id": "u-books", "item_id": "other-1", "type": 3, "value": 1, "ts": now},
+		},
+	}, http.StatusAccepted)
+
+	respBody := do(http.MethodPost, endpoints.Recommendations, map[string]any{
+		"user_id":   "u-books",
+		"namespace": "default",
+		"k":         5,
+		"constraints": map[string]any{
+			"include_tags_any": []string{"books"},
+		},
+	}, http.StatusOK)
+
+	var resp struct {
+		Items []struct {
+			ItemID string `json:"item_id"`
+		} `json:"items"`
+	}
+	require.NoError(t, json.Unmarshal(respBody, &resp))
+	require.NotEmpty(t, resp.Items, "expected at least one recommendation")
+
+	allowed := map[string]struct{}{
+		"book-1": {},
+		"book-2": {},
+	}
+	for _, item := range resp.Items {
+		if _, ok := allowed[item.ItemID]; !ok {
+			t.Fatalf("item %s missing required tag", item.ItemID)
+		}
+	}
+}
+
+func TestRecommend_RuleBlockTagRemovesItems(t *testing.T) {
+	client := shared.NewTestClient(t)
+
+	pool := shared.MustPool(t)
+	shared.CleanTables(t, pool)
+	shared.MustHaveEventTypeDefaults(t, pool)
+
+	do := func(method, path string, body any, want int) []byte {
+		return client.DoRequestWithStatus(t, method, path, body, want)
+	}
+
+	do(http.MethodPost, endpoints.ItemsUpsert, map[string]any{
+		"namespace": "default",
+		"items": []map[string]any{
+			{"item_id": "tagged_a", "available": true, "tags": []string{"high_margin", "electronics"}},
+			{"item_id": "tagged_b", "available": true, "tags": []string{"electronics"}},
+			{"item_id": "tagged_c", "available": true, "tags": []string{"high_margin", "fitness"}},
+		},
+	}, http.StatusAccepted)
+
+	do(http.MethodPost, endpoints.UsersUpsert, map[string]any{
+		"namespace": "default",
+		"users":     []map[string]any{{"user_id": "rule-user"}},
+	}, http.StatusAccepted)
+
+	now := time.Now().UTC().Format(time.RFC3339)
+	do(http.MethodPost, endpoints.EventsBatch, map[string]any{
+		"namespace": "default",
+		"events": []map[string]any{
+			{"user_id": "rule-user", "item_id": "tagged_a", "type": 3, "value": 1, "ts": now},
+			{"user_id": "rule-user", "item_id": "tagged_b", "type": 3, "value": 1, "ts": now},
+			{"user_id": "rule-user", "item_id": "tagged_c", "type": 3, "value": 1, "ts": now},
+		},
+	}, http.StatusAccepted)
+
+	baseline := do(http.MethodPost, endpoints.Recommendations, map[string]any{
+		"user_id":   "rule-user",
+		"namespace": "default",
+		"k":         5,
+		"context":   map[string]any{"surface": "home"},
+	}, http.StatusOK)
+
+	var baselineResp struct {
+		Items []struct {
+			ItemID string `json:"item_id"`
+		} `json:"items"`
+	}
+	require.NoError(t, json.Unmarshal(baseline, &baselineResp))
+	require.NotEmpty(t, baselineResp.Items)
+
+	hasHighMargin := func(items []struct {
+		ItemID string `json:"item_id"`
+	}) bool {
+		for _, it := range items {
+			if it.ItemID == "tagged_a" || it.ItemID == "tagged_c" {
+				return true
+			}
+		}
+		return false
+	}
+	require.True(t, hasHighMargin(baselineResp.Items), "expected high_margin items in baseline recommendations")
+
+	do(http.MethodPost, endpoints.Rules, map[string]any{
+		"namespace":   "default",
+		"surface":     "home",
+		"name":        "test-block-high-margin",
+		"description": "block high margin items",
+		"action":      "BLOCK",
+		"target_type": "TAG",
+		"target_key":  "high_margin",
+		"priority":    100,
+		"enabled":     true,
+	}, http.StatusCreated)
+
+	// Evaluate until rule manager cache picks up the new rule.
+	var filteredResp struct {
+		Items []struct {
+			ItemID string `json:"item_id"`
+		} `json:"items"`
+	}
+	require.Eventually(t, func() bool {
+		body := do(http.MethodPost, endpoints.Recommendations, map[string]any{
+			"user_id":   "rule-user",
+			"namespace": "default",
+			"k":         5,
+			"context":   map[string]any{"surface": "home"},
+		}, http.StatusOK)
+		require.NoError(t, json.Unmarshal(body, &filteredResp))
+		return !hasHighMargin(filteredResp.Items)
+	}, 5*time.Second, 200*time.Millisecond, "expected high_margin items to be blocked")
+}
+
+func TestRecommend_PinRuleForcesPosition(t *testing.T) {
+	client := shared.NewTestClient(t)
+
+	pool := shared.MustPool(t)
+	shared.CleanTables(t, pool)
+	shared.MustHaveEventTypeDefaults(t, pool)
+
+	do := func(method, path string, body any, want int) []byte {
+		return client.DoRequestWithStatus(t, method, path, body, want)
+	}
+
+	do(http.MethodPost, endpoints.ItemsUpsert, map[string]any{
+		"namespace": "default",
+		"items": []map[string]any{
+			{"item_id": "pin_a", "available": true, "tags": []string{"fitness"}},
+			{"item_id": "pin_b", "available": true, "tags": []string{"fitness"}},
+			{"item_id": "pin_c", "available": true, "tags": []string{"fitness"}},
+		},
+	}, http.StatusAccepted)
+
+	do(http.MethodPost, endpoints.UsersUpsert, map[string]any{
+		"namespace": "default",
+		"users":     []map[string]any{{"user_id": "pin-user"}},
+	}, http.StatusAccepted)
+
+	now := time.Now().UTC().Format(time.RFC3339)
+	do(http.MethodPost, endpoints.EventsBatch, map[string]any{
+		"namespace": "default",
+		"events": []map[string]any{
+			{"user_id": "pin-user", "item_id": "pin_a", "type": 3, "value": 1, "ts": now},
+			{"user_id": "pin-user", "item_id": "pin_b", "type": 0, "value": 1, "ts": now},
+			{"user_id": "pin-user", "item_id": "pin_c", "type": 0, "value": 1, "ts": now},
+		},
+	}, http.StatusAccepted)
+
+	createRule := map[string]any{
+		"namespace":   "default",
+		"surface":     "home",
+		"name":        "pin-rule",
+		"description": "pin specific item",
+		"action":      "PIN",
+		"target_type": "ITEM",
+		"item_ids":    []string{"pin_b"},
+		"priority":    500,
+		"enabled":     true,
+		"max_pins":    1,
+	}
+	do(http.MethodPost, endpoints.Rules, createRule, http.StatusCreated)
+
+	require.Eventually(t, func() bool {
+		resp := do(http.MethodPost, endpoints.Recommendations, map[string]any{
+			"user_id":   "pin-user",
+			"namespace": "default",
+			"k":         5,
+			"context":   map[string]any{"surface": "home"},
+		}, http.StatusOK)
+		var parsed struct {
+			Items []struct {
+				ItemID string `json:"item_id"`
+			} `json:"items"`
+		}
+		require.NoError(t, json.Unmarshal(resp, &parsed))
+		if len(parsed.Items) == 0 {
+			return false
+		}
+		return parsed.Items[0].ItemID == "pin_b"
+	}, 5*time.Second, 200*time.Millisecond, "expected pin_b to be pinned at rank 1")
+}

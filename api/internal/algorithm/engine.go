@@ -131,38 +131,26 @@ func (e *Engine) Recommend(
 		return nil, nil, err
 	}
 	sourceMetrics["post_exclusion"] = SourceMetric{Count: len(candidates), Duration: time.Since(excludeStart)}
-	if len(collabScores) > 0 {
-		filtered := make(map[string]float64, len(collabScores))
-		for _, cand := range candidates {
-			if score, ok := collabScores[cand.ItemID]; ok {
-				filtered[cand.ItemID] = score
-			}
-		}
-		collabScores = filtered
-	}
-	if len(contentScores) > 0 {
-		filtered := make(map[string]float64, len(contentScores))
-		for _, cand := range candidates {
-			if score, ok := contentScores[cand.ItemID]; ok {
-				filtered[cand.ItemID] = score
-			}
-		}
-		contentScores = filtered
-	}
-	if len(sessionScores) > 0 {
-		filtered := make(map[string]float64, len(sessionScores))
-		for _, cand := range candidates {
-			if score, ok := sessionScores[cand.ItemID]; ok {
-				filtered[cand.ItemID] = score
-			}
-		}
-		sessionScores = filtered
-	}
 
 	// Get tags for all candidates.
 	tags, err := e.getCandidateTags(ctx, candidates, req)
 	if err != nil {
 		return nil, nil, err
+	}
+
+	// Enforce positive constraints that require item metadata (e.g., tag whitelists).
+	candidates, tags = e.applyConstraintFilters(candidates, tags, req)
+	sourceMetrics["post_exclusion"] = SourceMetric{Count: len(candidates), Duration: time.Since(excludeStart)}
+
+	// Align secondary score maps with filtered candidates.
+	if len(collabScores) > 0 {
+		collabScores = filterScoreMapByCandidates(collabScores, candidates)
+	}
+	if len(contentScores) > 0 {
+		contentScores = filterScoreMapByCandidates(contentScores, candidates)
+	}
+	if len(sessionScores) > 0 {
+		sessionScores = filterScoreMapByCandidates(sessionScores, candidates)
 	}
 
 	// Get blend weights.
@@ -663,6 +651,73 @@ func (e *Engine) getCandidateTags(
 
 	// Fetch tags for all candidates.
 	return e.store.ListItemsTags(ctx, req.OrgID, req.Namespace, ids)
+}
+
+func (e *Engine) applyConstraintFilters(
+	candidates []types.ScoredItem,
+	tags map[string]types.ItemTags,
+	req Request,
+) ([]types.ScoredItem, map[string]types.ItemTags) {
+	if req.Constraints == nil {
+		return candidates, tags
+	}
+
+	filtered := candidates[:0]
+	prunedTags := tags
+
+	if len(req.Constraints.IncludeTagsAny) > 0 {
+		required := make(map[string]struct{}, len(req.Constraints.IncludeTagsAny))
+		for _, tag := range req.Constraints.IncludeTagsAny {
+			normalized := strings.ToLower(strings.TrimSpace(tag))
+			if normalized == "" {
+				continue
+			}
+			required[normalized] = struct{}{}
+		}
+		if len(required) > 0 {
+			// rebuild candidate list to only include items whose tags overlap required set.
+			pruned := make(map[string]types.ItemTags, len(tags))
+			for _, cand := range candidates {
+				itemTags, ok := tags[cand.ItemID]
+				if !ok {
+					continue
+				}
+				if hasAnyTag(itemTags.Tags, required) {
+					filtered = append(filtered, cand)
+					pruned[cand.ItemID] = itemTags
+				}
+			}
+			candidates = filtered
+			prunedTags = pruned
+		}
+	}
+
+	return candidates, prunedTags
+}
+
+func hasAnyTag(candidateTags []string, required map[string]struct{}) bool {
+	if len(candidateTags) == 0 || len(required) == 0 {
+		return false
+	}
+	for _, tag := range candidateTags {
+		if _, ok := required[strings.ToLower(strings.TrimSpace(tag))]; ok {
+			return true
+		}
+	}
+	return false
+}
+
+func filterScoreMapByCandidates(scores map[string]float64, candidates []types.ScoredItem) map[string]float64 {
+	if len(scores) == 0 {
+		return scores
+	}
+	filtered := make(map[string]float64, len(scores))
+	for _, cand := range candidates {
+		if score, ok := scores[cand.ItemID]; ok {
+			filtered[cand.ItemID] = score
+		}
+	}
+	return filtered
 }
 
 // getBlendWeights returns the blend weights to use.
