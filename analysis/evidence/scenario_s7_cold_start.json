@@ -1,154 +1,565 @@
 {
-  "request": {
-    "namespace": "default",
-    "user_id": "user_cold_start",
-    "k": 10,
-    "context": {
-      "surface": "home"
-    },
-    "include_reasons": true
-  },
-  "response": {
-    "model_version": "popularity_v1",
-    "items": [
-      {
-        "item_id": "item_0175",
-        "score": 0.25,
-        "reasons": [
-          "recent_popularity",
-          "diversity"
-        ]
-      },
-      {
-        "item_id": "item_0070",
-        "score": 0.17446443283185348,
-        "reasons": [
-          "recent_popularity",
-          "diversity"
-        ]
-      },
-      {
-        "item_id": "item_0001",
-        "score": 0.17354735799430587,
-        "reasons": [
-          "recent_popularity",
-          "diversity"
-        ]
-      },
-      {
-        "item_id": "item_0196",
-        "score": 0.16165772440286777,
-        "reasons": [
-          "recent_popularity",
-          "diversity"
-        ]
-      },
-      {
-        "item_id": "item_0057",
-        "score": 0.16004387659580957,
-        "reasons": [
-          "recent_popularity",
-          "diversity"
-        ]
-      },
-      {
-        "item_id": "item_0007",
-        "score": 0.15479480575669302,
-        "reasons": [
-          "recent_popularity",
-          "diversity"
-        ]
-      },
-      {
-        "item_id": "item_0080",
-        "score": 0.13191962806081683,
-        "reasons": [
-          "recent_popularity",
-          "diversity"
-        ]
-      },
-      {
-        "item_id": "item_0176",
-        "score": 0.12021139492165465,
-        "reasons": [
-          "recent_popularity",
-          "diversity"
-        ]
-      },
-      {
-        "item_id": "item_0211",
-        "score": 0.10454633550764585,
-        "reasons": [
-          "recent_popularity",
-          "diversity"
-        ]
-      },
-      {
-        "item_id": "item_0142",
-        "score": 0.044692171969870395,
-        "reasons": [
-          "recent_popularity",
-          "diversity"
-        ]
+  "results": [
+    {
+      "user_id": "user_0107",
+      "items": [
+        "item_0175",
+        "item_0001",
+        "item_0070",
+        "item_0145",
+        "item_0196",
+        "item_0057",
+        "item_0007",
+        "item_0050",
+        "item_0080",
+        "item_0176"
+      ],
+      "categories": [
+        "Beauty",
+        "Books",
+        "Electronics",
+        "Fashion",
+        "Fitness",
+        "Home",
+        "Outdoors"
+      ],
+      "ndcg@10": 0.02213375919266199,
+      "recall@20": 0.1,
+      "mrr@10": 0.14285714285714285,
+      "relevance_count": 10,
+      "starter_profile": {
+        "apparel": 0.08791666666666667,
+        "beauty": 0.04375,
+        "books": 0.035416666666666666,
+        "circuitlab": 0.015,
+        "couturex": 0.015,
+        "decor": 0.016666666666666666,
+        "electronics": 0.07333333333333332,
+        "fashion": 0.08791666666666667,
+        "gadgets": 0.07333333333333332,
+        "high_margin": 0.0275,
+        "home": 0.016666666666666666,
+        "literature": 0.035416666666666666,
+        "living": 0.016666666666666666,
+        "luxeglow": 0.03125,
+        "midnightlane": 0.056249999999999994,
+        "new_arrival": 0.0275,
+        "nimbus": 0.037500000000000006,
+        "quanta": 0.018750000000000003,
+        "reading": 0.035416666666666666,
+        "skincare": 0.04375,
+        "smart": 0.07333333333333332,
+        "style": 0.08791666666666667,
+        "wellness": 0.04375
       }
-    ],
-    "trace": {
-      "extras": {
-        "candidate_sources": {
-          "collaborative": {
-            "count": 0,
-            "duration_ms": 0.152571
-          },
-          "content": {
-            "count": 0,
-            "duration_ms": 0.548027
-          },
-          "merged": {
-            "count": 300,
-            "duration_ms": 0.014458
-          },
-          "popularity": {
-            "count": 300,
-            "duration_ms": 11.265415
-          },
-          "post_exclusion": {
-            "count": 300,
-            "duration_ms": 1.40187
-          },
-          "session": {
-            "count": 0,
-            "duration_ms": 0.155266
-          }
-        },
-        "policy": {
-          "total_candidates": 300,
-          "explicit_exclude_hits": 0,
-          "recent_event_exclude_hits": 0,
-          "after_exclusions": 300,
-          "constraint_filtered_count": 0,
-          "after_constraint_filters": 300,
-          "rule_block_count": 0,
-          "rule_pin_count": 0,
-          "rule_boost_count": 0,
-          "rule_boost_injected": 0,
-          "rule_boost_exposure": 0,
-          "rule_pin_exposure": 0,
-          "after_rules": 300,
-          "final_count": 10,
-          "constraint_leak_count": 0
-        }
+    },
+    {
+      "user_id": "user_0112",
+      "items": [
+        "item_0003",
+        "item_0175",
+        "item_0285",
+        "item_0001",
+        "item_0070",
+        "item_0145",
+        "item_0196",
+        "item_0007",
+        "item_0057",
+        "item_0080"
+      ],
+      "categories": [
+        "Beauty",
+        "Books",
+        "Electronics",
+        "Fashion",
+        "Fitness",
+        "Home",
+        "Outdoors"
+      ],
+      "ndcg@10": 0.8493209348863479,
+      "recall@20": 0.5,
+      "mrr@10": 1.0,
+      "relevance_count": 4,
+      "starter_profile": {
+        "apparel": 0.0380952380952381,
+        "aurathreads": 0.021428571428571432,
+        "backorder": 0.042857142857142864,
+        "beauty": 0.03392857142857143,
+        "books": 0.09702380952380953,
+        "circuitlab": 0.021428571428571432,
+        "cozynest": 0.026785714285714284,
+        "decor": 0.04345238095238096,
+        "electronics": 0.04226190476190477,
+        "fashion": 0.0380952380952381,
+        "gadgets": 0.04226190476190477,
+        "high_margin": 0.021428571428571432,
+        "home": 0.04345238095238096,
+        "leafpress": 0.08035714285714286,
+        "literature": 0.09702380952380953,
+        "living": 0.04345238095238096,
+        "reading": 0.09702380952380953,
+        "skincare": 0.03392857142857143,
+        "smart": 0.04226190476190477,
+        "style": 0.0380952380952381,
+        "velvetsky": 0.021428571428571432,
+        "wellness": 0.03392857142857143
+      }
+    },
+    {
+      "user_id": "user_0102",
+      "items": [
+        "item_0175",
+        "item_0001",
+        "item_0070",
+        "item_0145",
+        "item_0007",
+        "item_0196",
+        "item_0057",
+        "item_0050",
+        "item_0080",
+        "item_0176"
+      ],
+      "categories": [
+        "Beauty",
+        "Books",
+        "Electronics",
+        "Fashion",
+        "Fitness",
+        "Home",
+        "Outdoors"
+      ],
+      "ndcg@10": 0.0,
+      "recall@20": 0.0,
+      "mrr@10": 0.0,
+      "relevance_count": 9,
+      "starter_profile": {
+        "apparel": 0.050416666666666665,
+        "beauty": 0.025,
+        "books": 0.06916666666666665,
+        "brightliving": 0.015,
+        "circuitlab": 0.03,
+        "couturex": 0.015,
+        "decor": 0.03166666666666666,
+        "electronics": 0.06958333333333333,
+        "fashion": 0.050416666666666665,
+        "gadgets": 0.06958333333333333,
+        "high_margin": 0.057499999999999996,
+        "home": 0.03166666666666666,
+        "leafpress": 0.018750000000000003,
+        "literature": 0.06916666666666665,
+        "living": 0.03166666666666666,
+        "midnightlane": 0.018750000000000003,
+        "new_arrival": 0.042499999999999996,
+        "quanta": 0.03375,
+        "reading": 0.06916666666666665,
+        "skincare": 0.025,
+        "smart": 0.06958333333333333,
+        "style": 0.050416666666666665,
+        "velvetsky": 0.0125,
+        "voltify": 0.018750000000000003,
+        "wellness": 0.025
+      }
+    },
+    {
+      "user_id": "user_0117",
+      "items": [
+        "item_0175",
+        "item_0036",
+        "item_0070",
+        "item_0001",
+        "item_0196",
+        "item_0035",
+        "item_0145",
+        "item_0050",
+        "item_0080",
+        "item_0176"
+      ],
+      "categories": [
+        "Beauty",
+        "Books",
+        "Electronics",
+        "Fashion",
+        "Fitness",
+        "Home",
+        "Outdoors"
+      ],
+      "ndcg@10": 0.13431697802425355,
+      "recall@20": 0.16666666666666666,
+      "mrr@10": 0.5,
+      "relevance_count": 12,
+      "starter_profile": {
+        "active": 0.04874999999999999,
+        "apparel": 0.046666666666666655,
+        "aurathreads": 0.014999999999999994,
+        "backorder": 0.014999999999999994,
+        "beauty": 0.0125,
+        "books": 0.01666666666666667,
+        "cozynest": 0.014999999999999994,
+        "decor": 0.03166666666666667,
+        "electronics": 0.06958333333333333,
+        "fashion": 0.046666666666666655,
+        "fitness": 0.04874999999999999,
+        "food": 0.018749999999999992,
+        "gadgets": 0.06958333333333333,
+        "gourmet": 0.018749999999999992,
+        "health": 0.04874999999999999,
+        "high_margin": 0.05999999999999998,
+        "home": 0.03166666666666667,
+        "ironworks": 0.014999999999999994,
+        "kitchen": 0.018749999999999992,
+        "literature": 0.01666666666666667,
+        "living": 0.03166666666666667,
+        "midnightlane": 0.014999999999999994,
+        "new_arrival": 0.02999999999999999,
+        "nimbus": 0.03374999999999999,
+        "pulsegear": 0.014999999999999994,
+        "reading": 0.01666666666666667,
+        "savoryco": 0.018749999999999992,
+        "skincare": 0.0125,
+        "smart": 0.06958333333333333,
+        "stride": 0.018749999999999992,
+        "style": 0.046666666666666655,
+        "voltify": 0.014999999999999994,
+        "wellness": 0.0125
+      }
+    },
+    {
+      "user_id": "user_0022",
+      "items": [
+        "item_0021",
+        "item_0101",
+        "item_0175",
+        "item_0001",
+        "item_0007",
+        "item_0070",
+        "item_0196",
+        "item_0057",
+        "item_0080",
+        "item_0176"
+      ],
+      "categories": [
+        "Beauty",
+        "Books",
+        "Electronics",
+        "Fashion",
+        "Fitness",
+        "Home",
+        "Outdoors"
+      ],
+      "ndcg@10": 0.13614318117779187,
+      "recall@20": 0.2222222222222222,
+      "mrr@10": 1.0,
+      "relevance_count": 9,
+      "starter_profile": {
+        "acmetech": 0.012499999999999997,
+        "adventure": 0.018749999999999996,
+        "apparel": 0.06916666666666665,
+        "aurathreads": 0.018749999999999996,
+        "backorder": 0.024999999999999994,
+        "beauty": 0.012499999999999999,
+        "books": 0.016666666666666666,
+        "brightliving": 0.033749999999999995,
+        "circuitlab": 0.012499999999999997,
+        "couturex": 0.014999999999999998,
+        "decor": 0.08166666666666665,
+        "electronics": 0.04583333333333332,
+        "fashion": 0.06916666666666665,
+        "gadgets": 0.04583333333333332,
+        "havencraft": 0.031249999999999993,
+        "high_margin": 0.052499999999999984,
+        "home": 0.08166666666666665,
+        "literature": 0.016666666666666666,
+        "living": 0.08166666666666665,
+        "loomlab": 0.018749999999999996,
+        "new_arrival": 0.027499999999999997,
+        "outdoors": 0.018749999999999996,
+        "reading": 0.016666666666666666,
+        "skincare": 0.012499999999999999,
+        "skyline": 0.018749999999999996,
+        "smart": 0.04583333333333332,
+        "style": 0.06916666666666665,
+        "travel": 0.018749999999999996,
+        "wellness": 0.012499999999999999
+      }
+    },
+    {
+      "user_id": "user_0027",
+      "items": [
+        "item_0039",
+        "item_0175",
+        "item_0001",
+        "item_0070",
+        "item_0196",
+        "item_0007",
+        "item_0057",
+        "item_0145",
+        "item_0080",
+        "item_0142"
+      ],
+      "categories": [
+        "Beauty",
+        "Books",
+        "Electronics",
+        "Fashion",
+        "Fitness",
+        "Gourmet",
+        "Home",
+        "Outdoors"
+      ],
+      "ndcg@10": 0.0,
+      "recall@20": 0.0,
+      "mrr@10": 0.0,
+      "relevance_count": 6,
+      "starter_profile": {
+        "acmetech": 0.020833333333333332,
+        "apparel": 0.09583333333333333,
+        "backorder": 0.016666666666666666,
+        "beauty": 0.029166666666666664,
+        "books": 0.0375,
+        "couturex": 0.0375,
+        "cozynest": 0.013888888888888888,
+        "decor": 0.04722222222222222,
+        "electronics": 0.041666666666666664,
+        "fashion": 0.09583333333333333,
+        "gadgets": 0.041666666666666664,
+        "havencraft": 0.016666666666666666,
+        "high_margin": 0.030555555555555558,
+        "home": 0.04722222222222222,
+        "leafpress": 0.020833333333333332,
+        "literature": 0.0375,
+        "living": 0.04722222222222222,
+        "loomlab": 0.020833333333333332,
+        "midnightlane": 0.020833333333333332,
+        "new_arrival": 0.030555555555555558,
+        "radianthue": 0.016666666666666666,
+        "reading": 0.0375,
+        "skincare": 0.029166666666666664,
+        "smart": 0.041666666666666664,
+        "style": 0.09583333333333333,
+        "wellness": 0.029166666666666664
+      }
+    },
+    {
+      "user_id": "user_0032",
+      "items": [
+        "item_0175",
+        "item_0001",
+        "item_0070",
+        "item_0145",
+        "item_0057",
+        "item_0007",
+        "item_0196",
+        "item_0080",
+        "item_0176",
+        "item_0142"
+      ],
+      "categories": [
+        "Beauty",
+        "Books",
+        "Electronics",
+        "Fashion",
+        "Fitness",
+        "Gourmet",
+        "Home",
+        "Outdoors"
+      ],
+      "ndcg@10": 0.5338184715687443,
+      "recall@20": 0.5,
+      "mrr@10": 0.5,
+      "relevance_count": 2,
+      "starter_profile": {
+        "apparel": 0.016666666666666666,
+        "beauty": 0.06874999999999999,
+        "books": 0.04791666666666667,
+        "circuitlab": 0.025,
+        "decor": 0.07291666666666667,
+        "electronics": 0.04583333333333333,
+        "fashion": 0.016666666666666666,
+        "gadgets": 0.04583333333333333,
+        "high_margin": 0.05,
+        "home": 0.07291666666666667,
+        "leafpress": 0.03125,
+        "literature": 0.04791666666666667,
+        "living": 0.07291666666666667,
+        "luxeglow": 0.03125,
+        "new_arrival": 0.025,
+        "reading": 0.04791666666666667,
+        "skincare": 0.06874999999999999,
+        "smart": 0.04583333333333333,
+        "style": 0.016666666666666666,
+        "urbandwelling": 0.05625,
+        "velvetsky": 0.025,
+        "wellness": 0.06874999999999999
+      }
+    },
+    {
+      "user_id": "user_0042",
+      "items": [
+        "item_0175",
+        "item_0001",
+        "item_0070",
+        "item_0196",
+        "item_0007",
+        "item_0057",
+        "item_0145",
+        "item_0080",
+        "item_0176",
+        "item_0142"
+      ],
+      "categories": [
+        "Beauty",
+        "Books",
+        "Electronics",
+        "Fashion",
+        "Fitness",
+        "Gourmet",
+        "Home",
+        "Outdoors"
+      ],
+      "ndcg@10": 0.0,
+      "recall@20": 0.0,
+      "mrr@10": 0.0,
+      "relevance_count": 5,
+      "starter_profile": {
+        "adventure": 0.018749999999999996,
+        "apparel": 0.04791666666666665,
+        "beauty": 0.04624999999999999,
+        "books": 0.054166666666666655,
+        "circuitlab": 0.018749999999999996,
+        "cozynest": 0.014999999999999996,
+        "decor": 0.03166666666666666,
+        "electronics": 0.052083333333333315,
+        "fashion": 0.04791666666666665,
+        "gadgets": 0.052083333333333315,
+        "high_margin": 0.03999999999999999,
+        "home": 0.03166666666666666,
+        "literature": 0.054166666666666655,
+        "living": 0.03166666666666666,
+        "loomlab": 0.018749999999999996,
+        "midnightlane": 0.012499999999999997,
+        "new_arrival": 0.03999999999999999,
+        "nimbus": 0.012499999999999997,
+        "outdoors": 0.018749999999999996,
+        "pioneerwords": 0.018749999999999996,
+        "purebloom": 0.018749999999999996,
+        "quanta": 0.018749999999999996,
+        "radianthue": 0.014999999999999996,
+        "reading": 0.054166666666666655,
+        "skincare": 0.04624999999999999,
+        "smart": 0.052083333333333315,
+        "style": 0.04791666666666665,
+        "trailblaze": 0.018749999999999996,
+        "travel": 0.018749999999999996,
+        "wellness": 0.04624999999999999
+      }
+    },
+    {
+      "user_id": "user_0047",
+      "items": [
+        "item_0175",
+        "item_0057",
+        "item_0007",
+        "item_0196",
+        "item_0070",
+        "item_0001",
+        "item_0050",
+        "item_0145",
+        "item_0080",
+        "item_0176"
+      ],
+      "categories": [
+        "Beauty",
+        "Books",
+        "Electronics",
+        "Fashion",
+        "Fitness",
+        "Home",
+        "Outdoors"
+      ],
+      "ndcg@10": 0.0,
+      "recall@20": 0.0,
+      "mrr@10": 0.0,
+      "relevance_count": 2,
+      "starter_profile": {
+        "active": 0.03749999999999999,
+        "apparel": 0.054166666666666655,
+        "beauty": 0.012499999999999999,
+        "books": 0.016666666666666666,
+        "brightliving": 0.03749999999999999,
+        "circuitlab": 0.029999999999999995,
+        "couturex": 0.03749999999999999,
+        "decor": 0.054166666666666655,
+        "electronics": 0.08833333333333332,
+        "fashion": 0.054166666666666655,
+        "fitness": 0.03749999999999999,
+        "gadgets": 0.08833333333333332,
+        "health": 0.03749999999999999,
+        "home": 0.054166666666666655,
+        "literature": 0.016666666666666666,
+        "living": 0.054166666666666655,
+        "new_arrival": 0.029999999999999995,
+        "nimbus": 0.03749999999999999,
+        "reading": 0.016666666666666666,
+        "skincare": 0.012499999999999999,
+        "smart": 0.08833333333333332,
+        "stride": 0.03749999999999999,
+        "style": 0.054166666666666655,
+        "wellness": 0.012499999999999999
+      }
+    },
+    {
+      "user_id": "user_0052",
+      "items": [
+        "item_0209",
+        "item_0175",
+        "item_0001",
+        "item_0070",
+        "item_0145",
+        "item_0007",
+        "item_0196",
+        "item_0057",
+        "item_0080",
+        "item_0176"
+      ],
+      "categories": [
+        "Beauty",
+        "Books",
+        "Electronics",
+        "Fashion",
+        "Fitness",
+        "Home",
+        "Outdoors"
+      ],
+      "ndcg@10": 0.38584359823403264,
+      "recall@20": 0.3333333333333333,
+      "mrr@10": 1.0,
+      "relevance_count": 9,
+      "starter_profile": {
+        "apparel": 0.01666666666666667,
+        "atlasreads": 0.012500000000000002,
+        "backorder": 0.012500000000000002,
+        "beauty": 0.0125,
+        "books": 0.11916666666666667,
+        "circuitlab": 0.018750000000000006,
+        "decor": 0.03541666666666667,
+        "electronics": 0.07333333333333333,
+        "fashion": 0.01666666666666667,
+        "gadgets": 0.07333333333333333,
+        "havencraft": 0.018750000000000006,
+        "high_margin": 0.0425,
+        "home": 0.03541666666666667,
+        "leafpress": 0.018750000000000006,
+        "literature": 0.11916666666666667,
+        "living": 0.03541666666666667,
+        "nimbus": 0.03375000000000001,
+        "pioneerwords": 0.03750000000000001,
+        "quanta": 0.03375000000000001,
+        "reading": 0.11916666666666667,
+        "skincare": 0.0125,
+        "smart": 0.07333333333333333,
+        "style": 0.01666666666666667,
+        "wellness": 0.0125
       }
     }
-  },
-  "categories": [
-    "Fitness",
-    "Electronics",
-    "Gourmet",
-    "Books",
-    "Fashion",
-    "Home",
-    "Outdoors",
-    "Beauty"
-  ],
-  "starter_profile": {}
+  ]
 }

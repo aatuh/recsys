@@ -64,6 +64,8 @@ type Request struct {
 	StarterProfile     map[string]float64
 	StarterBlendWeight float64
 	RecentEventCount   int
+	InjectAnchors      bool
+	AnchorItemIDs      []string
 }
 
 // BlendWeights represents the blending weights for different signals

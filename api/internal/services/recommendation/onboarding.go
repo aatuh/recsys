@@ -38,9 +38,9 @@ func (s *Service) buildStarterProfile(
 	recentEventCount int,
 	recentCountKnown bool,
 	recentItemIDs []string,
-) map[string]float64 {
+) (map[string]float64, float64) {
 	if req.UserID == "" {
-		return nil
+		return nil, 0
 	}
 
 	segmentID := strings.ToLower(strings.TrimSpace(selection.SegmentID))
@@ -50,29 +50,67 @@ func (s *Service) buildStarterProfile(
 		}
 	}
 	if segmentID == "" {
-		return nil
+		segmentID = "new_users"
 	}
 
 	isNewSegment := segmentID == "new_users"
-	if !isNewSegment {
-		maxEvents := cfg.ProfileMinEventsForBoost
-		if maxEvents < 0 {
-			maxEvents = 0
-		}
-		if recentCountKnown && maxEvents > 0 && recentEventCount > maxEvents {
-			return nil
-		}
-		if !recentCountKnown && recentEventCount < 0 {
-			return nil
-		}
+
+	minEvents := cfg.ProfileMinEventsForBoost
+	if minEvents < 0 {
+		minEvents = 0
+	}
+	isSparseHistory := false
+	if !recentCountKnown {
+		isSparseHistory = true
+	} else if minEvents == 0 {
+		isSparseHistory = recentEventCount == 0
+	} else {
+		isSparseHistory = recentEventCount < minEvents
+	}
+
+	if !isNewSegment && !isSparseHistory {
+		return nil, 0
 	}
 
 	tagProfile := starterTagProfileForSegment(segmentID)
+	if len(tagProfile) == 0 && segmentID != "new_users" {
+		tagProfile = starterTagProfileForSegment("new_users")
+	}
 	if len(tagProfile) == 0 {
-		return nil
+		return nil, 0
 	}
 
-	if isNewSegment && len(recentItemIDs) > 0 {
+	blendWeight := cfg.ProfileStarterBlendWeight
+	if blendWeight < 0 {
+		blendWeight = 0
+	} else if blendWeight > 1 {
+		blendWeight = 1
+	}
+
+	starterWeight := blendWeight
+	if minEvents > 0 {
+		missing := minEvents - recentEventCount
+		if !recentCountKnown {
+			missing = minEvents
+		}
+		if missing < 0 {
+			missing = 0
+		}
+		factor := float64(missing) / float64(minEvents)
+		if factor > 1 {
+			factor = 1
+		}
+		starterWeight = starterWeight + (1-starterWeight)*factor
+	} else if recentEventCount == 0 {
+		starterWeight = 1
+	}
+	if starterWeight < 0 {
+		starterWeight = 0
+	} else if starterWeight > 1 {
+		starterWeight = 1
+	}
+
+	if len(recentItemIDs) > 0 {
 		tagsByItem, err := s.store.ListItemsTags(ctx, req.OrgID, req.Namespace, recentItemIDs)
 		if err == nil && len(tagsByItem) > 0 {
 			recentProfile := make(map[string]float64)
@@ -91,7 +129,7 @@ func (s *Service) buildStarterProfile(
 			}
 			normalizeWeights(recentProfile)
 			if len(recentProfile) > 0 {
-				tagProfile = blendProfiles(tagProfile, recentProfile, 0.5)
+				tagProfile = blendProfiles(tagProfile, recentProfile, 1-starterWeight)
 			}
 		}
 	}
@@ -101,7 +139,7 @@ func (s *Service) buildStarterProfile(
 		topN = len(tagProfile)
 	}
 	tagProfile = trimTagProfile(tagProfile, topN)
-	return tagProfile
+	return tagProfile, starterWeight
 }
 
 func (s *Service) recentInteractionItems(ctx context.Context, cfg algorithm.Config, req algorithm.Request) ([]string, error) {

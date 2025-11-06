@@ -20,6 +20,14 @@ func (personalizationStore) ListItemsTags(ctx context.Context, orgID uuid.UUID, 
 	return nil, nil
 }
 
+func (personalizationStore) ListItemsAvailability(ctx context.Context, orgID uuid.UUID, ns string, itemIDs []string) (map[string]bool, error) {
+	out := make(map[string]bool, len(itemIDs))
+	for _, id := range itemIDs {
+		out[id] = true
+	}
+	return out, nil
+}
+
 func (personalizationStore) ListUserEventsSince(ctx context.Context, orgID uuid.UUID, ns string, userID string, since time.Time, eventTypes []int16) ([]string, error) {
 	return nil, nil
 }

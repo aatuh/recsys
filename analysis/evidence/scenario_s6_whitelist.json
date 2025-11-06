@@ -16,44 +16,40 @@
     "model_version": "popularity_v1",
     "items": [
       {
-        "item_id": "item_0101",
-        "score": 0.8732580463577915
-      },
-      {
         "item_id": "item_0133",
-        "score": 0.3932560991822884
-      },
-      {
-        "item_id": "item_0163",
-        "score": 0.33229794058032364
+        "score": 0.41018158887030487
       },
       {
         "item_id": "item_0042",
-        "score": 0.22495178853675185
+        "score": 0.24449720520074347
       },
       {
         "item_id": "item_0317",
-        "score": 0.20246370809619768
+        "score": 0.2132098622100485
       },
       {
         "item_id": "item_0186",
-        "score": 0.19498666912926646
+        "score": 0.20280716539777208
       },
       {
         "item_id": "item_0269",
-        "score": 0.15937596737518522
+        "score": 0.1875
+      },
+      {
+        "item_id": "item_0163",
+        "score": 0.18050843447121495
       },
       {
         "item_id": "item_0147",
-        "score": 0.10634728942001136
+        "score": 0.1137219627899134
       },
       {
         "item_id": "item_0143",
-        "score": 0.09799209843537332
+        "score": 0.10209750570118332
       },
       {
         "item_id": "item_0171",
-        "score": 0.09149442767859509
+        "score": 0.005557389798657712
       }
     ],
     "trace": {
@@ -61,71 +57,61 @@
         "candidate_sources": {
           "collaborative": {
             "count": 0,
-            "duration_ms": 0.166338
+            "duration_ms": 0.071016
           },
           "content": {
-            "count": 194,
-            "duration_ms": 3.304807
+            "count": 174,
+            "duration_ms": 3.191226
           },
           "merged": {
-            "count": 203,
-            "duration_ms": 0.064383
+            "count": 18,
+            "duration_ms": 0.043523
           },
           "popularity": {
             "count": 9,
-            "duration_ms": 0.810039
+            "duration_ms": 0.880161
           },
           "post_exclusion": {
-            "count": 10,
-            "duration_ms": 1.321746
+            "count": 9,
+            "duration_ms": 0.433598
           },
           "session": {
             "count": 0,
-            "duration_ms": 0.182128
+            "duration_ms": 0.20949
           }
         },
         "policy": {
-          "total_candidates": 203,
+          "total_candidates": 18,
           "explicit_exclude_hits": 0,
-          "recent_event_exclude_hits": 4,
-          "after_exclusions": 199,
+          "recent_event_exclude_hits": 0,
+          "after_exclusions": 18,
           "constraint_include_tags": [
             "acmetech"
           ],
-          "constraint_filtered_count": 189,
+          "constraint_filtered_count": 9,
           "constraint_filtered_ids": [
             "item_0019",
             "item_0025",
             "item_0027",
-            "item_0031",
             "item_0054",
             "item_0056",
             "item_0067",
             "item_0073",
             "item_0076",
-            "item_0086",
-            "item_0123",
-            "item_0130",
-            "item_0135",
-            "item_0164",
-            "item_0167",
-            "item_0183",
-            "item_0185",
-            "item_0194",
-            "item_0195",
-            "item_0197"
+            "item_0086"
           ],
-          "after_constraint_filters": 10,
+          "after_constraint_filters": 9,
           "rule_block_count": 0,
           "rule_pin_count": 0,
           "rule_boost_count": 0,
           "rule_boost_injected": 0,
           "rule_boost_exposure": 0,
           "rule_pin_exposure": 0,
-          "after_rules": 10,
-          "final_count": 10,
+          "after_rules": 9,
+          "final_count": 9,
           "constraint_leak_count": 0
-        }
+        },
+        "recent_event_count": 10
       }
     }
   }

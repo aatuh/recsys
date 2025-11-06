@@ -7,9 +7,9 @@
       "price": 123.23,
       "available": true,
       "tags": [
-        "leafpress",
         "literature",
         "books",
+        "leafpress",
         "reading"
       ],
       "props": {
@@ -26,9 +26,9 @@
       "price": 155.56,
       "available": true,
       "tags": [
+        "stride",
         "active",
         "fitness",
-        "stride",
         "health"
       ],
       "props": {
@@ -45,10 +45,10 @@
       "price": 73.57,
       "available": false,
       "tags": [
+        "fashion",
         "style",
         "apparel",
         "aurathreads",
-        "fashion",
         "backorder"
       ],
       "props": {
@@ -67,8 +67,8 @@
       "tags": [
         "literature",
         "books",
-        "reading",
         "quanta",
+        "reading",
         "new_arrival"
       ],
       "props": {
@@ -87,8 +87,8 @@
       "tags": [
         "literature",
         "books",
-        "reading",
-        "quanta"
+        "quanta",
+        "reading"
       ],
       "props": {
         "margin": 0.371,

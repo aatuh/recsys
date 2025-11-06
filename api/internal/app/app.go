@@ -129,6 +129,12 @@ func New(ctx context.Context, opts Options) (*App, error) {
 			recommendationSvc = recommendationSvc.WithBlendResolver(resolver)
 		}
 	}
+	recommendationSvc = recommendationSvc.WithNewUserOverrides(
+		cfg.Recommendation.NewUserBlendAlpha,
+		cfg.Recommendation.NewUserBlendBeta,
+		cfg.Recommendation.NewUserBlendGamma,
+		cfg.Recommendation.NewUserMMRLambda,
+	)
 
 	explainService := newExplainService(cfg.Explain, st, logger)
 
@@ -155,28 +161,34 @@ func New(ctx context.Context, opts Options) (*App, error) {
 	tracer := handlers.NewDecisionTracer(decisionRecorder, logger, cfg.Audit.DecisionTrace.Salt, cfg.Rules.AuditSample)
 
 	recConfig := handlers.RecommendationConfig{
-		HalfLifeDays:               cfg.Recommendation.HalfLifeDays,
-		CoVisWindowDays:            cfg.Recommendation.CoVisWindowDays,
-		PopularityFanout:           cfg.Recommendation.PopularityFanout,
-		MMRLambda:                  cfg.Recommendation.MMRLambda,
-		BrandCap:                   cfg.Recommendation.BrandCap,
-		CategoryCap:                cfg.Recommendation.CategoryCap,
-		RuleExcludeEvents:          cfg.Recommendation.RuleExcludeEvents,
-		ExcludeEventTypes:          cfg.Recommendation.ExcludeEventTypes,
-		BrandTagPrefixes:           cfg.Recommendation.BrandTagPrefixes,
-		CategoryTagPrefixes:        cfg.Recommendation.CategoryTagPrefixes,
-		PurchasedWindowDays:        cfg.Recommendation.PurchasedWindowDays,
-		ProfileWindowDays:          cfg.Recommendation.Profile.WindowDays,
-		ProfileBoost:               cfg.Recommendation.Profile.Boost,
-		ProfileTopNTags:            cfg.Recommendation.Profile.TopNTags,
-		ProfileMinEventsForBoost:   cfg.Recommendation.Profile.MinEventsForBoost,
-		ProfileColdStartMultiplier: cfg.Recommendation.Profile.ColdStartMultiplier,
-		ProfileStarterBlendWeight:  cfg.Recommendation.Profile.StarterBlendWeight,
-		MMRPresets:                 cfg.Recommendation.MMRPresets,
-		BlendAlpha:                 cfg.Recommendation.Blend.Alpha,
-		BlendBeta:                  cfg.Recommendation.Blend.Beta,
-		BlendGamma:                 cfg.Recommendation.Blend.Gamma,
-		RulesEnabled:               cfg.Rules.Enabled,
+		HalfLifeDays:                  cfg.Recommendation.HalfLifeDays,
+		CoVisWindowDays:               cfg.Recommendation.CoVisWindowDays,
+		PopularityFanout:              cfg.Recommendation.PopularityFanout,
+		MMRLambda:                     cfg.Recommendation.MMRLambda,
+		BrandCap:                      cfg.Recommendation.BrandCap,
+		CategoryCap:                   cfg.Recommendation.CategoryCap,
+		RuleExcludeEvents:             cfg.Recommendation.RuleExcludeEvents,
+		ExcludeEventTypes:             cfg.Recommendation.ExcludeEventTypes,
+		BrandTagPrefixes:              cfg.Recommendation.BrandTagPrefixes,
+		CategoryTagPrefixes:           cfg.Recommendation.CategoryTagPrefixes,
+		PurchasedWindowDays:           cfg.Recommendation.PurchasedWindowDays,
+		ProfileWindowDays:             cfg.Recommendation.Profile.WindowDays,
+		ProfileBoost:                  cfg.Recommendation.Profile.Boost,
+		ProfileTopNTags:               cfg.Recommendation.Profile.TopNTags,
+		ProfileMinEventsForBoost:      cfg.Recommendation.Profile.MinEventsForBoost,
+		ProfileColdStartMultiplier:    cfg.Recommendation.Profile.ColdStartMultiplier,
+		ProfileStarterBlendWeight:     cfg.Recommendation.Profile.StarterBlendWeight,
+		MMRPresets:                    cfg.Recommendation.MMRPresets,
+		BlendAlpha:                    cfg.Recommendation.Blend.Alpha,
+		BlendBeta:                     cfg.Recommendation.Blend.Beta,
+		BlendGamma:                    cfg.Recommendation.Blend.Gamma,
+		NewUserBlendAlpha:             cfg.Recommendation.NewUserBlendAlpha,
+		NewUserBlendBeta:              cfg.Recommendation.NewUserBlendBeta,
+		NewUserBlendGamma:             cfg.Recommendation.NewUserBlendGamma,
+		NewUserMMRLambda:              cfg.Recommendation.NewUserMMRLambda,
+		RulesEnabled:                  cfg.Rules.Enabled,
+		CoverageCacheTTL:              cfg.Recommendation.CoverageCacheTTL,
+		CoverageLongTailHintThreshold: cfg.Recommendation.CoverageLongTailHintThreshold,
 		BanditExperiment: handlers.BanditExperimentConfig{
 			Enabled:        cfg.Recommendation.BanditExperiment.Enabled,
 			HoldoutPercent: cfg.Recommendation.BanditExperiment.HoldoutPercent,

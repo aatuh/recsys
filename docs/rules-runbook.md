@@ -43,7 +43,48 @@ Dashboards and alerts should watch the zero-effect counter and the ratio of
 `rule_*_exposure` to `rule_*_count` so merchandising regressions are detected
 quickly.
 
-## 3. Operational checklist
+## 3. Coverage guardrails
+
+Every response now contributes to coverage telemetry so you can alert when
+catalog breadth shrinks:
+
+- `policy_item_served_total{namespace, surface, item_id}` – increments once per
+  item delivered.
+- `policy_coverage_bucket_total{namespace, surface, bucket}` – `bucket` is
+  `all` or `long_tail`, letting you track exposure mix.
+- `policy_catalog_items_total{namespace}` – gauge of the available catalog size.
+
+Use PromQL (tweak the look-back window to taste):
+
+```promql
+# Unique items shown in the past hour
+unique_items =
+  count(count_over_time(policy_item_served_total{namespace="default"}[1h]) > 0)
+
+# Catalog coverage ratio (target ≥ 0.60)
+coverage_ratio = unique_items / max(policy_catalog_items_total{namespace="default"})
+
+# Long-tail share (target ≥ 0.20)
+long_tail_share =
+  sum(rate(policy_coverage_bucket_total{namespace="default", bucket="long_tail"}[1h])) /
+  sum(rate(policy_coverage_bucket_total{namespace="default", bucket="all"}[1h]))
+```
+
+Alert if `coverage_ratio < 0.60` or `long_tail_share < 0.20` for your chosen
+window.
+
+**If a guardrail fires**:
+
+1. Re-run the quality suite or `analysis/scripts/profile_coverage.py` against
+   the affected environment to confirm the regression.
+2. Inspect recent deployments for changes to `POPULARITY_FANOUT`,
+   `BLEND_*`, `MMR_LAMBDA`, or rule overrides that may concentrate exposure.
+3. Temporarily raise exploration knobs (fan-out, ALS weight) and re-check the
+   telemetry. When the targets recover, bake the updated settings into the
+   environment (`COVERAGE_LONG_TAIL_HINT_THRESHOLD`, `COVERAGE_CACHE_TTL`) and
+   document the change.
+
+## 4. Operational checklist
 
 - **Before a campaign**
   - Confirm rule creation through the admin list endpoints (`/v1/admin/rules`,
@@ -69,10 +110,10 @@ quickly.
     item is available.
   - Check for competing higher-priority rules (e.g., a block rule with the same
     target).
-  - Ensure boosts are sensible; remember manual boosts are relative to the
+- Ensure boosts are sensible; remember manual boosts are relative to the
     item’s base score.
 
-## 4. Useful commands
+## 5. Useful commands
 
 ```bash
 # Run the scenario suite against the local stack

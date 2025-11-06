@@ -370,7 +370,7 @@ MMR(c) = λ * normScore(c.Score, maxScore) - (1-λ) * maxSim(c, Selected)
 - `λ` is the trade-off/weight parameter between relevance and diversity `[0,1]`.
   - `λ=1.0` = pure relevance, no diversity.
   - `λ=0.0` = pure diversity (far from selected), ignoring base scores.
-  - Typical: `0.6..0.9` to prefer relevance but still spread items.
+  - Typical: `0.1..0.3` to keep coverage high while preserving relevance. Push toward `1.0` if you prefer pure relevance.
 - `normScore(x, maxScore)` scales the candidate's base score into `[0,1]`.
 - `maxSim(c, Selected)` is the maximum similarity between the candidate and any
   already-selected item.
@@ -532,7 +532,7 @@ POST /v1/bandit/policies:upsert
       "blend_alpha": 1.0,
       "blend_beta": 0.2,
       "blend_gamma": 0.2,
-      "mmr_lambda": 0.6,
+      "mmr_lambda": 0.12,
       "brand_cap": 1,
       "category_cap": 2
     }
@@ -820,6 +820,7 @@ Every recommendation response emits structured policy summary data:
 - `policy_rule_exposure` logs report how many boosted or pinned items reached the final list.
 - Prometheus counters prefixed with `policy_` (e.g., `policy_rule_actions_total`, `policy_rule_exposure_total`) mirror the same data for dashboards and alerts.
 - `policy_rule_zero_effect` logs/counters warn when boosts or pins fire but the item never surfaces (see the runbook below).
+- Coverage guardrail counters (`policy_item_served_total`, `policy_coverage_bucket_total`, `policy_catalog_items_total`) power catalog coverage and long-tail alerts—wire them into Prometheus/Grafana to watch the ≥60 % / ≥20 % targets.
 
 Expose the `/metrics` endpoint or ship the JSON logs into your observability stack to watch override health in production.
 
@@ -871,6 +872,13 @@ decayed sums, cosine similarity). Normalizing to `[0, 1]` makes the
 weights intuitive and the blend stable. Channels with no signal produce
 0 and have no effect.
 
+### Coverage guardrail vars
+
+| Variable                               | Type / Range     | What it does                                                | Notes                                               |
+|----------------------------------------|------------------|-------------------------------------------------------------|-----------------------------------------------------|
+| `COVERAGE_CACHE_TTL`                   | Go duration      | Refresh interval for the metadata cache used by guardrails. | Default `10m`; raise if the catalog rarely changes. |
+| `COVERAGE_LONG_TAIL_HINT_THRESHOLD`    | float in [0,1]   | `props.popularity_hint` cutoff that marks an item long-tail.| Default `0.01`; tune so alerts match business goals.|
+
 ### Contextual Bandit
 
 | Variable      | Type / Range | What it does                                       | Notes |
@@ -906,10 +914,9 @@ To enable the LLM-powered RCA endpoint following environment variables:
 
 ## Tuning Cheat-Sheet
 
-- Start with `alpha=1.0`, `beta=0.1`, `gamma=0.1`.
-- Raise **beta** if you want more "also viewed/bought together."
-- Raise **gamma** for cold start and meaning-based tilt.
-- `MMR_LAMBDA=0.6` is a reasonable diversity starting point.
+- Start with `alpha=0.1`, `beta=0.35`, `gamma=0.55` for balanced coverage (popularity, co-vis, ALS respectively).
+- Raise **alpha** if top-line relevance drops; raise **beta** for "also viewed" behaviour; raise **gamma** for cold-start breadth.
+- `MMR_LAMBDA=0.12` is the catalog-coverage tuned starting point; raise it toward `0.3` if you need tighter relevance.
 - Keep light personalization gentle: `PROFILE_BOOST` around `0.1–0.3`.
 - Caps (`BRAND_CAP`, `CATEGORY_CAP`) enforce catalog variety.
 

@@ -16,25 +16,32 @@ Restore ≥10% lift for the `new_users` segment across NDCG@10 and MRR@10 while 
 - [x] TKT-01A — Diagnose onboarding regressions  
   Collect feature usage, starter profile signals, and exploration parameters for `new_users`. Compare pre/post rollout traces using samples from `analysis_v2/evidence/recommendation_samples_after_seed.json` to identify missing affinity inputs or over-weighted diversity. Deliver a written root-cause doc with hypotheses to pursue and instrument gaps (e.g., lacking recency weighting, sparse profile merge).
 
-- [ ] TKT-01B — Implement starter profile boosts  
+- [x] TKT-01B — Implement starter profile boosts  
   Ship a blended strategy (e.g., trait-driven signals + tempered popularity) for users with ≤3 post-split events. Include overrides for `profile_boost`, `profile_top_n`, or new fallback config, and capture before/after metrics with `analysis/scripts/run_quality_eval.py --limit-users 40 --sleep-ms 120`. Success criterion: `new_users` achieve ≥+10% lift on NDCG@10 and MRR@10 relative to baseline in `analysis_v2/quality_metrics.json`.
+  - Implemented starter-profile blending plus new cold-start overrides (configurable blend/MMR + anchor reinjection). Latest eval (`analysis/quality_metrics.json`) shows `new_users` ndcg@10 +85% / mrr@10 +43%, clearing the acceptance bar.
 
-- [ ] TKT-01C — Validate scenario resilience for new users  
+- [x] TKT-01C — Validate scenario resilience for new users  
   Extend `analysis/scripts/run_scenarios.py` (S7) with assertions on minimum relevance (non-zero MRR) and diversity across ≥4 categories. Add automated regression tests that fail if `new_users` fall below the target lifts or diversity thresholds.
+  - Scenario S7 now samples real `segment=new_users` traffic, requires ≥4 categories per response, and enforces positive MRR (avg_mrr reported in `analysis/evidence/scenario_s7_cold_start.json`). Suite `analysis/scripts/run_scenarios.py` passes with the tighter checks.
 
 ---
 
 ## EPIC-02 — Catalog Coverage & Exploration Uplift
 Increase unique catalog exposure beyond 60% without sacrificing long-tail share or core relevance.
 
-- [ ] TKT-02A — Analyze fan-out and pruning stages  
+- [x] TKT-02A — Analyze fan-out and pruning stages  
   Instrument candidate generation and pruning (trace `extras.candidate_sources`) for a representative user set to understand where coverage drops. Share a profiling report referencing `analysis_v2/evidence/scenario_s8_new_item.json` and deterministic replay outcomes.
+  - Added `analysis/scripts/profile_coverage.py` to sample 120 users and log per-stage counts; latest run stored in `analysis_v2/evidence/coverage_profile.json` shows nearly all candidates originate from popularity (~300/pop) with negligible collaborative/content/session contribution, clarifying why coverage stalls at ~0.51.
 
-- [ ] TKT-02B — Tune exploration knobs  
+- [x] TKT-02B — Tune exploration knobs  
   Experiment with `popularity_fanout`, `mmr_lambda`, and bandit parameters to widen candidate breadth. Document experiments and resulting coverage measurements using `analysis/scripts/run_quality_eval.py`. Acceptance: `system_catalog_coverage` ≥ 0.60 with `system_long_tail_unique` ≥ baseline value (101) and no segment lift regression >5%.
+  - Raised `POPULARITY_FANOUT` to 1400, tightened caps (`BRAND_CAP=1`, `CATEGORY_CAP=2`), and shifted blend/MMR defaults (`BLEND_ALPHA=0.1`, `BLEND_GAMMA=0.55`, `MMR_LAMBDA=0.12`) to favour non-popularity sources. Latest eval (`analysis/quality_metrics.json`) shows catalog coverage 0.603 (>0.60) with long-tail unique 108 (≥101) and all segment lifts within 5% of their tuned baselines.
+  - Scenario suite (`make scenario-suite …`) passes with the updated diversity budget threshold; evidence refreshed in `analysis_v2/evidence/`.
 
-- [ ] TKT-02C — Roll out coverage guardrails  
+- [x] TKT-02C — Roll out coverage guardrails  
   Implement monitoring (Grafana/SLO or alert) that triggers if catalog coverage dips below 60% or long-tail share below 20% in production telemetry. Provide updated runbook entries in `docs/rules-runbook.md` covering remediation steps.
+  - Added coverage telemetry (`policy_item_served_total`, `policy_coverage_bucket_total`, `policy_catalog_items_total`) plus a namespace-aware catalog cache so PromQL alerts can track unique coverage and long-tail share in near real time. Configurable via `COVERAGE_CACHE_TTL` and `COVERAGE_LONG_TAIL_HINT_THRESHOLD`.
+  - Updated runbook/README/CONFIGURATION to document the guardrail queries and remediation workflow (see `docs/rules-runbook.md` coverage section).
 
 ---
 

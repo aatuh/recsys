@@ -3,100 +3,8 @@
     "model_version": "popularity_v1",
     "items": [
       {
-        "item_id": "item_0101",
-        "score": 1.1694738477653923,
-        "reasons": [
-          "recent_popularity",
-          "content_similarity",
-          "co_visitation",
-          "embedding_similarity",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
         "item_id": "item_0037",
-        "score": 0.9656620949305189,
-        "reasons": [
-          "recent_popularity",
-          "content_similarity",
-          "co_visitation",
-          "embedding_similarity",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0003",
-        "score": 0.9577905848997492,
-        "reasons": [
-          "recent_popularity",
-          "content_similarity",
-          "co_visitation",
-          "embedding_similarity",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0068",
-        "score": 0.9357941817426519,
-        "reasons": [
-          "recent_popularity",
-          "content_similarity",
-          "co_visitation",
-          "embedding_similarity",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0275",
-        "score": 0.8815152264777746,
-        "reasons": [
-          "recent_popularity",
-          "content_similarity",
-          "co_visitation",
-          "embedding_similarity",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0242",
-        "score": 0.4452677185564522,
-        "reasons": [
-          "recent_popularity",
-          "content_similarity",
-          "co_visitation",
-          "embedding_similarity",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0209",
-        "score": 0.28236489469433557,
-        "reasons": [
-          "recent_popularity",
-          "content_similarity",
-          "embedding_similarity",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0066",
-        "score": 0.2560145912283025,
-        "reasons": [
-          "recent_popularity",
-          "co_visitation",
-          "diversity"
-        ]
-      },
-      {
-        "item_id": "item_0013",
-        "score": 0.23351290627244897,
+        "score": 0.9209246927943291,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -106,16 +14,7 @@
       },
       {
         "item_id": "item_0175",
-        "score": 0.2297360781653483,
-        "reasons": [
-          "recent_popularity",
-          "co_visitation",
-          "diversity"
-        ]
-      },
-      {
-        "item_id": "item_0220",
-        "score": 0.22387335840680972,
+        "score": 0.83797109375,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -124,17 +23,48 @@
         ]
       },
       {
-        "item_id": "item_0298",
-        "score": 0.20782944745683365,
+        "item_id": "item_0070",
+        "score": 0.6386015221284006,
         "reasons": [
           "recent_popularity",
           "co_visitation",
-          "diversity"
+          "diversity",
+          "personalization"
         ]
       },
       {
         "item_id": "item_0001",
-        "score": 0.20535194280969463,
+        "score": 0.6307061183261687,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0007",
+        "score": 0.6177090436711096,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0196",
+        "score": 0.5654276014431273,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0050",
+        "score": 0.5517747217550315,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -142,8 +72,26 @@
         ]
       },
       {
-        "item_id": "item_0075",
-        "score": 0.11440797976446436,
+        "item_id": "item_0057",
+        "score": 0.5496404051065906,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity"
+        ]
+      },
+      {
+        "item_id": "item_0145",
+        "score": 0.4972347934790181,
+        "reasons": [
+          "recent_popularity",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0176",
+        "score": 0.4623997716954369,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -152,13 +100,50 @@
         ]
       },
       {
-        "item_id": "item_0193",
-        "score": 0.08722479271392909,
+        "item_id": "item_0080",
+        "score": 0.45964280979461397,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity"
+        ]
+      },
+      {
+        "item_id": "item_0111",
+        "score": 0.44048137224092904,
         "reasons": [
           "recent_popularity",
           "co_visitation",
           "diversity",
           "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0043",
+        "score": 0.4256815514463578,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0211",
+        "score": 0.3749441822252586,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0142",
+        "score": 0.1430149503035853,
+        "reasons": [
+          "recent_popularity",
+          "diversity"
         ]
       }
     ],
@@ -167,46 +152,73 @@
         "candidate_sources": {
           "collaborative": {
             "count": 0,
-            "duration_ms": 0.142492
+            "duration_ms": 0.180305
           },
           "content": {
-            "count": 20,
-            "duration_ms": 0.871165
+            "count": 0,
+            "duration_ms": 0.828282
           },
           "merged": {
-            "count": 320,
-            "duration_ms": 0.014618
+            "count": 301,
+            "duration_ms": 0.020489
           },
           "popularity": {
             "count": 300,
-            "duration_ms": 12.095733
+            "duration_ms": 19.683378
           },
           "post_exclusion": {
-            "count": 320,
-            "duration_ms": 1.342025
+            "count": 301,
+            "duration_ms": 1.349628
           },
           "session": {
             "count": 0,
-            "duration_ms": 0.17788
+            "duration_ms": 0.195663
           }
         },
         "policy": {
-          "total_candidates": 320,
+          "total_candidates": 301,
           "explicit_exclude_hits": 0,
           "recent_event_exclude_hits": 0,
-          "after_exclusions": 320,
+          "after_exclusions": 301,
           "constraint_filtered_count": 0,
-          "after_constraint_filters": 320,
+          "after_constraint_filters": 301,
           "rule_block_count": 0,
           "rule_pin_count": 0,
           "rule_boost_count": 0,
           "rule_boost_injected": 0,
           "rule_boost_exposure": 0,
           "rule_pin_exposure": 0,
-          "after_rules": 320,
+          "after_rules": 301,
           "final_count": 15,
           "constraint_leak_count": 0
-        }
+        },
+        "recent_event_count": 4,
+        "starter_profile": {
+          "apparel": 0.047916666666666656,
+          "backorder": 0.024999999999999994,
+          "beauty": 0.062499999999999986,
+          "books": 0.016666666666666666,
+          "decor": 0.016666666666666666,
+          "electronics": 0.09166666666666666,
+          "fashion": 0.047916666666666656,
+          "gadgets": 0.09166666666666666,
+          "high_margin": 0.07083333333333332,
+          "home": 0.016666666666666666,
+          "literature": 0.016666666666666666,
+          "living": 0.016666666666666666,
+          "midnightlane": 0.031249999999999993,
+          "new_arrival": 0.04583333333333333,
+          "nimbus": 0.04583333333333333,
+          "radianthue": 0.024999999999999994,
+          "reading": 0.016666666666666666,
+          "skincare": 0.062499999999999986,
+          "smart": 0.09166666666666666,
+          "style": 0.047916666666666656,
+          "velvetsky": 0.024999999999999994,
+          "voltify": 0.024999999999999994,
+          "wellness": 0.062499999999999986
+        },
+        "starter_profile_weight": 0.25
       }
     }
   },
@@ -214,87 +226,19 @@
     "model_version": "popularity_v1",
     "items": [
       {
-        "item_id": "item_0003",
-        "score": 3.831162339598997,
+        "item_id": "item_0070",
+        "score": 2.554406088513602,
         "reasons": [
           "recent_popularity",
-          "content_similarity",
           "co_visitation",
-          "embedding_similarity",
           "diversity",
           "personalization",
-          "rule.boost:+2.87[b60ca22d-c295-4e94-af5d-81008d5c2eeb]"
-        ]
-      },
-      {
-        "item_id": "item_0101",
-        "score": 1.169473847765392,
-        "reasons": [
-          "recent_popularity",
-          "content_similarity",
-          "co_visitation",
-          "embedding_similarity",
-          "diversity",
-          "personalization"
+          "rule.boost:+1.92[f06b7151-4812-46e8-a7bb-9fcf8f461834]"
         ]
       },
       {
         "item_id": "item_0037",
-        "score": 0.9656620949305189,
-        "reasons": [
-          "recent_popularity",
-          "content_similarity",
-          "co_visitation",
-          "embedding_similarity",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0242",
-        "score": 0.4452677185564522,
-        "reasons": [
-          "recent_popularity",
-          "content_similarity",
-          "co_visitation",
-          "embedding_similarity",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0191",
-        "score": 0.3396927541620959,
-        "reasons": [
-          "recent_popularity",
-          "co_visitation",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0209",
-        "score": 0.28236489469433557,
-        "reasons": [
-          "recent_popularity",
-          "content_similarity",
-          "embedding_similarity",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0066",
-        "score": 0.2560145872309402,
-        "reasons": [
-          "recent_popularity",
-          "co_visitation",
-          "diversity"
-        ]
-      },
-      {
-        "item_id": "item_0013",
-        "score": 0.23351290183986084,
+        "score": 0.9209246927943291,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -304,25 +248,47 @@
       },
       {
         "item_id": "item_0175",
-        "score": 0.2297360251718899,
+        "score": 0.83797109375,
         "reasons": [
           "recent_popularity",
           "co_visitation",
-          "diversity"
-        ]
-      },
-      {
-        "item_id": "item_0298",
-        "score": 0.20782944225329836,
-        "reasons": [
-          "recent_popularity",
-          "co_visitation",
-          "diversity"
+          "diversity",
+          "personalization"
         ]
       },
       {
         "item_id": "item_0001",
-        "score": 0.20535190602219583,
+        "score": 0.6307061183261681,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0007",
+        "score": 0.6177090436711093,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0196",
+        "score": 0.5654276014431276,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0050",
+        "score": 0.5517747217550315,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -330,8 +296,8 @@
         ]
       },
       {
-        "item_id": "item_0116",
-        "score": 0.19634555921260322,
+        "item_id": "item_0176",
+        "score": 0.4623997716954369,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -340,32 +306,72 @@
         ]
       },
       {
-        "item_id": "item_0104",
-        "score": 0.08920558437105704,
-        "reasons": [
-          "recent_popularity",
-          "co_visitation",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0193",
-        "score": 0.08722477618660929,
-        "reasons": [
-          "recent_popularity",
-          "co_visitation",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0060",
-        "score": 0.05783546748514137,
+        "item_id": "item_0080",
+        "score": 0.4596428097946137,
         "reasons": [
           "recent_popularity",
           "co_visitation",
           "diversity"
+        ]
+      },
+      {
+        "item_id": "item_0111",
+        "score": 0.44048137224092904,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0043",
+        "score": 0.4256815514463576,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0015",
+        "score": 0.3796035270582446,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0211",
+        "score": 0.37494418222525855,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0281",
+        "score": 0.30822337081860246,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0056",
+        "score": 0.17546780850221422,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
         ]
       }
     ],
@@ -374,63 +380,90 @@
         "candidate_sources": {
           "collaborative": {
             "count": 0,
-            "duration_ms": 0.194622
+            "duration_ms": 0.242494
           },
           "content": {
-            "count": 20,
-            "duration_ms": 0.906874
+            "count": 0,
+            "duration_ms": 0.945576
           },
           "merged": {
-            "count": 320,
-            "duration_ms": 0.038984
+            "count": 301,
+            "duration_ms": 0.028325
           },
           "popularity": {
             "count": 300,
-            "duration_ms": 11.888736
+            "duration_ms": 20.430054
           },
           "post_exclusion": {
-            "count": 320,
-            "duration_ms": 1.456013
+            "count": 301,
+            "duration_ms": 1.474848
           },
           "session": {
             "count": 0,
-            "duration_ms": 0.230982
+            "duration_ms": 0.219699
           }
         },
         "policy": {
-          "total_candidates": 320,
+          "total_candidates": 301,
           "explicit_exclude_hits": 0,
           "recent_event_exclude_hits": 0,
-          "after_exclusions": 320,
+          "after_exclusions": 301,
           "constraint_filtered_count": 0,
-          "after_constraint_filters": 320,
+          "after_constraint_filters": 301,
           "rule_block_count": 0,
           "rule_pin_count": 0,
           "rule_boost_count": 1,
           "rule_boost_injected": 0,
           "rule_boost_exposure": 1,
           "rule_pin_exposure": 0,
-          "after_rules": 320,
+          "after_rules": 301,
           "final_count": 15,
           "constraint_leak_count": 0
-        }
+        },
+        "recent_event_count": 4,
+        "starter_profile": {
+          "apparel": 0.04791666666666666,
+          "backorder": 0.025,
+          "beauty": 0.0625,
+          "books": 0.016666666666666666,
+          "decor": 0.016666666666666666,
+          "electronics": 0.09166666666666665,
+          "fashion": 0.04791666666666666,
+          "gadgets": 0.09166666666666665,
+          "high_margin": 0.07083333333333332,
+          "home": 0.016666666666666666,
+          "literature": 0.016666666666666666,
+          "living": 0.016666666666666666,
+          "midnightlane": 0.031249999999999993,
+          "new_arrival": 0.04583333333333333,
+          "nimbus": 0.04583333333333333,
+          "radianthue": 0.025,
+          "reading": 0.016666666666666666,
+          "skincare": 0.0625,
+          "smart": 0.09166666666666665,
+          "style": 0.04791666666666666,
+          "velvetsky": 0.025,
+          "voltify": 0.025,
+          "wellness": 0.0625
+        },
+        "starter_profile_weight": 0.25
       }
     }
   },
-  "target_item": "item_0003",
+  "target_item": "item_0070",
   "rank_before": 2,
   "rank_after": 0,
   "override": {
-    "override_id": "554cbc54-c85a-44f9-8a14-305cc7cca6c6",
+    "override_id": "7c22ef0e-8f89-461f-982b-130398db6119",
     "namespace": "default",
     "surface": "home",
-    "item_id": "item_0003",
+    "item_id": "item_0070",
     "action": "boost",
     "boost_value": 3,
     "notes": "Scenario S3 boost monotonicity",
     "created_by": "scenario_s3",
-    "created_at": "2025-11-04T07:14:35Z",
+    "created_at": "2025-11-06T16:13:37Z",
     "status": "active",
-    "rule_id": "b60ca22d-c295-4e94-af5d-81008d5c2eeb"
+    "rule_id": "f06b7151-4812-46e8-a7bb-9fcf8f461834"
   }
 }

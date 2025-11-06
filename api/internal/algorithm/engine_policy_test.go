@@ -23,6 +23,14 @@ func (n *noopAlgoStore) ListItemsTags(ctx context.Context, orgID uuid.UUID, ns s
 	return nil, nil
 }
 
+func (n *noopAlgoStore) ListItemsAvailability(ctx context.Context, orgID uuid.UUID, ns string, itemIDs []string) (map[string]bool, error) {
+	out := make(map[string]bool, len(itemIDs))
+	for _, id := range itemIDs {
+		out[id] = true
+	}
+	return out, nil
+}
+
 func (n *noopAlgoStore) ListUserEventsSince(ctx context.Context, orgID uuid.UUID, ns string, userID string, since time.Time, eventTypes []int16) ([]string, error) {
 	if len(n.recent) == 0 {
 		return nil, nil

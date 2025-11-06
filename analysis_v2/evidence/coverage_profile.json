@@ -1,0 +1,4706 @@
+{
+  "timestamp": "2025-11-06T16:13:25.525324Z",
+  "base_url": "https://api.pepe.local",
+  "namespace": "default",
+  "sampled_users": 120,
+  "unique_items": 193,
+  "catalog_size": 320,
+  "coverage_ratio": 0.603125,
+  "avg_final_list_len": 20,
+  "avg_candidates": {
+    "collaborative": 0.0,
+    "content": 0.0,
+    "merged": 300.1166666666667,
+    "popularity": 300.0,
+    "post_exclusion": 297.60833333333335,
+    "session": 0.008333333333333333
+  },
+  "avg_policy_counts": {
+    "total_candidates": 300.1166666666667,
+    "after_exclusions": 297.60833333333335,
+    "after_rules": 297.60833333333335,
+    "final_count": 20.0
+  },
+  "users": [
+    {
+      "user_id": "user_0001",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 293,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 293,
+        "after_rules": 293,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0006",
+        "item_0007",
+        "item_0211",
+        "item_0057",
+        "item_0124",
+        "item_0236",
+        "item_0008",
+        "item_0288",
+        "item_0269",
+        "item_0093",
+        "item_0105",
+        "item_0099",
+        "item_0177",
+        "item_0019",
+        "item_0040",
+        "item_0123",
+        "item_0104",
+        "item_0193",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0035",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 300,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 300,
+        "after_rules": 300,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0057",
+        "item_0153",
+        "item_0080",
+        "item_0211",
+        "item_0133",
+        "item_0006",
+        "item_0124",
+        "item_0086",
+        "item_0001",
+        "item_0268",
+        "item_0187",
+        "item_0230",
+        "item_0192",
+        "item_0072",
+        "item_0070",
+        "item_0104",
+        "item_0123",
+        "item_0193",
+        "item_0019",
+        "item_0075"
+      ]
+    },
+    {
+      "user_id": "user_0089",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 299,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 299,
+        "after_rules": 299,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0211",
+        "item_0007",
+        "item_0047",
+        "item_0262",
+        "item_0269",
+        "item_0105",
+        "item_0208",
+        "item_0002",
+        "item_0120",
+        "item_0111",
+        "item_0175",
+        "item_0288",
+        "item_0034",
+        "item_0123",
+        "item_0093",
+        "item_0193",
+        "item_0019",
+        "item_0106",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0103",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0019",
+        "item_0001",
+        "item_0175",
+        "item_0004",
+        "item_0295",
+        "item_0227",
+        "item_0076",
+        "item_0022",
+        "item_0233",
+        "item_0123",
+        "item_0193",
+        "item_0191",
+        "item_0084",
+        "item_0094",
+        "item_0199",
+        "item_0062",
+        "item_0089",
+        "item_0104",
+        "item_0236",
+        "item_0268"
+      ]
+    },
+    {
+      "user_id": "user_0115",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 300,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 300,
+        "after_rules": 300,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0084",
+        "item_0024",
+        "item_0211",
+        "item_0148",
+        "item_0251",
+        "item_0111",
+        "item_0120",
+        "item_0001",
+        "item_0192",
+        "item_0047",
+        "item_0082",
+        "item_0288",
+        "item_0020",
+        "item_0075",
+        "item_0070",
+        "item_0106",
+        "item_0132",
+        "item_0019",
+        "item_0054",
+        "item_0193"
+      ]
+    },
+    {
+      "user_id": "user_0106",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 297,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 297,
+        "after_rules": 297,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0032",
+        "item_0251",
+        "item_0020",
+        "item_0163",
+        "item_0006",
+        "item_0027",
+        "item_0128",
+        "item_0131",
+        "item_0288",
+        "item_0062",
+        "item_0123",
+        "item_0177",
+        "item_0034",
+        "item_0001",
+        "item_0166",
+        "item_0019",
+        "item_0075",
+        "item_0115",
+        "item_0222",
+        "item_0309"
+      ]
+    },
+    {
+      "user_id": "user_0069",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 296,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 296,
+        "after_rules": 296,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0131",
+        "item_0005",
+        "item_0007",
+        "item_0084",
+        "item_0111",
+        "item_0146",
+        "item_0082",
+        "item_0309",
+        "item_0050",
+        "item_0175",
+        "item_0211",
+        "item_0288",
+        "item_0019",
+        "item_0074",
+        "item_0046",
+        "item_0124",
+        "item_0216",
+        "item_0236",
+        "item_0075"
+      ]
+    },
+    {
+      "user_id": "user_0059",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 299,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 299,
+        "after_rules": 299,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0131",
+        "item_0027",
+        "item_0206",
+        "item_0035",
+        "item_0111",
+        "item_0006",
+        "item_0132",
+        "item_0001",
+        "item_0050",
+        "item_0211",
+        "item_0199",
+        "item_0177",
+        "item_0093",
+        "item_0030",
+        "item_0230",
+        "item_0268",
+        "item_0154",
+        "item_0222",
+        "item_0019",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0098",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 295,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 295,
+        "after_rules": 295,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0005",
+        "item_0046",
+        "item_0007",
+        "item_0154",
+        "item_0142",
+        "item_0070",
+        "item_0084",
+        "item_0109",
+        "item_0049",
+        "item_0019",
+        "item_0050",
+        "item_0167",
+        "item_0211",
+        "item_0240",
+        "item_0104",
+        "item_0124",
+        "item_0148",
+        "item_0193",
+        "item_0288"
+      ]
+    },
+    {
+      "user_id": "user_0042",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 300,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 300,
+        "after_rules": 300,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0175",
+        "item_0001",
+        "item_0070",
+        "item_0196",
+        "item_0007",
+        "item_0057",
+        "item_0145",
+        "item_0080",
+        "item_0050",
+        "item_0005",
+        "item_0215",
+        "item_0043",
+        "item_0047",
+        "item_0176",
+        "item_0211",
+        "item_0111",
+        "item_0199",
+        "item_0269",
+        "item_0015",
+        "item_0142"
+      ]
+    },
+    {
+      "user_id": "user_0086",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 291,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 291,
+        "after_rules": 291,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0251",
+        "item_0064",
+        "item_0302",
+        "item_0027",
+        "item_0057",
+        "item_0043",
+        "item_0288",
+        "item_0163",
+        "item_0192",
+        "item_0131",
+        "item_0111",
+        "item_0034",
+        "item_0004",
+        "item_0254",
+        "item_0052",
+        "item_0082",
+        "item_0281",
+        "item_0072",
+        "item_0309",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0063",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 299,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 299,
+        "after_rules": 299,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0005",
+        "item_0001",
+        "item_0046",
+        "item_0007",
+        "item_0154",
+        "item_0070",
+        "item_0142",
+        "item_0288",
+        "item_0109",
+        "item_0019",
+        "item_0049",
+        "item_0167",
+        "item_0015",
+        "item_0016",
+        "item_0006",
+        "item_0211",
+        "item_0281",
+        "item_0240",
+        "item_0104",
+        "item_0193"
+      ]
+    },
+    {
+      "user_id": "user_0030",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 296,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 296,
+        "after_rules": 296,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0084",
+        "item_0217",
+        "item_0057",
+        "item_0196",
+        "item_0035",
+        "item_0211",
+        "item_0111",
+        "item_0192",
+        "item_0082",
+        "item_0220",
+        "item_0020",
+        "item_0145",
+        "item_0232",
+        "item_0034",
+        "item_0070",
+        "item_0161",
+        "item_0054",
+        "item_0286",
+        "item_0193",
+        "item_0164"
+      ]
+    },
+    {
+      "user_id": "user_0022",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 302,
+        "popularity": 300,
+        "post_exclusion": 302,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 302,
+        "after_exclusions": 302,
+        "after_rules": 302,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0021",
+        "item_0101",
+        "item_0175",
+        "item_0001",
+        "item_0007",
+        "item_0070",
+        "item_0196",
+        "item_0145",
+        "item_0057",
+        "item_0050",
+        "item_0080",
+        "item_0043",
+        "item_0215",
+        "item_0176",
+        "item_0211",
+        "item_0111",
+        "item_0005",
+        "item_0015",
+        "item_0281",
+        "item_0142"
+      ]
+    },
+    {
+      "user_id": "user_0002",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 301,
+        "popularity": 300,
+        "post_exclusion": 301,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 301,
+        "after_exclusions": 301,
+        "after_rules": 301,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0037",
+        "item_0175",
+        "item_0070",
+        "item_0001",
+        "item_0007",
+        "item_0196",
+        "item_0050",
+        "item_0057",
+        "item_0145",
+        "item_0176",
+        "item_0080",
+        "item_0111",
+        "item_0215",
+        "item_0043",
+        "item_0015",
+        "item_0220",
+        "item_0211",
+        "item_0199",
+        "item_0262",
+        "item_0142"
+      ]
+    },
+    {
+      "user_id": "user_0011",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 296,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 296,
+        "after_rules": 296,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0066",
+        "item_0005",
+        "item_0288",
+        "item_0007",
+        "item_0211",
+        "item_0176",
+        "item_0163",
+        "item_0093",
+        "item_0177",
+        "item_0006",
+        "item_0309",
+        "item_0142",
+        "item_0027",
+        "item_0116",
+        "item_0019",
+        "item_0074",
+        "item_0104",
+        "item_0046",
+        "item_0286"
+      ]
+    },
+    {
+      "user_id": "user_0074",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0084",
+        "item_0004",
+        "item_0203",
+        "item_0057",
+        "item_0145",
+        "item_0082",
+        "item_0092",
+        "item_0111",
+        "item_0089",
+        "item_0265",
+        "item_0120",
+        "item_0133",
+        "item_0236",
+        "item_0154",
+        "item_0302",
+        "item_0309",
+        "item_0052",
+        "item_0233",
+        "item_0274",
+        "item_0288"
+      ]
+    },
+    {
+      "user_id": "user_0014",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 299,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 299,
+        "after_rules": 299,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0008",
+        "item_0015",
+        "item_0007",
+        "item_0262",
+        "item_0116",
+        "item_0019",
+        "item_0041",
+        "item_0027",
+        "item_0050",
+        "item_0312",
+        "item_0204",
+        "item_0006",
+        "item_0211",
+        "item_0104",
+        "item_0288",
+        "item_0228",
+        "item_0236",
+        "item_0020",
+        "item_0060"
+      ]
+    },
+    {
+      "user_id": "user_0032",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 300,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 300,
+        "after_rules": 300,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0175",
+        "item_0001",
+        "item_0070",
+        "item_0145",
+        "item_0057",
+        "item_0007",
+        "item_0196",
+        "item_0050",
+        "item_0005",
+        "item_0080",
+        "item_0176",
+        "item_0215",
+        "item_0047",
+        "item_0043",
+        "item_0111",
+        "item_0211",
+        "item_0269",
+        "item_0281",
+        "item_0015",
+        "item_0142"
+      ]
+    },
+    {
+      "user_id": "user_0097",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 301,
+        "popularity": 300,
+        "post_exclusion": 301,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 301,
+        "after_exclusions": 301,
+        "after_rules": 301,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0021",
+        "item_0175",
+        "item_0001",
+        "item_0007",
+        "item_0070",
+        "item_0196",
+        "item_0057",
+        "item_0145",
+        "item_0050",
+        "item_0080",
+        "item_0215",
+        "item_0043",
+        "item_0176",
+        "item_0211",
+        "item_0111",
+        "item_0005",
+        "item_0269",
+        "item_0015",
+        "item_0166",
+        "item_0227"
+      ]
+    },
+    {
+      "user_id": "user_0090",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 300,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 300,
+        "after_rules": 300,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0163",
+        "item_0199",
+        "item_0066",
+        "item_0153",
+        "item_0007",
+        "item_0175",
+        "item_0211",
+        "item_0208",
+        "item_0288",
+        "item_0047",
+        "item_0176",
+        "item_0220",
+        "item_0001",
+        "item_0074",
+        "item_0149",
+        "item_0104",
+        "item_0193",
+        "item_0105",
+        "item_0019",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0104",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 297,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 297,
+        "after_rules": 297,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0005",
+        "item_0011",
+        "item_0035",
+        "item_0057",
+        "item_0046",
+        "item_0154",
+        "item_0070",
+        "item_0142",
+        "item_0114",
+        "item_0019",
+        "item_0262",
+        "item_0109",
+        "item_0049",
+        "item_0167",
+        "item_0281",
+        "item_0288",
+        "item_0104",
+        "item_0211",
+        "item_0193",
+        "item_0240"
+      ]
+    },
+    {
+      "user_id": "user_0052",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 301,
+        "popularity": 300,
+        "post_exclusion": 301,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 301,
+        "after_exclusions": 301,
+        "after_rules": 301,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0209",
+        "item_0175",
+        "item_0001",
+        "item_0070",
+        "item_0145",
+        "item_0007",
+        "item_0196",
+        "item_0057",
+        "item_0050",
+        "item_0005",
+        "item_0080",
+        "item_0215",
+        "item_0176",
+        "item_0047",
+        "item_0211",
+        "item_0111",
+        "item_0269",
+        "item_0281",
+        "item_0015",
+        "item_0142"
+      ]
+    },
+    {
+      "user_id": "user_0003",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 294,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 294,
+        "after_rules": 294,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0004",
+        "item_0203",
+        "item_0092",
+        "item_0019",
+        "item_0046",
+        "item_0007",
+        "item_0240",
+        "item_0213",
+        "item_0111",
+        "item_0116",
+        "item_0006",
+        "item_0142",
+        "item_0057",
+        "item_0043",
+        "item_0193",
+        "item_0115",
+        "item_0211",
+        "item_0288",
+        "item_0281"
+      ]
+    },
+    {
+      "user_id": "user_0109",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 296,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 296,
+        "after_rules": 296,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0013",
+        "item_0303",
+        "item_0099",
+        "item_0247",
+        "item_0049",
+        "item_0007",
+        "item_0001",
+        "item_0111",
+        "item_0163",
+        "item_0093",
+        "item_0203",
+        "item_0019",
+        "item_0268",
+        "item_0175",
+        "item_0131",
+        "item_0309",
+        "item_0222",
+        "item_0052",
+        "item_0104",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0051",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 296,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 296,
+        "after_rules": 296,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0251",
+        "item_0211",
+        "item_0066",
+        "item_0175",
+        "item_0047",
+        "item_0163",
+        "item_0085",
+        "item_0272",
+        "item_0208",
+        "item_0070",
+        "item_0111",
+        "item_0005",
+        "item_0262",
+        "item_0093",
+        "item_0146",
+        "item_0123",
+        "item_0019",
+        "item_0129",
+        "item_0193",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0118",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0249",
+        "item_0175",
+        "item_0046",
+        "item_0142",
+        "item_0007",
+        "item_0019",
+        "item_0111",
+        "item_0057",
+        "item_0084",
+        "item_0116",
+        "item_0213",
+        "item_0309",
+        "item_0211",
+        "item_0054",
+        "item_0082",
+        "item_0236",
+        "item_0288",
+        "item_0199",
+        "item_0240"
+      ]
+    },
+    {
+      "user_id": "user_0036",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0249",
+        "item_0175",
+        "item_0211",
+        "item_0288",
+        "item_0046",
+        "item_0047",
+        "item_0142",
+        "item_0208",
+        "item_0035",
+        "item_0066",
+        "item_0034",
+        "item_0111",
+        "item_0093",
+        "item_0070",
+        "item_0082",
+        "item_0054",
+        "item_0019",
+        "item_0240",
+        "item_0193"
+      ]
+    },
+    {
+      "user_id": "user_0081",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 295,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 295,
+        "after_rules": 295,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0024",
+        "item_0211",
+        "item_0148",
+        "item_0066",
+        "item_0116",
+        "item_0027",
+        "item_0085",
+        "item_0006",
+        "item_0251",
+        "item_0124",
+        "item_0001",
+        "item_0196",
+        "item_0043",
+        "item_0104",
+        "item_0019",
+        "item_0309",
+        "item_0187",
+        "item_0189",
+        "item_0046",
+        "item_0142"
+      ]
+    },
+    {
+      "user_id": "user_0078",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 299,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 299,
+        "after_rules": 299,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0004",
+        "item_0076",
+        "item_0046",
+        "item_0274",
+        "item_0099",
+        "item_0092",
+        "item_0019",
+        "item_0155",
+        "item_0006",
+        "item_0203",
+        "item_0070",
+        "item_0305",
+        "item_0002",
+        "item_0265",
+        "item_0240",
+        "item_0281",
+        "item_0085",
+        "item_0193",
+        "item_0304"
+      ]
+    },
+    {
+      "user_id": "user_0017",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 301,
+        "popularity": 300,
+        "post_exclusion": 301,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 301,
+        "after_exclusions": 301,
+        "after_rules": 301,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0101",
+        "item_0175",
+        "item_0070",
+        "item_0001",
+        "item_0145",
+        "item_0057",
+        "item_0007",
+        "item_0196",
+        "item_0050",
+        "item_0005",
+        "item_0080",
+        "item_0215",
+        "item_0176",
+        "item_0047",
+        "item_0043",
+        "item_0111",
+        "item_0211",
+        "item_0220",
+        "item_0281",
+        "item_0142"
+      ]
+    },
+    {
+      "user_id": "user_0010",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 301,
+        "popularity": 300,
+        "post_exclusion": 301,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 301,
+        "after_exclusions": 301,
+        "after_rules": 301,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0296",
+        "item_0175",
+        "item_0057",
+        "item_0001",
+        "item_0050",
+        "item_0196",
+        "item_0070",
+        "item_0145",
+        "item_0215",
+        "item_0007",
+        "item_0080",
+        "item_0047",
+        "item_0176",
+        "item_0005",
+        "item_0211",
+        "item_0111",
+        "item_0199",
+        "item_0281",
+        "item_0269",
+        "item_0020"
+      ]
+    },
+    {
+      "user_id": "user_0116",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 294,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 294,
+        "after_rules": 294,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0006",
+        "item_0251",
+        "item_0120",
+        "item_0236",
+        "item_0057",
+        "item_0008",
+        "item_0206",
+        "item_0288",
+        "item_0105",
+        "item_0001",
+        "item_0278",
+        "item_0043",
+        "item_0211",
+        "item_0019",
+        "item_0041",
+        "item_0040",
+        "item_0281",
+        "item_0104",
+        "item_0193",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0064",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0007",
+        "item_0115",
+        "item_0295",
+        "item_0015",
+        "item_0019",
+        "item_0131",
+        "item_0084",
+        "item_0175",
+        "item_0312",
+        "item_0032",
+        "item_0235",
+        "item_0227",
+        "item_0288",
+        "item_0199",
+        "item_0034",
+        "item_0074",
+        "item_0236",
+        "item_0028",
+        "item_0075"
+      ]
+    },
+    {
+      "user_id": "user_0045",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 299,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 299,
+        "after_rules": 299,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0005",
+        "item_0196",
+        "item_0015",
+        "item_0295",
+        "item_0311",
+        "item_0002",
+        "item_0142",
+        "item_0007",
+        "item_0008",
+        "item_0220",
+        "item_0116",
+        "item_0062",
+        "item_0019",
+        "item_0113",
+        "item_0170",
+        "item_0166",
+        "item_0104",
+        "item_0123",
+        "item_0286"
+      ]
+    },
+    {
+      "user_id": "user_0096",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 294,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 294,
+        "after_rules": 294,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0251",
+        "item_0032",
+        "item_0006",
+        "item_0043",
+        "item_0085",
+        "item_0027",
+        "item_0272",
+        "item_0192",
+        "item_0163",
+        "item_0001",
+        "item_0029",
+        "item_0211",
+        "item_0111",
+        "item_0281",
+        "item_0105",
+        "item_0187",
+        "item_0222",
+        "item_0193",
+        "item_0019",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0084",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 295,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 295,
+        "after_rules": 295,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0005",
+        "item_0011",
+        "item_0046",
+        "item_0007",
+        "item_0154",
+        "item_0070",
+        "item_0066",
+        "item_0163",
+        "item_0049",
+        "item_0109",
+        "item_0019",
+        "item_0216",
+        "item_0167",
+        "item_0211",
+        "item_0288",
+        "item_0208",
+        "item_0104",
+        "item_0193",
+        "item_0093",
+        "item_0075"
+      ]
+    },
+    {
+      "user_id": "user_0020",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0236",
+        "item_0050",
+        "item_0196",
+        "item_0199",
+        "item_0303",
+        "item_0028",
+        "item_0084",
+        "item_0251",
+        "item_0113",
+        "item_0008",
+        "item_0232",
+        "item_0001",
+        "item_0269",
+        "item_0020",
+        "item_0091",
+        "item_0286",
+        "item_0123",
+        "item_0019",
+        "item_0104",
+        "item_0193"
+      ]
+    },
+    {
+      "user_id": "user_0065",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 294,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 294,
+        "after_rules": 294,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0064",
+        "item_0066",
+        "item_0251",
+        "item_0120",
+        "item_0236",
+        "item_0020",
+        "item_0093",
+        "item_0249",
+        "item_0043",
+        "item_0062",
+        "item_0027",
+        "item_0274",
+        "item_0192",
+        "item_0288",
+        "item_0019",
+        "item_0265",
+        "item_0075",
+        "item_0104",
+        "item_0193",
+        "item_0105"
+      ]
+    },
+    {
+      "user_id": "user_0070",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0006",
+        "item_0024",
+        "item_0211",
+        "item_0027",
+        "item_0007",
+        "item_0148",
+        "item_0008",
+        "item_0043",
+        "item_0163",
+        "item_0093",
+        "item_0041",
+        "item_0105",
+        "item_0001",
+        "item_0288",
+        "item_0019",
+        "item_0232",
+        "item_0020",
+        "item_0304",
+        "item_0286",
+        "item_0193"
+      ]
+    },
+    {
+      "user_id": "user_0018",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 299,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 299,
+        "after_rules": 299,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0005",
+        "item_0105",
+        "item_0007",
+        "item_0084",
+        "item_0146",
+        "item_0295",
+        "item_0175",
+        "item_0082",
+        "item_0019",
+        "item_0227",
+        "item_0050",
+        "item_0305",
+        "item_0288",
+        "item_0123",
+        "item_0124",
+        "item_0111",
+        "item_0075",
+        "item_0307",
+        "item_0193"
+      ]
+    },
+    {
+      "user_id": "user_0087",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 300,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 300,
+        "after_rules": 300,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0175",
+        "item_0070",
+        "item_0001",
+        "item_0057",
+        "item_0196",
+        "item_0007",
+        "item_0145",
+        "item_0050",
+        "item_0080",
+        "item_0215",
+        "item_0176",
+        "item_0043",
+        "item_0005",
+        "item_0111",
+        "item_0269",
+        "item_0047",
+        "item_0211",
+        "item_0166",
+        "item_0015",
+        "item_0142"
+      ]
+    },
+    {
+      "user_id": "user_0066",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 295,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 295,
+        "after_rules": 295,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0035",
+        "item_0251",
+        "item_0057",
+        "item_0211",
+        "item_0153",
+        "item_0192",
+        "item_0047",
+        "item_0208",
+        "item_0008",
+        "item_0288",
+        "item_0005",
+        "item_0124",
+        "item_0104",
+        "item_0105",
+        "item_0020",
+        "item_0054",
+        "item_0129",
+        "item_0193",
+        "item_0019",
+        "item_0075"
+      ]
+    },
+    {
+      "user_id": "user_0026",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 295,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 295,
+        "after_rules": 295,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0035",
+        "item_0251",
+        "item_0006",
+        "item_0057",
+        "item_0120",
+        "item_0192",
+        "item_0043",
+        "item_0093",
+        "item_0116",
+        "item_0249",
+        "item_0236",
+        "item_0288",
+        "item_0104",
+        "item_0019",
+        "item_0309",
+        "item_0132",
+        "item_0274",
+        "item_0211",
+        "item_0123",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0076",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 290,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 290,
+        "after_rules": 290,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0035",
+        "item_0273",
+        "item_0057",
+        "item_0192",
+        "item_0204",
+        "item_0220",
+        "item_0006",
+        "item_0027",
+        "item_0008",
+        "item_0004",
+        "item_0211",
+        "item_0070",
+        "item_0236",
+        "item_0145",
+        "item_0013",
+        "item_0304",
+        "item_0222",
+        "item_0318",
+        "item_0193",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0114",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 300,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 300,
+        "after_rules": 300,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0302",
+        "item_0132",
+        "item_0070",
+        "item_0004",
+        "item_0251",
+        "item_0167",
+        "item_0160",
+        "item_0066",
+        "item_0145",
+        "item_0082",
+        "item_0111",
+        "item_0193",
+        "item_0006",
+        "item_0227",
+        "item_0013",
+        "item_0211",
+        "item_0288",
+        "item_0104",
+        "item_0281",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0085",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0066",
+        "item_0236",
+        "item_0199",
+        "item_0225",
+        "item_0211",
+        "item_0166",
+        "item_0043",
+        "item_0284",
+        "item_0085",
+        "item_0027",
+        "item_0241",
+        "item_0232",
+        "item_0174",
+        "item_0041",
+        "item_0295",
+        "item_0070",
+        "item_0104",
+        "item_0019",
+        "item_0286",
+        "item_0193"
+      ]
+    },
+    {
+      "user_id": "user_0027",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 301,
+        "popularity": 300,
+        "post_exclusion": 301,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 301,
+        "after_exclusions": 301,
+        "after_rules": 301,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0039",
+        "item_0175",
+        "item_0001",
+        "item_0070",
+        "item_0196",
+        "item_0007",
+        "item_0057",
+        "item_0145",
+        "item_0050",
+        "item_0080",
+        "item_0176",
+        "item_0005",
+        "item_0215",
+        "item_0047",
+        "item_0269",
+        "item_0211",
+        "item_0015",
+        "item_0262",
+        "item_0281",
+        "item_0142"
+      ]
+    },
+    {
+      "user_id": "user_0105",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 299,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 299,
+        "after_rules": 299,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0251",
+        "item_0236",
+        "item_0035",
+        "item_0002",
+        "item_0288",
+        "item_0204",
+        "item_0302",
+        "item_0192",
+        "item_0211",
+        "item_0215",
+        "item_0184",
+        "item_0040",
+        "item_0276",
+        "item_0004",
+        "item_0008",
+        "item_0104",
+        "item_0193",
+        "item_0078",
+        "item_0054",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0117",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 301,
+        "popularity": 300,
+        "post_exclusion": 301,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 301,
+        "after_exclusions": 301,
+        "after_rules": 301,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0175",
+        "item_0036",
+        "item_0070",
+        "item_0001",
+        "item_0057",
+        "item_0196",
+        "item_0035",
+        "item_0145",
+        "item_0050",
+        "item_0080",
+        "item_0047",
+        "item_0176",
+        "item_0043",
+        "item_0215",
+        "item_0111",
+        "item_0211",
+        "item_0005",
+        "item_0269",
+        "item_0166",
+        "item_0020"
+      ]
+    },
+    {
+      "user_id": "user_0061",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 291,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 291,
+        "after_rules": 291,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0199",
+        "item_0260",
+        "item_0278",
+        "item_0066",
+        "item_0001",
+        "item_0042",
+        "item_0007",
+        "item_0288",
+        "item_0043",
+        "item_0019",
+        "item_0105",
+        "item_0006",
+        "item_0008",
+        "item_0211",
+        "item_0236",
+        "item_0109",
+        "item_0104",
+        "item_0193",
+        "item_0106",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0067",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 300,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 300,
+        "after_rules": 300,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0175",
+        "item_0001",
+        "item_0145",
+        "item_0070",
+        "item_0007",
+        "item_0196",
+        "item_0057",
+        "item_0050",
+        "item_0005",
+        "item_0080",
+        "item_0215",
+        "item_0176",
+        "item_0047",
+        "item_0043",
+        "item_0211",
+        "item_0111",
+        "item_0269",
+        "item_0281",
+        "item_0193",
+        "item_0142"
+      ]
+    },
+    {
+      "user_id": "user_0031",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 296,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 296,
+        "after_rules": 296,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0057",
+        "item_0132",
+        "item_0004",
+        "item_0007",
+        "item_0220",
+        "item_0083",
+        "item_0175",
+        "item_0084",
+        "item_0013",
+        "item_0131",
+        "item_0145",
+        "item_0288",
+        "item_0020",
+        "item_0236",
+        "item_0304",
+        "item_0183",
+        "item_0028",
+        "item_0309",
+        "item_0120",
+        "item_0075"
+      ]
+    },
+    {
+      "user_id": "user_0057",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 300,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 300,
+        "after_rules": 300,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0175",
+        "item_0001",
+        "item_0057",
+        "item_0070",
+        "item_0007",
+        "item_0145",
+        "item_0050",
+        "item_0196",
+        "item_0080",
+        "item_0043",
+        "item_0215",
+        "item_0176",
+        "item_0047",
+        "item_0111",
+        "item_0211",
+        "item_0269",
+        "item_0004",
+        "item_0199",
+        "item_0281",
+        "item_0227"
+      ]
+    },
+    {
+      "user_id": "user_0095",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 297,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 297,
+        "after_rules": 297,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0035",
+        "item_0251",
+        "item_0002",
+        "item_0084",
+        "item_0192",
+        "item_0111",
+        "item_0005",
+        "item_0236",
+        "item_0288",
+        "item_0082",
+        "item_0062",
+        "item_0020",
+        "item_0124",
+        "item_0075",
+        "item_0034",
+        "item_0070",
+        "item_0106",
+        "item_0123",
+        "item_0193",
+        "item_0019"
+      ]
+    },
+    {
+      "user_id": "user_0083",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 297,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 297,
+        "after_rules": 297,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0005",
+        "item_0046",
+        "item_0007",
+        "item_0154",
+        "item_0070",
+        "item_0142",
+        "item_0019",
+        "item_0109",
+        "item_0049",
+        "item_0084",
+        "item_0167",
+        "item_0211",
+        "item_0057",
+        "item_0240",
+        "item_0236",
+        "item_0124",
+        "item_0288",
+        "item_0104",
+        "item_0193"
+      ]
+    },
+    {
+      "user_id": "user_0029",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 295,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 295,
+        "after_rules": 295,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0015",
+        "item_0115",
+        "item_0049",
+        "item_0188",
+        "item_0007",
+        "item_0019",
+        "item_0244",
+        "item_0001",
+        "item_0057",
+        "item_0288",
+        "item_0104",
+        "item_0221",
+        "item_0179",
+        "item_0236",
+        "item_0312",
+        "item_0211",
+        "item_0124",
+        "item_0013",
+        "item_0227",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0120",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 299,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 299,
+        "after_rules": 299,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0057",
+        "item_0196",
+        "item_0311",
+        "item_0075",
+        "item_0007",
+        "item_0047",
+        "item_0111",
+        "item_0220",
+        "item_0175",
+        "item_0056",
+        "item_0187",
+        "item_0052",
+        "item_0243",
+        "item_0001",
+        "item_0093",
+        "item_0019",
+        "item_0123",
+        "item_0309",
+        "item_0106",
+        "item_0304"
+      ]
+    },
+    {
+      "user_id": "user_0068",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 300,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 300,
+        "after_rules": 300,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0175",
+        "item_0001",
+        "item_0070",
+        "item_0196",
+        "item_0057",
+        "item_0145",
+        "item_0007",
+        "item_0050",
+        "item_0080",
+        "item_0005",
+        "item_0215",
+        "item_0043",
+        "item_0176",
+        "item_0047",
+        "item_0111",
+        "item_0211",
+        "item_0281",
+        "item_0269",
+        "item_0262",
+        "item_0142"
+      ]
+    },
+    {
+      "user_id": "user_0094",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0131",
+        "item_0288",
+        "item_0049",
+        "item_0015",
+        "item_0111",
+        "item_0001",
+        "item_0007",
+        "item_0050",
+        "item_0262",
+        "item_0104",
+        "item_0229",
+        "item_0192",
+        "item_0064",
+        "item_0309",
+        "item_0019",
+        "item_0305",
+        "item_0166",
+        "item_0123",
+        "item_0072",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0041",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 295,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 295,
+        "after_rules": 295,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0064",
+        "item_0211",
+        "item_0120",
+        "item_0236",
+        "item_0133",
+        "item_0047",
+        "item_0288",
+        "item_0093",
+        "item_0002",
+        "item_0053",
+        "item_0132",
+        "item_0175",
+        "item_0005",
+        "item_0089",
+        "item_0104",
+        "item_0019",
+        "item_0054",
+        "item_0216",
+        "item_0309",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0025",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0005",
+        "item_0011",
+        "item_0046",
+        "item_0007",
+        "item_0220",
+        "item_0154",
+        "item_0070",
+        "item_0211",
+        "item_0027",
+        "item_0215",
+        "item_0032",
+        "item_0109",
+        "item_0049",
+        "item_0093",
+        "item_0019",
+        "item_0288",
+        "item_0216",
+        "item_0104",
+        "item_0075",
+        "item_0193"
+      ]
+    },
+    {
+      "user_id": "user_0062",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 300,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 300,
+        "after_rules": 300,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0175",
+        "item_0001",
+        "item_0007",
+        "item_0196",
+        "item_0070",
+        "item_0145",
+        "item_0057",
+        "item_0050",
+        "item_0047",
+        "item_0080",
+        "item_0176",
+        "item_0211",
+        "item_0163",
+        "item_0215",
+        "item_0111",
+        "item_0043",
+        "item_0220",
+        "item_0005",
+        "item_0281",
+        "item_0295"
+      ]
+    },
+    {
+      "user_id": "user_0056",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0066",
+        "item_0007",
+        "item_0288",
+        "item_0047",
+        "item_0163",
+        "item_0211",
+        "item_0220",
+        "item_0267",
+        "item_0001",
+        "item_0176",
+        "item_0189",
+        "item_0238",
+        "item_0281",
+        "item_0089",
+        "item_0170",
+        "item_0099",
+        "item_0256",
+        "item_0104",
+        "item_0019",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0072",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 300,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 300,
+        "after_rules": 300,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0175",
+        "item_0001",
+        "item_0070",
+        "item_0145",
+        "item_0057",
+        "item_0007",
+        "item_0196",
+        "item_0050",
+        "item_0176",
+        "item_0080",
+        "item_0215",
+        "item_0005",
+        "item_0111",
+        "item_0043",
+        "item_0269",
+        "item_0211",
+        "item_0262",
+        "item_0015",
+        "item_0281",
+        "item_0295"
+      ]
+    },
+    {
+      "user_id": "user_0101",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 294,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 294,
+        "after_rules": 294,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0302",
+        "item_0006",
+        "item_0220",
+        "item_0032",
+        "item_0007",
+        "item_0027",
+        "item_0276",
+        "item_0105",
+        "item_0020",
+        "item_0008",
+        "item_0177",
+        "item_0273",
+        "item_0211",
+        "item_0074",
+        "item_0227",
+        "item_0119",
+        "item_0166",
+        "item_0104",
+        "item_0233",
+        "item_0193"
+      ]
+    },
+    {
+      "user_id": "user_0054",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 299,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 299,
+        "after_rules": 299,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0008",
+        "item_0243",
+        "item_0203",
+        "item_0115",
+        "item_0081",
+        "item_0092",
+        "item_0015",
+        "item_0309",
+        "item_0303",
+        "item_0007",
+        "item_0288",
+        "item_0104",
+        "item_0245",
+        "item_0174",
+        "item_0099",
+        "item_0274",
+        "item_0233",
+        "item_0006",
+        "item_0028",
+        "item_0166"
+      ]
+    },
+    {
+      "user_id": "user_0038",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 300,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 300,
+        "after_rules": 300,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0175",
+        "item_0001",
+        "item_0145",
+        "item_0070",
+        "item_0196",
+        "item_0057",
+        "item_0007",
+        "item_0050",
+        "item_0080",
+        "item_0005",
+        "item_0215",
+        "item_0176",
+        "item_0047",
+        "item_0199",
+        "item_0043",
+        "item_0211",
+        "item_0111",
+        "item_0269",
+        "item_0295",
+        "item_0015"
+      ]
+    },
+    {
+      "user_id": "user_0107",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 300,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 300,
+        "after_rules": 300,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0175",
+        "item_0001",
+        "item_0070",
+        "item_0145",
+        "item_0196",
+        "item_0057",
+        "item_0007",
+        "item_0050",
+        "item_0080",
+        "item_0176",
+        "item_0047",
+        "item_0215",
+        "item_0005",
+        "item_0043",
+        "item_0111",
+        "item_0211",
+        "item_0220",
+        "item_0281",
+        "item_0015",
+        "item_0227"
+      ]
+    },
+    {
+      "user_id": "user_0049",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0005",
+        "item_0049",
+        "item_0084",
+        "item_0143",
+        "item_0188",
+        "item_0105",
+        "item_0178",
+        "item_0220",
+        "item_0019",
+        "item_0303",
+        "item_0104",
+        "item_0288",
+        "item_0193",
+        "item_0020",
+        "item_0236",
+        "item_0124",
+        "item_0013",
+        "item_0028",
+        "item_0112",
+        "item_0075"
+      ]
+    },
+    {
+      "user_id": "user_0058",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0005",
+        "item_0001",
+        "item_0046",
+        "item_0007",
+        "item_0154",
+        "item_0142",
+        "item_0070",
+        "item_0109",
+        "item_0049",
+        "item_0019",
+        "item_0167",
+        "item_0288",
+        "item_0084",
+        "item_0303",
+        "item_0124",
+        "item_0240",
+        "item_0305",
+        "item_0104",
+        "item_0193",
+        "item_0236"
+      ]
+    },
+    {
+      "user_id": "user_0112",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 302,
+        "popularity": 300,
+        "post_exclusion": 302,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 302,
+        "after_exclusions": 302,
+        "after_rules": 302,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0003",
+        "item_0175",
+        "item_0285",
+        "item_0001",
+        "item_0070",
+        "item_0145",
+        "item_0196",
+        "item_0007",
+        "item_0057",
+        "item_0050",
+        "item_0005",
+        "item_0080",
+        "item_0215",
+        "item_0047",
+        "item_0082",
+        "item_0111",
+        "item_0211",
+        "item_0269",
+        "item_0281",
+        "item_0142"
+      ]
+    },
+    {
+      "user_id": "user_0060",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 299,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 299,
+        "after_rules": 299,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0005",
+        "item_0080",
+        "item_0057",
+        "item_0215",
+        "item_0251",
+        "item_0054",
+        "item_0020",
+        "item_0019",
+        "item_0288",
+        "item_0142",
+        "item_0217",
+        "item_0166",
+        "item_0175",
+        "item_0211",
+        "item_0187",
+        "item_0070",
+        "item_0286",
+        "item_0104",
+        "item_0193"
+      ]
+    },
+    {
+      "user_id": "user_0113",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 297,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 297,
+        "after_rules": 297,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0162",
+        "item_0004",
+        "item_0203",
+        "item_0092",
+        "item_0302",
+        "item_0007",
+        "item_0213",
+        "item_0111",
+        "item_0116",
+        "item_0295",
+        "item_0309",
+        "item_0106",
+        "item_0006",
+        "item_0233",
+        "item_0057",
+        "item_0043",
+        "item_0115",
+        "item_0211",
+        "item_0288",
+        "item_0166"
+      ]
+    },
+    {
+      "user_id": "user_0093",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 299,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 299,
+        "after_rules": 299,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0005",
+        "item_0001",
+        "item_0046",
+        "item_0057",
+        "item_0007",
+        "item_0154",
+        "item_0142",
+        "item_0070",
+        "item_0109",
+        "item_0049",
+        "item_0019",
+        "item_0076",
+        "item_0102",
+        "item_0167",
+        "item_0166",
+        "item_0211",
+        "item_0288",
+        "item_0240",
+        "item_0193",
+        "item_0104"
+      ]
+    },
+    {
+      "user_id": "user_0100",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0120",
+        "item_0153",
+        "item_0024",
+        "item_0057",
+        "item_0007",
+        "item_0211",
+        "item_0208",
+        "item_0220",
+        "item_0288",
+        "item_0001",
+        "item_0043",
+        "item_0019",
+        "item_0105",
+        "item_0041",
+        "item_0187",
+        "item_0027",
+        "item_0216",
+        "item_0104",
+        "item_0233",
+        "item_0193"
+      ]
+    },
+    {
+      "user_id": "user_0015",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0084",
+        "item_0057",
+        "item_0211",
+        "item_0111",
+        "item_0120",
+        "item_0236",
+        "item_0133",
+        "item_0082",
+        "item_0020",
+        "item_0041",
+        "item_0320",
+        "item_0075",
+        "item_0137",
+        "item_0222",
+        "item_0288",
+        "item_0070",
+        "item_0265",
+        "item_0193",
+        "item_0228",
+        "item_0019"
+      ]
+    },
+    {
+      "user_id": "user_0088",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0005",
+        "item_0001",
+        "item_0019",
+        "item_0175",
+        "item_0046",
+        "item_0154",
+        "item_0007",
+        "item_0070",
+        "item_0142",
+        "item_0049",
+        "item_0076",
+        "item_0013",
+        "item_0022",
+        "item_0006",
+        "item_0211",
+        "item_0288",
+        "item_0281",
+        "item_0240",
+        "item_0104",
+        "item_0193"
+      ]
+    },
+    {
+      "user_id": "user_0024",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 297,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 297,
+        "after_rules": 297,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0206",
+        "item_0089",
+        "item_0265",
+        "item_0136",
+        "item_0007",
+        "item_0160",
+        "item_0016",
+        "item_0004",
+        "item_0006",
+        "item_0230",
+        "item_0046",
+        "item_0288",
+        "item_0281",
+        "item_0193",
+        "item_0142",
+        "item_0054",
+        "item_0305",
+        "item_0019",
+        "item_0240"
+      ]
+    },
+    {
+      "user_id": "user_0073",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0019",
+        "item_0119",
+        "item_0167",
+        "item_0295",
+        "item_0247",
+        "item_0002",
+        "item_0142",
+        "item_0007",
+        "item_0126",
+        "item_0043",
+        "item_0163",
+        "item_0193",
+        "item_0052",
+        "item_0176",
+        "item_0288",
+        "item_0166",
+        "item_0104",
+        "item_0070",
+        "item_0286"
+      ]
+    },
+    {
+      "user_id": "user_0111",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 292,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 292,
+        "after_rules": 292,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0302",
+        "item_0220",
+        "item_0145",
+        "item_0080",
+        "item_0215",
+        "item_0032",
+        "item_0053",
+        "item_0155",
+        "item_0175",
+        "item_0230",
+        "item_0132",
+        "item_0166",
+        "item_0105",
+        "item_0004",
+        "item_0013",
+        "item_0211",
+        "item_0104",
+        "item_0227",
+        "item_0193",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0013",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0302",
+        "item_0276",
+        "item_0105",
+        "item_0295",
+        "item_0007",
+        "item_0175",
+        "item_0008",
+        "item_0119",
+        "item_0227",
+        "item_0082",
+        "item_0211",
+        "item_0288",
+        "item_0269",
+        "item_0208",
+        "item_0104",
+        "item_0032",
+        "item_0193",
+        "item_0054",
+        "item_0093",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0077",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 300,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 300,
+        "after_rules": 300,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0175",
+        "item_0001",
+        "item_0145",
+        "item_0196",
+        "item_0070",
+        "item_0007",
+        "item_0057",
+        "item_0050",
+        "item_0047",
+        "item_0176",
+        "item_0080",
+        "item_0215",
+        "item_0211",
+        "item_0043",
+        "item_0111",
+        "item_0005",
+        "item_0269",
+        "item_0281",
+        "item_0262",
+        "item_0227"
+      ]
+    },
+    {
+      "user_id": "user_0028",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 293,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 293,
+        "after_rules": 293,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0005",
+        "item_0011",
+        "item_0046",
+        "item_0007",
+        "item_0019",
+        "item_0154",
+        "item_0070",
+        "item_0142",
+        "item_0167",
+        "item_0109",
+        "item_0049",
+        "item_0215",
+        "item_0013",
+        "item_0240",
+        "item_0211",
+        "item_0057",
+        "item_0288",
+        "item_0104",
+        "item_0281",
+        "item_0193"
+      ]
+    },
+    {
+      "user_id": "user_0023",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 296,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 296,
+        "after_rules": 296,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0005",
+        "item_0046",
+        "item_0007",
+        "item_0154",
+        "item_0070",
+        "item_0142",
+        "item_0109",
+        "item_0019",
+        "item_0049",
+        "item_0084",
+        "item_0167",
+        "item_0211",
+        "item_0057",
+        "item_0236",
+        "item_0124",
+        "item_0288",
+        "item_0240",
+        "item_0104",
+        "item_0193"
+      ]
+    },
+    {
+      "user_id": "user_0005",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0005",
+        "item_0011",
+        "item_0046",
+        "item_0007",
+        "item_0154",
+        "item_0070",
+        "item_0142",
+        "item_0120",
+        "item_0267",
+        "item_0211",
+        "item_0093",
+        "item_0109",
+        "item_0049",
+        "item_0002",
+        "item_0019",
+        "item_0167",
+        "item_0288",
+        "item_0240",
+        "item_0104",
+        "item_0193"
+      ]
+    },
+    {
+      "user_id": "user_0047",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 300,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 300,
+        "after_rules": 300,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0175",
+        "item_0057",
+        "item_0007",
+        "item_0196",
+        "item_0070",
+        "item_0001",
+        "item_0050",
+        "item_0145",
+        "item_0080",
+        "item_0176",
+        "item_0215",
+        "item_0111",
+        "item_0043",
+        "item_0047",
+        "item_0005",
+        "item_0269",
+        "item_0211",
+        "item_0166",
+        "item_0015",
+        "item_0020"
+      ]
+    },
+    {
+      "user_id": "user_0039",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 297,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 297,
+        "after_rules": 297,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0006",
+        "item_0007",
+        "item_0019",
+        "item_0001",
+        "item_0008",
+        "item_0105",
+        "item_0262",
+        "item_0010",
+        "item_0230",
+        "item_0211",
+        "item_0288",
+        "item_0177",
+        "item_0104",
+        "item_0051",
+        "item_0166",
+        "item_0123",
+        "item_0295",
+        "item_0193",
+        "item_0142",
+        "item_0125"
+      ]
+    },
+    {
+      "user_id": "user_0080",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 300,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 300,
+        "after_rules": 300,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0006",
+        "item_0211",
+        "item_0236",
+        "item_0093",
+        "item_0288",
+        "item_0124",
+        "item_0251",
+        "item_0057",
+        "item_0053",
+        "item_0027",
+        "item_0177",
+        "item_0001",
+        "item_0040",
+        "item_0187",
+        "item_0304",
+        "item_0074",
+        "item_0070",
+        "item_0233",
+        "item_0193",
+        "item_0019"
+      ]
+    },
+    {
+      "user_id": "user_0108",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0054",
+        "item_0019",
+        "item_0004",
+        "item_0295",
+        "item_0105",
+        "item_0092",
+        "item_0251",
+        "item_0227",
+        "item_0076",
+        "item_0084",
+        "item_0008",
+        "item_0288",
+        "item_0016",
+        "item_0233",
+        "item_0199",
+        "item_0062",
+        "item_0104",
+        "item_0193",
+        "item_0236"
+      ]
+    },
+    {
+      "user_id": "user_0079",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 301,
+        "popularity": 300,
+        "post_exclusion": 295,
+        "session": 1
+      },
+      "policy_counts": {
+        "total_candidates": 301,
+        "after_exclusions": 295,
+        "after_rules": 295,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0275",
+        "item_0005",
+        "item_0046",
+        "item_0007",
+        "item_0154",
+        "item_0142",
+        "item_0309",
+        "item_0109",
+        "item_0019",
+        "item_0111",
+        "item_0288",
+        "item_0084",
+        "item_0050",
+        "item_0167",
+        "item_0211",
+        "item_0132",
+        "item_0243",
+        "item_0236",
+        "item_0124",
+        "item_0240"
+      ]
+    },
+    {
+      "user_id": "user_0016",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 295,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 295,
+        "after_rules": 295,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0163",
+        "item_0199",
+        "item_0278",
+        "item_0004",
+        "item_0007",
+        "item_0211",
+        "item_0267",
+        "item_0093",
+        "item_0245",
+        "item_0265",
+        "item_0050",
+        "item_0220",
+        "item_0177",
+        "item_0070",
+        "item_0233",
+        "item_0274",
+        "item_0154",
+        "item_0104",
+        "item_0193"
+      ]
+    },
+    {
+      "user_id": "user_0091",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 299,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 299,
+        "after_rules": 299,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0006",
+        "item_0066",
+        "item_0015",
+        "item_0007",
+        "item_0027",
+        "item_0124",
+        "item_0008",
+        "item_0288",
+        "item_0211",
+        "item_0163",
+        "item_0043",
+        "item_0093",
+        "item_0019",
+        "item_0105",
+        "item_0041",
+        "item_0011",
+        "item_0104",
+        "item_0170",
+        "item_0222",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0019",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0057",
+        "item_0082",
+        "item_0089",
+        "item_0136",
+        "item_0132",
+        "item_0007",
+        "item_0247",
+        "item_0160",
+        "item_0163",
+        "item_0220",
+        "item_0046",
+        "item_0288",
+        "item_0211",
+        "item_0281",
+        "item_0193",
+        "item_0019",
+        "item_0142",
+        "item_0013",
+        "item_0240"
+      ]
+    },
+    {
+      "user_id": "user_0033",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 297,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 297,
+        "after_rules": 297,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0145",
+        "item_0142",
+        "item_0046",
+        "item_0013",
+        "item_0092",
+        "item_0076",
+        "item_0006",
+        "item_0035",
+        "item_0185",
+        "item_0211",
+        "item_0057",
+        "item_0193",
+        "item_0176",
+        "item_0240",
+        "item_0070",
+        "item_0288",
+        "item_0281",
+        "item_0304",
+        "item_0164"
+      ]
+    },
+    {
+      "user_id": "user_0006",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0035",
+        "item_0057",
+        "item_0192",
+        "item_0220",
+        "item_0032",
+        "item_0204",
+        "item_0027",
+        "item_0114",
+        "item_0043",
+        "item_0001",
+        "item_0211",
+        "item_0288",
+        "item_0116",
+        "item_0309",
+        "item_0008",
+        "item_0217",
+        "item_0019",
+        "item_0227",
+        "item_0304",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0102",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 300,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 300,
+        "after_rules": 300,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0175",
+        "item_0001",
+        "item_0070",
+        "item_0145",
+        "item_0007",
+        "item_0196",
+        "item_0057",
+        "item_0050",
+        "item_0080",
+        "item_0176",
+        "item_0047",
+        "item_0215",
+        "item_0005",
+        "item_0211",
+        "item_0220",
+        "item_0111",
+        "item_0015",
+        "item_0262",
+        "item_0281",
+        "item_0142"
+      ]
+    },
+    {
+      "user_id": "user_0050",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 299,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 299,
+        "after_rules": 299,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0176",
+        "item_0084",
+        "item_0319",
+        "item_0057",
+        "item_0163",
+        "item_0220",
+        "item_0262",
+        "item_0007",
+        "item_0211",
+        "item_0199",
+        "item_0104",
+        "item_0236",
+        "item_0192",
+        "item_0001",
+        "item_0238",
+        "item_0020",
+        "item_0019",
+        "item_0142",
+        "item_0286",
+        "item_0123"
+      ]
+    },
+    {
+      "user_id": "user_0048",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 296,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 296,
+        "after_rules": 296,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0005",
+        "item_0203",
+        "item_0175",
+        "item_0035",
+        "item_0050",
+        "item_0142",
+        "item_0111",
+        "item_0116",
+        "item_0019",
+        "item_0187",
+        "item_0006",
+        "item_0295",
+        "item_0043",
+        "item_0211",
+        "item_0029",
+        "item_0286",
+        "item_0288",
+        "item_0281",
+        "item_0193"
+      ]
+    },
+    {
+      "user_id": "user_0055",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 296,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 296,
+        "after_rules": 296,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0066",
+        "item_0001",
+        "item_0163",
+        "item_0124",
+        "item_0284",
+        "item_0111",
+        "item_0020",
+        "item_0006",
+        "item_0090",
+        "item_0041",
+        "item_0052",
+        "item_0281",
+        "item_0091",
+        "item_0013",
+        "item_0082",
+        "item_0193",
+        "item_0034",
+        "item_0142",
+        "item_0286",
+        "item_0019"
+      ]
+    },
+    {
+      "user_id": "user_0119",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 295,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 295,
+        "after_rules": 295,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0008",
+        "item_0001",
+        "item_0309",
+        "item_0243",
+        "item_0049",
+        "item_0188",
+        "item_0007",
+        "item_0116",
+        "item_0230",
+        "item_0019",
+        "item_0278",
+        "item_0104",
+        "item_0288",
+        "item_0208",
+        "item_0303",
+        "item_0227",
+        "item_0013",
+        "item_0052",
+        "item_0093",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0082",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 300,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 300,
+        "after_rules": 300,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0175",
+        "item_0001",
+        "item_0070",
+        "item_0196",
+        "item_0007",
+        "item_0057",
+        "item_0145",
+        "item_0050",
+        "item_0005",
+        "item_0080",
+        "item_0047",
+        "item_0176",
+        "item_0215",
+        "item_0043",
+        "item_0111",
+        "item_0211",
+        "item_0269",
+        "item_0015",
+        "item_0281",
+        "item_0142"
+      ]
+    },
+    {
+      "user_id": "user_0007",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 301,
+        "popularity": 300,
+        "post_exclusion": 301,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 301,
+        "after_exclusions": 301,
+        "after_rules": 301,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0175",
+        "item_0037",
+        "item_0001",
+        "item_0070",
+        "item_0145",
+        "item_0057",
+        "item_0196",
+        "item_0007",
+        "item_0050",
+        "item_0005",
+        "item_0080",
+        "item_0215",
+        "item_0176",
+        "item_0047",
+        "item_0211",
+        "item_0111",
+        "item_0269",
+        "item_0281",
+        "item_0015",
+        "item_0142"
+      ]
+    },
+    {
+      "user_id": "user_0075",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0015",
+        "item_0027",
+        "item_0217",
+        "item_0007",
+        "item_0267",
+        "item_0093",
+        "item_0211",
+        "item_0043",
+        "item_0163",
+        "item_0019",
+        "item_0002",
+        "item_0105",
+        "item_0041",
+        "item_0241",
+        "item_0288",
+        "item_0011",
+        "item_0104",
+        "item_0170",
+        "item_0222",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0040",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 299,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 299,
+        "after_rules": 299,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0175",
+        "item_0001",
+        "item_0007",
+        "item_0196",
+        "item_0070",
+        "item_0145",
+        "item_0057",
+        "item_0215",
+        "item_0050",
+        "item_0080",
+        "item_0047",
+        "item_0211",
+        "item_0111",
+        "item_0082",
+        "item_0005",
+        "item_0163",
+        "item_0199",
+        "item_0220",
+        "item_0281",
+        "item_0142"
+      ]
+    },
+    {
+      "user_id": "user_0046",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 289,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 289,
+        "after_rules": 289,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0066",
+        "item_0006",
+        "item_0211",
+        "item_0048",
+        "item_0027",
+        "item_0043",
+        "item_0220",
+        "item_0093",
+        "item_0133",
+        "item_0309",
+        "item_0236",
+        "item_0001",
+        "item_0176",
+        "item_0116",
+        "item_0019",
+        "item_0104",
+        "item_0189",
+        "item_0056",
+        "item_0142",
+        "item_0240"
+      ]
+    },
+    {
+      "user_id": "user_0008",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 297,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 297,
+        "after_rules": 297,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0005",
+        "item_0046",
+        "item_0007",
+        "item_0019",
+        "item_0154",
+        "item_0142",
+        "item_0070",
+        "item_0057",
+        "item_0167",
+        "item_0109",
+        "item_0049",
+        "item_0084",
+        "item_0240",
+        "item_0211",
+        "item_0288",
+        "item_0236",
+        "item_0124",
+        "item_0104",
+        "item_0193"
+      ]
+    },
+    {
+      "user_id": "user_0071",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0035",
+        "item_0251",
+        "item_0066",
+        "item_0288",
+        "item_0204",
+        "item_0020",
+        "item_0192",
+        "item_0034",
+        "item_0006",
+        "item_0217",
+        "item_0211",
+        "item_0116",
+        "item_0001",
+        "item_0115",
+        "item_0111",
+        "item_0019",
+        "item_0309",
+        "item_0075",
+        "item_0054",
+        "item_0129"
+      ]
+    },
+    {
+      "user_id": "user_0034",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0027",
+        "item_0301",
+        "item_0008",
+        "item_0035",
+        "item_0043",
+        "item_0115",
+        "item_0015",
+        "item_0116",
+        "item_0267",
+        "item_0093",
+        "item_0041",
+        "item_0050",
+        "item_0162",
+        "item_0211",
+        "item_0309",
+        "item_0104",
+        "item_0195",
+        "item_0268",
+        "item_0106",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0021",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 292,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 292,
+        "after_rules": 292,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0249",
+        "item_0002",
+        "item_0007",
+        "item_0046",
+        "item_0064",
+        "item_0047",
+        "item_0211",
+        "item_0111",
+        "item_0175",
+        "item_0146",
+        "item_0070",
+        "item_0082",
+        "item_0166",
+        "item_0054",
+        "item_0075",
+        "item_0019",
+        "item_0216",
+        "item_0193",
+        "item_0268"
+      ]
+    },
+    {
+      "user_id": "user_0009",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 297,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 297,
+        "after_rules": 297,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0049",
+        "item_0188",
+        "item_0070",
+        "item_0007",
+        "item_0269",
+        "item_0178",
+        "item_0019",
+        "item_0084",
+        "item_0278",
+        "item_0104",
+        "item_0288",
+        "item_0051",
+        "item_0211",
+        "item_0193",
+        "item_0228",
+        "item_0236",
+        "item_0124",
+        "item_0137",
+        "item_0046",
+        "item_0140"
+      ]
+    },
+    {
+      "user_id": "user_0092",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 301,
+        "popularity": 300,
+        "post_exclusion": 301,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 301,
+        "after_exclusions": 301,
+        "after_rules": 301,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0209",
+        "item_0175",
+        "item_0001",
+        "item_0070",
+        "item_0145",
+        "item_0057",
+        "item_0007",
+        "item_0196",
+        "item_0050",
+        "item_0005",
+        "item_0080",
+        "item_0176",
+        "item_0215",
+        "item_0047",
+        "item_0211",
+        "item_0111",
+        "item_0269",
+        "item_0015",
+        "item_0281",
+        "item_0142"
+      ]
+    },
+    {
+      "user_id": "user_0053",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 299,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 299,
+        "after_rules": 299,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0005",
+        "item_0011",
+        "item_0046",
+        "item_0019",
+        "item_0007",
+        "item_0154",
+        "item_0070",
+        "item_0167",
+        "item_0109",
+        "item_0049",
+        "item_0216",
+        "item_0013",
+        "item_0080",
+        "item_0211",
+        "item_0057",
+        "item_0193",
+        "item_0288",
+        "item_0075",
+        "item_0281",
+        "item_0104"
+      ]
+    },
+    {
+      "user_id": "user_0044",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 298,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 298,
+        "after_rules": 298,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0032",
+        "item_0042",
+        "item_0220",
+        "item_0309",
+        "item_0247",
+        "item_0008",
+        "item_0047",
+        "item_0288",
+        "item_0175",
+        "item_0015",
+        "item_0255",
+        "item_0019",
+        "item_0004",
+        "item_0211",
+        "item_0123",
+        "item_0104",
+        "item_0281",
+        "item_0046",
+        "item_0140"
+      ]
+    },
+    {
+      "user_id": "user_0012",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 300,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 300,
+        "after_rules": 300,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0175",
+        "item_0001",
+        "item_0007",
+        "item_0070",
+        "item_0196",
+        "item_0145",
+        "item_0057",
+        "item_0050",
+        "item_0111",
+        "item_0080",
+        "item_0043",
+        "item_0215",
+        "item_0005",
+        "item_0082",
+        "item_0116",
+        "item_0211",
+        "item_0015",
+        "item_0269",
+        "item_0281",
+        "item_0142"
+      ]
+    },
+    {
+      "user_id": "user_0037",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 300,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 300,
+        "after_rules": 300,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0175",
+        "item_0001",
+        "item_0196",
+        "item_0007",
+        "item_0070",
+        "item_0145",
+        "item_0057",
+        "item_0050",
+        "item_0043",
+        "item_0080",
+        "item_0047",
+        "item_0215",
+        "item_0176",
+        "item_0163",
+        "item_0211",
+        "item_0005",
+        "item_0111",
+        "item_0199",
+        "item_0220",
+        "item_0142"
+      ]
+    },
+    {
+      "user_id": "user_0099",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 293,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 293,
+        "after_rules": 293,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0006",
+        "item_0004",
+        "item_0032",
+        "item_0070",
+        "item_0042",
+        "item_0220",
+        "item_0008",
+        "item_0043",
+        "item_0211",
+        "item_0288",
+        "item_0142",
+        "item_0109",
+        "item_0278",
+        "item_0104",
+        "item_0019",
+        "item_0046",
+        "item_0166",
+        "item_0193",
+        "item_0240"
+      ]
+    },
+    {
+      "user_id": "user_0004",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 294,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 294,
+        "after_rules": 294,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0243",
+        "item_0115",
+        "item_0111",
+        "item_0015",
+        "item_0002",
+        "item_0187",
+        "item_0007",
+        "item_0084",
+        "item_0123",
+        "item_0104",
+        "item_0001",
+        "item_0160",
+        "item_0052",
+        "item_0288",
+        "item_0309",
+        "item_0019",
+        "item_0124",
+        "item_0112",
+        "item_0236",
+        "item_0233"
+      ]
+    },
+    {
+      "user_id": "user_0110",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 299,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 299,
+        "after_rules": 299,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0249",
+        "item_0002",
+        "item_0084",
+        "item_0046",
+        "item_0211",
+        "item_0111",
+        "item_0007",
+        "item_0217",
+        "item_0175",
+        "item_0082",
+        "item_0070",
+        "item_0288",
+        "item_0075",
+        "item_0054",
+        "item_0019",
+        "item_0146",
+        "item_0216",
+        "item_0161",
+        "item_0193"
+      ]
+    },
+    {
+      "user_id": "user_0043",
+      "candidate_sources": {
+        "collaborative": 0,
+        "content": 0,
+        "merged": 300,
+        "popularity": 300,
+        "post_exclusion": 297,
+        "session": 0
+      },
+      "policy_counts": {
+        "total_candidates": 300,
+        "after_exclusions": 297,
+        "after_rules": 297,
+        "final_count": 20
+      },
+      "final_items": [
+        "item_0001",
+        "item_0249",
+        "item_0046",
+        "item_0007",
+        "item_0154",
+        "item_0070",
+        "item_0142",
+        "item_0109",
+        "item_0019",
+        "item_0049",
+        "item_0084",
+        "item_0167",
+        "item_0240",
+        "item_0057",
+        "item_0211",
+        "item_0124",
+        "item_0288",
+        "item_0104",
+        "item_0193",
+        "item_0236"
+      ]
+    }
+  ]
+}

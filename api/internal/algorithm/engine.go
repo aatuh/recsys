@@ -76,8 +76,29 @@ func (e *Engine) Recommend(
 	sourceMetrics["popularity"] = SourceMetric{Count: len(popCandidates), Duration: time.Since(popStart)}
 
 	existing := make(map[string]struct{}, len(popCandidates))
+	maxPopScore := 0.0
 	for _, c := range popCandidates {
 		existing[c.ItemID] = struct{}{}
+		if c.Score > maxPopScore {
+			maxPopScore = c.Score
+		}
+	}
+
+	if req.InjectAnchors && len(req.AnchorItemIDs) > 0 {
+		if maxPopScore <= 0 {
+			maxPopScore = 1.0
+		}
+		for _, anchor := range req.AnchorItemIDs {
+			anchor = strings.TrimSpace(anchor)
+			if anchor == "" {
+				continue
+			}
+			if _, ok := existing[anchor]; ok {
+				continue
+			}
+			popCandidates = append(popCandidates, types.ScoredItem{ItemID: anchor, Score: maxPopScore})
+			existing[anchor] = struct{}{}
+		}
 	}
 
 	collabScores := make(map[string]float64)
@@ -1821,7 +1842,23 @@ func (e *Engine) mergeCandidates(
 		}
 	}
 
-	quotaOther := maxKeep - len(pool)
+	reserveSlots := max(len(pop)/4, 20)
+	if reserveSlots > len(pool) {
+		reserveSlots = len(pool)
+	}
+	reserveBuffer := make([]types.ScoredItem, 0, reserveSlots)
+	for i := 0; i < reserveSlots; i++ {
+		lastIdx := len(pool) - 1
+		if lastIdx < 0 {
+			break
+		}
+		removed := pool[lastIdx]
+		pool = pool[:lastIdx]
+		delete(used, removed.ItemID)
+		reserveBuffer = append(reserveBuffer, removed)
+	}
+
+	quotaOther := reserveSlots
 	appendFromMap := func(src map[string]float64) {
 		if quotaOther <= 0 {
 			return
@@ -1857,6 +1894,10 @@ func (e *Engine) mergeCandidates(
 	appendFromMap(collab)
 	appendFromMap(content)
 	appendFromMap(session)
+
+	for _, cand := range reserveBuffer {
+		appendIfNew(cand.ItemID, cand.Score)
+	}
 
 	return pool
 }

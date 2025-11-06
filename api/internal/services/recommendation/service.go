@@ -58,9 +58,13 @@ type Result struct {
 
 // Service orchestrates recommendation requests.
 type Service struct {
-	store         Store
-	rules         *rules.Manager
-	blendResolver BlendConfigResolver
+	store             Store
+	rules             *rules.Manager
+	blendResolver     BlendConfigResolver
+	newUserBlendAlpha *float64
+	newUserBlendBeta  *float64
+	newUserBlendGamma *float64
+	newUserMMRLambda  *float64
 }
 
 // New constructs a recommendation service.
@@ -71,6 +75,15 @@ func New(store Store, rulesManager *rules.Manager) *Service {
 // WithBlendResolver configures a resolver for runtime blend overrides.
 func (s *Service) WithBlendResolver(resolver BlendConfigResolver) *Service {
 	s.blendResolver = resolver
+	return s
+}
+
+// WithNewUserOverrides configures blend/MMR overrides for new or sparse-history users.
+func (s *Service) WithNewUserOverrides(alpha, beta, gamma, mmr *float64) *Service {
+	s.newUserBlendAlpha = alpha
+	s.newUserBlendBeta = beta
+	s.newUserBlendGamma = gamma
+	s.newUserMMRLambda = mmr
 	return s
 }
 
@@ -107,12 +120,18 @@ func (s *Service) Recommend(
 	blendOverrides(&cfg, s.resolveBlend(ctx, algoReq.Namespace))
 	applyOverrides(&cfg, req.Overrides)
 
-	isNewSegment := strings.EqualFold(selection.SegmentID, "new_users")
-	if !isNewSegment && selection.UserTraits != nil {
+	segmentHint := strings.TrimSpace(selection.SegmentID)
+	if segmentHint == "" && selection.UserTraits != nil {
 		if seg, ok := selection.UserTraits["segment"].(string); ok {
-			isNewSegment = strings.EqualFold(seg, "new_users")
+			segmentHint = seg
 		}
 	}
+	isNewSegment := strings.EqualFold(segmentHint, "new_users")
+	starterSelection := selection
+	if starterSelection.SegmentID == "" && segmentHint != "" {
+		starterSelection.SegmentID = segmentHint
+	}
+
 	if isNewSegment {
 		cfg.RuleExcludeEvents = false
 		if cfg.PopularityFanout < 1000 {
@@ -130,21 +149,80 @@ func (s *Service) Recommend(
 
 	recentEventCount := len(recentItems)
 	recentCountKnown := recentItems != nil
+	minEvents := cfg.ProfileMinEventsForBoost
+	if minEvents < 0 {
+		minEvents = 0
+	}
+	isSparseHistory := false
+	if !recentCountKnown {
+		isSparseHistory = true
+	} else if minEvents == 0 {
+		isSparseHistory = recentEventCount == 0
+	} else {
+		isSparseHistory = recentEventCount < minEvents
+	}
+
+	if !isNewSegment && isSparseHistory {
+		if cfg.PopularityFanout < 1000 {
+			cfg.PopularityFanout = 1000
+		}
+	}
+
+	if isNewSegment || isSparseHistory {
+		if weight := s.newUserBlendAlpha; weight != nil {
+			cfg.BlendAlpha = *weight
+		}
+		if weight := s.newUserBlendBeta; weight != nil {
+			cfg.BlendBeta = *weight
+		}
+		if weight := s.newUserBlendGamma; weight != nil {
+			cfg.BlendGamma = *weight
+		}
+		if lambda := s.newUserMMRLambda; lambda != nil {
+			cfg.MMRLambda = *lambda
+		}
+	}
+
 	effectiveEventCount := recentEventCount
 	if !recentCountKnown {
 		effectiveEventCount = -1
 	}
-	if isNewSegment && cfg.ProfileMinEventsForBoost > 0 && effectiveEventCount >= cfg.ProfileMinEventsForBoost {
+	if (isNewSegment || isSparseHistory) && cfg.ProfileMinEventsForBoost > 0 && effectiveEventCount >= cfg.ProfileMinEventsForBoost {
 		effectiveEventCount = cfg.ProfileMinEventsForBoost - 1
 		if effectiveEventCount < 0 {
 			effectiveEventCount = 0
 		}
 	}
 	algoReq.RecentEventCount = effectiveEventCount
+	algoReq.InjectAnchors = isNewSegment || isSparseHistory
+	if len(recentItems) > 0 {
+		var anchors []string
+		if s.store != nil {
+			if avail, err := s.store.ListItemsAvailability(ctx, algoReq.OrgID, algoReq.Namespace, recentItems); err == nil {
+				anchors = filterAnchorsByAvailability(recentItems, avail)
+			} else {
+				anchors = nil
+			}
+		} else {
+			anchors = filterAnchorsByAvailability(recentItems, nil)
+		}
+		if len(anchors) > 0 {
+			algoReq.AnchorItemIDs = anchors
+		}
+	}
 
-	if starter := s.buildStarterProfile(ctx, cfg, algoReq, selection, recentEventCount, recentCountKnown, recentItems); len(starter) > 0 {
-		algoReq.StarterProfile = starter
-		algoReq.StarterBlendWeight = cfg.ProfileStarterBlendWeight
+	starterProfile, starterWeight := s.buildStarterProfile(
+		ctx,
+		cfg,
+		algoReq,
+		starterSelection,
+		recentEventCount,
+		recentCountKnown,
+		recentItems,
+	)
+	if len(starterProfile) > 0 {
+		algoReq.StarterProfile = starterProfile
+		algoReq.StarterBlendWeight = starterWeight
 	}
 
 	engine := algorithm.NewEngine(cfg, s.store, s.rules)
@@ -209,6 +287,34 @@ func extractSurface(ctx map[string]any) string {
 		}
 	}
 	return ""
+}
+
+func filterAnchorsByAvailability(candidates []string, availability map[string]bool) []string {
+	if len(candidates) == 0 {
+		return nil
+	}
+	filtered := make([]string, 0, len(candidates))
+	seen := make(map[string]struct{}, len(candidates))
+	for _, id := range candidates {
+		trimmed := strings.TrimSpace(id)
+		if trimmed == "" {
+			continue
+		}
+		if _, ok := seen[trimmed]; ok {
+			continue
+		}
+		if availability != nil {
+			if ok, present := availability[trimmed]; !present || !ok {
+				continue
+			}
+		}
+		seen[trimmed] = struct{}{}
+		filtered = append(filtered, trimmed)
+	}
+	if len(filtered) == 0 {
+		return nil
+	}
+	return filtered
 }
 
 func parseConstraints(src *spectypes.RecommendConstraints) (*types.PopConstraints, error) {

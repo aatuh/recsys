@@ -37,6 +37,7 @@ type RecommendationHandler struct {
 	logger        *zap.Logger
 	defaultOrg    uuid.UUID
 	policyMetrics *policymetrics.Metrics
+	coverage      *coverageTracker
 }
 
 // RecommendationPresetsResponse describes preset configuration payloads.
@@ -62,7 +63,7 @@ func NewRecommendationHandler(service RecommendationService, st *store.Store, cf
 	if logger == nil {
 		logger = zap.NewNop()
 	}
-	return &RecommendationHandler{
+	handler := &RecommendationHandler{
 		service:       service,
 		store:         st,
 		config:        cfg,
@@ -71,6 +72,10 @@ func NewRecommendationHandler(service RecommendationService, st *store.Store, cf
 		defaultOrg:    defaultOrg,
 		policyMetrics: policyMetrics,
 	}
+	if st != nil {
+		handler.coverage = newCoverageTracker(st, cfg.CoverageCacheTTL, cfg.CoverageLongTailHintThreshold)
+	}
+	return handler
 }
 
 // Recommend godoc
@@ -182,6 +187,27 @@ func (h *RecommendationHandler) Recommend(w http.ResponseWriter, r *http.Request
 				zap.String("type", "pin"),
 				zap.Strings("rule_ids", collectRuleIDsByAction(result.TraceData.RuleMatches, types.RuleActionPin)),
 			)
+		}
+	}
+
+	if h.coverage != nil && h.policyMetrics != nil && len(result.Response.Items) > 0 {
+		itemIDs := make([]string, 0, len(result.Response.Items))
+		for _, item := range result.Response.Items {
+			if trimmed := strings.TrimSpace(item.ItemID); trimmed != "" {
+				itemIDs = append(itemIDs, trimmed)
+			}
+		}
+		if len(itemIDs) > 0 {
+			snapshot, err := h.coverage.snapshot(r.Context(), orgID, result.AlgoRequest.Namespace, itemIDs)
+			if err != nil {
+				h.logger.Warn("coverage_snapshot_failed",
+					zap.String("namespace", result.AlgoRequest.Namespace),
+					zap.String("surface", result.AlgoRequest.Surface),
+					zap.Error(err),
+				)
+			} else {
+				h.policyMetrics.ObserveCoverage(result.AlgoRequest, itemIDs, snapshot.LongTailFlags, snapshot.TotalCatalog)
+			}
 		}
 	}
 

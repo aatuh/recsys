@@ -52,10 +52,10 @@ Set these in your `.env` before starting the service. Invalid values are rejecte
 ### Windows & decay
 - `POPULARITY_HALFLIFE_DAYS` (float > 0) — recency vs memory for popularity (default 4).
 - `COVIS_WINDOW_DAYS` (float > 0) — event lookback window for co-visitation (default 28).
-- `POPULARITY_FANOUT` (int > 0) — how many popularity candidates to prefetch (default 500).
+- `POPULARITY_FANOUT` (int > 0) — how many popularity candidates to prefetch (default 1400 to sustain ≥60% catalog coverage).
 
 ### Diversity & business constraints
-- `MMR_LAMBDA` ([0,1]) — 1 = pure relevance, 0 = pure diversity (MMR off if 0).
+- `MMR_LAMBDA` ([0,1]) — 1 = pure relevance, 0 = pure diversity (MMR off if 0). Coverage-tuned default is 0.12.
 - `BRAND_CAP`, `CATEGORY_CAP` (int ≥ 0) — limit repeats per brand/category in the final list.
 - `BRAND_TAG_PREFIXES`, `CATEGORY_TAG_PREFIXES` (csv) — how the engine detects brand/category from `tags` (e.g., `brand`, `category,cat`).
 - `MMR_PRESETS` (`surface=value` pairs) — curated `mmr_lambda` presets per surface, served via `GET /v1/admin/recommendation/presets` for admin tooling.
@@ -66,12 +66,16 @@ Set these in your `.env` before starting the service. Invalid values are rejecte
 - `PURCHASED_WINDOW_DAYS` (float > 0) — lookback window for exclude‑purchased.
 - `PROFILE_WINDOW_DAYS` (float > 0 or -1) — how far back to build user profiles; -1 = all time.
 - `PROFILE_TOP_N` (int > 0) — number of top profile features (e.g., tags) to keep.
-- `PROFILE_BOOST` (float ≥ 0) — strength of profile-based boosting; 0 disables personalization (default 0.7 for balanced lift).
+- `PROFILE_BOOST` (float ≥ 0) — strength of profile-based boosting; 0 disables personalization (default 0.15 with cold-start blending enabled).
 - `PROFILE_MIN_EVENTS_FOR_BOOST` (int ≥ 0) — minimum recent interactions required before the full profile boost applies. If the user has fewer events, we attenuate the boost.
 - `PROFILE_COLD_START_MULTIPLIER` (0–1) — attenuation factor used when the event count is below the minimum. For example, `0.5` halves the boost for sparsely observed users while still nudging cold-start results.
 
 ### Blending defaults
-- `BLEND_ALPHA`, `BLEND_BETA`, `BLEND_GAMMA` — default weights for popularity/co-vis/embedding. Current recommended defaults: 0.25 / 0.35 / 0.40 (front-load embeddings for novel items).
+- `BLEND_ALPHA`, `BLEND_BETA`, `BLEND_GAMMA` — default weights for popularity/co-vis/embedding. Current recommended defaults: 0.10 / 0.35 / 0.55 (lean harder on ALS to expose long-tail items).
+
+### Coverage guardrail configuration
+- `COVERAGE_CACHE_TTL` (Go duration) — refresh interval for the cached catalog metadata used by the coverage tracker (default 10m).
+- `COVERAGE_LONG_TAIL_HINT_THRESHOLD` (float in [0,1]) — values at or below this `props.popularity_hint` are considered long-tail (default 0.01). Tune to match your business definition before wiring alerts.
 
 ### Bandit experiment controls
 - `BANDIT_ALGO` — online policy selector (`thompson` or `ucb1`).

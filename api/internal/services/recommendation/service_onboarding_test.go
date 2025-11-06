@@ -24,6 +24,14 @@ func (s onboardingStoreStub) ListItemsTags(ctx context.Context, orgID uuid.UUID,
 	return map[string]types.ItemTags{}, nil
 }
 
+func (s onboardingStoreStub) ListItemsAvailability(ctx context.Context, orgID uuid.UUID, ns string, itemIDs []string) (map[string]bool, error) {
+	out := make(map[string]bool, len(itemIDs))
+	for _, id := range itemIDs {
+		out[id] = true
+	}
+	return out, nil
+}
+
 func (s onboardingStoreStub) ListUserEventsSince(ctx context.Context, orgID uuid.UUID, ns string, userID string, since time.Time, eventTypes []int16) ([]string, error) {
 	return nil, nil
 }
@@ -63,7 +71,12 @@ func (s onboardingStoreStub) BuildUserTagProfile(ctx context.Context, orgID uuid
 
 func TestBuildStarterProfileForNewUser(t *testing.T) {
 	svc := &Service{store: onboardingStoreStub{}}
-	cfg := algorithm.Config{ProfileTopNTags: 8, ProfileWindowDays: 30, ProfileMinEventsForBoost: 3}
+	cfg := algorithm.Config{
+		ProfileTopNTags:           8,
+		ProfileWindowDays:         30,
+		ProfileMinEventsForBoost:  3,
+		ProfileStarterBlendWeight: 0.6,
+	}
 	req := algorithm.Request{
 		OrgID:     uuid.New(),
 		UserID:    "newbie",
@@ -71,7 +84,7 @@ func TestBuildStarterProfileForNewUser(t *testing.T) {
 	}
 	selection := SegmentSelection{UserTraits: map[string]any{"segment": "new_users"}}
 
-	starter := svc.buildStarterProfile(context.Background(), cfg, req, selection, 0, true, nil)
+	starter, weight := svc.buildStarterProfile(context.Background(), cfg, req, selection, 0, true, nil)
 	if len(starter) == 0 {
 		t.Fatalf("expected starter profile for new user")
 	}
@@ -82,6 +95,9 @@ func TestBuildStarterProfileForNewUser(t *testing.T) {
 	if math.Abs(sum-1.0) > 1e-6 {
 		t.Fatalf("expected normalized weights, got sum=%f", sum)
 	}
+	if math.Abs(weight-1.0) > 1e-6 {
+		t.Fatalf("expected starter blend weight to be 1 for zero history, got %f", weight)
+	}
 	if _, ok := starter["electronics"]; !ok {
 		t.Fatalf("expected electronics tag in starter profile")
 	}
@@ -89,7 +105,12 @@ func TestBuildStarterProfileForNewUser(t *testing.T) {
 
 func TestBuildStarterProfileSkipsWhenHistoryForNonNewSegment(t *testing.T) {
 	svc := &Service{store: onboardingStoreStub{recent: []string{"item_a"}}}
-	cfg := algorithm.Config{ProfileTopNTags: 8, ProfileWindowDays: 30, ProfileMinEventsForBoost: 3}
+	cfg := algorithm.Config{
+		ProfileTopNTags:           8,
+		ProfileWindowDays:         30,
+		ProfileMinEventsForBoost:  3,
+		ProfileStarterBlendWeight: 0.6,
+	}
 	req := algorithm.Request{
 		OrgID:     uuid.New(),
 		UserID:    "existing",
@@ -97,15 +118,20 @@ func TestBuildStarterProfileSkipsWhenHistoryForNonNewSegment(t *testing.T) {
 	}
 	selection := SegmentSelection{UserTraits: map[string]any{"segment": "trend_seekers"}}
 
-	starter := svc.buildStarterProfile(context.Background(), cfg, req, selection, 4, true, []string{"item_a"})
-	if starter != nil {
+	starter, weight := svc.buildStarterProfile(context.Background(), cfg, req, selection, 4, true, []string{"item_a"})
+	if starter != nil || weight != 0 {
 		t.Fatalf("expected no starter profile when history exists for non-new segment")
 	}
 }
 
-func TestStarterProfileUnknownSegment(t *testing.T) {
+func TestStarterProfileFallbackToDefaultSegment(t *testing.T) {
 	svc := &Service{store: onboardingStoreStub{}}
-	cfg := algorithm.Config{ProfileTopNTags: 8, ProfileWindowDays: 30, ProfileMinEventsForBoost: 3}
+	cfg := algorithm.Config{
+		ProfileTopNTags:           8,
+		ProfileWindowDays:         30,
+		ProfileMinEventsForBoost:  3,
+		ProfileStarterBlendWeight: 0.6,
+	}
 	req := algorithm.Request{
 		OrgID:     uuid.New(),
 		UserID:    "newbie",
@@ -113,15 +139,23 @@ func TestStarterProfileUnknownSegment(t *testing.T) {
 	}
 	selection := SegmentSelection{UserTraits: map[string]any{"segment": "unknown"}}
 
-	starter := svc.buildStarterProfile(context.Background(), cfg, req, selection, 0, true, nil)
-	if starter != nil {
-		t.Fatalf("expected nil starter profile for unknown segment")
+	starter, weight := svc.buildStarterProfile(context.Background(), cfg, req, selection, 0, true, nil)
+	if len(starter) == 0 {
+		t.Fatalf("expected fallback starter profile for unknown segment")
+	}
+	if math.Abs(weight-1.0) > 1e-6 {
+		t.Fatalf("expected full starter weight for unknown segment with zero history, got %f", weight)
 	}
 }
 
 func TestBuildStarterProfileForNewUserEvenWithHistory(t *testing.T) {
 	svc := &Service{store: onboardingStoreStub{recent: []string{"item_a", "item_b", "item_c", "item_d", "item_e"}}}
-	cfg := algorithm.Config{ProfileTopNTags: 8, ProfileWindowDays: 30, ProfileMinEventsForBoost: 3}
+	cfg := algorithm.Config{
+		ProfileTopNTags:           8,
+		ProfileWindowDays:         30,
+		ProfileMinEventsForBoost:  3,
+		ProfileStarterBlendWeight: 0.6,
+	}
 	req := algorithm.Request{
 		OrgID:     uuid.New(),
 		UserID:    "newbie",
@@ -133,8 +167,34 @@ func TestBuildStarterProfileForNewUserEvenWithHistory(t *testing.T) {
 		t.Fatalf("expected preset for new_users")
 	}
 
-	starter := svc.buildStarterProfile(context.Background(), cfg, req, selection, 5, true, []string{"item_a", "item_b"})
+	starter, weight := svc.buildStarterProfile(context.Background(), cfg, req, selection, 5, true, []string{"item_a", "item_b"})
 	if len(starter) == 0 {
 		t.Fatalf("expected starter profile for new user despite recent history")
+	}
+	if weight <= 0 {
+		t.Fatalf("expected positive starter blend weight when history exists, got %f", weight)
+	}
+}
+
+func TestBuildStarterProfileForSparseHistoryWithoutSegment(t *testing.T) {
+	svc := &Service{store: onboardingStoreStub{}}
+	cfg := algorithm.Config{
+		ProfileTopNTags:           8,
+		ProfileWindowDays:         30,
+		ProfileMinEventsForBoost:  3,
+		ProfileStarterBlendWeight: 0.6,
+	}
+	req := algorithm.Request{
+		OrgID:     uuid.New(),
+		UserID:    "sparse",
+		Namespace: "default",
+	}
+
+	starter, weight := svc.buildStarterProfile(context.Background(), cfg, req, SegmentSelection{}, 1, true, nil)
+	if len(starter) == 0 {
+		t.Fatalf("expected starter profile for sparse history user without explicit segment")
+	}
+	if weight <= cfg.ProfileStarterBlendWeight {
+		t.Fatalf("expected starter weight boosted above base for sparse history, got %f", weight)
 	}
 }

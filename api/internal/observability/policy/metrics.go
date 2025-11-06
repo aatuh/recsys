@@ -19,6 +19,9 @@ type Metrics struct {
 	ruleExposure    *prometheus.CounterVec
 	responseItems   *prometheus.CounterVec
 	ruleZeroEffect  *prometheus.CounterVec
+	itemExposure    *prometheus.CounterVec
+	coverageBucket  *prometheus.CounterVec
+	catalogSize     *prometheus.GaugeVec
 }
 
 // NewMetrics registers policy metrics with the provided Prometheus registerer.
@@ -72,7 +75,22 @@ func NewMetrics(reg prometheus.Registerer) *Metrics {
 		Help: "Rules that matched but produced zero exposure",
 	}, []string{"namespace", "surface", "action"})
 
-	reg.MustRegister(includeRequests, includeDropped, includeLeak, explicitHits, recentHits, ruleActions, ruleExposure, responseItems, ruleZeroEffect)
+	itemExposure := prometheus.NewCounterVec(prometheus.CounterOpts{
+		Name: "policy_item_served_total",
+		Help: "Recommendation items served to clients by namespace, surface, and item_id",
+	}, []string{"namespace", "surface", "item_id"})
+
+	coverageBucket := prometheus.NewCounterVec(prometheus.CounterOpts{
+		Name: "policy_coverage_bucket_total",
+		Help: "Recommendation items served grouped by coverage bucket",
+	}, []string{"namespace", "surface", "bucket"})
+
+	catalogSize := prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "policy_catalog_items_total",
+		Help: "Available catalog size per namespace for coverage guardrails",
+	}, []string{"namespace"})
+
+	reg.MustRegister(includeRequests, includeDropped, includeLeak, explicitHits, recentHits, ruleActions, ruleExposure, responseItems, ruleZeroEffect, itemExposure, coverageBucket, catalogSize)
 
 	return &Metrics{
 		includeRequests: includeRequests,
@@ -84,6 +102,9 @@ func NewMetrics(reg prometheus.Registerer) *Metrics {
 		ruleExposure:    ruleExposure,
 		responseItems:   responseItems,
 		ruleZeroEffect:  ruleZeroEffect,
+		itemExposure:    itemExposure,
+		coverageBucket:  coverageBucket,
+		catalogSize:     catalogSize,
 	}
 }
 
@@ -137,6 +158,37 @@ func (m *Metrics) Observe(req algorithm.Request, summary *algorithm.PolicySummar
 	}
 	if summary.RulePinCount > 0 && summary.RulePinExposure == 0 {
 		m.ruleZeroEffect.WithLabelValues(ns, surface, "pin").Inc()
+	}
+}
+
+// ObserveCoverage records item-level coverage telemetry for guardrails.
+func (m *Metrics) ObserveCoverage(req algorithm.Request, itemIDs []string, longTail []bool, catalogTotal int) {
+	if m == nil {
+		return
+	}
+	ns := normalizeLabel(req.Namespace, "default")
+	surface := normalizeLabel(req.Surface, "default")
+
+	if catalogTotal >= 0 {
+		m.catalogSize.WithLabelValues(ns).Set(float64(catalogTotal))
+	}
+
+	totalItems := len(itemIDs)
+	for idx, id := range itemIDs {
+		if id == "" {
+			continue
+		}
+		m.itemExposure.WithLabelValues(ns, surface, id).Inc()
+		m.coverageBucket.WithLabelValues(ns, surface, "all").Inc()
+		if idx < len(longTail) && longTail[idx] {
+			m.coverageBucket.WithLabelValues(ns, surface, "long_tail").Inc()
+		}
+	}
+
+	// Ensure the bucket metric advances even when no items are returned.
+	if totalItems == 0 {
+		m.coverageBucket.WithLabelValues(ns, surface, "all").Add(0)
+		m.coverageBucket.WithLabelValues(ns, surface, "long_tail").Add(0)
 	}
 }
 

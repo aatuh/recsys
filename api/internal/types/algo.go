@@ -54,6 +54,14 @@ type RecAlgoStore interface {
 		itemIDs []string,
 	) (map[string]ItemTags, error)
 
+	// ListItemsAvailability returns item availability flags for IDs.
+	ListItemsAvailability(
+		ctx context.Context,
+		orgID uuid.UUID,
+		ns string,
+		itemIDs []string,
+	) (map[string]bool, error)
+
 	// ListUserEventsSince returns distinct item IDs for the user's events
 	// on/after the timestamp filtered by event types. Order is not guaranteed.
 	ListUserEventsSince(

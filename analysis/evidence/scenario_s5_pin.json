@@ -4,77 +4,36 @@
     "items": [
       {
         "item_id": "item_0005",
-        "score": 0.3700332186036522,
+        "score": 0.4521044415570762,
         "reasons": [
           "recent_popularity",
           "co_visitation",
           "diversity",
           "personalization",
-          "rule.pin[8c896ec1-a431-47f9-b115-88f162498f5f]"
+          "rule.pin[85bfe7b4-844e-4737-83df-5396e2913667]"
         ]
       },
       {
-        "item_id": "item_0209",
-        "score": 0.8719054981897169,
+        "item_id": "item_0175",
+        "score": 0.807241566322389,
         "reasons": [
           "recent_popularity",
-          "content_similarity",
-          "co_visitation",
-          "embedding_similarity",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0101",
-        "score": 0.7518253112755707,
-        "reasons": [
-          "recent_popularity",
-          "content_similarity",
-          "co_visitation",
-          "embedding_similarity",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0003",
-        "score": 0.6738039050615622,
-        "reasons": [
-          "recent_popularity",
-          "content_similarity",
-          "co_visitation",
-          "embedding_similarity",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0275",
-        "score": 0.6117076384657963,
-        "reasons": [
-          "recent_popularity",
-          "content_similarity",
-          "embedding_similarity",
           "diversity",
           "personalization"
         ]
       },
       {
         "item_id": "item_0037",
-        "score": 0.6002446546789425,
+        "score": 0.8037480605285667,
         "reasons": [
           "recent_popularity",
-          "content_similarity",
-          "co_visitation",
-          "embedding_similarity",
           "diversity",
           "personalization"
         ]
       },
       {
         "item_id": "item_0001",
-        "score": 0.4772379263232626,
+        "score": 0.7142492772803402,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -83,17 +42,8 @@
         ]
       },
       {
-        "item_id": "item_0142",
-        "score": 0.13687857760245464,
-        "reasons": [
-          "recent_popularity",
-          "co_visitation",
-          "diversity"
-        ]
-      },
-      {
-        "item_id": "item_0092",
-        "score": 0.11950785601157661,
+        "item_id": "item_0145",
+        "score": 0.5531292317472907,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -103,11 +53,49 @@
       },
       {
         "item_id": "item_0057",
-        "score": 0.09253750766963473,
+        "score": 0.5371404051065907,
         "reasons": [
           "recent_popularity",
           "co_visitation",
           "diversity"
+        ]
+      },
+      {
+        "item_id": "item_0196",
+        "score": 0.5328651818341399,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0007",
+        "score": 0.5101032212015992,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0080",
+        "score": 0.4221428097946139,
+        "reasons": [
+          "recent_popularity",
+          "diversity"
+        ]
+      },
+      {
+        "item_id": "item_0176",
+        "score": 0.399652762318203,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
         ]
       }
     ],
@@ -116,53 +104,81 @@
         "candidate_sources": {
           "collaborative": {
             "count": 0,
-            "duration_ms": 0.322757
+            "duration_ms": 0.205022
           },
           "content": {
-            "count": 20,
-            "duration_ms": 1.442678
+            "count": 0,
+            "duration_ms": 1.054664
           },
           "merged": {
-            "count": 320,
-            "duration_ms": 0.016381
+            "count": 301,
+            "duration_ms": 0.022163
           },
           "popularity": {
             "count": 300,
-            "duration_ms": 11.245427
+            "duration_ms": 27.525997
           },
           "post_exclusion": {
-            "count": 320,
-            "duration_ms": 1.375039
+            "count": 301,
+            "duration_ms": 1.301897
           },
           "session": {
             "count": 0,
-            "duration_ms": 0.175265
+            "duration_ms": 0.203248
           }
         },
         "policy": {
-          "total_candidates": 320,
+          "total_candidates": 301,
           "explicit_exclude_hits": 0,
           "recent_event_exclude_hits": 0,
-          "after_exclusions": 320,
+          "after_exclusions": 301,
           "constraint_filtered_count": 0,
-          "after_constraint_filters": 320,
+          "after_constraint_filters": 301,
           "rule_block_count": 0,
           "rule_pin_count": 1,
           "rule_boost_count": 0,
           "rule_boost_injected": 0,
           "rule_boost_exposure": 0,
           "rule_pin_exposure": 1,
-          "after_rules": 319,
+          "after_rules": 300,
           "final_count": 10,
           "constraint_leak_count": 0
-        }
+        },
+        "recent_event_count": 4,
+        "starter_profile": {
+          "acmetech": 0.025,
+          "apparel": 0.04791666666666668,
+          "backorder": 0.025,
+          "beauty": 0.037500000000000006,
+          "books": 0.07291666666666669,
+          "brightliving": 0.03125000000000001,
+          "decor": 0.04791666666666668,
+          "electronics": 0.04583333333333334,
+          "fashion": 0.04791666666666668,
+          "gadgets": 0.04583333333333334,
+          "high_margin": 0.025,
+          "home": 0.04791666666666668,
+          "leafpress": 0.025,
+          "literature": 0.07291666666666669,
+          "living": 0.04791666666666668,
+          "midnightlane": 0.03125000000000001,
+          "new_arrival": 0.025,
+          "quanta": 0.03125000000000001,
+          "reading": 0.07291666666666669,
+          "skincare": 0.037500000000000006,
+          "smart": 0.04583333333333334,
+          "style": 0.04791666666666668,
+          "velvetsky": 0.025,
+          "wellness": 0.037500000000000006
+        },
+        "starter_profile_weight": 0.25
       }
     }
   },
   "target_item": "item_0005",
   "rank": 0,
   "rule": {
-    "rule_id": "8c896ec1-a431-47f9-b115-88f162498f5f",
+    "rule_id": "85bfe7b4-844e-4737-83df-5396e2913667",
     "namespace": "default",
     "surface": "home",
     "name": "scenario_s5_pin_item",
@@ -175,7 +191,7 @@
     "max_pins": 1,
     "priority": 200,
     "enabled": true,
-    "created_at": "2025-11-04T07:14:35Z",
-    "updated_at": "2025-11-04T07:14:35Z"
+    "created_at": "2025-11-06T16:13:38Z",
+    "updated_at": "2025-11-06T16:13:38Z"
   }
 }

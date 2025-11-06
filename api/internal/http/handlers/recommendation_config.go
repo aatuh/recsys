@@ -2,35 +2,42 @@ package handlers
 
 import (
 	"strings"
+	"time"
 
 	"recsys/internal/algorithm"
 )
 
 // RecommendationConfig captures the base algorithm tunables used for ranking.
 type RecommendationConfig struct {
-	HalfLifeDays               float64
-	CoVisWindowDays            float64
-	PopularityFanout           int
-	MMRLambda                  float64
-	BrandCap                   int
-	CategoryCap                int
-	RuleExcludeEvents          bool
-	ExcludeEventTypes          []int16
-	BrandTagPrefixes           []string
-	CategoryTagPrefixes        []string
-	PurchasedWindowDays        float64
-	ProfileWindowDays          float64
-	ProfileBoost               float64
-	ProfileTopNTags            int
-	ProfileMinEventsForBoost   int
-	ProfileColdStartMultiplier float64
-	ProfileStarterBlendWeight  float64
-	MMRPresets                 map[string]float64
-	BlendAlpha                 float64
-	BlendBeta                  float64
-	BlendGamma                 float64
-	BanditExperiment           BanditExperimentConfig
-	RulesEnabled               bool
+	HalfLifeDays                  float64
+	CoVisWindowDays               float64
+	PopularityFanout              int
+	MMRLambda                     float64
+	BrandCap                      int
+	CategoryCap                   int
+	RuleExcludeEvents             bool
+	ExcludeEventTypes             []int16
+	BrandTagPrefixes              []string
+	CategoryTagPrefixes           []string
+	PurchasedWindowDays           float64
+	ProfileWindowDays             float64
+	ProfileBoost                  float64
+	ProfileTopNTags               int
+	ProfileMinEventsForBoost      int
+	ProfileColdStartMultiplier    float64
+	ProfileStarterBlendWeight     float64
+	MMRPresets                    map[string]float64
+	BlendAlpha                    float64
+	BlendBeta                     float64
+	BlendGamma                    float64
+	NewUserBlendAlpha             *float64
+	NewUserBlendBeta              *float64
+	NewUserBlendGamma             *float64
+	NewUserMMRLambda              *float64
+	BanditExperiment              BanditExperimentConfig
+	RulesEnabled                  bool
+	CoverageCacheTTL              time.Duration
+	CoverageLongTailHintThreshold float64
 }
 
 // BanditExperimentConfig controls exploration holdouts for experiments.

@@ -81,24 +81,30 @@ type RateLimitConfig struct {
 }
 
 type RecommendationConfig struct {
-	DefaultOrgID        uuid.UUID
-	HalfLifeDays        float64
-	CoVisWindowDays     float64
-	PopularityFanout    int
-	MMRLambda           float64
-	BrandCap            int
-	CategoryCap         int
-	RuleExcludeEvents   bool
-	ExcludeEventTypes   []int16
-	BrandTagPrefixes    []string
-	CategoryTagPrefixes []string
-	PurchasedWindowDays float64
-	Profile             ProfileConfig
-	Blend               BlendConfig
-	BlendOverrides      map[string]BlendConfig
-	MMRPresets          map[string]float64
-	BanditAlgo          types.Algorithm
-	BanditExperiment    BanditExperimentConfig
+	DefaultOrgID                  uuid.UUID
+	HalfLifeDays                  float64
+	CoVisWindowDays               float64
+	PopularityFanout              int
+	MMRLambda                     float64
+	BrandCap                      int
+	CategoryCap                   int
+	RuleExcludeEvents             bool
+	ExcludeEventTypes             []int16
+	BrandTagPrefixes              []string
+	CategoryTagPrefixes           []string
+	PurchasedWindowDays           float64
+	Profile                       ProfileConfig
+	Blend                         BlendConfig
+	BlendOverrides                map[string]BlendConfig
+	MMRPresets                    map[string]float64
+	NewUserBlendAlpha             *float64
+	NewUserBlendBeta              *float64
+	NewUserBlendGamma             *float64
+	NewUserMMRLambda              *float64
+	BanditAlgo                    types.Algorithm
+	BanditExperiment              BanditExperimentConfig
+	CoverageCacheTTL              time.Duration
+	CoverageLongTailHintThreshold float64
 }
 
 type ProfileConfig struct {
@@ -468,6 +474,41 @@ func Load(ctx context.Context, src Source) (Config, error) {
 		Alpha: l.nonNegativeFloat("BLEND_ALPHA"),
 		Beta:  l.nonNegativeFloat("BLEND_BETA"),
 		Gamma: l.nonNegativeFloat("BLEND_GAMMA"),
+	}
+	cfg.Recommendation.CoverageCacheTTL = l.optionalDuration("COVERAGE_CACHE_TTL", 10*time.Minute)
+	cfg.Recommendation.CoverageLongTailHintThreshold = l.optionalFloatBetween("COVERAGE_LONG_TAIL_HINT_THRESHOLD", 0, 1, 0.01)
+
+	if raw, ok := l.lookup("NEW_USER_BLEND_ALPHA"); ok && raw != "" {
+		val, err := strconv.ParseFloat(strings.TrimSpace(raw), 64)
+		if err != nil || val < 0 {
+			l.appendErr("NEW_USER_BLEND_ALPHA", fmt.Errorf("must be a non-negative float"))
+		} else {
+			cfg.Recommendation.NewUserBlendAlpha = &val
+		}
+	}
+	if raw, ok := l.lookup("NEW_USER_BLEND_BETA"); ok && raw != "" {
+		val, err := strconv.ParseFloat(strings.TrimSpace(raw), 64)
+		if err != nil || val < 0 {
+			l.appendErr("NEW_USER_BLEND_BETA", fmt.Errorf("must be a non-negative float"))
+		} else {
+			cfg.Recommendation.NewUserBlendBeta = &val
+		}
+	}
+	if raw, ok := l.lookup("NEW_USER_BLEND_GAMMA"); ok && raw != "" {
+		val, err := strconv.ParseFloat(strings.TrimSpace(raw), 64)
+		if err != nil || val < 0 {
+			l.appendErr("NEW_USER_BLEND_GAMMA", fmt.Errorf("must be a non-negative float"))
+		} else {
+			cfg.Recommendation.NewUserBlendGamma = &val
+		}
+	}
+	if raw, ok := l.lookup("NEW_USER_MMR_LAMBDA"); ok && raw != "" {
+		val, err := strconv.ParseFloat(strings.TrimSpace(raw), 64)
+		if err != nil || val < 0 || val > 1 {
+			l.appendErr("NEW_USER_MMR_LAMBDA", fmt.Errorf("must be between 0 and 1"))
+		} else {
+			cfg.Recommendation.NewUserMMRLambda = &val
+		}
 	}
 
 	cfg.Recommendation.BlendOverrides = map[string]BlendConfig{}

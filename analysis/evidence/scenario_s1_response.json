@@ -18,32 +18,8 @@
     "model_version": "popularity_v1",
     "items": [
       {
-        "item_id": "item_0209",
-        "score": 1.1884256133753253,
-        "reasons": [
-          "recent_popularity",
-          "content_similarity",
-          "co_visitation",
-          "embedding_similarity",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0263",
-        "score": 0.8213456141864067,
-        "reasons": [
-          "recent_popularity",
-          "content_similarity",
-          "co_visitation",
-          "embedding_similarity",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
         "item_id": "item_0001",
-        "score": 0.5630901547126691,
+        "score": 0.4875676503487415,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -53,7 +29,7 @@
       },
       {
         "item_id": "item_0145",
-        "score": 0.434392952708865,
+        "score": 0.3680496691971472,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -63,27 +39,7 @@
       },
       {
         "item_id": "item_0004",
-        "score": 0.3974535427872499,
-        "reasons": [
-          "recent_popularity",
-          "co_visitation",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0174",
-        "score": 0.3888838900921197,
-        "reasons": [
-          "recent_popularity",
-          "co_visitation",
-          "diversity",
-          "personalization"
-        ]
-      },
-      {
-        "item_id": "item_0183",
-        "score": 0.37929176202243464,
+        "score": 0.35875012608804857,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -93,7 +49,7 @@
       },
       {
         "item_id": "item_0081",
-        "score": 0.3324917408677811,
+        "score": 0.3003279991483826,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -102,8 +58,8 @@
         ]
       },
       {
-        "item_id": "item_0252",
-        "score": 0.31543528610571914,
+        "item_id": "item_0302",
+        "score": 0.2818743865649294,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -112,8 +68,18 @@
         ]
       },
       {
-        "item_id": "item_0076",
-        "score": 0.3090510563238824,
+        "item_id": "item_0005",
+        "score": 0.2815029829249054,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0011",
+        "score": 0.2750356929350963,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -123,7 +89,7 @@
       },
       {
         "item_id": "item_0245",
-        "score": 0.28254923095624934,
+        "score": 0.26794601707776156,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -133,7 +99,37 @@
       },
       {
         "item_id": "item_0019",
-        "score": 0.27946918307628554,
+        "score": 0.2547761203714316,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0276",
+        "score": 0.2543525967343095,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0076",
+        "score": 0.22974282441973037,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "diversity",
+          "personalization"
+        ]
+      },
+      {
+        "item_id": "item_0252",
+        "score": 0.22912429699192755,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -143,7 +139,7 @@
       },
       {
         "item_id": "item_0138",
-        "score": 0.2497626991776334,
+        "score": 0.1802145432624297,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -153,7 +149,7 @@
       },
       {
         "item_id": "item_0282",
-        "score": 0.12640056464406352,
+        "score": 0.11481793585907418,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -163,7 +159,7 @@
       },
       {
         "item_id": "item_0164",
-        "score": 0.06556634219475523,
+        "score": 0.058042321813045576,
         "reasons": [
           "recent_popularity",
           "co_visitation",
@@ -177,38 +173,38 @@
         "candidate_sources": {
           "collaborative": {
             "count": 0,
-            "duration_ms": 0.089551
+            "duration_ms": 0.132513
           },
           "content": {
-            "count": 174,
-            "duration_ms": 2.728205
+            "count": 163,
+            "duration_ms": 3.660432
           },
           "merged": {
-            "count": 209,
-            "duration_ms": 0.04157
+            "count": 55,
+            "duration_ms": 0.038884
           },
           "popularity": {
             "count": 35,
-            "duration_ms": 1.577305
+            "duration_ms": 2.829735
           },
           "post_exclusion": {
-            "count": 37,
-            "duration_ms": 1.248677
+            "count": 35,
+            "duration_ms": 0.934686
           },
           "session": {
             "count": 0,
-            "duration_ms": 0.171157
+            "duration_ms": 0.213137
           }
         },
         "policy": {
-          "total_candidates": 209,
+          "total_candidates": 55,
           "explicit_exclude_hits": 0,
-          "recent_event_exclude_hits": 6,
-          "after_exclusions": 203,
+          "recent_event_exclude_hits": 0,
+          "after_exclusions": 55,
           "constraint_include_tags": [
             "books"
           ],
-          "constraint_filtered_count": 166,
+          "constraint_filtered_count": 20,
           "constraint_filtered_ids": [
             "item_0013",
             "item_0054",
@@ -231,17 +227,18 @@
             "item_0099",
             "item_0125"
           ],
-          "after_constraint_filters": 37,
+          "after_constraint_filters": 35,
           "rule_block_count": 0,
           "rule_pin_count": 0,
           "rule_boost_count": 0,
           "rule_boost_injected": 0,
           "rule_boost_exposure": 0,
           "rule_pin_exposure": 0,
-          "after_rules": 37,
+          "after_rules": 35,
           "final_count": 15,
           "constraint_leak_count": 0
-        }
+        },
+        "recent_event_count": 10
       }
     }
   }
