@@ -65,8 +65,9 @@ Ensure the evaluation suite becomes part of CI/CD to prevent future policy regre
 ## EPIC-04 — Documentation & Communication
 Align stakeholders on remediation plans and keep evaluation knowledge current.
 
-- [ ] TKT-04A — Publish remediation summary  
+- [x] TKT-04A — Publish remediation summary  
   Draft a concise memo linking `analysis_v2/report.md`, epics, and success metrics. Share with product, modeling, and ops teams, highlighting conditional pass status and timelines to reach PASS.
+  - Authored `analysis_v2/remediation_summary.md`, capturing the latest quality snapshot, completed epics (TKT‑01–03), and next steps for EPIC‑04. Share this doc alongside `analysis_v2/report.md` to keep stakeholders aligned.
 
 - [ ] TKT-04B — Update runbooks and onboarding docs  
   Incorporate new user onboarding steps, coverage targets, and monitoring instructions into `docs/rules-runbook.md` and relevant onboarding material. Ensure instructions point to `analysis_v2/` artifacts for reproducibility.
