@@ -40,7 +40,7 @@ SURFACE = "home"
 K_DEFAULT = 20
 SLEEP_BETWEEN_CALLS = 0.12
 
-EVIDENCE_DIR = os.path.join("analysis", "evidence")
+EVIDENCE_DIR = os.getenv("SCENARIO_EVIDENCE_DIR", os.path.join("analysis", "evidence"))
 
 SCENARIO_HEADERS = ["id", "name", "input", "expected", "observed", "result"]
 

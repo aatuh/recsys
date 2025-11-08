@@ -1,0 +1,67 @@
+name: Scenario Suite
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+jobs:
+  scenarios:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install requests
+
+      - name: Generate API env file
+        run: make env PROFILE=ci
+
+      - name: Prepare scenario evidence directory
+        run: |
+          rm -rf analysis_v2/evidence/ci
+          mkdir -p analysis_v2/evidence/ci
+
+      - name: Start services
+        run: docker compose up -d db api swagger
+
+      - name: Wait for API readiness
+        run: |
+          for i in {1..60}; do
+            if curl -s http://localhost:8000/health | grep -q '"status":"ok"'; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose logs api
+          exit 1
+
+      - name: Run scenario suite
+        env:
+          SCENARIO_BASE_URL: http://localhost:8000
+          SCENARIO_ORG_ID: 00000000-0000-0000-0000-000000000001
+          SCENARIO_NAMESPACE: default
+          SCENARIO_EVIDENCE_DIR: analysis_v2/evidence/ci
+        run: make scenario-suite
+
+      - name: Upload scenario artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: scenario-evidence
+          path: |
+            analysis_v2/evidence/ci
+            analysis/scenarios.csv
+            analysis_v2/evidence/ci/scenario_summary.json
+
+      - name: Stop services
+        if: always()
+        run: docker compose down -v

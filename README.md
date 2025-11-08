@@ -80,9 +80,19 @@ python analysis/scripts/run_scenarios.py --base-url https://api.pepe.local --org
 make scenario-suite SCENARIO_BASE_URL=http://localhost:8000 SCENARIO_ORG_ID="$RECSYS_ORG_ID"
 ```
 
-The script saves evidence under `analysis/evidence/` and rewrites `analysis/scenarios.csv`; scenario **S7** now records the starter profile applied to cold-start users, while **S8/S9** confirm boost and trade-off telemetry.
+The script saves evidence under `analysis/evidence/` by default (override with `SCENARIO_EVIDENCE_DIR`, which CI points to `analysis_v2/evidence/ci`) and rewrites `analysis/scenarios.csv`; scenario **S7** now records the starter profile applied to cold-start users, while **S8/S9** confirm boost and trade-off telemetry. The workflow at `.github/workflows/scenario-suite.yml` runs the same harness on every push/PR using the `ci` profile and leaves the collected artifacts in GitHub Actions.
 
 Need the recommended diversity settings for a surface? Call `GET /v1/admin/recommendation/presets` to retrieve the current `mmr_lambda` presets (parsed from `MMR_PRESETS` or the built-in defaults) so tooling can present validated dropdowns.
+
+For end-to-end quality checks, run:
+
+```bash
+python analysis/scripts/run_quality_eval.py --base-url https://api.pepe.local --org-id "$RECSYS_ORG_ID"
+# CI example (see .github/workflows/quality-eval.yml):
+python analysis/scripts/run_quality_eval.py --base-url http://localhost:8000 --org-id "$RECSYS_ORG_ID" --namespace default
+```
+
+This script rewrites `analysis/quality_metrics.json`, refreshes `analysis/evidence/recommendation_samples_after_seed.json`, and enforces the evaluation rubric (≥10% lift, coverage ≥0.60, long-tail share ≥0.20). The dedicated workflow stores artifacts under `analysis_v2/evidence/quality` so reviewers can diff CI results.
 
 ## Configuration profiles and feature flags
 
@@ -90,9 +100,12 @@ Need the recommended diversity settings for a surface? Call `GET /v1/admin/recom
   `production`. Set the `ENV` environment variable (defaults to `development`)
   to pick the profile. Each profile applies sensible defaults for debug mode,
   feature toggles (rules, decision trace, LLM explain), and observability.
-- Generate ready-to-use `.env` files with `make env PROFILE=dev|test|prod`. The
+- Generate ready-to-use `.env` files with `make env PROFILE=dev|test|prod|ci`. The
   command copies the matching template from `api/env/` into `api/.env`
   (and `api/.env.test` for the `test` profile).
+- The `ci` profile mirrors production knobs while disabling external
+  integrations (e.g., LLMs) so GitHub Actions can spin up the stack, run
+  the scenario suite deterministically, and publish artifacts without secrets.
 - The config loader exposes consolidated feature flags via
   `config.Config.Features`, keeping the effective state of optional subsystems
   in one place.

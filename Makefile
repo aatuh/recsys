@@ -39,7 +39,8 @@ env: ## Generate .env/.env.test from profile (PROFILE=dev|test|prod)
 		dev) src="api/env/dev.env"; dst="api/.env";; \
 		test) src="api/env/test.env"; dst="api/.env.test";; \
 		prod) src="api/env/prod.env"; dst="api/.env";; \
-		*) echo "Unknown PROFILE '$$profile'. Use dev, test, or prod."; exit 1;; \
+		ci) src="api/env/ci.env"; dst="api/.env";; \
+		*) echo "Unknown PROFILE '$$profile'. Use dev, test, prod, or ci."; exit 1;; \
 	esac; \
 	cp "$$src" "$$dst"; \
 	echo "Generated $$dst from $$src"

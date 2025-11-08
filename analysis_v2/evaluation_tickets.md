@@ -48,11 +48,13 @@ Increase unique catalog exposure beyond 60% without sacrificing long-tail share 
 ## EPIC-03 — Evaluation Automation & Regression Safety
 Ensure the evaluation suite becomes part of CI/CD to prevent future policy regressions.
 
-- [ ] TKT-03A — CI integration for scenario suite  
+- [x] TKT-03A — CI integration for scenario suite  
   Wrap `analysis/scripts/run_scenarios.py` in a CI job (GitHub Actions or internal pipeline) with deterministic seeds and sanitized secrets. Fail the build on any scenario regression, persist artifacts under `analysis_v2/evidence/`.
+  - Added an isolated `ci` env profile plus a hardened workflow (`.github/workflows/scenario-suite.yml`) that boots the stack, runs `make scenario-suite`, and uploads evidence from `analysis_v2/evidence/ci` on every push/PR with no external secrets.
 
-- [ ] TKT-03B — Automated quality metric checks  
+- [x] TKT-03B — Automated quality metric checks  
   Add a pipeline step running `analysis/scripts/run_quality_eval.py` against staging data. Define acceptance thresholds matching the evaluation rubric (overall lifts ≥10%, coverage ≥60%, long-tail ≥20%), failing builds on violations. Publish results to an internal dashboard.
+  - Introduced `.github/workflows/quality-eval.yml`, which boots the stack with the `ci` profile, seeds the evaluation dataset, runs `run_quality_eval.py`, enforces lift/coverage/long-tail thresholds, and uploads `analysis_v2/evidence/quality` artifacts for review on every push/PR.
 
 - [ ] TKT-03C — Determinism regression test  
   Codify the determinism probe (`analysis_v2/evidence/determinism_check.json`) into an integration test that compares repeated recommendation calls and asserts ≤1% variance in rank order for deterministic configs. Log anomalies with correlation IDs for quicker debugging.

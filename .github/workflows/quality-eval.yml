@@ -1,0 +1,108 @@
+name: Quality Evaluation
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    env:
+      COMPOSE_PROJECT_NAME: quality-eval
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install requests
+
+      - name: Generate API env file
+        run: make env PROFILE=ci
+
+      - name: Start services
+        run: docker compose up -d db api swagger
+
+      - name: Wait for API readiness
+        run: |
+          for i in {1..60}; do
+            if curl -s http://localhost:8000/health | grep -q '"status":"ok"'; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose logs api
+          exit 1
+
+      - name: Seed evaluation dataset
+        env:
+          BASE_URL: http://localhost:8000
+          ORG_ID: 00000000-0000-0000-0000-000000000001
+          NAMESPACE: default
+        run: |
+          python analysis/scripts/seed_dataset.py --base-url "$BASE_URL" --org-id "$ORG_ID" --namespace "$NAMESPACE"
+
+      - name: Run quality evaluation
+        env:
+          BASE_URL: http://localhost:8000
+          ORG_ID: 00000000-0000-0000-0000-000000000001
+          NAMESPACE: default
+        run: |
+          python analysis/scripts/run_quality_eval.py --base-url "$BASE_URL" --org-id "$ORG_ID" --namespace "$NAMESPACE"
+
+      - name: Enforce quality thresholds
+        run: |
+          python - <<'PY'
+import json, sys
+
+with open("analysis/quality_metrics.json", "r", encoding="utf-8") as fh:
+    data = json.load(fh)
+
+ndcg = data["overall"]["lift"]["ndcg@10"]
+recall = data["overall"]["lift"]["recall@20"]
+mrr = data["overall"]["lift"]["mrr@10"]
+coverage = data["coverage"]["system_catalog_coverage"]
+long_tail_share = data["overall"]["system"]["long_tail_share@20"]
+
+errors = []
+if ndcg < 0.10:
+    errors.append(f"NDCG lift {ndcg:.3f} < 0.10")
+if recall < 0.10:
+    errors.append(f"Recall lift {recall:.3f} < 0.10")
+if mrr < 0.10:
+    errors.append(f"MRR lift {mrr:.3f} < 0.10")
+if coverage < 0.60:
+    errors.append(f"Catalog coverage {coverage:.3f} < 0.60")
+if long_tail_share < 0.20:
+    errors.append(f"Long-tail share {long_tail_share:.3f} < 0.20")
+
+if errors:
+    print("Quality evaluation failed:")
+    for err in errors:
+        print(" -", err)
+    sys.exit(1)
+PY
+
+      - name: Collect artifacts
+        run: |
+          mkdir -p analysis_v2/evidence/quality
+          cp analysis/quality_metrics.json analysis_v2/evidence/quality/quality_metrics.json
+          cp analysis/evidence/recommendation_samples_after_seed.json analysis_v2/evidence/quality/recommendation_samples_after_seed.json
+
+      - name: Upload quality artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-evidence
+          path: analysis_v2/evidence/quality
+
+      - name: Stop services
+        if: always()
+        run: docker compose down -v

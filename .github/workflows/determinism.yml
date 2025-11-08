@@ -1,0 +1,73 @@
+name: Determinism Check
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+jobs:
+  determinism:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install requests numpy
+
+      - name: Generate API env file
+        run: make env PROFILE=ci
+
+      - name: Start services
+        run: docker compose up -d db api swagger
+
+      - name: Wait for API readiness
+        run: |
+          for i in {1..60}; do
+            if curl -s http://localhost:8000/health | grep -q '"status":"ok"'; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose logs api
+          exit 1
+
+      - name: Seed evaluation dataset
+        env:
+          BASE_URL: http://localhost:8000
+          ORG_ID: 00000000-0000-0000-0000-000000000001
+          NAMESPACE: default
+        run: |
+          python analysis/scripts/seed_dataset.py --base-url "$BASE_URL" --org-id "$ORG_ID" --namespace "$NAMESPACE"
+
+      - name: Run determinism check
+        env:
+          BASE_URL: http://localhost:8000
+          ORG_ID: 00000000-0000-0000-0000-000000000001
+          NAMESPACE: default
+        run: |
+          python analysis/scripts/check_determinism.py \
+            --base-url "$BASE_URL" \
+            --org-id "$ORG_ID" \
+            --namespace "$NAMESPACE" \
+            --baseline analysis_v2/evidence/determinism_check.json \
+            --output analysis_v2/evidence/determinism_ci.json
+
+      - name: Upload determinism artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: determinism-report
+          path: analysis_v2/evidence/determinism_ci.json
+
+      - name: Stop services
+        if: always()
+        run: docker compose down -v

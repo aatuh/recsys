@@ -2,3 +2,6 @@
 **/.*
 !.gitignore
 !.env.example
+!.github/
+!.github/workflows/
+!.github/workflows/*.yml
