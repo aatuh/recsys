@@ -69,8 +69,10 @@ Align stakeholders on remediation plans and keep evaluation knowledge current.
   Draft a concise memo linking `analysis_v2/report.md`, epics, and success metrics. Share with product, modeling, and ops teams, highlighting conditional pass status and timelines to reach PASS.
   - Authored `analysis_v2/remediation_summary.md`, capturing the latest quality snapshot, completed epics (TKT‑01–03), and next steps for EPIC‑04. Share this doc alongside `analysis_v2/report.md` to keep stakeholders aligned.
 
-- [ ] TKT-04B — Update runbooks and onboarding docs  
+- [x] TKT-04B — Update runbooks and onboarding docs  
   Incorporate new user onboarding steps, coverage targets, and monitoring instructions into `docs/rules-runbook.md` and relevant onboarding material. Ensure instructions point to `analysis_v2/` artifacts for reproducibility.
+  - README now includes an “Onboarding & Coverage Checklist” that references `analysis_v2/quality_metrics.json`, `analysis_v2/evidence/scenario_s7_cold_start.json`, `analysis_v2/remediation_summary.md`, and coverage guardrails.
+  - `docs/rules-runbook.md` gained a dedicated “New-user onboarding playbook” plus coverage alert instructions that cite the same evidence so operators can follow the remediation flow.
 
 - [ ] TKT-04C — Schedule follow-up evaluation  
   Plan a re-run of the full evaluation suite post-fixes, including dataset reseed if needed. Record target date, required resources, and pass/fail criteria so we can document improvements in the next `analysis_v2/report.md` revision.

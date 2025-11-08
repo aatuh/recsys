@@ -84,7 +84,14 @@ window.
    environment (`COVERAGE_LONG_TAIL_HINT_THRESHOLD`, `COVERAGE_CACHE_TTL`) and
    document the change.
 
-## 4. Operational checklist
+## 4. New-user onboarding playbook
+
+1. **Seed starter data** via `analysis/scripts/seed_dataset.py` using the same org/namespace as production; this mirrors the catalog/users captured in `analysis_v2/evidence/seed_manifest.json`.
+2. **Run scenario S7** (`make scenario-suite …`) and review `analysis_v2/evidence/scenario_s7_cold_start.json` to confirm ≥4 categories and personalization reasons for the first item.
+3. **Compare segment lifts** with `analysis_v2/quality_metrics.json`; new_users should stay ≥+10% on NDCG@10/MRR@10 after any rollout (use `analysis/scripts/run_quality_eval.py` to regenerate metrics).
+4. **Audit determinism** using `.github/workflows/determinism.yml` (or run `analysis/scripts/check_determinism.py --baseline analysis_v2/evidence/determinism_check.json`) before exposing a new surface.
+
+## 5. Operational checklist
 
 - **Before a campaign**
   - Confirm rule creation through the admin list endpoints (`/v1/admin/rules`,
@@ -113,7 +120,7 @@ window.
 - Ensure boosts are sensible; remember manual boosts are relative to the
     item’s base score.
 
-## 5. Useful commands
+## 6. Useful commands
 
 ```bash
 # Run the scenario suite against the local stack

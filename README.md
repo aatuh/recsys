@@ -94,6 +94,14 @@ python analysis/scripts/run_quality_eval.py --base-url http://localhost:8000 --o
 
 This script rewrites `analysis/quality_metrics.json`, refreshes `analysis/evidence/recommendation_samples_after_seed.json`, and enforces the evaluation rubric (≥10% lift, coverage ≥0.60, long-tail share ≥0.20). The dedicated workflow stores artifacts under `analysis_v2/evidence/quality` so reviewers can diff CI results.
 
+### Onboarding & Coverage Checklist
+
+1. **Seed data consistently** – run `analysis/scripts/seed_dataset.py` against the target API so scenarios/quality/determinism reuse the catalog snapshot stored in `analysis_v2/evidence/seed_manifest.json`.
+2. **Validate cold-start** – ensure scenario S7 passes and inspect `analysis_v2/evidence/scenario_s7_cold_start.json` for ≥4 categories plus personalization reasons on the first item.
+3. **Track segment lifts** – compare fresh `analysis/quality_metrics.json` with the evaluation baseline (`analysis_v2/quality_metrics.json`) to confirm each cohort stays ≥+10% on NDCG/MRR.
+4. **Watch coverage telemetry** – export `policy_item_served_total`, `policy_coverage_bucket_total`, and `policy_catalog_items_total`; alert if catalog coverage <0.60 or long-tail share <0.20 per the queries documented in `docs/rules-runbook.md`.
+5. **Share remediation summary** – include `analysis_v2/remediation_summary.md` (plus `analysis_v2/report.md`) in rollout notes so stakeholders see which epics are complete and which CI guardrails enforce the targets.
+
 ## Configuration profiles and feature flags
 
 - The API recognises three configuration profiles: `development`, `test`, and
