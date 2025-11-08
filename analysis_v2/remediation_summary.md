@@ -29,7 +29,7 @@
 1. **Document & socialize (EPIC‑04):**
    - Share this summary with Product/Ops along with `analysis_v2/report.md`.
    - Refresh onboarding docs/runbooks with links to new CI jobs and guardrails.
-   - Schedule the next evaluation rerun post-production deploy; target date TBD once the CI knobs ship.
+   - Schedule the next evaluation rerun post-production deploy; propose **2025‑11‑20** once production mirrors `ci.env`.
 2. **Monitor production rollout:**
    - Mirror `ci.env` coverage/personalization knobs in staging/prod.
    - Keep dashboards for coverage & rule telemetry aligned with the Prometheus series referenced in `docs/rules-runbook.md`.

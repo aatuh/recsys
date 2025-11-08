@@ -74,5 +74,6 @@ Align stakeholders on remediation plans and keep evaluation knowledge current.
   - README now includes an “Onboarding & Coverage Checklist” that references `analysis_v2/quality_metrics.json`, `analysis_v2/evidence/scenario_s7_cold_start.json`, `analysis_v2/remediation_summary.md`, and coverage guardrails.
   - `docs/rules-runbook.md` gained a dedicated “New-user onboarding playbook” plus coverage alert instructions that cite the same evidence so operators can follow the remediation flow.
 
-- [ ] TKT-04C — Schedule follow-up evaluation  
+- [x] TKT-04C — Schedule follow-up evaluation  
   Plan a re-run of the full evaluation suite post-fixes, including dataset reseed if needed. Record target date, required resources, and pass/fail criteria so we can document improvements in the next `analysis_v2/report.md` revision.
+  - Follow-up evaluation penciled in for **2025‑11‑20** (see `analysis_v2/remediation_summary.md`), contingent on production adopting the `ci.env` knobs. Required steps: reseed dataset, rerun `make scenario-suite`, `run_quality_eval.py`, and determinism workflow; PASS criteria mirror CI thresholds (≥10% lifts, coverage ≥0.60, long-tail ≥0.20, determinism delta ≤1%).
