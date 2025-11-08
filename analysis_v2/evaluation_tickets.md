@@ -56,8 +56,9 @@ Ensure the evaluation suite becomes part of CI/CD to prevent future policy regre
   Add a pipeline step running `analysis/scripts/run_quality_eval.py` against staging data. Define acceptance thresholds matching the evaluation rubric (overall lifts ≥10%, coverage ≥60%, long-tail ≥20%), failing builds on violations. Publish results to an internal dashboard.
   - Introduced `.github/workflows/quality-eval.yml`, which boots the stack with the `ci` profile, seeds the evaluation dataset, runs `run_quality_eval.py`, enforces lift/coverage/long-tail thresholds, and uploads `analysis_v2/evidence/quality` artifacts for review on every push/PR.
 
-- [ ] TKT-03C — Determinism regression test  
+- [x] TKT-03C — Determinism regression test  
   Codify the determinism probe (`analysis_v2/evidence/determinism_check.json`) into an integration test that compares repeated recommendation calls and asserts ≤1% variance in rank order for deterministic configs. Log anomalies with correlation IDs for quicker debugging.
+  - Added `analysis/scripts/check_determinism.py` plus a GitHub Action (`.github/workflows/determinism.yml`) that seeds CI data, replays the fixed request 10×, fails if >1% of ranks move, and uploads `analysis_v2/evidence/determinism_ci.json` for inspection.
 
 ---
 

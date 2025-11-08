@@ -24,6 +24,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--calls", type=int, default=10, help="Number of repeated calls to perform")
     parser.add_argument("--max-rank-delta", type=float, default=0.01, help="Allowed fraction of rank changes")
     parser.add_argument("--output", default="analysis_v2/evidence/determinism_ci.json")
+    parser.add_argument("--insecure", action="store_true", help="Disable TLS verification (for self-signed dev certs)")
     return parser.parse_args()
 
 
@@ -66,6 +67,14 @@ def main() -> None:
     args = parse_args()
     payload = load_request(args.baseline)
     session = requests.Session()
+    if args.insecure:
+        session.verify = False
+        try:
+            import urllib3
+
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+        except Exception:
+            pass
 
     runs: List[List[str]] = []
     for _ in range(args.calls):
