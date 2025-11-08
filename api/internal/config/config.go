@@ -2,6 +2,7 @@ package config
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -101,10 +102,53 @@ type RecommendationConfig struct {
 	NewUserBlendBeta              *float64
 	NewUserBlendGamma             *float64
 	NewUserMMRLambda              *float64
+	NewUserPopFanout              *int
 	BanditAlgo                    types.Algorithm
 	BanditExperiment              BanditExperimentConfig
 	CoverageCacheTTL              time.Duration
 	CoverageLongTailHintThreshold float64
+}
+
+func parseStarterPresets(raw string) map[string]map[string]float64 {
+	if raw == "" {
+		return cloneStarterPresetConfig(defaultStarterPresetConfig)
+	}
+	var parsed map[string]map[string]float64
+	if err := json.Unmarshal([]byte(raw), &parsed); err != nil {
+		return cloneStarterPresetConfig(defaultStarterPresetConfig)
+	}
+	return cloneStarterPresetConfig(parsed)
+}
+
+func cloneStarterPresetConfig(src map[string]map[string]float64) map[string]map[string]float64 {
+	if len(src) == 0 {
+		return cloneStarterPresetConfig(defaultStarterPresetConfig)
+	}
+	cloned := make(map[string]map[string]float64, len(src))
+	for segment, weights := range src {
+		if len(weights) == 0 {
+			continue
+		}
+		inner := make(map[string]float64, len(weights))
+		for key, value := range weights {
+			inner[strings.ToLower(strings.TrimSpace(key))] = value
+		}
+		cloned[strings.ToLower(strings.TrimSpace(segment))] = inner
+	}
+	if len(cloned) == 0 {
+		return cloneStarterPresetConfig(defaultStarterPresetConfig)
+	}
+	return cloned
+}
+
+var defaultStarterPresetConfig = map[string]map[string]float64{
+	"new_users": {
+		"electronics": 0.25,
+		"books":       0.2,
+		"home":        0.2,
+		"fashion":     0.2,
+		"beauty":      0.15,
+	},
 }
 
 type ProfileConfig struct {
@@ -114,6 +158,8 @@ type ProfileConfig struct {
 	MinEventsForBoost   int
 	ColdStartMultiplier float64
 	StarterBlendWeight  float64
+	StarterDecayEvents  int
+	StarterPresets      map[string]map[string]float64
 }
 
 type BlendConfig struct {
@@ -447,6 +493,8 @@ func Load(ctx context.Context, src Source) (Config, error) {
 		cfg.Recommendation.Profile.ColdStartMultiplier = 0.5
 	}
 	cfg.Recommendation.Profile.StarterBlendWeight = l.optionalFloatBetween("PROFILE_STARTER_BLEND_WEIGHT", 0, 1, 0.6)
+	cfg.Recommendation.Profile.StarterDecayEvents = l.optionalIntGreaterThan("PROFILE_STARTER_DECAY_EVENTS", 0, 5)
+	cfg.Recommendation.Profile.StarterPresets = parseStarterPresets(l.optionalString("PROFILE_STARTER_PRESETS", ""))
 
 	presets := l.optionalStringMap("MMR_PRESETS")
 	if len(presets) > 0 {
@@ -508,6 +556,14 @@ func Load(ctx context.Context, src Source) (Config, error) {
 			l.appendErr("NEW_USER_MMR_LAMBDA", fmt.Errorf("must be between 0 and 1"))
 		} else {
 			cfg.Recommendation.NewUserMMRLambda = &val
+		}
+	}
+	if raw, ok := l.lookup("NEW_USER_POP_FANOUT"); ok && raw != "" {
+		val, err := strconv.Atoi(strings.TrimSpace(raw))
+		if err != nil || val <= 0 {
+			l.appendErr("NEW_USER_POP_FANOUT", fmt.Errorf("must be an integer > 0"))
+		} else {
+			cfg.Recommendation.NewUserPopFanout = &val
 		}
 	}
 

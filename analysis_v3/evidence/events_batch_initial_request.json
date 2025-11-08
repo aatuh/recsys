@@ -1,0 +1,70 @@
+{
+  "namespace": "default",
+  "events": [
+    {
+      "user_id": "user_0047",
+      "item_id": "item_0141",
+      "type": 0,
+      "ts": "2025-09-01T00:02:07+00:00",
+      "value": 1,
+      "meta": {
+        "segment": "new_users",
+        "category": "Books",
+        "price": 205.32,
+        "margin": 0.132
+      }
+    },
+    {
+      "user_id": "user_0069",
+      "item_id": "item_0240",
+      "type": 1,
+      "ts": "2025-09-01T00:15:19+00:00",
+      "value": 1,
+      "meta": {
+        "segment": "trend_seekers",
+        "category": "Fashion",
+        "price": 221.38,
+        "margin": 0.129
+      }
+    },
+    {
+      "user_id": "user_0074",
+      "item_id": "item_0121",
+      "type": 0,
+      "ts": "2025-09-01T00:22:29+00:00",
+      "value": 1,
+      "meta": {
+        "segment": "trend_seekers",
+        "category": "Home",
+        "price": 193.49,
+        "margin": 0.419
+      }
+    },
+    {
+      "user_id": "user_0061",
+      "item_id": "item_0015",
+      "type": 0,
+      "ts": "2025-09-01T00:28:56+00:00",
+      "value": 1,
+      "meta": {
+        "segment": "power_users",
+        "category": "Electronics",
+        "price": 76.21,
+        "margin": 0.145
+      }
+    },
+    {
+      "user_id": "user_0051",
+      "item_id": "item_0226",
+      "type": 0,
+      "ts": "2025-09-01T00:34:38+00:00",
+      "value": 1,
+      "meta": {
+        "segment": "power_users",
+        "category": "Home",
+        "price": 180.8,
+        "margin": 0.135
+      }
+    }
+  ]
+}

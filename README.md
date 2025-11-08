@@ -80,7 +80,7 @@ python analysis/scripts/run_scenarios.py --base-url https://api.pepe.local --org
 make scenario-suite SCENARIO_BASE_URL=http://localhost:8000 SCENARIO_ORG_ID="$RECSYS_ORG_ID"
 ```
 
-The script saves evidence under `analysis/evidence/` by default (override with `SCENARIO_EVIDENCE_DIR`, which CI points to `analysis_v2/evidence/ci`) and rewrites `analysis/scenarios.csv`; scenario **S7** now records the starter profile applied to cold-start users, while **S8/S9** confirm boost and trade-off telemetry. The workflow at `.github/workflows/scenario-suite.yml` runs the same harness on every push/PR using the `ci` profile and leaves the collected artifacts in GitHub Actions.
+The script saves evidence under `analysis/evidence/` by default (override with `SCENARIO_EVIDENCE_DIR`, which CI points to `analysis_v2/evidence/ci`) and rewrites `analysis/scenarios.csv`; scenario **S7** now records the starter profile applied to cold-start users, enforces average `mrr@10` ≥ 0.2 and ≥ 4 categories (override with `--s7-min-avg-mrr` / `--s7-min-avg-categories`), while **S8/S9** confirm boost and trade-off telemetry. The workflow at `.github/workflows/scenario-suite.yml` runs the same harness on every push/PR using the `ci` profile and leaves the collected artifacts in GitHub Actions.
 
 Need the recommended diversity settings for a surface? Call `GET /v1/admin/recommendation/presets` to retrieve the current `mmr_lambda` presets (parsed from `MMR_PRESETS` or the built-in defaults) so tooling can present validated dropdowns.
 
@@ -92,7 +92,7 @@ python analysis/scripts/run_quality_eval.py --base-url https://api.pepe.local --
 python analysis/scripts/run_quality_eval.py --base-url http://localhost:8000 --org-id "$RECSYS_ORG_ID" --namespace default
 ```
 
-This script rewrites `analysis/quality_metrics.json`, refreshes `analysis/evidence/recommendation_samples_after_seed.json`, and enforces the evaluation rubric (≥10% lift, coverage ≥0.60, long-tail share ≥0.20). The dedicated workflow stores artifacts under `analysis_v2/evidence/quality` so reviewers can diff CI results.
+This script rewrites `analysis/quality_metrics.json`, refreshes `analysis/evidence/recommendation_samples_after_seed.json`, and enforces the evaluation rubric (≥10% lift per segment by default, coverage ≥0.60, long-tail share ≥0.20). Use `--min-segment-lift-ndcg` / `--min-segment-lift-mrr` if you need to temporarily override the +10% guardrail; the CI workflow stores artifacts under `analysis_v2/evidence/quality` so reviewers can diff results.
 
 ### Onboarding & Coverage Checklist
 
@@ -101,6 +101,12 @@ This script rewrites `analysis/quality_metrics.json`, refreshes `analysis/eviden
 3. **Track segment lifts** – compare fresh `analysis/quality_metrics.json` with the evaluation baseline (`analysis_v2/quality_metrics.json`) to confirm each cohort stays ≥+10% on NDCG/MRR.
 4. **Watch coverage telemetry** – export `policy_item_served_total`, `policy_coverage_bucket_total`, and `policy_catalog_items_total`; alert if catalog coverage <0.60 or long-tail share <0.20 per the queries documented in `docs/rules-runbook.md`.
 5. **Share remediation summary** – include `analysis_v2/remediation_summary.md` (plus `analysis_v2/report.md`) in rollout notes so stakeholders see which epics are complete and which CI guardrails enforce the targets.
+
+### Cold-start guardrails
+
+- Scenario suite S7 enforces `avg_mrr@10 ≥ 0.2` and `avg_categories ≥ 4`; override via `--s7-min-avg-mrr` / `--s7-min-avg-categories` when running `analysis/scripts/run_scenarios.py`.
+- Quality eval fails the job if any segment’s NDCG/MRR lift falls below the configured thresholds (defaults `--min-segment-lift-ndcg=0.1`, `--min-segment-lift-mrr=0.1`). CI relies on these exits, so only override locally when experimenting.
+- Evidence for both guardrails is stored under `analysis_v3/evidence/` (`scenario_s7_cold_start.json`, `quality_metrics.json`) for easy diffing in reviews.
 
 ## Configuration profiles and feature flags
 
@@ -873,6 +879,17 @@ detailed troubleshooting steps and operational checklists.
 | `PROFILE_BOOST`       | float ≥ 0         | Strength of the multiplicative boost. | `0` disables personalization |
 | `PROFILE_MIN_EVENTS_FOR_BOOST` | int ≥ 0 | Minimum recent events required before the full boost applies. | Keeps cold-start users from overpowering the ranking. |
 | `PROFILE_COLD_START_MULTIPLIER` | float in [0,1] | Attenuation factor when event count < min. | `0.5` halves the boost while still nudging results. |
+
+### Starter profile & new-user overrides
+
+| Variable | Type / Range | What it does | Notes |
+|----------|--------------|--------------|-------|
+| `PROFILE_STARTER_BLEND_WEIGHT` | float in [0,1] | Baseline weight assigned to the curated starter profile before any decay. | Higher values lean harder on curated tags even when we observe history. |
+| `PROFILE_STARTER_DECAY_EVENTS` | int > 0 | Number of interactions required before the starter profile fully decays back to the base blend weight. | Smaller numbers keep the curated mix dominant for longer. |
+| `PROFILE_STARTER_PRESETS` | JSON string | Segment → category weight map that seeds the starter profile. | Example: `'{"new_users":{"electronics":0.25,"books":0.2}}'`. Keys are lower-cased automatically. |
+| `NEW_USER_BLEND_ALPHA` / `NEW_USER_BLEND_BETA` / `NEW_USER_BLEND_GAMMA` | float ≥ 0 (optional) | Override the default blend weights when the user is tagged as `new_users` or has sparse history. | Leave unset to inherit global blend weights. |
+| `NEW_USER_MMR_LAMBDA` | float in [0,1] (optional) | Override the diversity vs. relevance trade-off for new users. | Pair with blend overrides to keep lists diverse while boosting relevance. |
+| `NEW_USER_POP_FANOUT` | int > 0 (optional) | Larger popularity fan-out for cold-start requests so we have more inventory to diversify from. | Defaults to at least 1000 when unset; raise further to hit coverage targets. |
 
 ### Blended scoring weight vars
 

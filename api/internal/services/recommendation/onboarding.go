@@ -9,14 +9,16 @@ import (
 	"recsys/internal/algorithm"
 )
 
-var starterCategoryPresets = map[string]map[string]float64{
-	"new_users": {
-		"electronics": 0.25,
-		"books":       0.2,
-		"home":        0.2,
-		"fashion":     0.2,
-		"beauty":      0.15,
-	},
+func defaultStarterPresets() map[string]map[string]float64 {
+	return map[string]map[string]float64{
+		"new_users": {
+			"electronics": 0.25,
+			"books":       0.2,
+			"home":        0.2,
+			"fashion":     0.2,
+			"beauty":      0.15,
+		},
+	}
 }
 
 var categoryTagMapping = map[string][]string{
@@ -72,9 +74,9 @@ func (s *Service) buildStarterProfile(
 		return nil, 0
 	}
 
-	tagProfile := starterTagProfileForSegment(segmentID)
+	tagProfile := starterTagProfileForSegment(segmentID, s.starterPresets)
 	if len(tagProfile) == 0 && segmentID != "new_users" {
-		tagProfile = starterTagProfileForSegment("new_users")
+		tagProfile = starterTagProfileForSegment("new_users", s.starterPresets)
 	}
 	if len(tagProfile) == 0 {
 		return nil, 0
@@ -87,23 +89,26 @@ func (s *Service) buildStarterProfile(
 		blendWeight = 1
 	}
 
-	starterWeight := blendWeight
-	if minEvents > 0 {
-		missing := minEvents - recentEventCount
-		if !recentCountKnown {
-			missing = minEvents
-		}
-		if missing < 0 {
-			missing = 0
-		}
-		factor := float64(missing) / float64(minEvents)
-		if factor > 1 {
-			factor = 1
-		}
-		starterWeight = starterWeight + (1-starterWeight)*factor
-	} else if recentEventCount == 0 {
-		starterWeight = 1
+	decayEvents := s.starterDecayEvents
+	if decayEvents <= 0 {
+		decayEvents = minEvents
 	}
+	if decayEvents <= 0 {
+		decayEvents = 3
+	}
+	starterWeight := blendWeight
+	missing := decayEvents - recentEventCount
+	if !recentCountKnown {
+		missing = decayEvents
+	}
+	if missing < 0 {
+		missing = 0
+	}
+	factor := float64(missing) / float64(decayEvents)
+	if factor > 1 {
+		factor = 1
+	}
+	starterWeight = starterWeight + (1-starterWeight)*factor
 	if starterWeight < 0 {
 		starterWeight = 0
 	} else if starterWeight > 1 {
@@ -165,8 +170,11 @@ func (s *Service) recentInteractionItems(ctx context.Context, cfg algorithm.Conf
 	return items, nil
 }
 
-func starterTagProfileForSegment(segment string) map[string]float64 {
-	preset, ok := starterCategoryPresets[segment]
+func starterTagProfileForSegment(segment string, presets map[string]map[string]float64) map[string]float64 {
+	if len(presets) == 0 {
+		presets = defaultStarterPresets()
+	}
+	preset, ok := presets[segment]
 	if !ok {
 		return nil
 	}

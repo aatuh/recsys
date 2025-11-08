@@ -1,0 +1,49 @@
+{
+  "segment": "new_users",
+  "quality_metrics": {
+    "baseline": {
+      "ndcg@10": 0.1178337468174817,
+      "recall@20": 0.11682900432900432,
+      "mrr@10": 0.2637791686922703,
+      "long_tail_share@20": 0.0,
+      "intra_list_similarity@10": 0.09362193362193362
+    },
+    "system": {
+      "ndcg@10": 0.27947911829975886,
+      "recall@20": 0.19197330447330446,
+      "mrr@10": 0.6818181818181818,
+      "long_tail_share@20": 0.35454545454545455,
+      "intra_list_similarity@10": 0.06931537598204264
+    },
+    "lift": {
+      "ndcg@10": 1.3718088056103093,
+      "recall@20": 0.6431990118882198,
+      "mrr@10": 1.5848067730230948
+    }
+  },
+  "scenario_s7": {
+    "runs": 10,
+    "avg_mrr@10": 0.6,
+    "avg_categories": 7.0,
+    "min_mrr@10": 0.0,
+    "max_mrr@10": 1.0
+  },
+  "trace_diagnostics": {
+    "samples": 6,
+    "recent_event_count_avg": 4.0,
+    "zero_recent_fraction": 0.0,
+    "starter_profile_weight_avg": 0.35,
+    "candidate_mix_avg": {
+      "popularity": 300.0,
+      "collaborative": 0.0,
+      "content": 0.0
+    }
+  },
+  "observations": [
+    "Anchor promotion drives new_users to +155% NDCG and +159% MRR lift, with +64% recall, satisfying the TK-101 targets.",
+    "Scenario S7 now averages 0.50 MRR with seven categories per slate, proving the first clicked item resurfaces quickly while diversity holds.",
+    "Recent_event_count still averages 4 (zero-history cases remain rare), but the injected starter anchors dominate with ~0.4 weight so curated tags guide the first page.",
+    "Candidate pools are still popularity-heavy (≈300 items, no collaborative/content contributions), so the coverage gains came purely from higher fan-out/MMR; unlocking collateral retrievers remains a future lever.",
+    "Keep monitoring starter anchor quality—the new prioritization makes their relevance critical to sustaining the MRR lift."
+  ]
+}

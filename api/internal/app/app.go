@@ -112,6 +112,7 @@ func New(ctx context.Context, opts Options) (*App, error) {
 		Enabled:         cfg.Rules.Enabled,
 	})
 	recommendationSvc := recommendation.New(st, rulesManager)
+	recommendationSvc.WithStarterProfiles(cfg.Recommendation.Profile.StarterPresets, cfg.Recommendation.Profile.StarterDecayEvents)
 	if len(cfg.Recommendation.BlendOverrides) > 0 {
 		entries := make(map[string]recommendation.ResolvedBlendConfig, len(cfg.Recommendation.BlendOverrides))
 		now := time.Now().UTC()
@@ -134,6 +135,7 @@ func New(ctx context.Context, opts Options) (*App, error) {
 		cfg.Recommendation.NewUserBlendBeta,
 		cfg.Recommendation.NewUserBlendGamma,
 		cfg.Recommendation.NewUserMMRLambda,
+		cfg.Recommendation.NewUserPopFanout,
 	)
 
 	explainService := newExplainService(cfg.Explain, st, logger)
@@ -186,6 +188,7 @@ func New(ctx context.Context, opts Options) (*App, error) {
 		NewUserBlendBeta:              cfg.Recommendation.NewUserBlendBeta,
 		NewUserBlendGamma:             cfg.Recommendation.NewUserBlendGamma,
 		NewUserMMRLambda:              cfg.Recommendation.NewUserMMRLambda,
+		NewUserPopFanout:              cfg.Recommendation.NewUserPopFanout,
 		RulesEnabled:                  cfg.Rules.Enabled,
 		CoverageCacheTTL:              cfg.Recommendation.CoverageCacheTTL,
 		CoverageLongTailHintThreshold: cfg.Recommendation.CoverageLongTailHintThreshold,

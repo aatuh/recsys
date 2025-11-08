@@ -1,0 +1,39 @@
+{
+  "items": [
+    {
+      "created_at": "2025-11-04T07:14:36Z",
+      "traits": "{\"notes\": \"Synthetic cold-start user\", \"segment\": \"cold_start\"}",
+      "updated_at": "2025-11-04T07:14:36Z",
+      "user_id": "user_cold_start"
+    },
+    {
+      "created_at": "2025-11-04T07:13:20Z",
+      "traits": "{\"segment\": \"weekend_adventurers\", \"join_date\": \"2025-10-06T00:00:00+00:00\", \"description\": \"Outdoor-focused users with taste for fitness and gourmet gear.\", \"activity_level\": 0.9}",
+      "updated_at": "2025-11-04T07:13:20Z",
+      "user_id": "user_0120"
+    },
+    {
+      "created_at": "2025-11-04T07:13:20Z",
+      "traits": "{\"segment\": \"trend_seekers\", \"join_date\": \"2025-10-09T00:00:00+00:00\", \"description\": \"Fashion and beauty enthusiasts with high novelty appetite.\", \"activity_level\": 1.1}",
+      "updated_at": "2025-11-04T07:13:20Z",
+      "user_id": "user_0119"
+    },
+    {
+      "created_at": "2025-11-04T07:13:20Z",
+      "traits": "{\"segment\": \"niche_readers\", \"join_date\": \"2025-10-04T00:00:00+00:00\", \"description\": \"Book-centric users with niche gourmet interests.\", \"activity_level\": 1}",
+      "updated_at": "2025-11-04T07:13:20Z",
+      "user_id": "user_0118"
+    },
+    {
+      "created_at": "2025-11-04T07:13:20Z",
+      "traits": "{\"segment\": \"new_users\", \"join_date\": \"2025-09-27T00:00:00+00:00\", \"description\": \"Recently onboarded users exploring popular categories with limited actions.\", \"activity_level\": 0.6}",
+      "updated_at": "2025-11-04T07:13:20Z",
+      "user_id": "user_0117"
+    }
+  ],
+  "total": 121,
+  "limit": 5,
+  "offset": 0,
+  "has_more": true,
+  "next_offset": 5
+}

@@ -149,7 +149,11 @@ func TestStarterProfileFallbackToDefaultSegment(t *testing.T) {
 }
 
 func TestBuildStarterProfileForNewUserEvenWithHistory(t *testing.T) {
-	svc := &Service{store: onboardingStoreStub{recent: []string{"item_a", "item_b", "item_c", "item_d", "item_e"}}}
+	svc := &Service{
+		store:             onboardingStoreStub{recent: []string{"item_a", "item_b", "item_c", "item_d", "item_e"}},
+		starterPresets:    defaultStarterPresets(),
+		starterDecayEvents: 5,
+	}
 	cfg := algorithm.Config{
 		ProfileTopNTags:           8,
 		ProfileWindowDays:         30,
@@ -163,7 +167,7 @@ func TestBuildStarterProfileForNewUserEvenWithHistory(t *testing.T) {
 	}
 	selection := SegmentSelection{UserTraits: map[string]any{"segment": "new_users"}}
 
-	if profile := starterTagProfileForSegment("new_users"); len(profile) == 0 {
+	if profile := starterTagProfileForSegment("new_users", svc.starterPresets); len(profile) == 0 {
 		t.Fatalf("expected preset for new_users")
 	}
 
@@ -177,7 +181,7 @@ func TestBuildStarterProfileForNewUserEvenWithHistory(t *testing.T) {
 }
 
 func TestBuildStarterProfileForSparseHistoryWithoutSegment(t *testing.T) {
-	svc := &Service{store: onboardingStoreStub{}}
+	svc := &Service{store: onboardingStoreStub{}, starterPresets: defaultStarterPresets(), starterDecayEvents: 5}
 	cfg := algorithm.Config{
 		ProfileTopNTags:           8,
 		ProfileWindowDays:         30,

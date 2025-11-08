@@ -326,6 +326,9 @@ func (e *Engine) Recommend(
 	)
 	finalizePolicySummary(&policySummary, response, ruleResult)
 	trace.Policy = &policySummary
+	if req.InjectAnchors && len(req.AnchorItemIDs) > 0 && len(response.Items) > 0 {
+		promoteAnchors(response, req.AnchorItemIDs, 3)
+	}
 	if len(trace.Anchors) == 0 && candidateData.AnchorsFetched {
 		trace.Anchors = append(trace.Anchors, "(no_recent_activity)")
 	}
@@ -394,6 +397,62 @@ func (e *Engine) applyRules(
 	}
 	data.Candidates = result.Candidates
 	return result, nil
+}
+
+func promoteAnchors(resp *Response, anchors []string, maxPromote int) {
+	if maxPromote <= 0 || resp == nil || len(resp.Items) == 0 || len(anchors) == 0 {
+		return
+	}
+	anchorOrder := make([]string, 0, len(anchors))
+	seenAnchors := make(map[string]struct{}, len(anchors))
+	for _, anchor := range anchors {
+		id := strings.TrimSpace(anchor)
+		if id == "" {
+			continue
+		}
+		if _, ok := seenAnchors[id]; ok {
+			continue
+		}
+		anchorOrder = append(anchorOrder, id)
+		seenAnchors[id] = struct{}{}
+	}
+	if len(anchorOrder) == 0 {
+		return
+	}
+
+	type itemPos struct {
+		idx int
+		val ScoredItem
+	}
+
+	itemIndex := make(map[string]itemPos, len(resp.Items))
+	for idx, item := range resp.Items {
+		itemIndex[item.ItemID] = itemPos{idx: idx, val: item}
+	}
+
+	promoted := make([]ScoredItem, 0, maxPromote)
+	promotedSet := make(map[string]struct{}, maxPromote)
+	for _, anchor := range anchorOrder {
+		if len(promoted) >= maxPromote {
+			break
+		}
+		if pos, ok := itemIndex[anchor]; ok {
+			promoted = append(promoted, pos.val)
+			promotedSet[anchor] = struct{}{}
+		}
+	}
+	if len(promoted) == 0 {
+		return
+	}
+
+	rest := make([]ScoredItem, 0, len(resp.Items)-len(promoted))
+	for _, item := range resp.Items {
+		if _, ok := promotedSet[item.ItemID]; ok {
+			continue
+		}
+		rest = append(rest, item)
+	}
+	resp.Items = append(promoted, rest...)
 }
 
 // getPopularityCandidates fetches a popularity-based candidate pool.
@@ -1010,15 +1069,22 @@ func (e *Engine) gatherSignals(
 		return data, nil
 	}
 
-	// Recent anchors (views/purchases/etc.) for the user.
-	anchors, err := e.getRecentAnchors(ctx, req)
-	if err != nil {
-		// Be resilient: still return a response with placeholders.
+	var anchors []string
+	var err error
+	if req.InjectAnchors && len(req.AnchorItemIDs) > 0 {
+		anchors = append([]string(nil), req.AnchorItemIDs...)
 		data.AnchorsFetched = true
-		data.Anchors = []string{"(no_recent_activity)"}
-		return data, nil
+	} else {
+		// Recent anchors (views/purchases/etc.) for the user.
+		anchors, err = e.getRecentAnchors(ctx, req)
+		if err != nil {
+			// Be resilient: still return a response with placeholders.
+			data.AnchorsFetched = true
+			data.Anchors = []string{"(no_recent_activity)"}
+			return data, nil
+		}
+		data.AnchorsFetched = true
 	}
-	data.AnchorsFetched = true
 
 	if len(anchors) == 0 {
 		// Explicit placeholder when there is no history.

@@ -69,6 +69,12 @@ Set these in your `.env` before starting the service. Invalid values are rejecte
 - `PROFILE_BOOST` (float ≥ 0) — strength of profile-based boosting; 0 disables personalization (default 0.15 with cold-start blending enabled).
 - `PROFILE_MIN_EVENTS_FOR_BOOST` (int ≥ 0) — minimum recent interactions required before the full profile boost applies. If the user has fewer events, we attenuate the boost.
 - `PROFILE_COLD_START_MULTIPLIER` (0–1) — attenuation factor used when the event count is below the minimum. For example, `0.5` halves the boost for sparsely observed users while still nudging cold-start results.
+- `PROFILE_STARTER_BLEND_WEIGHT` (0–1) — baseline weight assigned to the curated starter profile before any decay is applied.
+- `PROFILE_STARTER_DECAY_EVENTS` (int > 0) — number of interactions required before the starter profile drops back to its baseline influence.
+- `PROFILE_STARTER_PRESETS` (JSON string) — segment → category weight map that seeds the starter profile (e.g., `{ "new_users": {"electronics": 0.25, "books": 0.2} }`).
+- `NEW_USER_BLEND_ALPHA` / `NEW_USER_BLEND_BETA` / `NEW_USER_BLEND_GAMMA` (float ≥ 0, optional) — override the default blend weights for `new_users` and sparse-history traffic.
+- `NEW_USER_MMR_LAMBDA` (float in [0,1], optional) — custom diversity vs. relevance trade-off for the same cohort.
+- `NEW_USER_POP_FANOUT` (int > 0, optional) — larger popularity fan-out used only for `new_users` so cold-start runs have more inventory to diversify from (falls back to at least 1000 when unset).
 
 ### Blending defaults
 - `BLEND_ALPHA`, `BLEND_BETA`, `BLEND_GAMMA` — default weights for popularity/co-vis/embedding. Current recommended defaults: 0.10 / 0.35 / 0.55 (lean harder on ALS to expose long-tail items).

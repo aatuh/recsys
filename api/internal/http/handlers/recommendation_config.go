@@ -34,6 +34,7 @@ type RecommendationConfig struct {
 	NewUserBlendBeta              *float64
 	NewUserBlendGamma             *float64
 	NewUserMMRLambda              *float64
+	NewUserPopFanout              *int
 	BanditExperiment              BanditExperimentConfig
 	RulesEnabled                  bool
 	CoverageCacheTTL              time.Duration

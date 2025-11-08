@@ -3,6 +3,7 @@ package recommendation
 import (
 	"context"
 	"errors"
+	"sort"
 	"strings"
 	"time"
 
@@ -58,18 +59,21 @@ type Result struct {
 
 // Service orchestrates recommendation requests.
 type Service struct {
-	store             Store
-	rules             *rules.Manager
-	blendResolver     BlendConfigResolver
-	newUserBlendAlpha *float64
-	newUserBlendBeta  *float64
-	newUserBlendGamma *float64
-	newUserMMRLambda  *float64
+	store              Store
+	rules              *rules.Manager
+	blendResolver      BlendConfigResolver
+	newUserBlendAlpha  *float64
+	newUserBlendBeta   *float64
+	newUserBlendGamma  *float64
+	newUserMMRLambda   *float64
+	newUserPopFanout   *int
+	starterPresets     map[string]map[string]float64
+	starterDecayEvents int
 }
 
 // New constructs a recommendation service.
 func New(store Store, rulesManager *rules.Manager) *Service {
-	return &Service{store: store, rules: rulesManager}
+	return &Service{store: store, rules: rulesManager, starterPresets: defaultStarterPresets(), starterDecayEvents: 5}
 }
 
 // WithBlendResolver configures a resolver for runtime blend overrides.
@@ -79,11 +83,42 @@ func (s *Service) WithBlendResolver(resolver BlendConfigResolver) *Service {
 }
 
 // WithNewUserOverrides configures blend/MMR overrides for new or sparse-history users.
-func (s *Service) WithNewUserOverrides(alpha, beta, gamma, mmr *float64) *Service {
+func (s *Service) WithNewUserOverrides(alpha, beta, gamma, mmr *float64, popFanout *int) *Service {
 	s.newUserBlendAlpha = alpha
 	s.newUserBlendBeta = beta
 	s.newUserBlendGamma = gamma
 	s.newUserMMRLambda = mmr
+	s.newUserPopFanout = popFanout
+	return s
+}
+
+// WithStarterProfiles configures starter-profile presets and decay behavior.
+func (s *Service) WithStarterProfiles(presets map[string]map[string]float64, decayEvents int) *Service {
+	if len(presets) == 0 {
+		presets = defaultStarterPresets()
+	} else {
+		// defensive copy
+		copied := make(map[string]map[string]float64, len(presets))
+		for segment, weights := range presets {
+			if len(weights) == 0 {
+				continue
+			}
+			inner := make(map[string]float64, len(weights))
+			for key, weight := range weights {
+				inner[strings.ToLower(strings.TrimSpace(key))] = weight
+			}
+			copied[strings.ToLower(strings.TrimSpace(segment))] = inner
+		}
+		if len(copied) == 0 {
+			copied = defaultStarterPresets()
+		}
+		presets = copied
+	}
+	if decayEvents <= 0 {
+		decayEvents = 5
+	}
+	s.starterPresets = presets
+	s.starterDecayEvents = decayEvents
 	return s
 }
 
@@ -134,7 +169,9 @@ func (s *Service) Recommend(
 
 	if isNewSegment {
 		cfg.RuleExcludeEvents = false
-		if cfg.PopularityFanout < 1000 {
+		if fanout := s.newUserPopFanout; fanout != nil && *fanout > 0 {
+			cfg.PopularityFanout = *fanout
+		} else if cfg.PopularityFanout < 1000 {
 			cfg.PopularityFanout = 1000
 		}
 	}
@@ -162,8 +199,10 @@ func (s *Service) Recommend(
 		isSparseHistory = recentEventCount < minEvents
 	}
 
-	if !isNewSegment && isSparseHistory {
-		if cfg.PopularityFanout < 1000 {
+	if isNewSegment || isSparseHistory {
+		if fanout := s.newUserPopFanout; fanout != nil && *fanout > 0 {
+			cfg.PopularityFanout = *fanout
+		} else if cfg.PopularityFanout < 1000 {
 			cfg.PopularityFanout = 1000
 		}
 	}
@@ -223,6 +262,18 @@ func (s *Service) Recommend(
 	if len(starterProfile) > 0 {
 		algoReq.StarterProfile = starterProfile
 		algoReq.StarterBlendWeight = starterWeight
+	}
+	if isNewSegment && len(algoReq.AnchorItemIDs) == 0 && len(starterProfile) > 0 {
+		anchorLimit := algoReq.K
+		if anchorLimit <= 0 {
+			anchorLimit = 10
+		}
+		if anchorLimit > 5 {
+			anchorLimit = 5
+		}
+		if anchors := s.starterAnchors(ctx, cfg, algoReq, starterProfile, anchorLimit); len(anchors) > 0 {
+			algoReq.AnchorItemIDs = anchors
+		}
 	}
 
 	engine := algorithm.NewEngine(cfg, s.store, s.rules)
@@ -315,6 +366,66 @@ func filterAnchorsByAvailability(candidates []string, availability map[string]bo
 		return nil
 	}
 	return filtered
+}
+
+func (s *Service) starterAnchors(
+	ctx context.Context,
+	cfg algorithm.Config,
+	req algorithm.Request,
+	starterProfile map[string]float64,
+	limit int,
+) []string {
+	if limit <= 0 || len(starterProfile) == 0 || s.store == nil {
+		return nil
+	}
+
+	type tagWeight struct {
+		tag    string
+		weight float64
+	}
+	weights := make([]tagWeight, 0, len(starterProfile))
+	for tag, weight := range starterProfile {
+		if weight <= 0 {
+			continue
+		}
+		weights = append(weights, tagWeight{tag: tag, weight: weight})
+	}
+	if len(weights) == 0 {
+		return nil
+	}
+	sort.Slice(weights, func(i, j int) bool {
+		return weights[i].weight > weights[j].weight
+	})
+
+	perTagLimit := limit
+	if perTagLimit < 3 {
+		perTagLimit = 3
+	}
+
+	seen := make(map[string]struct{}, limit)
+	anchors := make([]string, 0, limit)
+	for _, entry := range weights {
+		constraints := &types.PopConstraints{IncludeTagsAny: []string{entry.tag}}
+		items, err := s.store.PopularityTopK(ctx, req.OrgID, req.Namespace, cfg.HalfLifeDays, perTagLimit, constraints)
+		if err != nil {
+			continue
+		}
+		for _, item := range items {
+			id := strings.TrimSpace(item.ItemID)
+			if id == "" {
+				continue
+			}
+			if _, exists := seen[id]; exists {
+				continue
+			}
+			seen[id] = struct{}{}
+			anchors = append(anchors, id)
+			if len(anchors) >= limit {
+				return anchors
+			}
+		}
+	}
+	return anchors
 }
 
 func parseConstraints(src *spectypes.RecommendConstraints) (*types.PopConstraints, error) {

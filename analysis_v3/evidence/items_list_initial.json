@@ -1,0 +1,97 @@
+{
+  "items": [
+    {
+      "available": true,
+      "brand": "AuraThreads",
+      "category": "Fashion",
+      "category_path": [],
+      "created_at": "2025-11-04T07:14:36Z",
+      "item_id": "item_new_explore",
+      "price": 149,
+      "props": "{\"margin\": 0.55, \"novelty\": 0.95}",
+      "tags": [
+        "fashion",
+        "style",
+        "aurathreads",
+        "new_arrival"
+      ],
+      "updated_at": "2025-11-04T07:14:36Z"
+    },
+    {
+      "available": true,
+      "brand": "Stride",
+      "category": "Fitness",
+      "category_path": [],
+      "created_at": "2025-11-04T07:13:20Z",
+      "item_id": "item_0320",
+      "price": 96.31,
+      "props": "{\"margin\": 0.518, \"novelty\": 0.626, \"popularity_hint\": 0.000762, \"popularity_rank_norm\": 0.007424}",
+      "tags": [
+        "active",
+        "fitness",
+        "stride",
+        "health",
+        "high_margin"
+      ],
+      "updated_at": "2025-11-04T07:13:20Z"
+    },
+    {
+      "available": true,
+      "brand": "LuxeGlow",
+      "category": "Beauty",
+      "category_path": [],
+      "created_at": "2025-11-04T07:13:20Z",
+      "item_id": "item_0319",
+      "price": 168.9,
+      "props": "{\"margin\": 0.536, \"novelty\": 0.155, \"popularity_hint\": 0.000764, \"popularity_rank_norm\": 0.007444}",
+      "tags": [
+        "wellness",
+        "luxeglow",
+        "skincare",
+        "beauty",
+        "high_margin"
+      ],
+      "updated_at": "2025-11-04T07:13:20Z"
+    },
+    {
+      "available": true,
+      "brand": "LeafPress",
+      "category": "Books",
+      "category_path": [],
+      "created_at": "2025-11-04T07:13:20Z",
+      "item_id": "item_0318",
+      "price": 153.84,
+      "props": "{\"margin\": 0.513, \"novelty\": 0.254, \"popularity_hint\": 0.000766, \"popularity_rank_norm\": 0.007463}",
+      "tags": [
+        "leafpress",
+        "literature",
+        "books",
+        "reading",
+        "high_margin"
+      ],
+      "updated_at": "2025-11-04T07:13:20Z"
+    },
+    {
+      "available": true,
+      "brand": "AcmeTech",
+      "category": "Electronics",
+      "category_path": [],
+      "created_at": "2025-11-04T07:13:20Z",
+      "item_id": "item_0317",
+      "price": 73.7,
+      "props": "{\"margin\": 0.316, \"novelty\": 0.113, \"popularity_hint\": 0.000768, \"popularity_rank_norm\": 0.007483}",
+      "tags": [
+        "gadgets",
+        "electronics",
+        "smart",
+        "acmetech"
+      ],
+      "updated_at": "2025-11-04T07:13:20Z"
+    }
+  ],
+  "total": 321,
+  "limit": 5,
+  "offset": 0,
+  "has_more": true,
+  "next_offset": 5
+}

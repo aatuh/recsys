@@ -21,6 +21,7 @@ from typing import Dict, Iterable, List, Optional, Tuple
 
 import requests
 import urllib3
+import sys
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -68,6 +69,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--org-id", default=DEFAULT_ORG_ID)
     parser.add_argument("--limit-users", type=int, default=0, help="Optional cap for evaluation users (0 = no cap).")
     parser.add_argument("--sleep-ms", type=int, default=120, help="Sleep between recommendation calls to avoid throttling.")
+    parser.add_argument(
+        "--min-segment-lift-ndcg",
+        type=float,
+        default=0.1,
+        help="Minimum NDCG lift required for each segment (default: %(default)s = +10%%).",
+    )
+    parser.add_argument(
+        "--min-segment-lift-mrr",
+        type=float,
+        default=0.1,
+        help="Minimum MRR lift required for each segment (default: %(default)s = +10%%).",
+    )
     return parser.parse_args()
 
 
@@ -533,6 +546,29 @@ def main() -> None:
         sleep_ms=args.sleep_ms,
     )
     print(json.dumps(results, indent=2))
+    failing_segments = []
+    for segment, metrics in results.get("segments", {}).items():
+        ndcg_lift = metrics.get("lift", {}).get("ndcg@10")
+        mrr_lift = metrics.get("lift", {}).get("mrr@10")
+        if ndcg_lift is None or mrr_lift is None:
+            continue
+        if ndcg_lift < args.min_segment_lift_ndcg or mrr_lift < args.min_segment_lift_mrr:
+            failing_segments.append(
+                {
+                    "segment": segment,
+                    "ndcg_lift": ndcg_lift,
+                    "mrr_lift": mrr_lift,
+                    "threshold_ndcg": args.min_segment_lift_ndcg,
+                    "threshold_mrr": args.min_segment_lift_mrr,
+                }
+            )
+    if failing_segments:
+        sys.stderr.write(
+            "Segment guardrail failure detected: "
+            + json.dumps(failing_segments, indent=2)
+            + "\n"
+        )
+        sys.exit(1)
 
 
 if __name__ == "__main__":
