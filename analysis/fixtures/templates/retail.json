@@ -1,0 +1,99 @@
+{
+  "items": [
+    {
+      "item_id": "retail_grocery_001",
+      "category": "Gourmet",
+      "brand": "HarvestBite",
+      "price": 12.5,
+      "available": true,
+      "tags": ["gourmet", "food", "fresh", "brand:harvestbite"],
+      "props": {
+        "margin": 0.18,
+        "inventory": "in_stock",
+        "popularity_hint": 0.7
+      }
+    },
+    {
+      "item_id": "retail_beauty_002",
+      "category": "Beauty",
+      "brand": "PureBloom",
+      "price": 28.0,
+      "available": true,
+      "tags": ["beauty", "skincare", "brand:purebloom"],
+      "props": {
+        "margin": 0.45,
+        "inventory": "low_stock",
+        "popularity_hint": 0.5
+      }
+    },
+    {
+      "item_id": "retail_outdoor_003",
+      "category": "Outdoors",
+      "brand": "Trailblaze",
+      "price": 129.0,
+      "available": false,
+      "tags": ["outdoors", "adventure", "brand:trailblaze"],
+      "props": {
+        "margin": 0.35,
+        "inventory": "backorder",
+        "popularity_hint": 0.4
+      }
+    }
+  ],
+  "users": [
+    {
+      "user_id": "retail_repeat_001",
+      "traits": {
+        "segment": "trend_seekers",
+        "description": "Repeat buyers of seasonal beauty kits",
+        "loyalty_tier": "gold"
+      }
+    },
+    {
+      "user_id": "retail_weekend_002",
+      "traits": {
+        "segment": "weekend_adventurers",
+        "description": "Outdoor shoppers planning expedition restocks",
+        "loyalty_tier": "silver"
+      }
+    }
+  ],
+  "events": [
+    {
+      "user_id": "retail_repeat_001",
+      "item_id": "retail_beauty_002",
+      "type": 3,
+      "ts": "2025-09-26T14:00:00Z",
+      "value": 2,
+      "meta": {
+        "surface": "home",
+        "order_id": "ord_10001",
+        "session_id": "retail_repeat_session_01"
+      }
+    },
+    {
+      "user_id": "retail_repeat_001",
+      "item_id": "retail_grocery_001",
+      "type": 2,
+      "ts": "2025-09-26T14:02:00Z",
+      "value": 1,
+      "meta": {
+        "surface": "home",
+        "order_id": "ord_10001",
+        "session_id": "retail_repeat_session_01"
+      }
+    },
+    {
+      "user_id": "retail_weekend_002",
+      "item_id": "retail_outdoor_003",
+      "type": 1,
+      "ts": "2025-09-30T08:10:00Z",
+      "value": 1,
+      "meta": {
+        "surface": "search",
+        "session_id": "retail_weekend_session_01",
+        "note": "Interested despite backorder"
+      }
+    }
+  ]
+}

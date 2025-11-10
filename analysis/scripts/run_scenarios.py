@@ -21,6 +21,7 @@ from typing import Dict, List, Tuple
 
 sys.path.append(os.path.dirname(__file__))
 
+from env_utils import env_metadata
 from run_quality_eval import (  # type: ignore
     EVENT_WEIGHTS,
     build_session,
@@ -42,7 +43,7 @@ SLEEP_BETWEEN_CALLS = 0.12
 
 EVIDENCE_DIR = os.getenv("SCENARIO_EVIDENCE_DIR", os.path.join("analysis", "evidence"))
 
-SCENARIO_HEADERS = ["id", "name", "input", "expected", "observed", "result"]
+SCENARIO_HEADERS = ["id", "name", "input", "expected", "observed", "result", "env_hash"]
 
 
 @dataclass
@@ -848,6 +849,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--namespace", default=DEFAULT_NAMESPACE, help="Namespace to target (default: %(default)s)")
     parser.add_argument("--org-id", default=DEFAULT_ORG_ID, help="Org ID / tenant identifier (default: %(default)s)")
     parser.add_argument(
+        "--env-file",
+        default="api/.env",
+        help="Path to the env file whose hash should be recorded (default: %(default)s).",
+    )
+    parser.add_argument(
         "--s7-min-avg-mrr",
         type=float,
         default=0.2,
@@ -864,6 +870,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
+    env_meta = env_metadata(args.env_file)
     results = run_all(
         args.base_url,
         args.namespace,
@@ -876,7 +883,7 @@ def main() -> None:
         writer = csv.writer(fh)
         writer.writerow(SCENARIO_HEADERS)
         for result in results:
-            writer.writerow(result.to_row())
+            writer.writerow(result.to_row() + [env_meta.get("env_hash", "")])
 
     summary = {
         "results": [r.__dict__ for r in results],
@@ -884,6 +891,7 @@ def main() -> None:
         "base_url": args.base_url,
         "namespace": args.namespace,
         "org_id": args.org_id,
+        **env_meta,
     }
     write_evidence("scenario_summary.json", summary)
     overall_pass = all(r.passed for r in results)

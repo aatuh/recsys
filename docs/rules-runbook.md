@@ -3,6 +3,8 @@
 This runbook explains how to verify, monitor, and troubleshoot the rule/override
 pipeline in production.
 
+> **Who should read this?** Business stakeholders and engineers responsible for merchandising overrides and guardrail monitoring.
+
 ## 1. Rule precedence refresher
 
 When a recommendation request arrives, the engine evaluates rules in priority
@@ -83,6 +85,18 @@ window.
    telemetry. When the targets recover, bake the updated settings into the
    environment (`COVERAGE_LONG_TAIL_HINT_THRESHOLD`, `COVERAGE_CACHE_TTL`) and
    document the change.
+
+## 3a. Configuring guardrails via `guardrails.yml`
+
+Automated suites (simulation, CI, make targets) source their thresholds from the root-level `guardrails.yml`. The file includes a `defaults` block plus per-customer overrides—each override may also scope to a namespace. Fields under `quality` map to the CLI flags on `analysis/scripts/run_quality_eval.py` (segment lifts, minimum catalog coverage, long-tail share), while `scenarios` defines the S7 checks enforced by `analysis/scripts/run_scenarios.py`.
+
+Workflow:
+
+1. **Edit `guardrails.yml`** – add or update the customer entry, optionally providing namespace-specific overrides.
+2. **Dry-run the simulation** – `python analysis/scripts/run_simulation.py --customer <name> --dry-run` prints the resolved thresholds so you can confirm the edits.
+3. **Commit + run CI** – the GitHub workflows read the same file, so the new guardrails apply immediately to the scenario suite and quality eval jobs.
+
+If you need to test with a different guardrail set (e.g., staging vs. prod), pass `--guardrails-file path/to/guardrails.yml` when invoking the simulation runner or override `GUARDRAILS_FILE` in the workflow environment. Set it to an empty string only when debugging; otherwise leave it at the repo default to ensure every evidence artifact records the enforced thresholds.
 
 ## 4. New-user onboarding playbook
 

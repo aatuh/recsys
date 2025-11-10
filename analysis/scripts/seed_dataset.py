@@ -18,8 +18,9 @@ import math
 import random
 import time
 from dataclasses import dataclass
+from collections import Counter
 from datetime import datetime, timedelta, timezone
-from typing import Dict, Iterable, List, Tuple
+from typing import Dict, Iterable, List, Optional, Tuple
 
 import requests
 import urllib3
@@ -172,8 +173,21 @@ def post_json(session: requests.Session, url: str, payload: Dict, retries: int =
 
 
 # ---------------------------------------------------------------------------
-# Generators
+# Fixture helpers & generators
 # ---------------------------------------------------------------------------
+
+def load_fixture(path: str) -> Dict[str, List[Dict]]:
+    with open(path, "r", encoding="utf-8") as fh:
+        data = json.load(fh)
+    if not isinstance(data, dict):
+        raise ValueError(f"Fixture file {path} must contain a JSON object.")
+    fixture: Dict[str, List[Dict]] = {}
+    for key in ("items", "users", "events"):
+        value = data.get(key)
+        if value is not None and not isinstance(value, list):
+            raise ValueError(f"Fixture field '{key}' must be a list.")
+        fixture[key] = value
+    return fixture
 
 def generate_items(count: int) -> List[Dict]:
     items: List[Dict] = []
@@ -306,12 +320,30 @@ def generate_events(users: List[Dict], items: List[Dict], min_events: int) -> Li
 # Main workflow
 # ---------------------------------------------------------------------------
 
-def seed_dataset(base_url: str, namespace: str, org_id: str, item_count: int, user_count: int, min_events: int) -> Dict:
+def seed_dataset(
+    base_url: str,
+    namespace: str,
+    org_id: str,
+    item_count: int,
+    user_count: int,
+    min_events: int,
+    fixture: Optional[Dict[str, List[Dict]]] = None,
+    fixture_path: Optional[str] = None,
+) -> Dict:
     random.seed(SEED)
 
-    items = generate_items(item_count)
-    users = generate_users(user_count)
-    events = generate_events(users, items, min_events)
+    if fixture and fixture.get("items"):
+        items = list(fixture["items"])
+    else:
+        items = generate_items(item_count)
+    if fixture and fixture.get("users"):
+        users = list(fixture["users"])
+    else:
+        users = generate_users(user_count)
+    if fixture and fixture.get("events"):
+        events = list(fixture["events"])
+    else:
+        events = generate_events(users, items, min_events)
 
     session = requests.Session()
     session.verify = False
@@ -375,6 +407,7 @@ def seed_dataset(base_url: str, namespace: str, org_id: str, item_count: int, us
                 "user_count": len(users),
                 "event_count": len(events),
                 "seed": SEED,
+                "fixture": fixture_path,
                 "batches": payload_manifest,
             },
             fh,
@@ -389,12 +422,22 @@ def seed_dataset(base_url: str, namespace: str, org_id: str, item_count: int, us
     with open(f"{evidence_dir}/seed_samples.json", "w", encoding="utf-8") as fh:
         json.dump(snapshot, fh, indent=2)
 
+    segment_counts = Counter(
+        (user.get("traits") or {}).get("segment", "unknown") for user in users
+    )
+    segment_samples: Dict[str, Dict] = {}
+    for user in users:
+        segment = (user.get("traits") or {}).get("segment", "unknown")
+        if segment not in segment_samples:
+            segment_samples[segment] = user.get("traits", {})
+
     stats = {
         "items": len(items),
         "users": len(users),
         "events": len(events),
         "categories": sorted({item["category"] for item in items}),
         "segments": sorted({user["traits"]["segment"] for user in users}),
+        "segment_counts": dict(sorted(segment_counts.items())),
         "time_span_days": (
             (
                 datetime.fromisoformat(events[-1]["ts"]) - datetime.fromisoformat(events[0]["ts"])
@@ -405,6 +448,15 @@ def seed_dataset(base_url: str, namespace: str, org_id: str, item_count: int, us
     }
     with open(f"{evidence_dir}/seed_stats.json", "w", encoding="utf-8") as fh:
         json.dump(stats, fh, indent=2)
+    with open(f"{evidence_dir}/seed_segments.json", "w", encoding="utf-8") as fh:
+        json.dump(
+            {
+                "segment_counts": stats["segment_counts"],
+                "segment_samples": segment_samples,
+            },
+            fh,
+            indent=2,
+        )
 
     return stats
 
@@ -417,11 +469,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--items", type=int, default=320)
     parser.add_argument("--users", type=int, default=120)
     parser.add_argument("--events", type=int, default=5200)
+    parser.add_argument(
+        "--fixture-path",
+        type=str,
+        default=None,
+        help="Path to bespoke fixture JSON with items/users/events (optional).",
+    )
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
+    fixture_data = load_fixture(args.fixture_path) if args.fixture_path else None
     stats = seed_dataset(
         base_url=args.base_url,
         namespace=args.namespace,
@@ -429,6 +488,8 @@ def main() -> None:
         item_count=args.items,
         user_count=args.users,
         min_events=args.events,
+        fixture=fixture_data,
+        fixture_path=args.fixture_path,
     )
     print(json.dumps({"status": "seeded", "stats": stats}, indent=2))
 

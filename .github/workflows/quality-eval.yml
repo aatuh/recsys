@@ -23,7 +23,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install Python dependencies
-        run: pip install requests
+        run: pip install requests pyyaml
 
       - name: Generate API env file
         run: make env PROFILE=ci
@@ -50,46 +50,39 @@ jobs:
         run: |
           python analysis/scripts/seed_dataset.py --base-url "$BASE_URL" --org-id "$ORG_ID" --namespace "$NAMESPACE"
 
+      - name: Resolve guardrails
+        id: guardrails
+        env:
+          GUARDRAILS_FILE: guardrails.yml
+          GUARDRAILS_CUSTOMER: ci
+          GUARDRAILS_NAMESPACE: default
+        run: |
+          python - <<'PY'
+import os, sys
+sys.path.append("analysis/scripts")
+import guardrails
+cfg = guardrails.load_guardrails(os.environ["GUARDRAILS_FILE"])
+resolved = guardrails.resolve_guardrails(cfg, os.environ["GUARDRAILS_CUSTOMER"], os.environ["GUARDRAILS_NAMESPACE"])
+quality = resolved.get("quality", {})
+with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+    for key, value in quality.items():
+        fh.write(f"{key}={value}\n")
+PY
+
       - name: Run quality evaluation
         env:
           BASE_URL: http://localhost:8000
           ORG_ID: 00000000-0000-0000-0000-000000000001
           NAMESPACE: default
         run: |
-          python analysis/scripts/run_quality_eval.py --base-url "$BASE_URL" --org-id "$ORG_ID" --namespace "$NAMESPACE"
-
-      - name: Enforce quality thresholds
-        run: |
-          python - <<'PY'
-import json, sys
-
-with open("analysis/quality_metrics.json", "r", encoding="utf-8") as fh:
-    data = json.load(fh)
-
-ndcg = data["overall"]["lift"]["ndcg@10"]
-recall = data["overall"]["lift"]["recall@20"]
-mrr = data["overall"]["lift"]["mrr@10"]
-coverage = data["coverage"]["system_catalog_coverage"]
-long_tail_share = data["overall"]["system"]["long_tail_share@20"]
-
-errors = []
-if ndcg < 0.10:
-    errors.append(f"NDCG lift {ndcg:.3f} < 0.10")
-if recall < 0.10:
-    errors.append(f"Recall lift {recall:.3f} < 0.10")
-if mrr < 0.10:
-    errors.append(f"MRR lift {mrr:.3f} < 0.10")
-if coverage < 0.60:
-    errors.append(f"Catalog coverage {coverage:.3f} < 0.60")
-if long_tail_share < 0.20:
-    errors.append(f"Long-tail share {long_tail_share:.3f} < 0.20")
-
-if errors:
-    print("Quality evaluation failed:")
-    for err in errors:
-        print(" -", err)
-    sys.exit(1)
-PY
+          python analysis/scripts/run_quality_eval.py \
+            --base-url "$BASE_URL" \
+            --org-id "$ORG_ID" \
+            --namespace "$NAMESPACE" \
+            --min-segment-lift-ndcg "${{ steps.guardrails.outputs.min_segment_lift_ndcg }}" \
+            --min-segment-lift-mrr "${{ steps.guardrails.outputs.min_segment_lift_mrr }}" \
+            --min-catalog-coverage "${{ steps.guardrails.outputs.min_catalog_coverage }}" \
+            --min-long-tail-share "${{ steps.guardrails.outputs.min_long_tail_share }}"
 
       - name: Collect artifacts
         run: |

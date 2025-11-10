@@ -80,9 +80,91 @@ python analysis/scripts/run_scenarios.py --base-url https://api.pepe.local --org
 make scenario-suite SCENARIO_BASE_URL=http://localhost:8000 SCENARIO_ORG_ID="$RECSYS_ORG_ID"
 ```
 
-The script saves evidence under `analysis/evidence/` and rewrites `analysis/scenarios.csv`; scenario **S7** now records the starter profile applied to cold-start users, while **S8/S9** confirm boost and trade-off telemetry.
+The script saves evidence under `analysis/evidence/` by default (override with `SCENARIO_EVIDENCE_DIR`, which CI points to `analysis_v2/evidence/ci`) and rewrites `analysis/scenarios.csv`; scenario **S7** now records the starter profile applied to cold-start users, enforces average `mrr@10` ≥ 0.2 and ≥ 4 categories (override with `--s7-min-avg-mrr` / `--s7-min-avg-categories`), while **S8/S9** confirm boost and trade-off telemetry. The workflow at `.github/workflows/scenario-suite.yml` runs the same harness on every push/PR using the `ci` profile and leaves the collected artifacts in GitHub Actions.
 
 Need the recommended diversity settings for a surface? Call `GET /v1/admin/recommendation/presets` to retrieve the current `mmr_lambda` presets (parsed from `MMR_PRESETS` or the built-in defaults) so tooling can present validated dropdowns.
+
+For end-to-end quality checks, run:
+
+```bash
+python analysis/scripts/run_quality_eval.py --base-url https://api.pepe.local --org-id "$RECSYS_ORG_ID"
+# CI example (see .github/workflows/quality-eval.yml):
+python analysis/scripts/run_quality_eval.py --base-url http://localhost:8000 --org-id "$RECSYS_ORG_ID" --namespace default
+```
+
+This script rewrites `analysis/quality_metrics.json`, refreshes `analysis/evidence/recommendation_samples_after_seed.json`, and enforces the evaluation rubric (≥10% lift per segment by default, coverage ≥0.60, long-tail share ≥0.20). Use `--min-segment-lift-ndcg` / `--min-segment-lift-mrr` if you need to temporarily override the +10% guardrail; the CI workflow stores artifacts under `analysis_v2/evidence/quality` so reviewers can diff results.
+
+Both the scenario suite and quality eval accept `--env-file` and automatically embed `env_file` / `env_hash` metadata within `analysis/scenarios.csv`, `analysis/evidence/scenario_summary.json`, and `analysis/quality_metrics.json`, ensuring every evidence snapshot is traceable to the exact `api/.env` used.
+
+Need to automate the whole workflow for a customer profile? Use the simulation orchestrator:
+
+```bash
+python analysis/scripts/run_simulation.py \
+  --customer beta-retail \
+  --base-url http://localhost:8000 \
+  --org-id "$RECSYS_ORG_ID" \
+  --env-profile dev \
+  --env-override PROFILE_BOOST=0.55 \
+  --fixture-path analysis/fixtures/sample_customer.json
+```
+
+The CLI chains env patching → restart → reset → seed → quality → scenarios and drops a provenance bundle under `analysis/reports/<customer>/<timestamp>/simulation_metadata.json` so every experiment is auditable.
+
+Each run also copies the key artifacts (quality metrics, scenario summary, seeding manifests, scenario CSV) into the same report folder and writes a Markdown digest that highlights overall lifts and scenario pass rates—perfect for sharing with customers or reviewers.
+
+Prefer a turnkey example? Run `analysis/scripts/examples/run_marketplace_simulation.sh` (set `BASE_URL`, `NAMESPACE`, etc.) to seed the marketplace template, enforce guardrails, and collect reports in one step.
+
+To blast through multiple customers in one go, supply a manifest (YAML or JSON). Example (`analysis/fixtures/batch_simulations.yaml`):
+
+```yaml
+runs:
+  - customer: beta-retail
+    fixture_path: analysis/fixtures/sample_customer.json
+    env_overrides:
+      - PROFILE_BOOST=0.55
+  - customer: media-plus
+    namespace: media
+    env_profile: dev
+    env_overrides:
+      - PROFILE_STARTER_BLEND_WEIGHT=0.45
+      - POPULARITY_FANOUT=800
+```
+
+Execute with:
+
+```bash
+python analysis/scripts/run_simulation.py --batch-file analysis/fixtures/batch_simulations.yaml --batch-name pilot-rollout
+```
+
+The command iterates through each run, generates the per-customer report folders described above, and drops an aggregate summary under `analysis/reports/batches/pilot-rollout_<timestamp>.json`.
+
+### Guardrail configuration
+
+Guardrails are centralized in `guardrails.yml`. The file contains a `defaults` block and optional per-customer overrides (namespaces, segment lift thresholds, catalog coverage minimums, S7 expectations). `run_simulation.py`, the CI workflows, and the Make targets load this file automatically so every evidence artifact—including `analysis/quality_metrics.json`, `analysis/scenarios.csv`, and CI runs—enforces the correct targets.
+
+- To tweak a customer, add or update its entry under `customers:` (or `customers.<name>.namespaces.<ns>` if you need per-namespace granularity).
+- Run dry runs with `python analysis/scripts/run_simulation.py --customer <name> --guardrails-file guardrails.yml --dry-run` to confirm the resolved thresholds.
+- CI reads the same file, so guardrail changes automatically propagate to `.github/workflows/quality-eval.yml` and `scenario-suite.yml`. Keep PRs that adjust guardrails small and include rationale in the description.
+
+If you need to test with a bespoke config, pass `--guardrails-file path/to/custom.yml` to the simulation runner (or set `GUARDRAILS_FILE` in workflows). Set the flag to an empty string to disable guardrails during local debugging.
+
+For an end-to-end walkthrough (profiles, fixtures, simulations, evidence), see `docs/bespoke_simulations.md`.
+
+### Onboarding & Coverage Checklist
+
+1. **Start with a clean namespace** – execute `analysis/scripts/reset_namespace.py --base-url <API> --namespace <NS> --org-id <ORG> --force` (or `make reset-namespace SCENARIO_BASE_URL=<API> SCENARIO_ORG_ID=<ORG>`). The helper calls `/v1/events:delete`, `/v1/users:delete`, and `/v1/items:delete` so bespoke fixtures never mingle with previous data and writes `analysis/evidence/reset_<timestamp>.json` for auditing.
+2. **Seed data consistently** – run `analysis/scripts/seed_dataset.py` against the target API so scenarios/quality/determinism reuse the catalog snapshot stored in `analysis_v2/evidence/seed_manifest.json`. Pass `--fixture-path analysis/fixtures/sample_customer.json` (or your own JSON) to ingest bespoke items/users/events when testing customer-specific catalogs; the script now emits `seed_segments.json` with per-segment counts and sample traits for quick validation.
+   - Need inspiration? The templates under `analysis/fixtures/templates/` (marketplace, media, retail) plus the accompanying `analysis/fixtures/README.md` show the required fields and props you can copy into your own fixture.
+3. **Validate cold-start** – ensure scenario S7 passes and inspect `analysis_v2/evidence/scenario_s7_cold_start.json` for ≥4 categories plus personalization reasons on the first item.
+4. **Track segment lifts** – compare fresh `analysis/quality_metrics.json` with the evaluation baseline (`analysis_v2/quality_metrics.json`) to confirm each cohort stays ≥+10% on NDCG/MRR.
+5. **Watch coverage telemetry** – export `policy_item_served_total`, `policy_coverage_bucket_total`, and `policy_catalog_items_total`; alert if catalog coverage <0.60 or long-tail share <0.20 per the queries documented in `docs/rules-runbook.md`.
+6. **Share remediation summary** – include `analysis_v2/remediation_summary.md` (plus `analysis_v2/report.md`) in rollout notes so stakeholders see which epics are complete and which CI guardrails enforce the targets.
+
+### Cold-start guardrails
+
+- Scenario suite S7 enforces `avg_mrr@10 ≥ 0.2` and `avg_categories ≥ 4`; override via `--s7-min-avg-mrr` / `--s7-min-avg-categories` when running `analysis/scripts/run_scenarios.py`.
+- Quality eval fails the job if any segment’s NDCG/MRR lift falls below the configured thresholds (defaults `--min-segment-lift-ndcg=0.1`, `--min-segment-lift-mrr=0.1`). CI relies on these exits, so only override locally when experimenting.
+- Evidence for both guardrails is stored under `analysis_v3/evidence/` (`scenario_s7_cold_start.json`, `quality_metrics.json`) for easy diffing in reviews.
 
 ## Configuration profiles and feature flags
 
@@ -90,9 +172,25 @@ Need the recommended diversity settings for a surface? Call `GET /v1/admin/recom
   `production`. Set the `ENV` environment variable (defaults to `development`)
   to pick the profile. Each profile applies sensible defaults for debug mode,
   feature toggles (rules, decision trace, LLM explain), and observability.
-- Generate ready-to-use `.env` files with `make env PROFILE=dev|test|prod`. The
+- Generate ready-to-use `.env` files with `make env PROFILE=dev|test|prod|ci`. The
   command copies the matching template from `api/env/` into `api/.env`
-  (and `api/.env.test` for the `test` profile).
+  (and `api/.env.test` for the `test` profile). For scripted tweaks, run
+  `python analysis/scripts/configure_env.py --namespace default --set PROFILE_BOOST=0.45`
+  (repeat `--set` for multiple overrides). Every run rewrites `api/.env` and records
+  the change—including the SHA and before/after values—in
+  `analysis/env_history/<timestamp>.json`, keeping experiments auditable. Follow it
+  with `python analysis/scripts/restart_api.py --base-url http://localhost:8000`
+  (or `make restart-api`) to force `docker compose up -d --force-recreate api` and wait
+  for `/health` before seeding or running scenarios.
+- Run `python analysis/scripts/check_env_profiles.py --strict` to ensure
+  every profile under `api/env/` contains the same algorithm env vars as
+  `api/.env`. Update `config/profiles.yml` to document which namespaces use each
+  profile—`analysis/scripts/configure_env.py` will auto-select the matching profile
+  when you pass `--namespace`, so you can hot-swap namespaces without restarting
+  the API (simulation runner integration coming next).
+- The `ci` profile mirrors production knobs while disabling external
+  integrations (e.g., LLMs) so GitHub Actions can spin up the stack, run
+  the scenario suite deterministically, and publish artifacts without secrets.
 - The config loader exposes consolidated feature flags via
   `config.Config.Features`, keeping the effective state of optional subsystems
   in one place.
@@ -370,7 +468,7 @@ MMR(c) = λ * normScore(c.Score, maxScore) - (1-λ) * maxSim(c, Selected)
 - `λ` is the trade-off/weight parameter between relevance and diversity `[0,1]`.
   - `λ=1.0` = pure relevance, no diversity.
   - `λ=0.0` = pure diversity (far from selected), ignoring base scores.
-  - Typical: `0.6..0.9` to prefer relevance but still spread items.
+  - Typical: `0.1..0.3` to keep coverage high while preserving relevance. Push toward `1.0` if you prefer pure relevance.
 - `normScore(x, maxScore)` scales the candidate's base score into `[0,1]`.
 - `maxSim(c, Selected)` is the maximum similarity between the candidate and any
   already-selected item.
@@ -532,7 +630,7 @@ POST /v1/bandit/policies:upsert
       "blend_alpha": 1.0,
       "blend_beta": 0.2,
       "blend_gamma": 0.2,
-      "mmr_lambda": 0.6,
+      "mmr_lambda": 0.12,
       "brand_cap": 1,
       "category_cap": 2
     }
@@ -820,11 +918,48 @@ Every recommendation response emits structured policy summary data:
 - `policy_rule_exposure` logs report how many boosted or pinned items reached the final list.
 - Prometheus counters prefixed with `policy_` (e.g., `policy_rule_actions_total`, `policy_rule_exposure_total`) mirror the same data for dashboards and alerts.
 - `policy_rule_zero_effect` logs/counters warn when boosts or pins fire but the item never surfaces (see the runbook below).
+- Coverage guardrail counters (`policy_item_served_total`, `policy_coverage_bucket_total`, `policy_catalog_items_total`) power catalog coverage and long-tail alerts—wire them into Prometheus/Grafana to watch the ≥60 % / ≥20 % targets.
 
 Expose the `/metrics` endpoint or ship the JSON logs into your observability stack to watch override health in production.
 
 > Need a deeper playbook? See [docs/rules-runbook.md](docs/rules-runbook.md) for
 detailed troubleshooting steps and operational checklists.
+
+### Per-request algorithm overrides
+
+The `/v1/recommendations` request body accepts an optional `overrides` object so tooling can experiment without rewriting `api/.env`. Supported fields map directly to the algorithm config:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `popularity_halflife_days` | int | Override the time decay applied to popularity. |
+| `covis_window_days` | int | Override the co-visitation lookback window. |
+| `popularity_fanout` | int | Increase/decrease the number of popularity candidates seeded into the ranking loop. |
+| `mmr_lambda` | float in [0,1] | Adjust the diversification trade-off for the request. |
+| `brand_cap` / `category_cap` | int | Tighten or relax per-brand/category caps. |
+| `rule_exclude_events` | bool | Toggle the exclude-purchased rule. |
+| `purchased_window_days` | int | Set the lookback window for the exclude-purchased rule. |
+| `profile_window_days`, `profile_boost`, `profile_top_n` | ints/floats | Tune personalization strength mid-request. |
+| `profile_starter_blend_weight` | float in [0,1] | Nudge how much the curated starter profile influences cold-start results. |
+| `blend_alpha`, `blend_beta`, `blend_gamma` | float ≥ 0 | Adjust the weighted blend for pop / co-vis / emb retrievers. |
+| `bandit_algo` | string (`thompson`, `ucb1`) | Switch the bandit strategy for the request (use sparingly). |
+
+Example:
+
+```json
+{
+  "user_id": "customer_user_001",
+  "namespace": "customer_a",
+  "k": 20,
+  "overrides": {
+    "popularity_fanout": 500,
+    "mmr_lambda": 0.3,
+    "profile_boost": 0.4,
+    "profile_starter_blend_weight": 0.45
+  }
+}
+```
+
+The service applies these overrides on top of the active env profile; if a field is omitted, the baseline env value is used. Stick to the fields listed above—everything else must be changed via env profiles to keep runs reproducible.
 
 ### Tag prefix vars
 
@@ -852,6 +987,17 @@ detailed troubleshooting steps and operational checklists.
 | `PROFILE_MIN_EVENTS_FOR_BOOST` | int ≥ 0 | Minimum recent events required before the full boost applies. | Keeps cold-start users from overpowering the ranking. |
 | `PROFILE_COLD_START_MULTIPLIER` | float in [0,1] | Attenuation factor when event count < min. | `0.5` halves the boost while still nudging results. |
 
+### Starter profile & new-user overrides
+
+| Variable | Type / Range | What it does | Notes |
+|----------|--------------|--------------|-------|
+| `PROFILE_STARTER_BLEND_WEIGHT` | float in [0,1] | Baseline weight assigned to the curated starter profile before any decay. | Higher values lean harder on curated tags even when we observe history. |
+| `PROFILE_STARTER_DECAY_EVENTS` | int > 0 | Number of interactions required before the starter profile fully decays back to the base blend weight. | Smaller numbers keep the curated mix dominant for longer. |
+| `PROFILE_STARTER_PRESETS` | JSON string | Segment → category weight map that seeds the starter profile. | Example: `'{"new_users":{"electronics":0.25,"books":0.2}}'`. Keys are lower-cased automatically. |
+| `NEW_USER_BLEND_ALPHA` / `NEW_USER_BLEND_BETA` / `NEW_USER_BLEND_GAMMA` | float ≥ 0 (optional) | Override the default blend weights when the user is tagged as `new_users` or has sparse history. | Leave unset to inherit global blend weights. |
+| `NEW_USER_MMR_LAMBDA` | float in [0,1] (optional) | Override the diversity vs. relevance trade-off for new users. | Pair with blend overrides to keep lists diverse while boosting relevance. |
+| `NEW_USER_POP_FANOUT` | int > 0 (optional) | Larger popularity fan-out for cold-start requests so we have more inventory to diversify from. | Defaults to at least 1000 when unset; raise further to hit coverage targets. |
+
 ### Blended scoring weight vars
 
 We rescore each candidate using normalized signals:
@@ -870,6 +1016,13 @@ final = alpha*pop_norm + beta*co_vis_norm + gamma*embed_norm
 decayed sums, cosine similarity). Normalizing to `[0, 1]` makes the
 weights intuitive and the blend stable. Channels with no signal produce
 0 and have no effect.
+
+### Coverage guardrail vars
+
+| Variable                               | Type / Range     | What it does                                                | Notes                                               |
+|----------------------------------------|------------------|-------------------------------------------------------------|-----------------------------------------------------|
+| `COVERAGE_CACHE_TTL`                   | Go duration      | Refresh interval for the metadata cache used by guardrails. | Default `10m`; raise if the catalog rarely changes. |
+| `COVERAGE_LONG_TAIL_HINT_THRESHOLD`    | float in [0,1]   | `props.popularity_hint` cutoff that marks an item long-tail.| Default `0.01`; tune so alerts match business goals.|
 
 ### Contextual Bandit
 
@@ -906,10 +1059,9 @@ To enable the LLM-powered RCA endpoint following environment variables:
 
 ## Tuning Cheat-Sheet
 
-- Start with `alpha=1.0`, `beta=0.1`, `gamma=0.1`.
-- Raise **beta** if you want more "also viewed/bought together."
-- Raise **gamma** for cold start and meaning-based tilt.
-- `MMR_LAMBDA=0.6` is a reasonable diversity starting point.
+- Start with `alpha=0.1`, `beta=0.35`, `gamma=0.55` for balanced coverage (popularity, co-vis, ALS respectively).
+- Raise **alpha** if top-line relevance drops; raise **beta** for "also viewed" behaviour; raise **gamma** for cold-start breadth.
+- `MMR_LAMBDA=0.12` is the catalog-coverage tuned starting point; raise it toward `0.3` if you need tighter relevance.
 - Keep light personalization gentle: `PROFILE_BOOST` around `0.1–0.3`.
 - Caps (`BRAND_CAP`, `CATEGORY_CAP`) enforce catalog variety.
 

@@ -23,6 +23,8 @@ import requests
 import urllib3
 import sys
 
+from env_utils import env_metadata
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
@@ -67,6 +69,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
     parser.add_argument("--namespace", default=DEFAULT_NAMESPACE)
     parser.add_argument("--org-id", default=DEFAULT_ORG_ID)
+    parser.add_argument(
+        "--env-file",
+        default="api/.env",
+        help="Path to the env file whose hash should be recorded for provenance (default: %(default)s).",
+    )
     parser.add_argument("--limit-users", type=int, default=0, help="Optional cap for evaluation users (0 = no cap).")
     parser.add_argument("--sleep-ms", type=int, default=120, help="Sleep between recommendation calls to avoid throttling.")
     parser.add_argument(
@@ -80,6 +87,18 @@ def parse_args() -> argparse.Namespace:
         type=float,
         default=0.1,
         help="Minimum MRR lift required for each segment (default: %(default)s = +10%%).",
+    )
+    parser.add_argument(
+        "--min-catalog-coverage",
+        type=float,
+        default=0.0,
+        help="Minimum system catalog coverage required (default: disabled).",
+    )
+    parser.add_argument(
+        "--min-long-tail-share",
+        type=float,
+        default=0.0,
+        help="Minimum long-tail share required (default: disabled).",
     )
     return parser.parse_args()
 
@@ -296,6 +315,7 @@ def evaluate(
     org_id: str,
     limit_users: int,
     sleep_ms: int,
+    env_meta: Optional[Dict[str, str]] = None,
 ) -> Dict:
     session = build_session(base_url, org_id)
 
@@ -422,6 +442,8 @@ def evaluate(
         "split_timestamp": split_ts.isoformat(),
         "long_tail_threshold": long_tail_threshold,
     }
+    if env_meta:
+        results["meta"].update(env_meta)
 
     with open("analysis/quality_metrics.json", "w", encoding="utf-8") as fh:
         json.dump(results, fh, indent=2)
@@ -538,12 +560,14 @@ def summarize_metrics(
 
 def main() -> None:
     args = parse_args()
+    env_meta = env_metadata(args.env_file)
     results = evaluate(
         base_url=args.base_url,
         namespace=args.namespace,
         org_id=args.org_id,
         limit_users=args.limit_users,
         sleep_ms=args.sleep_ms,
+        env_meta=env_meta,
     )
     print(json.dumps(results, indent=2))
     failing_segments = []
@@ -566,6 +590,37 @@ def main() -> None:
         sys.stderr.write(
             "Segment guardrail failure detected: "
             + json.dumps(failing_segments, indent=2)
+            + "\n"
+        )
+        sys.exit(1)
+
+    coverage = results.get("coverage", {})
+    overall_system = results.get("overall", {}).get("system", {})
+    coverage_failures = []
+    if args.min_catalog_coverage > 0:
+        system_cov = coverage.get("system_catalog_coverage", 0.0)
+        if system_cov < args.min_catalog_coverage:
+            coverage_failures.append(
+                {
+                    "metric": "system_catalog_coverage",
+                    "value": system_cov,
+                    "threshold": args.min_catalog_coverage,
+                }
+            )
+    if args.min_long_tail_share > 0:
+        system_lts = overall_system.get("long_tail_share@20", 0.0)
+        if system_lts < args.min_long_tail_share:
+            coverage_failures.append(
+                {
+                    "metric": "system_long_tail_share",
+                    "value": system_lts,
+                    "threshold": args.min_long_tail_share,
+                }
+            )
+    if coverage_failures:
+        sys.stderr.write(
+            "Coverage guardrail failure detected: "
+            + json.dumps(coverage_failures, indent=2)
             + "\n"
         )
         sys.exit(1)

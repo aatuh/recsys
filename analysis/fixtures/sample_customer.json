@@ -1,0 +1,72 @@
+{
+  "items": [
+    {
+      "item_id": "sku_custom_001",
+      "category": "Books",
+      "brand": "LeafPress",
+      "price": 19.99,
+      "available": true,
+      "tags": ["books", "reading", "literature", "brand:leafpress"],
+      "props": {
+        "margin": 0.35,
+        "novelty": 0.42,
+        "popularity_hint": 0.8,
+        "popularity_rank_norm": 1.0
+      }
+    },
+    {
+      "item_id": "sku_custom_002",
+      "category": "Electronics",
+      "brand": "AcmeTech",
+      "price": 249.0,
+      "available": true,
+      "tags": ["electronics", "gadgets", "smart", "brand:acmetech"],
+      "props": {
+        "margin": 0.22,
+        "novelty": 0.65,
+        "popularity_hint": 0.5,
+        "popularity_rank_norm": 0.5
+      }
+    }
+  ],
+  "users": [
+    {
+      "user_id": "customer_user_001",
+      "traits": {
+        "segment": "custom_books",
+        "description": "Bookworm pilot cohort",
+        "join_date": "2025-09-15T00:00:00+00:00"
+      }
+    },
+    {
+      "user_id": "customer_user_002",
+      "traits": {
+        "segment": "custom_gadgets",
+        "description": "Electronics explorers",
+        "join_date": "2025-09-20T00:00:00+00:00"
+      }
+    }
+  ],
+  "events": [
+    {
+      "user_id": "customer_user_001",
+      "item_id": "sku_custom_001",
+      "type": 3,
+      "ts": "2025-10-01T12:00:00+00:00",
+      "value": 1,
+      "meta": {
+        "segment": "custom_books"
+      }
+    },
+    {
+      "user_id": "customer_user_002",
+      "item_id": "sku_custom_002",
+      "type": 1,
+      "ts": "2025-10-02T08:30:00+00:00",
+      "value": 1,
+      "meta": {
+        "segment": "custom_gadgets"
+      }
+    }
+  ]
+}

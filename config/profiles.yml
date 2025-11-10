@@ -1,0 +1,12 @@
+profiles:
+  dev:
+    namespaces:
+      - default
+  test:
+    namespaces: []
+  prod:
+    namespaces: []
+  ci:
+    namespaces:
+      - marketplace_demo
+      - media_demo

@@ -21,7 +21,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install Python dependencies
-        run: pip install requests
+        run: pip install requests pyyaml
 
       - name: Generate API env file
         run: make env PROFILE=ci
@@ -45,12 +45,33 @@ jobs:
           docker compose logs api
           exit 1
 
+      - name: Resolve guardrails
+        id: guardrails
+        env:
+          GUARDRAILS_FILE: guardrails.yml
+          GUARDRAILS_CUSTOMER: ci
+          GUARDRAILS_NAMESPACE: default
+        run: |
+          python - <<'PY'
+import os, sys
+sys.path.append("analysis/scripts")
+import guardrails
+cfg = guardrails.load_guardrails(os.environ["GUARDRAILS_FILE"])
+resolved = guardrails.resolve_guardrails(cfg, os.environ["GUARDRAILS_CUSTOMER"], os.environ["GUARDRAILS_NAMESPACE"])
+scenarios = resolved.get("scenarios", {})
+with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+    for key, value in scenarios.items():
+        fh.write(f"{key}={value}\n")
+PY
+
       - name: Run scenario suite
         env:
           SCENARIO_BASE_URL: http://localhost:8000
           SCENARIO_ORG_ID: 00000000-0000-0000-0000-000000000001
           SCENARIO_NAMESPACE: default
           SCENARIO_EVIDENCE_DIR: analysis_v2/evidence/ci
+          S7_MIN_AVG_MRR: ${{ steps.guardrails.outputs.s7_min_avg_mrr }}
+          S7_MIN_AVG_CATEGORIES: ${{ steps.guardrails.outputs.s7_min_avg_categories }}
         run: make scenario-suite
 
       - name: Upload scenario artifacts

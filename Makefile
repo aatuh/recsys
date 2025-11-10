@@ -6,6 +6,10 @@ NAMESPACE ?= default
 SCENARIO_BASE_URL ?= http://localhost:8000
 SCENARIO_ORG_ID ?= 00000000-0000-0000-0000-000000000001
 SCENARIO_NAMESPACE ?= default
+RESET_NAMESPACE ?= $(SCENARIO_NAMESPACE)
+RESTART_BASE_URL ?= http://localhost:8000
+S7_MIN_AVG_MRR ?= 0.2
+S7_MIN_AVG_CATEGORIES ?= 4
 
 help: ## Show this help message
 	@echo "Available targets:"
@@ -65,7 +69,16 @@ typecheck: ## Typecheck UI
 scenario-suite: ## Seed sample data and run S1-S10 scenario regression suite
 	@echo "🎯 Running end-to-end scenario suite..."
 	@python analysis/scripts/seed_dataset.py --base-url $(SCENARIO_BASE_URL) --org-id $(SCENARIO_ORG_ID) --namespace $(SCENARIO_NAMESPACE)
-	@python analysis/scripts/run_scenarios.py --base-url $(SCENARIO_BASE_URL) --org-id $(SCENARIO_ORG_ID) --namespace $(SCENARIO_NAMESPACE)
+	@python analysis/scripts/run_scenarios.py --base-url $(SCENARIO_BASE_URL) --org-id $(SCENARIO_ORG_ID) --namespace $(SCENARIO_NAMESPACE) --s7-min-avg-mrr $(S7_MIN_AVG_MRR) --s7-min-avg-categories $(S7_MIN_AVG_CATEGORIES)
+
+.PHONY: reset-namespace
+reset-namespace: ## Delete all items/users/events in the configured namespace
+	@echo "♻️ Resetting namespace '$(RESET_NAMESPACE)' on $(SCENARIO_BASE_URL)..."
+	@python analysis/scripts/reset_namespace.py --base-url $(SCENARIO_BASE_URL) --org-id $(SCENARIO_ORG_ID) --namespace $(RESET_NAMESPACE) --force
+
+.PHONY: restart-api
+restart-api: ## Restart the API container and wait for /health
+	@python analysis/scripts/restart_api.py --base-url $(RESTART_BASE_URL)
 
 prod-build: ## Build production Docker image
 	@echo "🏗️  Building production image..."

@@ -1,0 +1,102 @@
+{
+  "items": [
+    {
+      "item_id": "media_show_001",
+      "category": "Drama",
+      "brand": "StreamCo Originals",
+      "price": 0,
+      "available": true,
+      "tags": ["media", "series", "drama", "binge"],
+      "props": {
+        "season_count": 3,
+        "episode_count": 24,
+        "novelty": 0.6,
+        "popularity_hint": 0.8
+      }
+    },
+    {
+      "item_id": "media_show_002",
+      "category": "Documentary",
+      "brand": "StreamCo Studios",
+      "price": 0,
+      "available": true,
+      "tags": ["media", "film", "documentary", "long_tail"],
+      "props": {
+        "season_count": 1,
+        "episode_count": 4,
+        "novelty": 0.3,
+        "popularity_hint": 0.35
+      }
+    },
+    {
+      "item_id": "media_show_003",
+      "category": "Kids",
+      "brand": "StreamCo Family",
+      "price": 0,
+      "available": true,
+      "tags": ["media", "kids", "family"],
+      "props": {
+        "season_count": 5,
+        "episode_count": 60,
+        "novelty": 0.2,
+        "popularity_hint": 0.9
+      }
+    }
+  ],
+  "users": [
+    {
+      "user_id": "media_user_binge",
+      "traits": {
+        "segment": "niche_readers",
+        "description": "Binge watchers completing full seasons in a weekend",
+        "primary_surface": "connected_tv"
+      }
+    },
+    {
+      "user_id": "media_user_family",
+      "traits": {
+        "segment": "weekend_adventurers",
+        "description": "Family accounts focusing on kid-safe queues",
+        "primary_surface": "tablet"
+      }
+    }
+  ],
+  "events": [
+    {
+      "user_id": "media_user_binge",
+      "item_id": "media_show_001",
+      "type": 0,
+      "ts": "2025-09-30T18:15:00Z",
+      "value": 1,
+      "meta": {
+        "surface": "connected_tv",
+        "session_id": "session_binge_01",
+        "duration_seconds": 1800
+      }
+    },
+    {
+      "user_id": "media_user_binge",
+      "item_id": "media_show_002",
+      "type": 1,
+      "ts": "2025-10-01T20:45:00Z",
+      "value": 1,
+      "meta": {
+        "surface": "connected_tv",
+        "session_id": "session_binge_02",
+        "duration_seconds": 2400
+      }
+    },
+    {
+      "user_id": "media_user_family",
+      "item_id": "media_show_003",
+      "type": 3,
+      "ts": "2025-10-02T15:30:00Z",
+      "value": 1,
+      "meta": {
+        "surface": "tablet",
+        "session_id": "session_family_01",
+        "profile": "kids"
+      }
+    }
+  ]
+}
