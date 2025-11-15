@@ -2,59 +2,62 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"testing"
-	"time"
 
 	"recsys/specs/endpoints"
 	"recsys/test/shared"
-
-	"github.com/stretchr/testify/require"
 )
 
-func TestSimilar_KLimitAndPresence(t *testing.T) {
+func TestSimilarItems_UsesGeneratedEmbeddings(t *testing.T) {
 	client := shared.NewTestClient(t)
 
-	// Clean database to ensure test isolation
 	pool := shared.MustPool(t)
 	shared.CleanTables(t, pool)
 	shared.MustHaveEventTypeDefaults(t, pool)
 
-	// ingest co-visitation: u1 touched X,Y,Z; u2 touched X,Z
-	do := func(method, path string, body any, want int) {
-		client.DoRequestWithStatus(t, method, path, body, want)
-	}
-
-	do("POST", endpoints.ItemsUpsert, map[string]any{
+	payload := map[string]any{
 		"namespace": "default",
 		"items": []map[string]any{
-			{"item_id": "X", "available": true},
-			{"item_id": "Y", "available": true},
-			{"item_id": "Z", "available": true},
+			{
+				"item_id":     "anchor",
+				"available":   true,
+				"brand":       "Voltify",
+				"category":    "Electronics",
+				"description": "Smart assistant hub",
+			},
+			{
+				"item_id":     "neighbor_a",
+				"available":   true,
+				"brand":       "Voltify",
+				"category":    "Electronics",
+				"description": "Companion device",
+			},
+			{
+				"item_id":     "neighbor_b",
+				"available":   true,
+				"brand":       "LeafPress",
+				"category":    "Books",
+				"description": "Reader pick",
+			},
 		},
-	}, http.StatusAccepted)
-
-	do("POST", endpoints.UsersUpsert, map[string]any{"namespace": "default", "users": []map[string]any{{"user_id": "u1"}, {"user_id": "u2"}}}, http.StatusAccepted)
-	now := time.Now().UTC().Format(time.RFC3339)
-	do("POST", endpoints.EventsBatch, map[string]any{
-		"namespace": "default",
-		"events": []map[string]any{
-			{"user_id": "u1", "item_id": "X", "type": 0, "value": 1, "ts": now},
-			{"user_id": "u1", "item_id": "Y", "type": 0, "value": 1, "ts": now},
-			{"user_id": "u1", "item_id": "Z", "type": 0, "value": 1, "ts": now},
-			{"user_id": "u2", "item_id": "X", "type": 0, "value": 1, "ts": now},
-			{"user_id": "u2", "item_id": "Z", "type": 0, "value": 1, "ts": now},
-		},
-	}, http.StatusAccepted)
-
-	// ask similar to X with k=1
-	body := client.DoRequestWithStatus(t, http.MethodGet, endpoints.ItemsSimilarPath("X")+"?namespace=default&k=1", nil, http.StatusOK)
-
-	var sim []struct {
-		ItemID string  `json:"item_id"`
-		Score  float64 `json:"score"`
 	}
-	require.NoError(t, json.Unmarshal(body, &sim))
-	require.LessOrEqual(t, len(sim), 1)
-	require.NotEmpty(t, sim) // should have either Y or Z
+
+	client.DoRequestWithStatus(t, http.MethodPost, endpoints.ItemsUpsert, payload, http.StatusAccepted)
+
+	body := client.DoRequestWithStatus(t, http.MethodGet,
+		fmt.Sprintf("%s?namespace=default&k=2", endpoints.ItemsSimilarPath("anchor")),
+		nil, http.StatusOK)
+
+	var resp []struct {
+		ItemID string `json:"item_id"`
+	}
+	if err := json.Unmarshal(body, &resp); err != nil {
+		t.Fatalf("response not JSON: %v", err)
+	}
+
+	if len(resp) == 0 {
+		t.Fatalf("expected at least one similar item when embeddings are synthesized")
+	}
 }

@@ -16,6 +16,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 
+	"recsys/internal/algorithm"
 	"recsys/internal/audit"
 	"recsys/internal/config"
 	"recsys/internal/explain"
@@ -32,6 +33,7 @@ import (
 	manualsvc "recsys/internal/services/manual"
 	"recsys/internal/services/recommendation"
 	"recsys/internal/store"
+	"recsys/internal/version"
 	"recsys/specs/endpoints"
 )
 
@@ -130,6 +132,21 @@ func New(ctx context.Context, opts Options) (*App, error) {
 			recommendationSvc = recommendationSvc.WithBlendResolver(resolver)
 		}
 	}
+	if len(cfg.Recommendation.BlendSegmentOverrides) > 0 {
+		segmentEntries := make(map[string]recommendation.ResolvedBlendConfig, len(cfg.Recommendation.BlendSegmentOverrides))
+		now := time.Now().UTC()
+		for segment, weights := range cfg.Recommendation.BlendSegmentOverrides {
+			segmentEntries[segment] = recommendation.ResolvedBlendConfig{
+				Namespace: segment,
+				Alpha:     weights.Alpha,
+				Beta:      weights.Beta,
+				Gamma:     weights.Gamma,
+				Source:    "segment_override",
+				UpdatedAt: now,
+			}
+		}
+		recommendationSvc = recommendationSvc.WithSegmentBlendOverrides(segmentEntries)
+	}
 	recommendationSvc = recommendationSvc.WithNewUserOverrides(
 		cfg.Recommendation.NewUserBlendAlpha,
 		cfg.Recommendation.NewUserBlendBeta,
@@ -203,10 +220,15 @@ func New(ctx context.Context, opts Options) (*App, error) {
 		recConfig.BanditExperiment.Surfaces[surface] = struct{}{}
 	}
 
+	configManager := handlers.NewRecommendationConfigManager(recConfig, handlers.RecommendationConfigMetadata{
+		Source:    "env",
+		UpdatedBy: "env",
+	})
+
 	ingHandler := handlers.NewIngestionHandler(ingestionSvc, cfg.Recommendation.DefaultOrgID, logger)
 	dataHandler := handlers.NewDataManagementHandler(dataSvc, cfg.Recommendation.DefaultOrgID, logger)
 	segmentsHandler := handlers.NewSegmentsHandler(st, cfg.Recommendation.DefaultOrgID)
-	banditHandler := handlers.NewBanditHandler(st, recommendationSvc, recConfig, tracer, cfg.Recommendation.DefaultOrgID, cfg.Recommendation.BanditAlgo, logger)
+	banditHandler := handlers.NewBanditHandler(st, recommendationSvc, configManager, tracer, cfg.Recommendation.DefaultOrgID, cfg.Recommendation.BanditAlgo, logger)
 	rulesHandler := handlers.NewRulesHandler(st, rulesManager, cfg.Recommendation.DefaultOrgID, cfg.Recommendation.BrandTagPrefixes, cfg.Recommendation.CategoryTagPrefixes)
 	manualSvc := manualsvc.New(st)
 	manualHandler := handlers.NewManualOverridesHandler(manualSvc, rulesManager, cfg.Recommendation.DefaultOrgID)
@@ -230,7 +252,19 @@ func New(ctx context.Context, opts Options) (*App, error) {
 		policyMetrics = obs.PolicyMetrics
 	}
 
-	recoHandler := handlers.NewRecommendationHandler(recommendationSvc, st, recConfig, tracer, cfg.Recommendation.DefaultOrgID, logger, policyMetrics)
+	recoHandler := handlers.NewRecommendationHandler(recommendationSvc, st, configManager, tracer, cfg.Recommendation.DefaultOrgID, logger, policyMetrics)
+	configAdminHandler := handlers.NewRecommendationAdminConfigHandler(configManager, logger)
+	configAdminHandler.RegisterListener(func(newCfg handlers.RecommendationConfig) {
+		recoHandler.ApplyCoverageConfig(newCfg)
+	})
+
+	baseWeights := algorithm.BlendWeights{
+		Pop:  cfg.Recommendation.Blend.Alpha,
+		Cooc: cfg.Recommendation.Blend.Beta,
+		ALS:  cfg.Recommendation.Blend.Gamma,
+	}
+	versionInfo := version.Snapshot(algorithm.ModelVersionForWeights(baseWeights))
+	versionHandler := handlers.NewVersionHandler(versionInfo)
 
 	router := chi.NewRouter()
 	if obs != nil {
@@ -285,6 +319,7 @@ func New(ctx context.Context, opts Options) (*App, error) {
 		w.WriteHeader(code)
 		_ = json.NewEncoder(w).Encode(health)
 	})
+	router.Get(endpoints.Version, versionHandler)
 	if obs != nil && cfg.Observability.MetricsEnabled && obs.MetricsHandler != nil && cfg.Observability.MetricsPath != "" {
 		router.Handle(cfg.Observability.MetricsPath, obs.MetricsHandler)
 	}
@@ -321,6 +356,7 @@ func New(ctx context.Context, opts Options) (*App, error) {
 	protected.Post(endpoints.UsersUpsert, ingHandler.UsersUpsert)
 	protected.Post(endpoints.EventsBatch, ingHandler.EventsBatch)
 	protected.Post(endpoints.Recommendations, recoHandler.Recommend)
+	protected.Post(endpoints.Rerank, recoHandler.Rerank)
 	protected.Get(endpoints.ItemsSimilar, recoHandler.ItemSimilar)
 	protected.Post(endpoints.EventTypesUpsert, eventTypesHandler.EventTypesUpsert)
 	protected.Get(endpoints.EventTypes, eventTypesHandler.EventTypesList)
@@ -357,6 +393,8 @@ func New(ctx context.Context, opts Options) (*App, error) {
 	protected.Post(endpoints.ManualOverrides, manualHandler.ManualOverrideCreate)
 	protected.Get(endpoints.ManualOverrides, manualHandler.ManualOverrideList)
 	protected.Post(endpoints.ManualOverrideCancel, manualHandler.ManualOverrideCancel)
+	protected.Get(endpoints.AdminRecommendationConfig, configAdminHandler.Get)
+	protected.Post(endpoints.AdminRecommendationConfig, configAdminHandler.Update)
 	protected.Get(endpoints.RecommendationPresets, recoHandler.RecommendationPresets)
 
 	protected.Post(endpoints.ExplainLLM, explainHandler.ExplainLLM)

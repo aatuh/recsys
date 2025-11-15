@@ -28,6 +28,7 @@ that influences Recsys ranking. Use it alongside:
 | Env var                                         | Description                                              | Impact                                                                                          | Related knobs                                                                                   | Override?                                                                  |
 |-------------------------------------------------|----------------------------------------------------------|-------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------|
 | `BLEND_ALPHA`, `BLEND_BETA`, `BLEND_GAMMA`      | Blend weights for popularity, co-visitation, embeddings. | Higher weight raises that retriever’s influence. Ensure weights sum to ~1 for interpretability. | `NEW_USER_BLEND_*` for cold-start surfaces, `BLEND_WEIGHTS_OVERRIDES` for per-namespace tweaks. | Yes (`overrides.blend_alpha/beta/gamma`).                                  |
+| `BLEND_SEGMENT_OVERRIDES`                      | Per-segment blend weights (`segment=alpha\|beta\|gamma`). | Lets you tailor mix for named cohorts (e.g., `trend_seekers`, `weekend_adventurers`).           | Starter profiles, `PROFILE_*` knobs, namespace overrides.                                        | Not via request; configure via env/segment profiles.            |
 | `POPULARITY_FANOUT`                             | Number of popularity candidates inserted before ranking. | Larger fan-out increases catalog coverage but adds compute.                                     | `MMR_LAMBDA`, coverage guardrails.                                                              | Yes (`overrides.popularity_fanout`).                                       |
 | `COVIS_WINDOW_DAYS`, `POPULARITY_HALFLIFE_DAYS` | Time windows for co-visitation and popularity decay.     | Short windows react faster but reduce historical signal.                                        | Event ingestion cadence.                                                                        | Yes (`overrides.covis_window_days`, `overrides.popularity_halflife_days`). |
 
@@ -78,7 +79,7 @@ Remember to update `/v1/bandit/policies` when changing env defaults so experimen
 ## Runtime overrides vs. env profiles
 
 - **Per-request overrides (rapid experimentation):** Use the `overrides` object in `/v1/recommendations` for short-lived experiments or customer-specific tuning. Every override is captured in audit traces and scenario evidence.
-- **Env profiles (namespace defaults):** Use env files (`api/env/*.env`) plus `config/profiles.yml` when setting the baseline for a namespace/environment. Apply via `analysis/scripts/configure_env.py --namespace <ns>`; the script records the before/after diff in `analysis/env_history/`.
+- **Env profiles (namespace defaults):** Use env files (`api/env/*.env`) plus `config/profiles.yml` when setting the baseline for a namespace/environment. Apply via `analysis/scripts/configure_env.py --namespace <ns>`; the script records the before/after diff in `analysis/env_history/`. When you need hot-swappable profiles without restarting containers, capture/apply them via `analysis/scripts/env_profile_manager.py fetch/apply` so `/v1/admin/recommendation/config` is updated directly.
 - **Admin APIs:** For structural changes (segments, event types, starter profiles), prefer the dedicated endpoints so changes are versioned in the DB and surfaced via `/v1/segments`, `/v1/event-types`, etc.
 - **Guardrails:** Regardless of approach, run `analysis/scripts/run_simulation.py` with guardrails enabled before rollout. This ensures coverage and segment lifts stay above thresholds.
 
@@ -94,3 +95,12 @@ Remember to update `/v1/bandit/policies` when changing env defaults so experimen
 - Overrides supported in `/v1/recommendations`: see “Per-request algorithm overrides” in README.
 - Env profile parity: run `python analysis/scripts/check_env_profiles.py --strict` after editing any `api/env/*.env`.
 - Profiles ↔ namespaces: maintain `config/profiles.yml`; `run_simulation.py` uses it to pick the correct profile per namespace.
+
+### Service metadata
+
+| Env var             | Description                                               | Notes                                                                                           |
+|---------------------|-----------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+| `RECSYS_GIT_COMMIT` | Populates `/version.git_commit`.                           | Set during deploys (`git rev-parse HEAD`); falls back to the `git` CLI or `"unknown"` if unset. |
+| `RECSYS_BUILD_TIME` | Populates `/version.build_time` (UTC ISO-8601).            | Optional; defaults to process start time if not supplied.                                       |
+
+Supplying both makes `/version` output—and therefore determinism/quality evidence—traceable to a single build without digging through CI logs.

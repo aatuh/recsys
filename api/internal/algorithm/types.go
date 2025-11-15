@@ -51,21 +51,22 @@ type Config struct {
 
 // Request represents a recommendation request
 type Request struct {
-	OrgID              uuid.UUID
-	UserID             string
-	Namespace          string
-	Surface            string
-	SegmentID          string
-	K                  int
-	Constraints        *types.PopConstraints
-	Blend              *BlendWeights
-	IncludeReasons     bool
-	ExplainLevel       ExplainLevel
-	StarterProfile     map[string]float64
-	StarterBlendWeight float64
-	RecentEventCount   int
-	InjectAnchors      bool
-	AnchorItemIDs      []string
+	OrgID                uuid.UUID
+	UserID               string
+	Namespace            string
+	Surface              string
+	SegmentID            string
+	K                    int
+	Constraints          *types.PopConstraints
+	Blend                *BlendWeights
+	IncludeReasons       bool
+	ExplainLevel         ExplainLevel
+	StarterProfile       map[string]float64
+	StarterBlendWeight   float64
+	RecentEventCount     int
+	InjectAnchors        bool
+	AnchorItemIDs        []string
+	PrefetchedCandidates []types.ScoredItem
 }
 
 // BlendWeights represents the blending weights for different signals
@@ -73,6 +74,19 @@ type BlendWeights struct {
 	Pop  float64 // Popularity weight
 	Cooc float64 // Co-visitation weight
 	ALS  float64 // Embedding weight
+}
+
+const (
+	ModelVersionPopularity = "popularity_v1"
+	ModelVersionBlend      = "blend_v1"
+)
+
+// ModelVersionForWeights derives the model version label given blend weights.
+func ModelVersionForWeights(weights BlendWeights) string {
+	if weights.Cooc == 0 && weights.ALS == 0 {
+		return ModelVersionPopularity
+	}
+	return ModelVersionBlend
 }
 
 // ExplainLevel controls how much structured explanation data to return.
@@ -159,6 +173,7 @@ type TraceData struct {
 	StarterProfile     map[string]float64
 	StarterBlendWeight float64
 	RecentEventCount   int
+	ManualOverrideHits []rules.OverrideHit
 }
 
 // SourceMetric captures coverage and latency for a candidate source.
@@ -169,25 +184,29 @@ type SourceMetric struct {
 
 // PolicySummary captures enforcement stats for constraints and rule actions.
 type PolicySummary struct {
-	TotalCandidates          int                 `json:"total_candidates"`
-	ExplicitExcludeHits      int                 `json:"explicit_exclude_hits"`
-	RecentEventExcludeHits   int                 `json:"recent_event_exclude_hits"`
-	AfterExclusions          int                 `json:"after_exclusions"`
-	ConstraintIncludeTags    []string            `json:"constraint_include_tags,omitempty"`
-	ConstraintFilteredCount  int                 `json:"constraint_filtered_count"`
-	ConstraintFilteredIDs    []string            `json:"constraint_filtered_ids,omitempty"`
-	constraintFilteredLookup map[string]struct{} `json:"-"`
-	AfterConstraintFilters   int                 `json:"after_constraint_filters"`
-	RuleBlockCount           int                 `json:"rule_block_count"`
-	RulePinCount             int                 `json:"rule_pin_count"`
-	RuleBoostCount           int                 `json:"rule_boost_count"`
-	RuleBoostInjected        int                 `json:"rule_boost_injected"`
-	RuleBoostExposure        int                 `json:"rule_boost_exposure"`
-	RulePinExposure          int                 `json:"rule_pin_exposure"`
-	AfterRules               int                 `json:"after_rules"`
-	FinalCount               int                 `json:"final_count"`
-	ConstraintLeakCount      int                 `json:"constraint_leak_count"`
-	ConstraintLeakIDs        []string            `json:"constraint_leak_ids,omitempty"`
+	TotalCandidates           int                 `json:"total_candidates"`
+	ExplicitExcludeHits       int                 `json:"explicit_exclude_hits"`
+	RecentEventExcludeHits    int                 `json:"recent_event_exclude_hits"`
+	AfterExclusions           int                 `json:"after_exclusions"`
+	ConstraintIncludeTags     []string            `json:"constraint_include_tags,omitempty"`
+	ConstraintFilteredCount   int                 `json:"constraint_filtered_count"`
+	ConstraintFilteredIDs     []string            `json:"constraint_filtered_ids,omitempty"`
+	constraintFilteredLookup  map[string]struct{} `json:"-"`
+	constraintFilteredReasons map[string]string   `json:"-"`
+	AfterConstraintFilters    int                 `json:"after_constraint_filters"`
+	RuleBlockCount            int                 `json:"rule_block_count"`
+	RulePinCount              int                 `json:"rule_pin_count"`
+	RuleBoostCount            int                 `json:"rule_boost_count"`
+	RuleBoostInjected         int                 `json:"rule_boost_injected"`
+	RuleBlockExposure         int                 `json:"rule_block_exposure"`
+	RuleBoostExposure         int                 `json:"rule_boost_exposure"`
+	RulePinExposure           int                 `json:"rule_pin_exposure"`
+	AfterRules                int                 `json:"after_rules"`
+	FinalCount                int                 `json:"final_count"`
+	ConstraintLeakCount       int                 `json:"constraint_leak_count"`
+	ConstraintLeakIDs         []string            `json:"constraint_leak_ids,omitempty"`
+	ConstraintLeakByReason    map[string]int      `json:"constraint_leak_by_reason,omitempty"`
+	RuleBlockExposureByRule   map[string]int      `json:"rule_block_exposure_by_rule,omitempty"`
 }
 
 // SimilarItemsRequest represents a request for similar items

@@ -2,6 +2,7 @@
 set -e
 
 if [ -z "$SKIP_API_WAIT" ]; then
+    echo "Tip: tail api/.test_log.txt on the host if console output truncates."
     echo "Waiting for API server to be ready..."
     waited=0
     until wget --no-verbose --tries=1 --spider http://api:8000/health >/dev/null 2>&1; do
@@ -16,6 +17,9 @@ else
     echo "SKIP_API_WAIT set; not waiting for API"
 fi
 
+LOG_FILE="/app/.test_log.txt"
+: > "$LOG_FILE"
+echo "Streaming go test output to $LOG_FILE"
 echo "Running tests..."
 
 # Set defaults
@@ -36,8 +40,10 @@ exit_code=0
 
 if [ -n "$FAST" ]; then
     echo "FAST mode: single go test invocation, no race/coverage"
-    go test -v -failfast $FLAGS $RUN_FLAGS $pkgs
-    exit_code=$?
+    set -o pipefail
+    go test -v -failfast $FLAGS $RUN_FLAGS $pkgs 2>&1 | tee -a "$LOG_FILE"
+    exit_code=${PIPESTATUS[0]}
+    set +o pipefail
 else
     # Clean old per-package coverage
     rm -f coverage.*.out 2>/dev/null || true
@@ -47,8 +53,10 @@ else
         echo ">> Testing $p"
         cov_file=".coverage/coverage.$(echo $p | tr '/.' '--').out"
         # -failfast only affects *within* this package; loop handles cross-package bail-out.
-        go test -v -failfast -covermode=atomic -coverprofile="$cov_file" $FLAGS $RUN_FLAGS "$p"
-        code=$?
+        set -o pipefail
+        go test -v -failfast -covermode=atomic -coverprofile="$cov_file" $FLAGS $RUN_FLAGS "$p" 2>&1 | tee -a "$LOG_FILE"
+        code=${PIPESTATUS[0]}
+        set +o pipefail
         if [ $code -ne 0 ]; then
             echo "❌ Tests failed in $p (exit $code)"
             exit_code=$code

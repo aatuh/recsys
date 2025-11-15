@@ -69,3 +69,18 @@ func TestHandlers_IngestSmoke(t *testing.T) {
 	}
 	require.True(t, found, "expected i1 in similar-to-i2")
 }
+
+func TestVersionEndpoint(t *testing.T) {
+	client := shared.NewTestClient(t)
+
+	body := client.DoRequestWithStatus(t, http.MethodGet, endpoints.Version, nil, http.StatusOK)
+	var resp struct {
+		GitCommit   string `json:"git_commit"`
+		BuildTime   string `json:"build_time"`
+		ModelVersion string `json:"model_version"`
+	}
+	require.NoError(t, json.Unmarshal(body, &resp))
+	require.NotEmpty(t, resp.GitCommit)
+	require.NotEmpty(t, resp.BuildTime)
+	require.NotEmpty(t, resp.ModelVersion)
+}

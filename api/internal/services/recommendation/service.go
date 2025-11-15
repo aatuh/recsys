@@ -59,16 +59,17 @@ type Result struct {
 
 // Service orchestrates recommendation requests.
 type Service struct {
-	store              Store
-	rules              *rules.Manager
-	blendResolver      BlendConfigResolver
-	newUserBlendAlpha  *float64
-	newUserBlendBeta   *float64
-	newUserBlendGamma  *float64
-	newUserMMRLambda   *float64
-	newUserPopFanout   *int
-	starterPresets     map[string]map[string]float64
-	starterDecayEvents int
+	store                 Store
+	rules                 *rules.Manager
+	blendResolver         BlendConfigResolver
+	segmentBlendOverrides map[string]ResolvedBlendConfig
+	newUserBlendAlpha     *float64
+	newUserBlendBeta      *float64
+	newUserBlendGamma     *float64
+	newUserMMRLambda      *float64
+	newUserPopFanout      *int
+	starterPresets        map[string]map[string]float64
+	starterDecayEvents    int
 }
 
 // New constructs a recommendation service.
@@ -79,6 +80,25 @@ func New(store Store, rulesManager *rules.Manager) *Service {
 // WithBlendResolver configures a resolver for runtime blend overrides.
 func (s *Service) WithBlendResolver(resolver BlendConfigResolver) *Service {
 	s.blendResolver = resolver
+	return s
+}
+
+// WithSegmentBlendOverrides configures static blend weights per segment name.
+func (s *Service) WithSegmentBlendOverrides(overrides map[string]ResolvedBlendConfig) *Service {
+	if len(overrides) == 0 {
+		s.segmentBlendOverrides = nil
+		return s
+	}
+	if s.segmentBlendOverrides == nil {
+		s.segmentBlendOverrides = make(map[string]ResolvedBlendConfig, len(overrides))
+	}
+	for segment, cfg := range overrides {
+		key := strings.ToLower(strings.TrimSpace(segment))
+		if key == "" {
+			continue
+		}
+		s.segmentBlendOverrides[key] = cfg
+	}
 	return s
 }
 
@@ -130,9 +150,108 @@ func (s *Service) Recommend(
 	baseCfg algorithm.Config,
 	selector SegmentSelector,
 ) (*Result, error) {
-	algoReq, err := buildAlgorithmRequest(orgID, req)
+	algoReq, cfg, selection, err := s.prepareRecommendInputs(ctx, orgID, req, baseCfg, selector)
 	if err != nil {
 		return nil, err
+	}
+
+	engine := algorithm.NewEngine(cfg, s.store, s.rules)
+	algoResp, traceData, err := engine.Recommend(ctx, algoReq)
+	if err != nil {
+		return nil, err
+	}
+
+	if selection.SegmentID != "" {
+		algoResp.SegmentID = selection.SegmentID
+	}
+	if selection.ProfileID != "" {
+		algoResp.ProfileID = selection.ProfileID
+	}
+
+	httpResp := convertToHTTPResponse(algoResp)
+
+	return &Result{
+		Response:     httpResp,
+		AlgoRequest:  algoReq,
+		AlgoConfig:   cfg,
+		AlgoResponse: algoResp,
+		TraceData:    traceData,
+		SourceStats:  traceData.SourceMetrics,
+	}, nil
+}
+
+// Rerank applies the blended scoring pipeline to a provided candidate set.
+func (s *Service) Rerank(
+	ctx context.Context,
+	orgID uuid.UUID,
+	req spectypes.RerankRequest,
+	baseCfg algorithm.Config,
+	selector SegmentSelector,
+) (*Result, error) {
+	if len(req.Items) == 0 {
+		return nil, ValidationError{Code: "empty_items", Message: "items must not be empty"}
+	}
+
+	if req.Namespace == "" {
+		req.Namespace = "default"
+	}
+	if req.K <= 0 || req.K > len(req.Items) {
+		req.K = len(req.Items)
+	}
+
+	converted := rerankAsRecommend(req)
+	algoReq, cfg, selection, err := s.prepareRecommendInputs(ctx, orgID, converted, baseCfg, selector)
+	if err != nil {
+		return nil, err
+	}
+
+	candidates, err := buildPrefetchedCandidates(req.Items)
+	if err != nil {
+		return nil, err
+	}
+	if len(candidates) == 0 {
+		return nil, ValidationError{Code: "invalid_items", Message: "no valid candidate IDs provided"}
+	}
+	algoReq.PrefetchedCandidates = candidates
+	if algoReq.K <= 0 || algoReq.K > len(candidates) {
+		algoReq.K = len(candidates)
+	}
+
+	engine := algorithm.NewEngine(cfg, s.store, s.rules)
+	algoResp, traceData, err := engine.Recommend(ctx, algoReq)
+	if err != nil {
+		return nil, err
+	}
+
+	if selection.SegmentID != "" {
+		algoResp.SegmentID = selection.SegmentID
+	}
+	if selection.ProfileID != "" {
+		algoResp.ProfileID = selection.ProfileID
+	}
+
+	httpResp := convertToHTTPResponse(algoResp)
+
+	return &Result{
+		Response:     httpResp,
+		AlgoRequest:  algoReq,
+		AlgoConfig:   cfg,
+		AlgoResponse: algoResp,
+		TraceData:    traceData,
+		SourceStats:  traceData.SourceMetrics,
+	}, nil
+}
+
+func (s *Service) prepareRecommendInputs(
+	ctx context.Context,
+	orgID uuid.UUID,
+	req spectypes.RecommendRequest,
+	baseCfg algorithm.Config,
+	selector SegmentSelector,
+) (algorithm.Request, algorithm.Config, SegmentSelection, error) {
+	algoReq, err := buildAlgorithmRequest(orgID, req)
+	if err != nil {
+		return algorithm.Request{}, algorithm.Config{}, SegmentSelection{}, err
 	}
 	cfg := baseCfg
 
@@ -140,7 +259,7 @@ func (s *Service) Recommend(
 	if selector != nil {
 		sel, err := selector(ctx, algoReq, req)
 		if err != nil {
-			return nil, err
+			return algorithm.Request{}, algorithm.Config{}, SegmentSelection{}, err
 		}
 		selection = sel
 		if selection.Profile != nil {
@@ -151,9 +270,6 @@ func (s *Service) Recommend(
 		}
 		algoReq.SegmentID = selection.SegmentID
 	}
-
-	blendOverrides(&cfg, s.resolveBlend(ctx, algoReq.Namespace))
-	applyOverrides(&cfg, req.Overrides)
 
 	segmentHint := strings.TrimSpace(selection.SegmentID)
 	if segmentHint == "" && selection.UserTraits != nil {
@@ -167,19 +283,14 @@ func (s *Service) Recommend(
 		starterSelection.SegmentID = segmentHint
 	}
 
-	if isNewSegment {
-		cfg.RuleExcludeEvents = false
-		if fanout := s.newUserPopFanout; fanout != nil && *fanout > 0 {
-			cfg.PopularityFanout = *fanout
-		} else if cfg.PopularityFanout < 1000 {
-			cfg.PopularityFanout = 1000
-		}
-	}
+	blendOverrides(&cfg, s.resolveBlend(ctx, algoReq.Namespace))
+	s.applySegmentBlendOverrides(&cfg, segmentHint)
+	applyOverrides(&cfg, req.Overrides)
 
 	recentItems, err := s.recentInteractionItems(ctx, cfg, algoReq)
 	if err != nil {
 		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
-			return nil, err
+			return algorithm.Request{}, algorithm.Config{}, SegmentSelection{}, err
 		}
 		recentItems = nil
 	}
@@ -197,6 +308,15 @@ func (s *Service) Recommend(
 		isSparseHistory = recentEventCount == 0
 	} else {
 		isSparseHistory = recentEventCount < minEvents
+	}
+
+	if isNewSegment {
+		cfg.RuleExcludeEvents = false
+		if fanout := s.newUserPopFanout; fanout != nil && *fanout > 0 {
+			cfg.PopularityFanout = *fanout
+		} else if cfg.PopularityFanout < 1000 {
+			cfg.PopularityFanout = 1000
+		}
 	}
 
 	if isNewSegment || isSparseHistory {
@@ -276,32 +396,45 @@ func (s *Service) Recommend(
 		}
 	}
 
-	engine := algorithm.NewEngine(cfg, s.store, s.rules)
-	algoResp, traceData, err := engine.Recommend(ctx, algoReq)
-	if err != nil {
-		return nil, err
+	return algoReq, cfg, selection, nil
+}
+
+func rerankAsRecommend(req spectypes.RerankRequest) spectypes.RecommendRequest {
+	return spectypes.RecommendRequest{
+		UserID:         req.UserID,
+		Namespace:      req.Namespace,
+		K:              req.K,
+		Context:        req.Context,
+		IncludeReasons: req.IncludeReasons,
+		ExplainLevel:   req.ExplainLevel,
+		Blend:          req.Blend,
+		Overrides:      req.Overrides,
+		Constraints:    req.Constraints,
 	}
+}
 
-	if selector != nil {
-		selection, _ := selector(ctx, algoReq, req)
-		if selection.SegmentID != "" {
-			algoResp.SegmentID = selection.SegmentID
-		}
-		if selection.ProfileID != "" {
-			algoResp.ProfileID = selection.ProfileID
-		}
+func buildPrefetchedCandidates(items []spectypes.RerankCandidate) ([]types.ScoredItem, error) {
+	if len(items) == 0 {
+		return nil, nil
 	}
-
-	httpResp := convertToHTTPResponse(algoResp)
-
-	return &Result{
-		Response:     httpResp,
-		AlgoRequest:  algoReq,
-		AlgoConfig:   cfg,
-		AlgoResponse: algoResp,
-		TraceData:    traceData,
-		SourceStats:  traceData.SourceMetrics,
-	}, nil
+	out := make([]types.ScoredItem, 0, len(items))
+	seen := make(map[string]struct{}, len(items))
+	for _, item := range items {
+		id := strings.TrimSpace(item.ItemID)
+		if id == "" {
+			continue
+		}
+		if _, ok := seen[id]; ok {
+			continue
+		}
+		seen[id] = struct{}{}
+		score := 0.0
+		if item.Score != nil {
+			score = *item.Score
+		}
+		out = append(out, types.ScoredItem{ItemID: id, Score: score})
+	}
+	return out, nil
 }
 
 func buildAlgorithmRequest(orgID uuid.UUID, req spectypes.RecommendRequest) (algorithm.Request, error) {
@@ -402,14 +535,21 @@ func (s *Service) starterAnchors(
 		perTagLimit = 3
 	}
 
-	seen := make(map[string]struct{}, limit)
-	anchors := make([]string, 0, limit)
+	type tagBucket struct {
+		tag   string
+		items []string
+		index int
+	}
+
+	seen := make(map[string]struct{}, limit*2)
+	buckets := make([]tagBucket, 0, len(weights))
 	for _, entry := range weights {
 		constraints := &types.PopConstraints{IncludeTagsAny: []string{entry.tag}}
 		items, err := s.store.PopularityTopK(ctx, req.OrgID, req.Namespace, cfg.HalfLifeDays, perTagLimit, constraints)
 		if err != nil {
 			continue
 		}
+		sanitized := make([]string, 0, len(items))
 		for _, item := range items {
 			id := strings.TrimSpace(item.ItemID)
 			if id == "" {
@@ -419,10 +559,35 @@ func (s *Service) starterAnchors(
 				continue
 			}
 			seen[id] = struct{}{}
-			anchors = append(anchors, id)
+			sanitized = append(sanitized, id)
+		}
+		if len(sanitized) == 0 {
+			continue
+		}
+		buckets = append(buckets, tagBucket{tag: entry.tag, items: sanitized})
+	}
+	if len(buckets) == 0 {
+		return nil
+	}
+
+	anchors := make([]string, 0, limit)
+	for added := true; len(anchors) < limit && added; {
+		added = false
+		for i := range buckets {
 			if len(anchors) >= limit {
-				return anchors
+				break
 			}
+			bucket := &buckets[i]
+			if bucket.index >= len(bucket.items) {
+				continue
+			}
+			id := bucket.items[bucket.index]
+			bucket.index++
+			if id == "" {
+				continue
+			}
+			anchors = append(anchors, id)
+			added = true
 		}
 	}
 	return anchors
@@ -531,6 +696,20 @@ func (s *Service) resolveBlend(ctx context.Context, namespace string) *ResolvedB
 		return nil
 	}
 	return resolved
+}
+
+func (s *Service) applySegmentBlendOverrides(cfg *algorithm.Config, segment string) {
+	if len(s.segmentBlendOverrides) == 0 {
+		return
+	}
+	key := strings.ToLower(strings.TrimSpace(segment))
+	if key == "" {
+		return
+	}
+	if resolved, ok := s.segmentBlendOverrides[key]; ok {
+		override := resolved
+		blendOverrides(cfg, &override)
+	}
 }
 
 func applySegmentProfile(cfg *algorithm.Config, profile types.SegmentProfile) {

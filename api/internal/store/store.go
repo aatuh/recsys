@@ -559,12 +559,21 @@ func (s *Store) ListItemsTags(
 
 		res := make(map[string]types.ItemTags, len(itemIDs))
 		for rows.Next() {
-			var id string
-			var tags []string
-			if err := rows.Scan(&id, &tags); err != nil {
+			var (
+				id        string
+				tags      []string
+				price     *float64
+				createdAt time.Time
+			)
+			if err := rows.Scan(&id, &tags, &price, &createdAt); err != nil {
 				return err
 			}
-			res[id] = types.ItemTags{ItemID: id, Tags: tags}
+			res[id] = types.ItemTags{
+				ItemID:    id,
+				Tags:      tags,
+				Price:     price,
+				CreatedAt: createdAt,
+			}
 		}
 		if err := rows.Err(); err != nil {
 			return err

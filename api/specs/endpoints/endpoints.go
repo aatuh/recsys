@@ -16,6 +16,7 @@ const (
 // Recommendation endpoints
 const (
 	Recommendations       = V1 + "/recommendations"
+	Rerank                = V1 + "/rerank"
 	ItemsSimilar          = V1 + "/items/{item_id}/similar"
 	BanditRecommendations = V1 + "/bandit/recommendations"
 )
@@ -39,7 +40,7 @@ const (
 	SegmentProfilesUpsert = V1 + "/segment-profiles:upsert"
 	SegmentProfilesDelete = V1 + "/segment-profiles:delete"
 	SegmentDryRun         = V1 + "/segments:dry-run"
- 	RecommendationPresets = V1 + "/admin/recommendation/presets"
+	RecommendationPresets = V1 + "/admin/recommendation/presets"
 )
 
 // Data management endpoints
@@ -58,11 +59,12 @@ const (
 
 // Admin rule engine endpoints
 const (
-	Rules       = V1 + "/admin/rules"
-	RuleByID    = V1 + "/admin/rules/{rule_id}"
-	RulesDryRun = V1 + "/admin/rules/dry-run"
+	Rules                = V1 + "/admin/rules"
+	RuleByID             = V1 + "/admin/rules/{rule_id}"
+	RulesDryRun          = V1 + "/admin/rules/dry-run"
 	ManualOverrides      = V1 + "/admin/manual_overrides"
 	ManualOverrideCancel = V1 + "/admin/manual_overrides/{override_id}/cancel"
+	AdminRecommendationConfig = V1 + "/admin/recommendation/config"
 )
 
 // Explain endpoints
@@ -72,8 +74,9 @@ const (
 
 // Health and documentation
 const (
-	Health = "/health"
-	Docs   = "/docs"
+	Health  = "/health"
+	Version = "/version"
+	Docs    = "/docs"
 )
 
 // Helper functions for endpoints with path parameters

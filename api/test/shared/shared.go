@@ -66,11 +66,21 @@ func MustOrgID(t *testing.T) uuid.UUID {
 // CleanTables truncates mutable tables between tests.
 func CleanTables(t *testing.T, pool *pgxpool.Pool) {
 	t.Helper()
+	dbLock.Lock()
+	defer dbLock.Unlock()
 	_, err := pool.Exec(context.Background(), `
 TRUNCATE TABLE rec_decisions;
 TRUNCATE TABLE events, items, users RESTART IDENTITY;
 TRUNCATE TABLE event_type_config;`)
 	require.NoError(t, err)
+}
+
+// WithDatabaseLock provides exclusive access to the shared test database for the duration of fn.
+func WithDatabaseLock(t *testing.T, fn func()) {
+	t.Helper()
+	dbLock.Lock()
+	defer dbLock.Unlock()
+	fn()
 }
 
 // MustHaveEventTypeDefaults guarantees global defaults exist.
@@ -94,7 +104,10 @@ type TestClient struct {
 	BaseURL string
 }
 
-var loadEnvOnce sync.Once
+var (
+	loadEnvOnce sync.Once
+	dbLock      sync.Mutex
+)
 
 func init() {
 	loadEnvOnce.Do(func() {

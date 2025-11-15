@@ -171,6 +171,65 @@
                 }
             }
         },
+        "/v1/admin/recommendation/config": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Fetch the active recommendation config snapshot",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "default",
+                        "description": "Namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.RecommendationConfigDocument"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Update the active recommendation config",
+                "parameters": [
+                    {
+                        "description": "Updated config",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.RecommendationConfigUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.RecommendationConfigDocument"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/admin/recommendation/presets": {
             "get": {
                 "produces": [
@@ -1245,6 +1304,45 @@
                 }
             }
         },
+        "/v1/rerank": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ranking"
+                ],
+                "summary": "Rerank a candidate set",
+                "parameters": [
+                    {
+                        "description": "Rerank request",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.RerankRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.RecommendResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/common.APIError"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/segment-profiles": {
             "get": {
                 "produces": [
@@ -1692,6 +1790,25 @@
                     }
                 }
             }
+        },
+        "/version": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "meta"
+                ],
+                "summary": "Describe the running build",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.VersionResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1725,6 +1842,23 @@
                         "type": "number",
                         "format": "float64"
                     }
+                }
+            }
+        },
+        "handlers.VersionResponse": {
+            "type": "object",
+            "properties": {
+                "build_time": {
+                    "type": "string",
+                    "example": "2025-01-15T12:34:56Z"
+                },
+                "git_commit": {
+                    "type": "string",
+                    "example": "d34db33f"
+                },
+                "model_version": {
+                    "type": "string",
+                    "example": "popularity_v1"
                 }
             }
         },
@@ -2268,6 +2402,26 @@
                 },
                 "variant": {
                     "type": "string"
+                }
+            }
+        },
+        "types.BanditExperimentConfig": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "holdout_percent": {
+                    "type": "number"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "surfaces": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -3188,6 +3342,224 @@
                 "segment_id": {
                     "type": "string",
                     "example": "vip"
+                }
+            }
+        },
+        "types.RecommendationConfigDocument": {
+            "type": "object",
+            "properties": {
+                "config": {
+                    "$ref": "#/definitions/types.RecommendationConfigPayload"
+                },
+                "metadata": {
+                    "$ref": "#/definitions/types.RecommendationConfigMetadata"
+                },
+                "namespace": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.RecommendationConfigMetadata": {
+            "type": "object",
+            "properties": {
+                "notes": {
+                    "type": "string"
+                },
+                "source": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.RecommendationConfigPayload": {
+            "type": "object",
+            "properties": {
+                "bandit_experiment": {
+                    "$ref": "#/definitions/types.BanditExperimentConfig"
+                },
+                "blend_alpha": {
+                    "type": "number"
+                },
+                "blend_beta": {
+                    "type": "number"
+                },
+                "blend_gamma": {
+                    "type": "number"
+                },
+                "brand_cap": {
+                    "type": "integer"
+                },
+                "brand_tag_prefixes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "category_cap": {
+                    "type": "integer"
+                },
+                "category_tag_prefixes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "co_vis_window_days": {
+                    "type": "number"
+                },
+                "coverage_cache_ttl_seconds": {
+                    "type": "number"
+                },
+                "coverage_long_tail_hint_threshold": {
+                    "type": "number"
+                },
+                "exclude_event_types": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "half_life_days": {
+                    "type": "number"
+                },
+                "mmr_lambda": {
+                    "type": "number"
+                },
+                "mmr_presets": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number",
+                        "format": "float64"
+                    }
+                },
+                "new_user_blend_alpha": {
+                    "type": "number"
+                },
+                "new_user_blend_beta": {
+                    "type": "number"
+                },
+                "new_user_blend_gamma": {
+                    "type": "number"
+                },
+                "new_user_mmr_lambda": {
+                    "type": "number"
+                },
+                "new_user_pop_fanout": {
+                    "type": "integer"
+                },
+                "popularity_fanout": {
+                    "type": "integer"
+                },
+                "profile_boost": {
+                    "type": "number"
+                },
+                "profile_cold_start_multiplier": {
+                    "type": "number"
+                },
+                "profile_min_events_for_boost": {
+                    "type": "integer"
+                },
+                "profile_starter_blend_weight": {
+                    "type": "number"
+                },
+                "profile_top_n_tags": {
+                    "type": "integer"
+                },
+                "profile_window_days": {
+                    "type": "number"
+                },
+                "purchased_window_days": {
+                    "type": "number"
+                },
+                "rule_exclude_events": {
+                    "type": "boolean"
+                },
+                "rules_enabled": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "types.RecommendationConfigUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "author": {
+                    "type": "string"
+                },
+                "config": {
+                    "$ref": "#/definitions/types.RecommendationConfigPayload"
+                },
+                "namespace": {
+                    "type": "string"
+                },
+                "notes": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.RerankCandidate": {
+            "type": "object",
+            "properties": {
+                "item_id": {
+                    "type": "string",
+                    "example": "sku-123"
+                },
+                "score": {
+                    "type": "number",
+                    "example": 0.42
+                }
+            }
+        },
+        "types.RerankRequest": {
+            "type": "object",
+            "properties": {
+                "blend": {
+                    "$ref": "#/definitions/types.RecommendBlend"
+                },
+                "constraints": {
+                    "$ref": "#/definitions/types.RecommendConstraints"
+                },
+                "context": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "explain_level": {
+                    "type": "string",
+                    "enum": [
+                        "tags",
+                        "numeric",
+                        "full"
+                    ],
+                    "example": "numeric"
+                },
+                "include_reasons": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.RerankCandidate"
+                    }
+                },
+                "k": {
+                    "type": "integer",
+                    "example": 20
+                },
+                "namespace": {
+                    "type": "string",
+                    "example": "default"
+                },
+                "overrides": {
+                    "$ref": "#/definitions/types.Overrides"
+                },
+                "user_id": {
+                    "type": "string",
+                    "example": "u_123"
                 }
             }
         },

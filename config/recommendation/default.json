@@ -1,0 +1,43 @@
+{
+  "namespace": "default",
+  "config": {
+    "half_life_days": 5,
+    "co_vis_window_days": 21,
+    "popularity_fanout": 725,
+    "mmr_lambda": 0.23,
+    "brand_cap": 2,
+    "category_cap": 3,
+    "rule_exclude_events": true,
+    "exclude_event_types": [3],
+    "brand_tag_prefixes": ["brand"],
+    "category_tag_prefixes": ["category", "cat"],
+    "purchased_window_days": 30,
+    "profile_window_days": 30,
+    "profile_boost": 0.78,
+    "profile_top_n_tags": 64,
+    "profile_min_events_for_boost": 3,
+    "profile_cold_start_multiplier": 0.9,
+    "profile_starter_blend_weight": 0.92,
+    "mmr_presets": {"home": 0.25, "product_detail": 0.35, "search": 0.2, "email": 0.3},
+    "blend_alpha": 0.32,
+    "blend_beta": 0.43,
+    "blend_gamma": 0.25,
+    "new_user_blend_alpha": 0.3,
+    "new_user_blend_beta": 0.5,
+    "new_user_blend_gamma": 0.2,
+    "new_user_mmr_lambda": 0.07,
+    "new_user_pop_fanout": 140,
+    "bandit_experiment": {
+      "enabled": true,
+      "holdout_percent": 0.1,
+      "label": "bandit_exploration_rt7d",
+      "surfaces": ["home", "cart"]
+    },
+    "rules_enabled": true,
+    "coverage_cache_ttl_seconds": 600,
+    "coverage_long_tail_hint_threshold": 0.01
+  },
+  "metadata": {
+    "notes": "Example snapshot checked into git; use analysis/scripts/recommendation_config.py to refresh."
+  }
+}

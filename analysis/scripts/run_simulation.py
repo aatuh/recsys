@@ -41,6 +41,11 @@ ARTIFACT_SOURCES = [
     ("scenarios.csv", "analysis/scenarios.csv"),
     ("seed_manifest.json", "analysis/evidence/seed_manifest.json"),
     ("seed_segments.json", "analysis/evidence/seed_segments.json"),
+    ("recommendation_dump.json", "analysis/results/recommendation_dump.json"),
+    ("exposure_dashboard.json", "analysis/results/exposure_dashboard.json"),
+    ("rules_effect_sample.json", "analysis/results/rules_effect_sample.json"),
+    ("rules_block_sample.json", "analysis/results/rules_block_sample.json"),
+    ("load_test_summary.json", "analysis/results/load_test_summary.json"),
 ]
 
 
@@ -338,6 +343,9 @@ def write_summary(report_dir: Path, metadata: Dict, artifacts: List[Dict[str, st
     artifacts_map = {art["name"]: report_dir / art["path"] for art in artifacts}
     quality = load_json_safe(artifacts_map.get("quality_metrics.json", Path()))
     scenarios = load_json_safe(artifacts_map.get("scenario_summary.json", Path()))
+    exposure = load_json_safe(artifacts_map.get("exposure_dashboard.json", Path()))
+    load_summary = load_json_safe(artifacts_map.get("load_test_summary.json", Path()))
+    rules_effect = load_json_safe(artifacts_map.get("rules_effect_sample.json", Path()))
 
     lines = [
         "# Simulation Report",
@@ -399,6 +407,60 @@ def write_summary(report_dir: Path, metadata: Dict, artifacts: List[Dict[str, st
         lines.append("")
         lines.append("- Scenario summary not available.")
         lines.append("")
+
+    if exposure:
+        names = exposure.get("namespaces", {})
+        lines.append("## Exposure Dashboard")
+        lines.append("")
+        if names:
+            lines.append("| Namespace | Ratio | Status | Max/Mean |")
+            lines.append("|-----------|-------|--------|----------|")
+            for ns, stats in names.items():
+                ratio = stats.get("exposure_ratio") or stats.get("brand_ratio") or 0
+                status = stats.get("status", "unknown")
+                lines.append(
+                    f"| {ns} | {ratio:.2f} | {status.upper()} | "
+                    f"{stats.get('max_brand_exposure', 0):.0f} / {stats.get('mean_brand_exposure', 0):.1f} |"
+                )
+            lines.append("")
+        else:
+            lines.append("- Exposure dashboard file present but no namespace data found.")
+            lines.append("")
+
+    if load_summary:
+        metrics = load_summary.get("metrics", {})
+        durations = metrics.get("http_req_duration_ms", {})
+        lines.append("## Load Test Summary")
+        lines.append("")
+        lines.append(
+            f"- Iterations: {metrics.get('iterations', 'n/a')} | "
+            f"Failure rate: {metrics.get('http_req_failed_rate', 0):.4f}"
+        )
+        if durations:
+            lines.append(
+                f"- Latency p50/p95/p99 (ms): "
+                f"{durations.get('p50', 0):.1f} / {durations.get('p95', 0):.1f} / {durations.get('p99', 0):.1f}"
+            )
+        lines.append("")
+
+    if rules_effect:
+        policy = (
+            rules_effect.get("trace", {})
+            .get("extras", {})
+            .get("policy", {})
+        )
+        if policy:
+            lines.append("## Rules Evidence")
+            lines.append("")
+            lines.append(
+                "- Rule hits: "
+                f"block={policy.get('rule_block_count', 0)}, "
+                f"boost={policy.get('rule_boost_count', 0)}, "
+                f"pin={policy.get('rule_pin_count', 0)}; "
+                f"boost exposure={policy.get('rule_boost_exposure', 0)}, "
+                f"pin exposure={policy.get('rule_pin_exposure', 0)}"
+            )
+            lines.append("")
 
     lines.append("## Artifacts")
     lines.append("")

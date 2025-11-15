@@ -46,6 +46,7 @@ func scanRule(scanner ruleScanner) (types.Rule, error) {
 		segment    pgtype.Text
 		validFrom  pgtype.Timestamptz
 		validUntil pgtype.Timestamptz
+		overrideID pgtype.UUID
 	)
 
 	if err := scanner.Scan(
@@ -68,6 +69,7 @@ func scanRule(scanner ruleScanner) (types.Rule, error) {
 		&validUntil,
 		&rule.CreatedAt,
 		&rule.UpdatedAt,
+		&overrideID,
 	); err != nil {
 		return types.Rule{}, err
 	}
@@ -103,6 +105,11 @@ func scanRule(scanner ruleScanner) (types.Rule, error) {
 	if validUntil.Valid {
 		t := validUntil.Time
 		rule.ValidUntil = &t
+	}
+	if overrideID.Valid {
+		if id, err := uuid.FromBytes(overrideID.Bytes[:]); err == nil {
+			rule.ManualOverrideID = &id
+		}
 	}
 	return rule, nil
 }

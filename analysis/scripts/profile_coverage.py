@@ -21,7 +21,7 @@ DEFAULT_BASE_URL = os.getenv("SCENARIOS_BASE_URL", "https://api.pepe.local")
 DEFAULT_NAMESPACE = os.getenv("SCENARIOS_NAMESPACE", "default")
 DEFAULT_ORG_ID = os.getenv("SCENARIOS_ORG_ID", "00000000-0000-0000-0000-000000000001")
 
-EVIDENCE_PATH = "analysis_v2/evidence/coverage_profile.json"
+EVIDENCE_PATH = "analysis/evidence/coverage_profile.json"
 SAMPLE_LIMIT = 120
 K = 20
 

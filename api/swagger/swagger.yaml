@@ -21,6 +21,18 @@ definitions:
           type: number
         type: object
     type: object
+  handlers.VersionResponse:
+    properties:
+      build_time:
+        example: "2025-01-15T12:34:56Z"
+        type: string
+      git_commit:
+        example: d34db33f
+        type: string
+      model_version:
+        example: popularity_v1
+        type: string
+    type: object
   specs_types.ScoredItem:
     properties:
       explain:
@@ -377,6 +389,19 @@ definitions:
         type: string
       variant:
         type: string
+    type: object
+  types.BanditExperimentConfig:
+    properties:
+      enabled:
+        type: boolean
+      holdout_percent:
+        type: number
+      label:
+        type: string
+      surfaces:
+        items:
+          type: string
+        type: array
     type: object
   types.BanditPoliciesUpsertRequest:
     properties:
@@ -1001,6 +1026,153 @@ definitions:
         example: vip
         type: string
     type: object
+  types.RecommendationConfigDocument:
+    properties:
+      config:
+        $ref: '#/definitions/types.RecommendationConfigPayload'
+      metadata:
+        $ref: '#/definitions/types.RecommendationConfigMetadata'
+      namespace:
+        type: string
+    type: object
+  types.RecommendationConfigMetadata:
+    properties:
+      notes:
+        type: string
+      source:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  types.RecommendationConfigPayload:
+    properties:
+      bandit_experiment:
+        $ref: '#/definitions/types.BanditExperimentConfig'
+      blend_alpha:
+        type: number
+      blend_beta:
+        type: number
+      blend_gamma:
+        type: number
+      brand_cap:
+        type: integer
+      brand_tag_prefixes:
+        items:
+          type: string
+        type: array
+      category_cap:
+        type: integer
+      category_tag_prefixes:
+        items:
+          type: string
+        type: array
+      co_vis_window_days:
+        type: number
+      coverage_cache_ttl_seconds:
+        type: number
+      coverage_long_tail_hint_threshold:
+        type: number
+      exclude_event_types:
+        items:
+          type: integer
+        type: array
+      half_life_days:
+        type: number
+      mmr_lambda:
+        type: number
+      mmr_presets:
+        additionalProperties:
+          format: float64
+          type: number
+        type: object
+      new_user_blend_alpha:
+        type: number
+      new_user_blend_beta:
+        type: number
+      new_user_blend_gamma:
+        type: number
+      new_user_mmr_lambda:
+        type: number
+      new_user_pop_fanout:
+        type: integer
+      popularity_fanout:
+        type: integer
+      profile_boost:
+        type: number
+      profile_cold_start_multiplier:
+        type: number
+      profile_min_events_for_boost:
+        type: integer
+      profile_starter_blend_weight:
+        type: number
+      profile_top_n_tags:
+        type: integer
+      profile_window_days:
+        type: number
+      purchased_window_days:
+        type: number
+      rule_exclude_events:
+        type: boolean
+      rules_enabled:
+        type: boolean
+    type: object
+  types.RecommendationConfigUpdateRequest:
+    properties:
+      author:
+        type: string
+      config:
+        $ref: '#/definitions/types.RecommendationConfigPayload'
+      namespace:
+        type: string
+      notes:
+        type: string
+    type: object
+  types.RerankCandidate:
+    properties:
+      item_id:
+        example: sku-123
+        type: string
+      score:
+        example: 0.42
+        type: number
+    type: object
+  types.RerankRequest:
+    properties:
+      blend:
+        $ref: '#/definitions/types.RecommendBlend'
+      constraints:
+        $ref: '#/definitions/types.RecommendConstraints'
+      context:
+        additionalProperties: {}
+        type: object
+      explain_level:
+        enum:
+        - tags
+        - numeric
+        - full
+        example: numeric
+        type: string
+      include_reasons:
+        example: true
+        type: boolean
+      items:
+        items:
+          $ref: '#/definitions/types.RerankCandidate'
+        type: array
+      k:
+        example: 20
+        type: integer
+      namespace:
+        example: default
+        type: string
+      overrides:
+        $ref: '#/definitions/types.Overrides'
+      user_id:
+        example: u_123
+        type: string
+    type: object
   types.RuleDryRunPinnedItem:
     properties:
       from_candidates:
@@ -1340,6 +1512,44 @@ paths:
           schema:
             $ref: '#/definitions/common.APIError'
       summary: Cancel a manual override
+      tags:
+      - admin
+  /v1/admin/recommendation/config:
+    get:
+      parameters:
+      - default: default
+        description: Namespace
+        in: query
+        name: namespace
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.RecommendationConfigDocument'
+      summary: Fetch the active recommendation config snapshot
+      tags:
+      - admin
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Updated config
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.RecommendationConfigUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.RecommendationConfigDocument'
+      summary: Update the active recommendation config
       tags:
       - admin
   /v1/admin/recommendation/presets:
@@ -2048,6 +2258,31 @@ paths:
       summary: Get recommendations for a user
       tags:
       - ranking
+  /v1/rerank:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Rerank request
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.RerankRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.RecommendResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.APIError'
+      summary: Rerank a candidate set
+      tags:
+      - ranking
   /v1/segment-profiles:
     get:
       parameters:
@@ -2343,4 +2578,16 @@ paths:
       summary: Upsert users (batch)
       tags:
       - ingestion
+  /version:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.VersionResponse'
+      summary: Describe the running build
+      tags:
+      - meta
 swagger: "2.0"

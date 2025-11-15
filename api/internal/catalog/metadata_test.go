@@ -2,6 +2,7 @@ package catalog
 
 import (
 	"encoding/json"
+	"math"
 	"testing"
 	"time"
 
@@ -125,4 +126,40 @@ func BenchmarkDeterministicEmbedding(b *testing.B) {
 			copy(existing, vec)
 		}
 	}
+}
+
+func TestDeterministicEmbeddingCosineSimilarity(t *testing.T) {
+	anchor := DeterministicEmbeddingFromText("Voltify Electronics Smart hub")
+	related := DeterministicEmbeddingFromText("Voltify Electronics Smart hub")
+	distant := DeterministicEmbeddingFromText("LeafPress Books Artisan Edition")
+
+	require.Len(t, anchor, EmbeddingDims())
+	require.Len(t, related, EmbeddingDims())
+	require.Len(t, distant, EmbeddingDims())
+
+	simSame := cosineSimilarity(anchor, related)
+	if math.Abs(1-simSame) > 1e-9 {
+		t.Fatalf("expected identical brand/category text to yield cosine ≈1; got %.6f", simSame)
+	}
+
+	simDiff := cosineSimilarity(anchor, distant)
+	if simDiff >= 0.5 {
+		t.Fatalf("expected distant text to yield noticeably lower cosine; got %.6f", simDiff)
+	}
+}
+
+func cosineSimilarity(a, b []float64) float64 {
+	if len(a) == 0 || len(b) == 0 || len(a) != len(b) {
+		return 0
+	}
+	var dot, normA, normB float64
+	for i := range a {
+		dot += a[i] * b[i]
+		normA += a[i] * a[i]
+		normB += b[i] * b[i]
+	}
+	if normA == 0 || normB == 0 {
+		return 0
+	}
+	return dot / (math.Sqrt(normA) * math.Sqrt(normB))
 }

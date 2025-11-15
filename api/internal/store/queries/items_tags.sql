@@ -7,11 +7,13 @@
 --  2. namespace (text)
 --  3. item_ids (text[])
 --
--- outputs:
---   item_id (text),
---   tags (text[])
+--   tags (text[]),
+--   price (numeric),
+--   created_at (timestamptz)
 SELECT item_id,
-    tags
+    tags,
+    price,
+    created_at
 FROM items
 WHERE org_id = $1
     AND namespace = $2

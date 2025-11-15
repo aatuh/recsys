@@ -126,11 +126,64 @@ func TestApplyConstraintFiltersUpdatesSummary(t *testing.T) {
 	if summary.constraintFilteredLookup == nil || len(summary.constraintFilteredLookup) != 1 {
 		t.Fatalf("expected lookup map populated")
 	}
+	if got := summary.constraintFilteredReasons["drop"]; got != constraintReasonInclude {
+		t.Fatalf("expected include reason recorded, got %q", got)
+	}
+}
+
+func TestApplyConstraintFiltersPriceRange(t *testing.T) {
+	eng := NewEngine(Config{}, nil, nil)
+	min := 20.0
+	max := 60.0
+	now := time.Now()
+	candidates := []types.ScoredItem{
+		{ItemID: "cheap"},
+		{ItemID: "sweetspot"},
+		{ItemID: "premium"},
+		{ItemID: "unknown-price"},
+	}
+	tags := map[string]types.ItemTags{
+		"cheap":         {ItemID: "cheap", Tags: []string{"books"}, Price: floatPtr(10), CreatedAt: now},
+		"sweetspot":     {ItemID: "sweetspot", Tags: []string{"books"}, Price: floatPtr(40), CreatedAt: now},
+		"premium":       {ItemID: "premium", Tags: []string{"books"}, Price: floatPtr(80), CreatedAt: now},
+		"unknown-price": {ItemID: "unknown-price", Tags: []string{"books"}, Price: nil, CreatedAt: now},
+	}
+	req := Request{Constraints: &types.PopConstraints{MinPrice: &min, MaxPrice: &max}}
+
+	filtered, _ := eng.applyConstraintFilters(candidates, tags, req, nil)
+	if len(filtered) != 1 || filtered[0].ItemID != "sweetspot" {
+		t.Fatalf("expected only sweetspot to remain, got %#v", filtered)
+	}
+}
+
+func TestApplyConstraintFiltersCreatedAfter(t *testing.T) {
+	eng := NewEngine(Config{}, nil, nil)
+	now := time.Now().UTC()
+	threshold := now.Add(-6 * time.Hour)
+	candidates := []types.ScoredItem{
+		{ItemID: "fresh"},
+		{ItemID: "stale"},
+	}
+	tags := map[string]types.ItemTags{
+		"fresh": {ItemID: "fresh", Price: floatPtr(25), CreatedAt: now},
+		"stale": {ItemID: "stale", Price: floatPtr(25), CreatedAt: now.Add(-24 * time.Hour)},
+	}
+	req := Request{Constraints: &types.PopConstraints{CreatedAfter: &threshold}}
+
+	filtered, _ := eng.applyConstraintFilters(candidates, tags, req, nil)
+	if len(filtered) != 1 || filtered[0].ItemID != "fresh" {
+		t.Fatalf("expected only fresh item to remain, got %#v", filtered)
+	}
+}
+
+func floatPtr(v float64) *float64 {
+	return &v
 }
 
 func TestFinalizePolicySummaryDetectsLeaks(t *testing.T) {
 	summary := PolicySummary{
-		constraintFilteredLookup: map[string]struct{}{"leaked": {}},
+		constraintFilteredLookup:  map[string]struct{}{"leaked": {}},
+		constraintFilteredReasons: map[string]string{"leaked": constraintReasonInclude},
 	}
 	resp := &Response{Items: []ScoredItem{{ItemID: "leaked"}, {ItemID: "ok"}}}
 
@@ -145,8 +198,14 @@ func TestFinalizePolicySummaryDetectsLeaks(t *testing.T) {
 	if len(summary.ConstraintLeakIDs) != 1 || summary.ConstraintLeakIDs[0] != "leaked" {
 		t.Fatalf("expected leaked ID recorded, got %#v", summary.ConstraintLeakIDs)
 	}
+	if summary.ConstraintLeakByReason[constraintReasonInclude] != 1 {
+		t.Fatalf("expected leak reason counted, got %#v", summary.ConstraintLeakByReason)
+	}
 	if summary.constraintFilteredLookup != nil {
 		t.Fatalf("expected lookup cleared after finalize")
+	}
+	if summary.constraintFilteredReasons != nil {
+		t.Fatalf("expected reason map cleared after finalize")
 	}
 }
 
@@ -168,5 +227,34 @@ func TestFinalizePolicySummaryTracksRuleExposure(t *testing.T) {
 	}
 	if summary.RulePinExposure != 1 {
 		t.Fatalf("expected pin exposure 1, got %d", summary.RulePinExposure)
+	}
+}
+
+func TestFinalizePolicySummaryTracksRuleBlockExposureByRule(t *testing.T) {
+	ruleA := uuid.New()
+	ruleB := uuid.New()
+	summary := PolicySummary{}
+	ruleResult := &rules.EvaluateResult{
+		ItemEffects: map[string]rules.ItemEffect{
+			"a": {Blocked: true, BlockRules: []uuid.UUID{ruleA}},
+			"b": {Blocked: true, BlockRules: []uuid.UUID{ruleA, ruleB}},
+			"c": {Blocked: true},
+			"d": {BoostDelta: 1},
+		},
+	}
+
+	finalizePolicySummary(&summary, nil, ruleResult)
+
+	if summary.RuleBlockExposure != 3 {
+		t.Fatalf("expected block exposure 3, got %d", summary.RuleBlockExposure)
+	}
+	if summary.RuleBlockExposureByRule[ruleA.String()] != 2 {
+		t.Fatalf("expected ruleA exposure 2, got %#v", summary.RuleBlockExposureByRule)
+	}
+	if summary.RuleBlockExposureByRule[ruleB.String()] != 1 {
+		t.Fatalf("expected ruleB exposure 1, got %#v", summary.RuleBlockExposureByRule)
+	}
+	if summary.RuleBlockExposureByRule[constraintReasonUnknown] != 1 {
+		t.Fatalf("expected unknown bucket for rule-less blocks, got %#v", summary.RuleBlockExposureByRule)
 	}
 }

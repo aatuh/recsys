@@ -36,4 +36,5 @@ RETURNING
     valid_from,
     valid_until,
     created_at,
-    updated_at;
+    updated_at,
+    NULL::uuid AS manual_override_id;

@@ -7,6 +7,7 @@ import type { types_RecommendRequest } from '../models/types_RecommendRequest';
 import type { types_RecommendResponse } from '../models/types_RecommendResponse';
 import type { types_RecommendWithBanditRequest } from '../models/types_RecommendWithBanditRequest';
 import type { types_RecommendWithBanditResponse } from '../models/types_RecommendWithBanditResponse';
+import type { types_RerankRequest } from '../models/types_RerankRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -66,6 +67,24 @@ export class RankingService {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/v1/recommendations',
+            body: payload,
+            errors: {
+                400: `Bad Request`,
+            },
+        });
+    }
+    /**
+     * Rerank a candidate set
+     * @param payload Rerank request
+     * @returns types_RecommendResponse OK
+     * @throws ApiError
+     */
+    public static postV1Rerank(
+        payload: types_RerankRequest,
+    ): CancelablePromise<types_RecommendResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/v1/rerank',
             body: payload,
             errors: {
                 400: `Bad Request`,

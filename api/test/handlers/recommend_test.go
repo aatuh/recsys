@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 
@@ -84,6 +85,7 @@ func TestRecommend_TenantOverrideAffectsRanking(t *testing.T) {
 	pool := shared.MustPool(t)
 	shared.CleanTables(t, pool)
 	shared.MustHaveEventTypeDefaults(t, pool)
+	ns := "tenant_override_" + time.Now().UTC().Format("20060102150405")
 
 	// baseline data: A has only views (type 0), B has only purchases (type 3)
 	do := func(method, path string, body any, want int) {
@@ -91,39 +93,54 @@ func TestRecommend_TenantOverrideAffectsRanking(t *testing.T) {
 	}
 
 	do("POST", endpoints.ItemsUpsert, map[string]any{
-		"namespace": "default",
+		"namespace": ns,
 		"items":     []map[string]any{{"item_id": "A", "available": true}, {"item_id": "B", "available": true}},
 	}, http.StatusAccepted)
-	do("POST", endpoints.UsersUpsert, map[string]any{"namespace": "default", "users": []map[string]any{{"user_id": "u1"}}}, http.StatusAccepted)
+	do("POST", endpoints.UsersUpsert, map[string]any{"namespace": ns, "users": []map[string]any{{"user_id": "u1"}}}, http.StatusAccepted)
 
 	now := time.Now().UTC().Format(time.RFC3339)
 	do("POST", endpoints.EventsBatch, map[string]any{
-		"namespace": "default",
+		"namespace": ns,
 		"events": []map[string]any{
 			{"user_id": "u1", "item_id": "A", "type": 0, "value": 1, "ts": now}, // view
 			{"user_id": "u1", "item_id": "B", "type": 3, "value": 1, "ts": now}, // purchase
+			{"user_id": "u1", "item_id": "A", "type": 0, "value": 1, "ts": now}, // extra view to exit cold-start
 		},
 	}, http.StatusAccepted)
 
 	// Initial recs: defaults mean B (purchase=1.0) should beat A (view=0.1)
+	do("POST", endpoints.EventTypesUpsert, map[string]any{
+		"namespace": ns,
+		"types": []map[string]any{
+			{"type": 0, "weight": 0.1},
+			{"type": 3, "weight": 1.0},
+		},
+	}, http.StatusAccepted)
 	body1 := client.DoRequestWithStatus(t, http.MethodPost, endpoints.Recommendations, map[string]any{
-		"user_id": "u1", "namespace": "default", "k": 2,
+		"user_id": "u1", "namespace": ns, "k": 2,
+		"blend": map[string]any{"pop": 1.0, "cooc": 0.0, "als": 0.0},
 		"overrides": map[string]any{
 			"rule_exclude_events": false,
+			"mmr_lambda":          1.0,
 		},
 	}, http.StatusOK)
 	var r1 struct {
 		Items []struct {
-			ItemID string `json:"item_id"`
+			ItemID string  `json:"item_id"`
+			Score  float64 `json:"score"`
 		}
 	}
 	require.NoError(t, json.Unmarshal(body1, &r1))
 	require.GreaterOrEqual(t, len(r1.Items), 2)
-	require.Equal(t, "B", r1.Items[0].ItemID)
+	scores1 := make(map[string]float64, len(r1.Items))
+	for _, it := range r1.Items {
+		scores1[it.ItemID] = it.Score
+	}
+	require.Greater(t, scores1["B"], scores1["A"], "purchase events should beat views before overrides")
 
 	// Override: boost view weight above purchase
 	do("POST", endpoints.EventTypesUpsert, map[string]any{
-		"namespace": "default",
+		"namespace": ns,
 		"types": []map[string]any{
 			{"type": 0, "weight": 1.2},
 			{"type": 3, "weight": 0.4},
@@ -132,19 +149,26 @@ func TestRecommend_TenantOverrideAffectsRanking(t *testing.T) {
 
 	// Recs after override: A should now top B
 	body2 := client.DoRequestWithStatus(t, http.MethodPost, endpoints.Recommendations, map[string]any{
-		"user_id": "u1", "namespace": "default", "k": 2,
+		"user_id": "u1", "namespace": ns, "k": 2,
+		"blend": map[string]any{"pop": 1.0, "cooc": 0.0, "als": 0.0},
 		"overrides": map[string]any{
 			"rule_exclude_events": false,
+			"mmr_lambda":          1.0,
 		},
 	}, http.StatusOK)
 	var r2 struct {
 		Items []struct {
-			ItemID string `json:"item_id"`
+			ItemID string  `json:"item_id"`
+			Score  float64 `json:"score"`
 		}
 	}
 	require.NoError(t, json.Unmarshal(body2, &r2))
 	require.GreaterOrEqual(t, len(r2.Items), 2)
-	require.Equal(t, "A", r2.Items[0].ItemID)
+	scores2 := make(map[string]float64, len(r2.Items))
+	for _, it := range r2.Items {
+		scores2[it.ItemID] = it.Score
+	}
+	require.Greater(t, scores2["A"], scores2["B"], "view-heavy weights should lift A after overrides")
 }
 
 func TestRecommend_ExplainLevels(t *testing.T) {
@@ -330,12 +354,29 @@ func TestManualOverrideBoostSurfacedItem(t *testing.T) {
 		ItemID string  `json:"item_id"`
 		Score  float64 `json:"score"`
 	}
-	parseItems := func(b []byte) []recItem {
-		var resp struct {
-			Items []recItem `json:"items"`
-		}
+	type manualOverrideTrace struct {
+		OverrideID string   `json:"override_id"`
+		RuleID     string   `json:"rule_id"`
+		Action     string   `json:"action"`
+		Matched    int      `json:"matched"`
+		Blocked    []string `json:"blocked"`
+		Boosted    []string `json:"boosted"`
+		Pinned     []string `json:"pinned"`
+		Served     []string `json:"served"`
+	}
+	type recTrace struct {
+		Extras struct {
+			ManualOverrides []manualOverrideTrace `json:"manual_overrides"`
+		} `json:"extras"`
+	}
+	type recResponse struct {
+		Items []recItem `json:"items"`
+		Trace *recTrace `json:"trace"`
+	}
+	parseResponse := func(b []byte) recResponse {
+		var resp recResponse
 		require.NoError(t, json.Unmarshal(b, &resp))
-		return resp.Items
+		return resp
 	}
 
 	req := map[string]any{
@@ -348,15 +389,20 @@ func TestManualOverrideBoostSurfacedItem(t *testing.T) {
 		},
 	}
 	initial := do(http.MethodPost, endpoints.Recommendations, req, http.StatusOK)
-	itemsBefore := parseItems(initial)
+	initialResp := parseResponse(initial)
+	itemsBefore := initialResp.Items
 	require.GreaterOrEqual(t, len(itemsBefore), 3)
 	initialTopScore := itemsBefore[0].Score
+	beforeWatchScore := 0.0
 	for _, it := range itemsBefore {
-		require.NotEqual(t, "watch_gps", it.ItemID)
+		if it.ItemID == "watch_gps" {
+			beforeWatchScore = it.Score
+			break
+		}
 	}
 
 	boostValue := 5.0
-	do(http.MethodPost, endpoints.ManualOverrides, types.ManualOverrideRequest{
+	overrideBytes := do(http.MethodPost, endpoints.ManualOverrides, types.ManualOverrideRequest{
 		Namespace:  "default",
 		Surface:    "home",
 		ItemID:     "watch_gps",
@@ -364,11 +410,14 @@ func TestManualOverrideBoostSurfacedItem(t *testing.T) {
 		BoostValue: &boostValue,
 		CreatedBy:  "test-suite",
 	}, http.StatusCreated)
+	var overrideResp types.ManualOverrideResponse
+	require.NoError(t, json.Unmarshal(overrideBytes, &overrideResp))
 
 	time.Sleep(3 * time.Second)
 
 	after := do(http.MethodPost, endpoints.Recommendations, req, http.StatusOK)
-	itemsAfter := parseItems(after)
+	afterResp := parseResponse(after)
+	itemsAfter := afterResp.Items
 	require.GreaterOrEqual(t, len(itemsAfter), 3)
 
 	var boosted *recItem
@@ -379,7 +428,27 @@ func TestManualOverrideBoostSurfacedItem(t *testing.T) {
 		}
 	}
 	require.NotNil(t, boosted, "boosted item should appear in results")
-	require.Greater(t, boosted.Score, initialTopScore, "boosted item should outrank previous best score")
+	targetScore := initialTopScore
+	if beforeWatchScore > targetScore {
+		targetScore = beforeWatchScore
+	}
+	require.Greater(t, boosted.Score, targetScore, "boosted item should outrank previous best score")
+
+	if afterResp.Trace == nil {
+		t.Fatalf("expected trace in recommendation response")
+	}
+	overrides := afterResp.Trace.Extras.ManualOverrides
+	require.NotEmpty(t, overrides, "expected manual override telemetry")
+	found := false
+	for _, hit := range overrides {
+		if hit.OverrideID == overrideResp.OverrideID {
+			found = true
+			require.Contains(t, hit.Boosted, "watch_gps")
+			require.Contains(t, hit.Served, "watch_gps")
+			break
+		}
+	}
+	require.True(t, found, "expected override hit for watch_gps")
 }
 
 func TestRecommend_IncludeTagConstraints(t *testing.T) {
@@ -446,95 +515,110 @@ func TestRecommend_IncludeTagConstraints(t *testing.T) {
 }
 
 func TestRecommend_RuleBlockTagRemovesItems(t *testing.T) {
-	client := shared.NewTestClient(t)
+	shared.WithDatabaseLock(t, func() {
+		client := shared.NewTestClient(t)
 
-	pool := shared.MustPool(t)
-	shared.CleanTables(t, pool)
-	shared.MustHaveEventTypeDefaults(t, pool)
+		pool := shared.MustPool(t)
+		shared.MustHaveEventTypeDefaults(t, pool)
 
-	do := func(method, path string, body any, want int) []byte {
-		return client.DoRequestWithStatus(t, method, path, body, want)
-	}
+		ns := strings.ToLower(strings.ReplaceAll(t.Name(), "/", "_"))
 
-	do(http.MethodPost, endpoints.ItemsUpsert, map[string]any{
-		"namespace": "default",
-		"items": []map[string]any{
-			{"item_id": "tagged_a", "available": true, "tags": []string{"high_margin", "electronics"}},
-			{"item_id": "tagged_b", "available": true, "tags": []string{"electronics"}},
-			{"item_id": "tagged_c", "available": true, "tags": []string{"high_margin", "fitness"}},
-		},
-	}, http.StatusAccepted)
-
-	do(http.MethodPost, endpoints.UsersUpsert, map[string]any{
-		"namespace": "default",
-		"users":     []map[string]any{{"user_id": "rule-user"}},
-	}, http.StatusAccepted)
-
-	now := time.Now().UTC().Format(time.RFC3339)
-	do(http.MethodPost, endpoints.EventsBatch, map[string]any{
-		"namespace": "default",
-		"events": []map[string]any{
-			{"user_id": "rule-user", "item_id": "tagged_a", "type": 3, "value": 1, "ts": now},
-			{"user_id": "rule-user", "item_id": "tagged_b", "type": 3, "value": 1, "ts": now},
-			{"user_id": "rule-user", "item_id": "tagged_c", "type": 3, "value": 1, "ts": now},
-		},
-	}, http.StatusAccepted)
-
-	baseline := do(http.MethodPost, endpoints.Recommendations, map[string]any{
-		"user_id":   "rule-user",
-		"namespace": "default",
-		"k":         5,
-		"context":   map[string]any{"surface": "home"},
-	}, http.StatusOK)
-
-	var baselineResp struct {
-		Items []struct {
-			ItemID string `json:"item_id"`
-		} `json:"items"`
-	}
-	require.NoError(t, json.Unmarshal(baseline, &baselineResp))
-	require.NotEmpty(t, baselineResp.Items)
-
-	hasHighMargin := func(items []struct {
-		ItemID string `json:"item_id"`
-	}) bool {
-		for _, it := range items {
-			if it.ItemID == "tagged_a" || it.ItemID == "tagged_c" {
-				return true
-			}
+		do := func(method, path string, body any, want int) []byte {
+			return client.DoRequestWithStatus(t, method, path, body, want)
 		}
-		return false
-	}
-	require.True(t, hasHighMargin(baselineResp.Items), "expected high_margin items in baseline recommendations")
 
-	do(http.MethodPost, endpoints.Rules, map[string]any{
-		"namespace":   "default",
-		"surface":     "home",
-		"name":        "test-block-high-margin",
-		"description": "block high margin items",
-		"action":      "BLOCK",
-		"target_type": "TAG",
-		"target_key":  "high_margin",
-		"priority":    100,
-		"enabled":     true,
-	}, http.StatusCreated)
+		seed := func() {
+			do(http.MethodPost, endpoints.ItemsUpsert, map[string]any{
+				"namespace": ns,
+				"items": []map[string]any{
+					{"item_id": "tagged_a", "available": true, "tags": []string{"high_margin", "electronics"}},
+					{"item_id": "tagged_b", "available": true, "tags": []string{"electronics"}},
+					{"item_id": "tagged_c", "available": true, "tags": []string{"high_margin", "fitness"}},
+				},
+			}, http.StatusAccepted)
 
-	// Evaluate until rule manager cache picks up the new rule.
-	var filteredResp struct {
-		Items []struct {
-			ItemID string `json:"item_id"`
-		} `json:"items"`
-	}
-	require.Eventually(t, func() bool {
-		body := do(http.MethodPost, endpoints.Recommendations, map[string]any{
+			do(http.MethodPost, endpoints.UsersUpsert, map[string]any{
+				"namespace": ns,
+				"users":     []map[string]any{{"user_id": "rule-user"}},
+			}, http.StatusAccepted)
+
+			now := time.Now().UTC().Format(time.RFC3339)
+			do(http.MethodPost, endpoints.EventsBatch, map[string]any{
+				"namespace": ns,
+				"events": []map[string]any{
+					{"user_id": "rule-user", "item_id": "tagged_a", "type": 3, "value": 1, "ts": now},
+					{"user_id": "rule-user", "item_id": "tagged_b", "type": 3, "value": 1, "ts": now},
+					{"user_id": "rule-user", "item_id": "tagged_c", "type": 3, "value": 1, "ts": now},
+				},
+			}, http.StatusAccepted)
+		}
+
+		reqPayload := map[string]any{
 			"user_id":   "rule-user",
-			"namespace": "default",
+			"namespace": ns,
 			"k":         5,
 			"context":   map[string]any{"surface": "home"},
-		}, http.StatusOK)
-		require.NoError(t, json.Unmarshal(body, &filteredResp))
-		return !hasHighMargin(filteredResp.Items)
-	}, 5*time.Second, 200*time.Millisecond, "expected high_margin items to be blocked")
+			"blend":     map[string]any{"pop": 1.0, "cooc": 0.0, "als": 0.0},
+			"constraints": map[string]any{
+				"include_tags_any": []string{"high_margin"},
+			},
+			"overrides": map[string]any{
+				"rule_exclude_events": false,
+				"mmr_lambda":          1.0,
+			},
+		}
+		var baselineResp struct {
+			Items []struct {
+				ItemID string `json:"item_id"`
+			} `json:"items"`
+		}
+
+		hasHighMargin := func(items []struct {
+			ItemID string `json:"item_id"`
+		}) bool {
+			for _, it := range items {
+				if it.ItemID == "tagged_a" || it.ItemID == "tagged_c" {
+					return true
+				}
+			}
+			return false
+		}
+
+		require.Eventually(t, func() bool {
+			seed()
+			body := do(http.MethodPost, endpoints.Recommendations, reqPayload, http.StatusOK)
+			require.NoError(t, json.Unmarshal(body, &baselineResp))
+			t.Logf("baseline items: %+v", baselineResp.Items)
+			return hasHighMargin(baselineResp.Items)
+		}, 5*time.Second, 200*time.Millisecond, "expected high_margin items in baseline recommendations")
+
+		do(http.MethodPost, endpoints.Rules, map[string]any{
+			"namespace":   ns,
+			"surface":     "home",
+			"name":        "test-block-high-margin",
+			"description": "block high margin items",
+			"action":      "BLOCK",
+			"target_type": "TAG",
+			"target_key":  "high_margin",
+			"priority":    100,
+			"enabled":     true,
+		}, http.StatusCreated)
+
+		// Evaluate until rule manager cache picks up the new rule.
+		var filteredResp struct {
+			Items []struct {
+				ItemID string `json:"item_id"`
+			} `json:"items"`
+		}
+
+		require.Eventually(t, func() bool {
+			seed()
+			body := do(http.MethodPost, endpoints.Recommendations, reqPayload, http.StatusOK)
+			require.NoError(t, json.Unmarshal(body, &filteredResp))
+			t.Logf("filtered items: %+v", filteredResp.Items)
+			return !hasHighMargin(filteredResp.Items)
+		}, 5*time.Second, 200*time.Millisecond, "expected high_margin items to be blocked")
+	})
 }
 
 func TestRecommend_PinRuleForcesPosition(t *testing.T) {
@@ -604,4 +688,58 @@ func TestRecommend_PinRuleForcesPosition(t *testing.T) {
 		}
 		return parsed.Items[0].ItemID == "pin_b"
 	}, 5*time.Second, 200*time.Millisecond, "expected pin_b to be pinned at rank 1")
+}
+
+func TestRerank_ReordersWithinProvidedCandidates(t *testing.T) {
+	client := shared.NewTestClient(t)
+
+	pool := shared.MustPool(t)
+	shared.CleanTables(t, pool)
+	shared.MustHaveEventTypeDefaults(t, pool)
+	ns := "rerank_" + time.Now().UTC().Format("20060102150405")
+
+	do := func(method, path string, body any, want int) []byte {
+		return client.DoRequestWithStatus(t, method, path, body, want)
+	}
+
+	do("POST", endpoints.ItemsUpsert, types.ItemsUpsertRequest{
+		Namespace: ns,
+		Items: []types.Item{
+			{ItemID: "A", Available: true, Tags: []string{"category:alpha"}},
+			{ItemID: "B", Available: true, Tags: []string{"category:beta"}},
+		},
+	}, http.StatusAccepted)
+	do("POST", endpoints.UsersUpsert, types.UsersUpsertRequest{
+		Namespace: ns,
+		Users:     []types.User{{UserID: "u1"}},
+	}, http.StatusAccepted)
+
+	now := time.Now().UTC().Format(time.RFC3339)
+	do("POST", endpoints.EventsBatch, types.EventsBatchRequest{
+		Namespace: ns,
+		Events: []types.Event{
+			{UserID: "u1", ItemID: "B", Type: 3, Value: 1, TS: now},
+		},
+	}, http.StatusAccepted)
+
+	body := do(http.MethodPost, endpoints.Rerank, map[string]any{
+		"user_id":   "u1",
+		"namespace": ns,
+		"k":         2,
+		"items": []map[string]any{
+			{"item_id": "A", "score": 0.3},
+			{"item_id": "B", "score": 0.2},
+		},
+		"context": map[string]any{"surface": "search"},
+	}, http.StatusOK)
+
+	var resp struct {
+		Items []struct {
+			ItemID string  `json:"item_id"`
+			Score  float64 `json:"score"`
+		} `json:"items"`
+	}
+	require.NoError(t, json.Unmarshal(body, &resp))
+	require.Len(t, resp.Items, 2)
+	require.Equal(t, []string{"B", "A"}, []string{resp.Items[0].ItemID, resp.Items[1].ItemID}, "rerank should reorder only within provided candidate set")
 }

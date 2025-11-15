@@ -33,13 +33,40 @@ Two sources expose runtime health:
      final list.
    - `policy_rule_zero_effect` – warns when a boost or pin rule matched but did
      not influence the response.
+   - `manual_override_activity` – lists every manual override (override ID + rule ID)
+     that matched the request, including which items were blocked, boosted, pinned, or
+     ultimately served.
+   - Every recommendation trace now exposes a `manual_overrides` array under
+     `trace.extras`, mirroring the log payload so investigators can see override impact
+     directly in stored responses.
 
 2. **Prometheus counters** (exposed via `/metrics`)
    - `policy_rule_actions_total{namespace, surface, action}`
    - `policy_rule_exposure_total{namespace, surface, action}`
    - `policy_rule_zero_effect_total{namespace, surface, action}`
-   - `policy_include_filter_*`, `policy_explicit_exclude_hits_total`, etc., for
-     constraint hygiene.
+   - `policy_rule_blocked_items_total{namespace, surface, rule_id}` – lets you alert when a specific block rule starts removing too many (or too few) items.
+   - `policy_override_matches_total{namespace, surface, override_id, action}` and
+     `policy_override_exposure_total{namespace, surface, override_id, action}` track
+     manual override matches/exposures per override ID so you can alert when a
+     specific override stops firing.
+   - `policy_constraint_leak_total{namespace, surface, reason}`, `policy_include_filter_*`,
+     `policy_explicit_exclude_hits_total`, etc., for constraint hygiene. The `reason`
+     label distinguishes between include-tag misses, price-band violations, stale items,
+     and other constraint failures so dashboards can point directly to the faulty guardrail.
+
+## 2a. Manual overrides in the pipeline
+
+Creating a manual override (`/v1/admin/manual_overrides`) transparently writes a
+high-priority rule under the hood. That rule flows through the same evaluator as
+block/pin/boost rules, but the engine now remembers which override fired:
+
+- Realtime traces/logs include the `override_id`, `rule_id`, and the affected
+  items (`blocked`, `boosted`, `pinned`, `served`).
+- `/metrics` exposes both match counts and exposure counts per override ID so
+  you can alert on individual campaigns.
+- `analysis/scripts/test_rules.py` seeds sample data, issues a boost/pin/block
+  override, and asserts that the telemetry increments—run it whenever you need a
+  quick end-to-end override sanity check.
 
 Dashboards and alerts should watch the zero-effect counter and the ratio of
 `rule_*_exposure` to `rule_*_count` so merchandising regressions are detected
@@ -100,10 +127,10 @@ If you need to test with a different guardrail set (e.g., staging vs. prod), pas
 
 ## 4. New-user onboarding playbook
 
-1. **Seed starter data** via `analysis/scripts/seed_dataset.py` using the same org/namespace as production; this mirrors the catalog/users captured in `analysis_v2/evidence/seed_manifest.json`.
-2. **Run scenario S7** (`make scenario-suite …`) and review `analysis_v2/evidence/scenario_s7_cold_start.json` to confirm ≥4 categories and personalization reasons for the first item.
-3. **Compare segment lifts** with `analysis_v2/quality_metrics.json`; new_users should stay ≥+10% on NDCG@10/MRR@10 after any rollout (use `analysis/scripts/run_quality_eval.py` to regenerate metrics).
-4. **Audit determinism** using `.github/workflows/determinism.yml` (or run `analysis/scripts/check_determinism.py --baseline analysis_v2/evidence/determinism_check.json`) before exposing a new surface.
+1. **Seed starter data** via `analysis/scripts/seed_dataset.py` using the same org/namespace as production; this mirrors the catalog/users captured in `analysis/evidence/seed_manifest.json`.
+2. **Run scenario S7** (`make scenario-suite …`) and review `analysis/evidence/scenario_s7_cold_start.json` to confirm ≥4 categories and personalization reasons for the first item.
+3. **Compare segment lifts** with `analysis/quality_metrics.json`; new_users should stay ≥+10% on NDCG@10/MRR@10 after any rollout (use `analysis/scripts/run_quality_eval.py` to regenerate metrics).
+4. **Audit determinism** using `.github/workflows/determinism.yml` (or run `analysis/scripts/check_determinism.py --baseline analysis/evidence/determinism_check.json`) before exposing a new surface.
 
 ## 5. Operational checklist
 

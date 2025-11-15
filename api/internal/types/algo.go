@@ -22,8 +22,10 @@ type ScoredItem struct {
 
 // ItemTags holds tags required for diversity and caps.
 type ItemTags struct {
-	ItemID string
-	Tags   []string
+	ItemID    string
+	Tags      []string
+	Price     *float64
+	CreatedAt time.Time
 }
 
 // RecAlgoStore is the minimal interface the algorithm needs from persistence.

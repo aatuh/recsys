@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
 
+	"recsys/internal/catalog"
 	"recsys/internal/store"
 	specs "recsys/specs/types"
 )
@@ -35,9 +37,10 @@ type Store interface {
 
 // Service handles ingestion domain mutations.
 type Service struct {
-	store         Store
-	embeddingDims int
-	now           func() time.Time
+	store             Store
+	embeddingDims     int
+	now               func() time.Time
+	fallbackEmbedding func(specs.Item) []float64
 }
 
 // Option configures the Service.
@@ -64,9 +67,10 @@ func WithEmbeddingDims(dims int) Option {
 // New constructs a Service backed by the provided store.
 func New(st Store, opts ...Option) *Service {
 	svc := &Service{
-		store:         st,
-		embeddingDims: store.EmbeddingDims,
-		now:           time.Now,
+		store:             st,
+		embeddingDims:     store.EmbeddingDims,
+		now:               time.Now,
+		fallbackEmbedding: deriveEmbeddingFromItem,
 	}
 	for _, opt := range opts {
 		opt(svc)
@@ -97,6 +101,12 @@ func (s *Service) UpsertItems(ctx context.Context, orgID uuid.UUID, req specs.It
 			tmp := make([]float64, len(it.Embedding))
 			copy(tmp, it.Embedding)
 			emb = &tmp
+		} else if s.fallbackEmbedding != nil {
+			if fallback := s.fallbackEmbedding(it); len(fallback) > 0 {
+				tmp := make([]float64, len(fallback))
+				copy(tmp, fallback)
+				emb = &tmp
+			}
 		}
 		batch = append(batch, store.ItemUpsert{
 			ItemID:          it.ItemID,
@@ -191,4 +201,25 @@ func cloneStringSlicePtr(src *[]string) *[]string {
 	}
 	cp := append([]string(nil), (*src)...)
 	return &cp
+}
+
+func deriveEmbeddingFromItem(it specs.Item) []float64 {
+	parts := make([]string, 0, 8)
+	if it.Brand != nil {
+		parts = append(parts, *it.Brand)
+	}
+	if it.Category != nil {
+		parts = append(parts, *it.Category)
+	}
+	if it.Description != nil {
+		parts = append(parts, *it.Description)
+	}
+	if len(parts) == 0 && len(it.Tags) > 0 {
+		parts = append(parts, it.Tags...)
+	}
+	text := strings.TrimSpace(strings.Join(parts, " "))
+	if text == "" {
+		return nil
+	}
+	return catalog.DeterministicEmbeddingFromText(text)
 }

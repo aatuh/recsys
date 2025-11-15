@@ -97,6 +97,7 @@ type RecommendationConfig struct {
 	Profile                       ProfileConfig
 	Blend                         BlendConfig
 	BlendOverrides                map[string]BlendConfig
+	BlendSegmentOverrides         map[string]BlendConfig
 	MMRPresets                    map[string]float64
 	NewUserBlendAlpha             *float64
 	NewUserBlendBeta              *float64
@@ -599,6 +600,41 @@ func Load(ctx context.Context, src Source) (Config, error) {
 			}
 			key := strings.TrimSpace(strings.ToLower(namespace))
 			cfg.Recommendation.BlendOverrides[key] = BlendConfig{Alpha: alpha, Beta: beta, Gamma: gamma}
+		}
+	}
+
+	cfg.Recommendation.BlendSegmentOverrides = map[string]BlendConfig{}
+	if raw := l.optionalString("BLEND_SEGMENT_OVERRIDES", ""); raw != "" {
+		entries := strings.Split(raw, ",")
+		for _, entry := range entries {
+			entry = strings.TrimSpace(entry)
+			if entry == "" {
+				continue
+			}
+			parts := strings.SplitN(entry, "=", 2)
+			if len(parts) != 2 {
+				l.appendErr("BLEND_SEGMENT_OVERRIDES", fmt.Errorf("invalid entry %q (expected segment=alpha|beta|gamma)", entry))
+				continue
+			}
+			segment := strings.TrimSpace(parts[0])
+			if segment == "" {
+				l.appendErr("BLEND_SEGMENT_OVERRIDES", fmt.Errorf("missing segment in entry %q", entry))
+				continue
+			}
+			weights := strings.Split(parts[1], "|")
+			if len(weights) != 3 {
+				l.appendErr("BLEND_SEGMENT_OVERRIDES", fmt.Errorf("expected three weights in entry %q", entry))
+				continue
+			}
+			alpha, errA := strconv.ParseFloat(strings.TrimSpace(weights[0]), 64)
+			beta, errB := strconv.ParseFloat(strings.TrimSpace(weights[1]), 64)
+			gamma, errC := strconv.ParseFloat(strings.TrimSpace(weights[2]), 64)
+			if errA != nil || errB != nil || errC != nil {
+				l.appendErr("BLEND_SEGMENT_OVERRIDES", fmt.Errorf("invalid weights in entry %q", entry))
+				continue
+			}
+			key := strings.TrimSpace(strings.ToLower(segment))
+			cfg.Recommendation.BlendSegmentOverrides[key] = BlendConfig{Alpha: alpha, Beta: beta, Gamma: gamma}
 		}
 	}
 

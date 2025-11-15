@@ -41,6 +41,55 @@ type RecommendationConfig struct {
 	CoverageLongTailHintThreshold float64
 }
 
+// Clone returns a deep copy of the config to avoid sharing slice/map references.
+func (c RecommendationConfig) Clone() RecommendationConfig {
+	clone := c
+	if len(c.ExcludeEventTypes) > 0 {
+		clone.ExcludeEventTypes = append([]int16(nil), c.ExcludeEventTypes...)
+	}
+	if len(c.BrandTagPrefixes) > 0 {
+		clone.BrandTagPrefixes = append([]string(nil), c.BrandTagPrefixes...)
+	}
+	if len(c.CategoryTagPrefixes) > 0 {
+		clone.CategoryTagPrefixes = append([]string(nil), c.CategoryTagPrefixes...)
+	}
+	if len(c.MMRPresets) > 0 {
+		clone.MMRPresets = make(map[string]float64, len(c.MMRPresets))
+		for k, v := range c.MMRPresets {
+			clone.MMRPresets[k] = v
+		}
+	}
+	if c.NewUserBlendAlpha != nil {
+		val := *c.NewUserBlendAlpha
+		clone.NewUserBlendAlpha = &val
+	}
+	if c.NewUserBlendBeta != nil {
+		val := *c.NewUserBlendBeta
+		clone.NewUserBlendBeta = &val
+	}
+	if c.NewUserBlendGamma != nil {
+		val := *c.NewUserBlendGamma
+		clone.NewUserBlendGamma = &val
+	}
+	if c.NewUserMMRLambda != nil {
+		val := *c.NewUserMMRLambda
+		clone.NewUserMMRLambda = &val
+	}
+	if c.NewUserPopFanout != nil {
+		val := *c.NewUserPopFanout
+		clone.NewUserPopFanout = &val
+	}
+	if len(c.BanditExperiment.Surfaces) > 0 {
+		clone.BanditExperiment.Surfaces = make(map[string]struct{}, len(c.BanditExperiment.Surfaces))
+		for k := range c.BanditExperiment.Surfaces {
+			clone.BanditExperiment.Surfaces[k] = struct{}{}
+		}
+	} else if c.BanditExperiment.Surfaces != nil {
+		clone.BanditExperiment.Surfaces = nil
+	}
+	return clone
+}
+
 // BanditExperimentConfig controls exploration holdouts for experiments.
 type BanditExperimentConfig struct {
 	Enabled        bool

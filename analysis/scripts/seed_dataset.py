@@ -13,6 +13,7 @@ All writes happen via HTTPS to BASE_URL using X-Org-ID header.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import random
@@ -40,6 +41,7 @@ BATCH_SIZE_USERS = 100
 BATCH_SIZE_EVENTS = 500
 
 SEED = 20251103
+EMBEDDING_DIMS = 384
 
 
 @dataclass
@@ -128,6 +130,16 @@ SEGMENTS: List[SegmentProfile] = [
     ),
 ]
 
+ITEM_DESCRIPTORS = [
+    "signature",
+    "curated",
+    "smart",
+    "limited",
+    "artisan",
+    "premium",
+    "versatile",
+]
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -147,6 +159,39 @@ def weighted_choice(weights: Dict[str, float]) -> str:
 def long_tail_index(idx: int, total: int) -> float:
     """Zipf-like weighting so earlier items are more popular."""
     return 1.0 / math.pow(idx + 1, 0.85) / sum(1.0 / math.pow(i + 1, 0.85) for i in range(total))
+
+
+def deterministic_embedding(text: str, dims: int = EMBEDDING_DIMS) -> List[float]:
+    seed = text.strip().lower().encode("utf-8")
+    if not seed:
+        return []
+    block = hashlib.sha256(seed).digest()
+    vec: List[float] = []
+    for i in range(dims):
+        if i and i % len(block) == 0:
+            counter = bytes([i // len(block)])
+            block = hashlib.sha256(seed + counter).digest()
+        b = block[i % len(block)]
+        vec.append(float(b) / 127.5 - 1.0)
+    return vec
+
+
+def ensure_item_embeddings(items: List[Dict]) -> None:
+    for item in items:
+        if item.get("embedding"):
+            continue
+        text_parts: List[str] = []
+        for key in ("brand", "category", "description"):
+            value = item.get(key)
+            if value:
+                text_parts.append(str(value))
+        tags = item.get("tags") or []
+        if not text_parts and tags:
+            text_parts.append(" ".join(tags))
+        text = " ".join(text_parts).strip()
+        if not text:
+            continue
+        item["embedding"] = deterministic_embedding(text)
 
 
 def chunked(iterable: Iterable, n: int) -> Iterable[List]:
@@ -218,6 +263,7 @@ def generate_items(count: int) -> List[Dict]:
             "price": round(base_price, 2),
             "available": availability,
             "tags": tags,
+            "description": f"{random.choice(ITEM_DESCRIPTORS)} {category.lower()} pick by {brand}",
             "props": {
                 "margin": round(margin, 3),
                 "novelty": round(novelty, 3),
@@ -336,6 +382,7 @@ def seed_dataset(
         items = list(fixture["items"])
     else:
         items = generate_items(item_count)
+    ensure_item_embeddings(items)
     if fixture and fixture.get("users"):
         users = list(fixture["users"])
     else:

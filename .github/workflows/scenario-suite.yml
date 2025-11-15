@@ -28,8 +28,8 @@ jobs:
 
       - name: Prepare scenario evidence directory
         run: |
-          rm -rf analysis_v2/evidence/ci
-          mkdir -p analysis_v2/evidence/ci
+          rm -rf analysis/evidence/ci
+          mkdir -p analysis/evidence/ci
 
       - name: Start services
         run: docker compose up -d db api swagger
@@ -69,7 +69,7 @@ PY
           SCENARIO_BASE_URL: http://localhost:8000
           SCENARIO_ORG_ID: 00000000-0000-0000-0000-000000000001
           SCENARIO_NAMESPACE: default
-          SCENARIO_EVIDENCE_DIR: analysis_v2/evidence/ci
+          SCENARIO_EVIDENCE_DIR: analysis/evidence/ci
           S7_MIN_AVG_MRR: ${{ steps.guardrails.outputs.s7_min_avg_mrr }}
           S7_MIN_AVG_CATEGORIES: ${{ steps.guardrails.outputs.s7_min_avg_categories }}
         run: make scenario-suite
@@ -79,9 +79,9 @@ PY
         with:
           name: scenario-evidence
           path: |
-            analysis_v2/evidence/ci
+            analysis/evidence/ci
             analysis/scenarios.csv
-            analysis_v2/evidence/ci/scenario_summary.json
+            analysis/evidence/ci/scenario_summary.json
 
       - name: Stop services
         if: always()

@@ -27,11 +27,19 @@ codegen: ## Generate code
 
 dev: ## Start development environment
 	@echo "🚀 Starting development environment..."
-	@docker-compose up
+	@docker-compose up -d
 
 down: ## Clean up containers and volumes
 	@echo "🧹 Cleaning up..."
 	@docker-compose down -v
+
+cycle: ## Cycle the service down and up
+	@echo "♻️ Cycling development environment..."
+	@make down
+	@make dev
+
+logs: ## Follow Docker Compose logs
+	@docker compose logs -f
 
 build: ## Build all services
 	@echo "🔨 Building all services..."
@@ -70,6 +78,32 @@ scenario-suite: ## Seed sample data and run S1-S10 scenario regression suite
 	@echo "🎯 Running end-to-end scenario suite..."
 	@python analysis/scripts/seed_dataset.py --base-url $(SCENARIO_BASE_URL) --org-id $(SCENARIO_ORG_ID) --namespace $(SCENARIO_NAMESPACE)
 	@python analysis/scripts/run_scenarios.py --base-url $(SCENARIO_BASE_URL) --org-id $(SCENARIO_ORG_ID) --namespace $(SCENARIO_NAMESPACE) --s7-min-avg-mrr $(S7_MIN_AVG_MRR) --s7-min-avg-categories $(S7_MIN_AVG_CATEGORIES)
+
+.PHONY: determinism
+determinism: ## Replay a fixed request multiple times to verify deterministic rankings
+	@echo "🧬 Checking determinism..."
+	@python analysis/scripts/check_determinism.py \
+		--base-url $(SCENARIO_BASE_URL) \
+		--org-id $(SCENARIO_ORG_ID) \
+		--namespace $(SCENARIO_NAMESPACE) \
+		--baseline analysis/results/determinism_baseline.json \
+		--output analysis/results/determinism_run.json \
+		--insecure
+
+.PHONY: load-test
+load-test: ## Run k6-based load test (set LOAD_BASE_URL/LOAD_ORG_ID/LOAD_NAMESPACE as needed)
+	@echo "📈 Running load test with k6..."
+	@mkdir -p analysis/results
+	@docker run --rm -v $(PWD):/work -w /work grafana/k6 \
+		run analysis/load/recommendations_k6.js \
+		-e BASE_URL=$(or $(LOAD_BASE_URL),http://localhost:8000) \
+		-e ORG_ID=$(or $(LOAD_ORG_ID),$(SCENARIO_ORG_ID)) \
+		-e NAMESPACE=$(or $(LOAD_NAMESPACE),$(SCENARIO_NAMESPACE)) \
+		-e SURFACE=$(or $(LOAD_SURFACE),home) \
+		-e USER_POOL=$(or $(LOAD_USER_POOL),load_user_0001,load_user_0002,load_user_0003,load_user_0004,load_user_0005) \
+		-e RPS_TARGETS=$(or $(LOAD_RPS),10,100,1000) \
+		-e STAGE_DURATION=$(or $(LOAD_STAGE_DURATION),30s) \
+		-e SUMMARY_PATH=$(or $(LOAD_SUMMARY),analysis/results/load_test_summary.json)
 
 .PHONY: reset-namespace
 reset-namespace: ## Delete all items/users/events in the configured namespace

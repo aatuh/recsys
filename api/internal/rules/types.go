@@ -23,10 +23,23 @@ type EvaluateRequest struct {
 
 // Match captures rule-to-item matches for auditing and dry-run responses.
 type Match struct {
-	RuleID  uuid.UUID
-	Action  types.RuleAction
-	Target  types.RuleTarget
-	ItemIDs []string
+	RuleID           uuid.UUID
+	Action           types.RuleAction
+	Target           types.RuleTarget
+	ItemIDs          []string
+	ManualOverrideID *uuid.UUID
+}
+
+// OverrideHit summarizes manual override activity for telemetry.
+type OverrideHit struct {
+	OverrideID   uuid.UUID
+	RuleID       uuid.UUID
+	Action       types.RuleAction
+	MatchedItems []string
+	BlockedItems []string
+	PinnedItems  []string
+	BoostedItems []string
+	ServedItems  []string
 }
 
 // BoostDetail stores per-rule boost contribution for an item.
@@ -61,4 +74,14 @@ type EvaluateResult struct {
 	EvaluatedRuleIDs []uuid.UUID
 	ItemEffects      map[string]ItemEffect
 	ReasonTags       map[string][]string
+	OverrideHits     []OverrideHit
+	overrideIndex    map[uuid.UUID]*OverrideHit
+}
+
+// OverrideHitForRule returns the override hit (if any) for the provided rule ID.
+func (r *EvaluateResult) OverrideHitForRule(ruleID uuid.UUID) *OverrideHit {
+	if r == nil || len(r.overrideIndex) == 0 {
+		return nil
+	}
+	return r.overrideIndex[ruleID]
 }

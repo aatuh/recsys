@@ -23,7 +23,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--baseline", required=True, help="Path to baseline determinism JSON")
     parser.add_argument("--calls", type=int, default=10, help="Number of repeated calls to perform")
     parser.add_argument("--max-rank-delta", type=float, default=0.01, help="Allowed fraction of rank changes")
-    parser.add_argument("--output", default="analysis_v2/evidence/determinism_ci.json")
+    parser.add_argument("--output", default="analysis/evidence/determinism_ci.json")
     parser.add_argument("--insecure", action="store_true", help="Disable TLS verification (for self-signed dev certs)")
     return parser.parse_args()
 

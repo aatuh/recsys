@@ -56,6 +56,23 @@ func newCoverageTracker(st *store.Store, ttl time.Duration, hintThreshold float6
 	}
 }
 
+func (c *coverageTracker) applyConfig(ttl time.Duration, hintThreshold float64) {
+	if c == nil {
+		return
+	}
+	if ttl <= 0 {
+		ttl = 10 * time.Minute
+	}
+	if hintThreshold < 0 {
+		hintThreshold = 0
+	}
+	c.mu.Lock()
+	c.ttl = ttl
+	c.hintThreshold = hintThreshold
+	c.namespaces = make(map[string]*namespaceCoverage)
+	c.mu.Unlock()
+}
+
 func (c *coverageTracker) snapshot(ctx context.Context, orgID uuid.UUID, namespace string, itemIDs []string) (coverageSnapshot, error) {
 	snap := coverageSnapshot{
 		LongTailFlags: make([]bool, len(itemIDs)),

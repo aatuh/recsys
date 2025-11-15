@@ -1,0 +1,39 @@
+{
+  "threshold": 1.4,
+  "namespaces": {
+    "retail_en_us": {
+      "brand_ratio": 1.8,
+      "max_brand_exposure": 20,
+      "mean_brand_exposure": 11.11111111111111,
+      "brand_counts": {
+        "BrightLiving": 10,
+        "Voltify": 20,
+        "Epicurean": 10,
+        "SummitPeak": 10,
+        "AuraThreads": 10,
+        "Quanta": 10,
+        "PulseGear": 10,
+        "LeafPress": 10,
+        "IndieWeave": 10
+      },
+      "user_count": 10,
+      "exposure_ratio": 1.8,
+      "status": "fail"
+    },
+    "media_fi_fi": {
+      "brand_ratio": 1.6666666666666667,
+      "max_brand_exposure": 21,
+      "mean_brand_exposure": 12.6,
+      "brand_counts": {
+        "NordicSignal": 21,
+        "BrightNordic": 7,
+        "SuomiPlay": 14,
+        "AuroraShows": 14,
+        "NorthDocs": 7
+      },
+      "user_count": 7,
+      "exposure_ratio": 1.6666666666666667,
+      "status": "fail"
+    }
+  }
+}

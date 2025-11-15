@@ -27,25 +27,26 @@ const (
 
 // Rule represents a deterministic merchandising rule.
 type Rule struct {
-	RuleID      uuid.UUID
-	OrgID       uuid.UUID
-	Namespace   string
-	Surface     string
-	Name        string
-	Description string
-	Action      RuleAction
-	TargetType  RuleTarget
-	TargetKey   string
-	ItemIDs     []string
-	BoostValue  *float64
-	MaxPins     *int
-	SegmentID   string
-	Priority    int
-	Enabled     bool
-	ValidFrom   *time.Time
-	ValidUntil  *time.Time
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	RuleID           uuid.UUID
+	ManualOverrideID *uuid.UUID
+	OrgID            uuid.UUID
+	Namespace        string
+	Surface          string
+	Name             string
+	Description      string
+	Action           RuleAction
+	TargetType       RuleTarget
+	TargetKey        string
+	ItemIDs          []string
+	BoostValue       *float64
+	MaxPins          *int
+	SegmentID        string
+	Priority         int
+	Enabled          bool
+	ValidFrom        *time.Time
+	ValidUntil       *time.Time
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
 }
 
 // RuleListFilters captures optional filters for listing rules.

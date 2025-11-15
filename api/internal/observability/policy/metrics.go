@@ -6,22 +6,28 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 
 	"recsys/internal/algorithm"
+	"recsys/internal/rules"
+	"recsys/internal/types"
 )
 
 // Metrics exposes counters for policy enforcement health.
 type Metrics struct {
-	includeRequests *prometheus.CounterVec
-	includeDropped  *prometheus.CounterVec
-	includeLeak     *prometheus.CounterVec
-	explicitHits    *prometheus.CounterVec
-	recentHits      *prometheus.CounterVec
-	ruleActions     *prometheus.CounterVec
-	ruleExposure    *prometheus.CounterVec
-	responseItems   *prometheus.CounterVec
-	ruleZeroEffect  *prometheus.CounterVec
-	itemExposure    *prometheus.CounterVec
-	coverageBucket  *prometheus.CounterVec
-	catalogSize     *prometheus.GaugeVec
+	includeRequests  *prometheus.CounterVec
+	includeDropped   *prometheus.CounterVec
+	includeLeak      *prometheus.CounterVec
+	explicitHits     *prometheus.CounterVec
+	recentHits       *prometheus.CounterVec
+	ruleActions      *prometheus.CounterVec
+	ruleExposure     *prometheus.CounterVec
+	responseItems    *prometheus.CounterVec
+	ruleZeroEffect   *prometheus.CounterVec
+	itemExposure     *prometheus.CounterVec
+	coverageBucket   *prometheus.CounterVec
+	catalogSize      *prometheus.GaugeVec
+	overrideMatches  *prometheus.CounterVec
+	overrideExposure *prometheus.CounterVec
+	constraintLeak   *prometheus.CounterVec
+	ruleBlockedItems *prometheus.CounterVec
 }
 
 // NewMetrics registers policy metrics with the provided Prometheus registerer.
@@ -80,6 +86,26 @@ func NewMetrics(reg prometheus.Registerer) *Metrics {
 		Help: "Recommendation items served to clients by namespace, surface, and item_id",
 	}, []string{"namespace", "surface", "item_id"})
 
+	overrideMatches := prometheus.NewCounterVec(prometheus.CounterOpts{
+		Name: "policy_override_matches_total",
+		Help: "Count of manual override matches per override_id and action",
+	}, []string{"namespace", "surface", "override_id", "action"})
+
+	overrideExposure := prometheus.NewCounterVec(prometheus.CounterOpts{
+		Name: "policy_override_exposure_total",
+		Help: "Number of items affected by manual overrides per override_id and action",
+	}, []string{"namespace", "surface", "override_id", "action"})
+
+	constraintLeak := prometheus.NewCounterVec(prometheus.CounterOpts{
+		Name: "policy_constraint_leak_total",
+		Help: "Items that bypassed constraint filters and still surfaced, bucketed by constraint type",
+	}, []string{"namespace", "surface", "reason"})
+
+	ruleBlockedItems := prometheus.NewCounterVec(prometheus.CounterOpts{
+		Name: "policy_rule_blocked_items_total",
+		Help: "Items removed from responses due to block rules, labeled per rule_id",
+	}, []string{"namespace", "surface", "rule_id"})
+
 	coverageBucket := prometheus.NewCounterVec(prometheus.CounterOpts{
 		Name: "policy_coverage_bucket_total",
 		Help: "Recommendation items served grouped by coverage bucket",
@@ -90,21 +116,25 @@ func NewMetrics(reg prometheus.Registerer) *Metrics {
 		Help: "Available catalog size per namespace for coverage guardrails",
 	}, []string{"namespace"})
 
-	reg.MustRegister(includeRequests, includeDropped, includeLeak, explicitHits, recentHits, ruleActions, ruleExposure, responseItems, ruleZeroEffect, itemExposure, coverageBucket, catalogSize)
+	reg.MustRegister(includeRequests, includeDropped, includeLeak, explicitHits, recentHits, ruleActions, ruleExposure, responseItems, ruleZeroEffect, itemExposure, coverageBucket, catalogSize, overrideMatches, overrideExposure, constraintLeak, ruleBlockedItems)
 
 	return &Metrics{
-		includeRequests: includeRequests,
-		includeDropped:  includeDropped,
-		includeLeak:     includeLeak,
-		explicitHits:    explicitHits,
-		recentHits:      recentHits,
-		ruleActions:     ruleActions,
-		ruleExposure:    ruleExposure,
-		responseItems:   responseItems,
-		ruleZeroEffect:  ruleZeroEffect,
-		itemExposure:    itemExposure,
-		coverageBucket:  coverageBucket,
-		catalogSize:     catalogSize,
+		includeRequests:  includeRequests,
+		includeDropped:   includeDropped,
+		includeLeak:      includeLeak,
+		explicitHits:     explicitHits,
+		recentHits:       recentHits,
+		ruleActions:      ruleActions,
+		ruleExposure:     ruleExposure,
+		responseItems:    responseItems,
+		ruleZeroEffect:   ruleZeroEffect,
+		itemExposure:     itemExposure,
+		coverageBucket:   coverageBucket,
+		catalogSize:      catalogSize,
+		overrideMatches:  overrideMatches,
+		overrideExposure: overrideExposure,
+		constraintLeak:   constraintLeak,
+		ruleBlockedItems: ruleBlockedItems,
 	}
 }
 
@@ -143,6 +173,14 @@ func (m *Metrics) Observe(req algorithm.Request, summary *algorithm.PolicySummar
 	if summary.RuleBoostCount > 0 {
 		m.ruleActions.WithLabelValues(ns, surface, "boost").Add(float64(summary.RuleBoostCount))
 	}
+	if len(summary.RuleBlockExposureByRule) > 0 {
+		for ruleID, count := range summary.RuleBlockExposureByRule {
+			label := normalizeLabel(ruleID, "unknown")
+			m.ruleBlockedItems.WithLabelValues(ns, surface, label).Add(float64(count))
+		}
+	} else if summary.RuleBlockExposure > 0 {
+		m.ruleBlockedItems.WithLabelValues(ns, surface, "unknown").Add(float64(summary.RuleBlockExposure))
+	}
 
 	if summary.FinalCount > 0 {
 		m.responseItems.WithLabelValues(ns, surface).Add(float64(summary.FinalCount))
@@ -158,6 +196,45 @@ func (m *Metrics) Observe(req algorithm.Request, summary *algorithm.PolicySummar
 	}
 	if summary.RulePinCount > 0 && summary.RulePinExposure == 0 {
 		m.ruleZeroEffect.WithLabelValues(ns, surface, "pin").Inc()
+	}
+	if len(summary.ConstraintLeakByReason) > 0 {
+		for reason, count := range summary.ConstraintLeakByReason {
+			label := normalizeLabel(reason, "unknown")
+			m.constraintLeak.WithLabelValues(ns, surface, label).Add(float64(count))
+		}
+	} else if summary.ConstraintLeakCount > 0 {
+		m.constraintLeak.WithLabelValues(ns, surface, "unknown").Add(float64(summary.ConstraintLeakCount))
+	}
+}
+
+// ObserveOverrides records per-override counters for manual override activity.
+func (m *Metrics) ObserveOverrides(req algorithm.Request, hits []rules.OverrideHit) {
+	if m == nil || len(hits) == 0 {
+		return
+	}
+	ns := normalizeLabel(req.Namespace, "default")
+	surface := normalizeLabel(req.Surface, "default")
+
+	for _, hit := range hits {
+		action := strings.ToLower(string(hit.Action))
+		overrideID := hit.OverrideID.String()
+		if len(hit.MatchedItems) > 0 {
+			m.overrideMatches.WithLabelValues(ns, surface, overrideID, action).Add(float64(len(hit.MatchedItems)))
+		}
+		var exposure int
+		switch hit.Action {
+		case types.RuleActionBlock:
+			exposure = len(hit.BlockedItems)
+		case types.RuleActionPin:
+			exposure = len(hit.PinnedItems)
+		case types.RuleActionBoost:
+			exposure = len(hit.ServedItems)
+		default:
+			exposure = len(hit.ServedItems)
+		}
+		if exposure > 0 {
+			m.overrideExposure.WithLabelValues(ns, surface, overrideID, action).Add(float64(exposure))
+		}
 	}
 }
 

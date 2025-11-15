@@ -125,6 +125,26 @@ type RecommendResponse struct {
 	ProfileID    string       `json:"profile_id,omitempty" example:"vip-high-novelty"`
 }
 
+// Rerank types
+
+type RerankCandidate struct {
+	ItemID string   `json:"item_id" example:"sku-123"`
+	Score  *float64 `json:"score,omitempty" example:"0.42"`
+}
+
+type RerankRequest struct {
+	UserID         string                `json:"user_id" example:"u_123"`
+	Namespace      string                `json:"namespace" example:"default"`
+	K              int                   `json:"k" example:"20"`
+	Items          []RerankCandidate     `json:"items"`
+	Context        map[string]any        `json:"context,omitempty"`
+	IncludeReasons bool                  `json:"include_reasons,omitempty" example:"true"`
+	ExplainLevel   string                `json:"explain_level,omitempty" example:"numeric" enums:"tags,numeric,full"`
+	Blend          *RecommendBlend       `json:"blend,omitempty"`
+	Overrides      *Overrides            `json:"overrides,omitempty"`
+	Constraints    *RecommendConstraints `json:"constraints,omitempty"`
+}
+
 type ExplainLLMRequest struct {
 	TargetType string `json:"target_type"`
 	TargetID   string `json:"target_id"`
@@ -383,4 +403,64 @@ type AuditTraceCapUsage struct {
 	Limit   *int   `json:"limit,omitempty"`
 	Count   *int   `json:"count,omitempty"`
 	Value   string `json:"value,omitempty"`
+}
+
+type RecommendationConfigPayload struct {
+	HalfLifeDays                  float64                `json:"half_life_days"`
+	CoVisWindowDays               float64                `json:"co_vis_window_days"`
+	PopularityFanout              int                    `json:"popularity_fanout"`
+	MMRLambda                     float64                `json:"mmr_lambda"`
+	BrandCap                      int                    `json:"brand_cap"`
+	CategoryCap                   int                    `json:"category_cap"`
+	RuleExcludeEvents             bool                   `json:"rule_exclude_events"`
+	ExcludeEventTypes             []int16                `json:"exclude_event_types,omitempty"`
+	BrandTagPrefixes              []string               `json:"brand_tag_prefixes,omitempty"`
+	CategoryTagPrefixes           []string               `json:"category_tag_prefixes,omitempty"`
+	PurchasedWindowDays           float64                `json:"purchased_window_days"`
+	ProfileWindowDays             float64                `json:"profile_window_days"`
+	ProfileBoost                  float64                `json:"profile_boost"`
+	ProfileTopNTags               int                    `json:"profile_top_n_tags"`
+	ProfileMinEventsForBoost      int                    `json:"profile_min_events_for_boost"`
+	ProfileColdStartMultiplier    float64                `json:"profile_cold_start_multiplier"`
+	ProfileStarterBlendWeight     float64                `json:"profile_starter_blend_weight"`
+	MMRPresets                    map[string]float64     `json:"mmr_presets,omitempty"`
+	BlendAlpha                    float64                `json:"blend_alpha"`
+	BlendBeta                     float64                `json:"blend_beta"`
+	BlendGamma                    float64                `json:"blend_gamma"`
+	NewUserBlendAlpha             *float64               `json:"new_user_blend_alpha,omitempty"`
+	NewUserBlendBeta              *float64               `json:"new_user_blend_beta,omitempty"`
+	NewUserBlendGamma             *float64               `json:"new_user_blend_gamma,omitempty"`
+	NewUserMMRLambda              *float64               `json:"new_user_mmr_lambda,omitempty"`
+	NewUserPopFanout              *int                   `json:"new_user_pop_fanout,omitempty"`
+	BanditExperiment              BanditExperimentConfig `json:"bandit_experiment"`
+	RulesEnabled                  bool                   `json:"rules_enabled"`
+	CoverageCacheTTLSeconds       float64                `json:"coverage_cache_ttl_seconds"`
+	CoverageLongTailHintThreshold float64                `json:"coverage_long_tail_hint_threshold"`
+}
+
+type BanditExperimentConfig struct {
+	Enabled        bool     `json:"enabled"`
+	HoldoutPercent float64  `json:"holdout_percent"`
+	Label          string   `json:"label,omitempty"`
+	Surfaces       []string `json:"surfaces,omitempty"`
+}
+
+type RecommendationConfigMetadata struct {
+	UpdatedAt time.Time `json:"updated_at"`
+	UpdatedBy string    `json:"updated_by,omitempty"`
+	Source    string    `json:"source,omitempty"`
+	Notes     string    `json:"notes,omitempty"`
+}
+
+type RecommendationConfigDocument struct {
+	Namespace string                       `json:"namespace"`
+	Config    *RecommendationConfigPayload `json:"config"`
+	Metadata  RecommendationConfigMetadata `json:"metadata"`
+}
+
+type RecommendationConfigUpdateRequest struct {
+	Namespace string                       `json:"namespace"`
+	Config    *RecommendationConfigPayload `json:"config"`
+	Author    string                       `json:"author,omitempty"`
+	Notes     string                       `json:"notes,omitempty"`
 }

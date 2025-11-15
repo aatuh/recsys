@@ -58,15 +58,15 @@ jobs:
             --base-url "$BASE_URL" \
             --org-id "$ORG_ID" \
             --namespace "$NAMESPACE" \
-            --baseline analysis_v2/evidence/determinism_check.json \
-            --output analysis_v2/evidence/determinism_ci.json
+            --baseline analysis/results/determinism_baseline.json \
+            --output analysis/results/determinism_ci.json
 
       - name: Upload determinism artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: determinism-report
-          path: analysis_v2/evidence/determinism_ci.json
+          path: analysis/results/determinism_ci.json
 
       - name: Stop services
         if: always()

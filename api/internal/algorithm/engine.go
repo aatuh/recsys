@@ -33,9 +33,15 @@ const maxEmbNeighbors = 200
 // Maximum stored sample IDs for policy diagnostics.
 const maxPolicySampleIDs = 20
 
-// Model versions.
-const modelVersionPopularity = "popularity_v1"
-const modelVersionBlend = "blend_v1"
+const (
+	constraintReasonInclude     = "include_tags"
+	constraintReasonMissingTags = "missing_tags"
+	constraintReasonPriceMin    = "price_below_min"
+	constraintReasonPriceMax    = "price_above_max"
+	constraintReasonPriceMiss   = "price_missing"
+	constraintReasonCreated     = "stale_item"
+	constraintReasonUnknown     = "unknown"
+)
 
 // Engine handles recommendation algorithm logic.
 type Engine struct {
@@ -65,15 +71,22 @@ func (e *Engine) Recommend(
 
 	sourceMetrics := make(map[string]SourceMetric)
 
-	// Get popularity candidates.
-	popStart := time.Now()
-	popCandidates, err := e.getPopularityCandidates(
-		ctx, req.OrgID, req.Namespace, k, req.Constraints,
-	)
-	if err != nil {
-		return nil, nil, err
+	usePrefetched := len(req.PrefetchedCandidates) > 0
+	var popCandidates []types.ScoredItem
+	if usePrefetched {
+		popCandidates = copyScoredItems(req.PrefetchedCandidates)
+		sourceMetrics["prefetched"] = SourceMetric{Count: len(popCandidates)}
+	} else {
+		popStart := time.Now()
+		var err error
+		popCandidates, err = e.getPopularityCandidates(
+			ctx, req.OrgID, req.Namespace, k, req.Constraints,
+		)
+		if err != nil {
+			return nil, nil, err
+		}
+		sourceMetrics["popularity"] = SourceMetric{Count: len(popCandidates), Duration: time.Since(popStart)}
 	}
-	sourceMetrics["popularity"] = SourceMetric{Count: len(popCandidates), Duration: time.Since(popStart)}
 
 	existing := make(map[string]struct{}, len(popCandidates))
 	maxPopScore := 0.0
@@ -84,7 +97,7 @@ func (e *Engine) Recommend(
 		}
 	}
 
-	if req.InjectAnchors && len(req.AnchorItemIDs) > 0 {
+	if !usePrefetched && req.InjectAnchors && len(req.AnchorItemIDs) > 0 {
 		if maxPopScore <= 0 {
 			maxPopScore = 1.0
 		}
@@ -104,7 +117,7 @@ func (e *Engine) Recommend(
 	collabScores := make(map[string]float64)
 	contentScores := make(map[string]float64)
 	sessionScores := make(map[string]float64)
-	if req.UserID != "" {
+	if !usePrefetched && req.UserID != "" {
 		start := time.Now()
 		_, scores, err := e.getCollaborativeCandidates(ctx, req, existing, k)
 		if err != nil {
@@ -114,11 +127,9 @@ func (e *Engine) Recommend(
 			collabScores[id] = score
 		}
 		sourceMetrics["collaborative"] = SourceMetric{Count: len(scores), Duration: time.Since(start)}
-	}
 
-	if req.UserID != "" {
-		start := time.Now()
-		_, scores, err := e.getContentBasedCandidates(ctx, req, existing, k)
+		start = time.Now()
+		_, scores, err = e.getContentBasedCandidates(ctx, req, existing, k)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -126,10 +137,9 @@ func (e *Engine) Recommend(
 			contentScores[id] = score
 		}
 		sourceMetrics["content"] = SourceMetric{Count: len(scores), Duration: time.Since(start)}
-	}
-	if req.UserID != "" {
-		start := time.Now()
-		_, scores, err := e.getSessionCandidates(ctx, req, existing, k)
+
+		start = time.Now()
+		_, scores, err = e.getSessionCandidates(ctx, req, existing, k)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -270,7 +280,7 @@ func (e *Engine) Recommend(
 	// Default requests (no explicit blend provided) are reported as
 	// popularity_v1 to match API contract and tests, even if non-zero
 	// config weights are used under the hood.
-	modelVersion := modelVersionPopularity
+	modelVersion := ModelVersionPopularity
 	if req.Blend != nil {
 		modelVersion = e.getModelVersion(weights)
 	}
@@ -353,6 +363,11 @@ func (e *Engine) Recommend(
 		}
 		if len(ruleResult.Pinned) > 0 {
 			trace.RulePinned = append([]rules.PinnedItem(nil), ruleResult.Pinned...)
+		}
+		if len(ruleResult.OverrideHits) > 0 {
+			hits := make([]rules.OverrideHit, len(ruleResult.OverrideHits))
+			copy(hits, ruleResult.OverrideHits)
+			trace.ManualOverrideHits = hits
 		}
 	}
 	return response, trace, nil
@@ -827,10 +842,27 @@ func (e *Engine) applyConstraintFilters(
 		return candidates, tags
 	}
 
-	filtered := candidates[:0]
+	working := candidates
 	prunedTags := tags
 	removed := make([]string, 0)
+	var removedReasons map[string]string
+	if summary != nil {
+		removedReasons = make(map[string]string)
+	}
 	includeNormalized := make([]string, 0)
+
+	recordRemoval := func(id, reason string) {
+		if id == "" {
+			return
+		}
+		removed = append(removed, id)
+		if removedReasons != nil {
+			if reason == "" {
+				reason = constraintReasonUnknown
+			}
+			removedReasons[id] = reason
+		}
+	}
 
 	if len(req.Constraints.IncludeTagsAny) > 0 {
 		required := make(map[string]struct{}, len(req.Constraints.IncludeTagsAny))
@@ -846,23 +878,51 @@ func (e *Engine) applyConstraintFilters(
 		}
 		if len(required) > 0 {
 			// rebuild candidate list to only include items whose tags overlap required set.
-			pruned := make(map[string]types.ItemTags, len(tags))
-			for _, cand := range candidates {
-				itemTags, ok := tags[cand.ItemID]
+			pruned := make(map[string]types.ItemTags, len(prunedTags))
+			next := working[:0]
+			for _, cand := range working {
+				itemTags, ok := prunedTags[cand.ItemID]
 				if !ok {
-					removed = append(removed, cand.ItemID)
+					recordRemoval(cand.ItemID, constraintReasonMissingTags)
 					continue
 				}
 				if hasAnyTag(itemTags.Tags, required) {
-					filtered = append(filtered, cand)
+					next = append(next, cand)
 					pruned[cand.ItemID] = itemTags
 				} else {
-					removed = append(removed, cand.ItemID)
+					recordRemoval(cand.ItemID, constraintReasonInclude)
 				}
 			}
-			candidates = filtered
+			working = next
 			prunedTags = pruned
 		}
+	}
+
+	minPrice := req.Constraints.MinPrice
+	maxPrice := req.Constraints.MaxPrice
+	createdAfter := req.Constraints.CreatedAfter
+	if (minPrice != nil || maxPrice != nil || createdAfter != nil) && len(working) > 0 {
+		pruned := make(map[string]types.ItemTags, len(prunedTags))
+		next := working[:0]
+		for _, cand := range working {
+			itemTags, ok := prunedTags[cand.ItemID]
+			if !ok {
+				recordRemoval(cand.ItemID, constraintReasonMissingTags)
+				continue
+			}
+			if violated, reason := priceViolationReason(itemTags.Price, minPrice, maxPrice); violated {
+				recordRemoval(cand.ItemID, reason)
+				continue
+			}
+			if createdAfter != nil && (itemTags.CreatedAt.IsZero() || !itemTags.CreatedAt.After(*createdAfter)) {
+				recordRemoval(cand.ItemID, constraintReasonCreated)
+				continue
+			}
+			next = append(next, cand)
+			pruned[cand.ItemID] = itemTags
+		}
+		working = next
+		prunedTags = pruned
 	}
 
 	if summary != nil {
@@ -879,18 +939,33 @@ func (e *Engine) applyConstraintFilters(
 				summary.ConstraintFilteredIDs = append([]string(nil), removed...)
 			}
 			lookup := make(map[string]struct{}, len(removed))
+			var reasons map[string]string
+			if len(removedReasons) > 0 {
+				reasons = make(map[string]string, len(removedReasons))
+			}
 			for _, id := range removed {
 				lookup[id] = struct{}{}
+				if reasons != nil {
+					if reason, ok := removedReasons[id]; ok {
+						reasons[id] = reason
+					}
+				}
 			}
 			summary.constraintFilteredLookup = lookup
+			if len(reasons) > 0 {
+				summary.constraintFilteredReasons = reasons
+			} else {
+				summary.constraintFilteredReasons = nil
+			}
 		} else {
 			summary.ConstraintFilteredIDs = nil
 			summary.constraintFilteredLookup = nil
+			summary.constraintFilteredReasons = nil
 		}
-		summary.AfterConstraintFilters = len(candidates)
+		summary.AfterConstraintFilters = len(working)
 	}
 
-	return candidates, prunedTags
+	return working, prunedTags
 }
 
 func hasAnyTag(candidateTags []string, required map[string]struct{}) bool {
@@ -903,6 +978,22 @@ func hasAnyTag(candidateTags []string, required map[string]struct{}) bool {
 		}
 	}
 	return false
+}
+
+func priceViolationReason(price *float64, minPrice, maxPrice *float64) (bool, string) {
+	if price == nil {
+		if minPrice != nil || maxPrice != nil {
+			return true, constraintReasonPriceMiss
+		}
+		return false, ""
+	}
+	if minPrice != nil && *price < *minPrice {
+		return true, constraintReasonPriceMin
+	}
+	if maxPrice != nil && *price > *maxPrice {
+		return true, constraintReasonPriceMax
+	}
+	return false, ""
 }
 
 func (e *Engine) populateMissingTags(
@@ -957,17 +1048,35 @@ func finalizePolicySummary(summary *PolicySummary, resp *Response, ruleResult *r
 			}
 			summary.ConstraintLeakCount = len(leaks)
 			if len(leaks) > 0 {
+				if summary.ConstraintLeakByReason == nil {
+					summary.ConstraintLeakByReason = make(map[string]int)
+				} else {
+					for k := range summary.ConstraintLeakByReason {
+						delete(summary.ConstraintLeakByReason, k)
+					}
+				}
 				if len(leaks) > maxPolicySampleIDs {
 					summary.ConstraintLeakIDs = append([]string(nil), leaks[:maxPolicySampleIDs]...)
 				} else {
 					summary.ConstraintLeakIDs = append([]string(nil), leaks...)
 				}
+				for _, leaked := range leaks {
+					reason := constraintReasonUnknown
+					if summary.constraintFilteredReasons != nil {
+						if r, ok := summary.constraintFilteredReasons[leaked]; ok && r != "" {
+							reason = r
+						}
+					}
+					summary.ConstraintLeakByReason[reason]++
+				}
 			} else {
 				summary.ConstraintLeakIDs = nil
+				summary.ConstraintLeakByReason = nil
 			}
 		} else {
 			summary.ConstraintLeakCount = 0
 			summary.ConstraintLeakIDs = nil
+			summary.ConstraintLeakByReason = nil
 		}
 
 		if ruleResult != nil && len(ruleResult.ItemEffects) > 0 {
@@ -977,9 +1086,19 @@ func finalizePolicySummary(summary *PolicySummary, resp *Response, ruleResult *r
 				if eff, ok := ruleResult.ItemEffects[item.ItemID]; ok {
 					if eff.BoostDelta != 0 {
 						boostExposure++
+						for _, boost := range eff.BoostRules {
+							if hit := ruleResult.OverrideHitForRule(boost.RuleID); hit != nil {
+								hit.ServedItems = appendUniqueString(hit.ServedItems, item.ItemID)
+							}
+						}
 					}
 					if eff.Pinned {
 						pinExposure++
+						for _, ruleID := range eff.PinRules {
+							if hit := ruleResult.OverrideHitForRule(ruleID); hit != nil {
+								hit.ServedItems = appendUniqueString(hit.ServedItems, item.ItemID)
+							}
+						}
 					}
 				}
 			}
@@ -990,7 +1109,39 @@ func finalizePolicySummary(summary *PolicySummary, resp *Response, ruleResult *r
 			summary.RulePinExposure = 0
 		}
 	}
+	if ruleResult != nil && len(ruleResult.ItemEffects) > 0 {
+		blockExposure := 0
+		var exposureByRule map[string]int
+		for _, eff := range ruleResult.ItemEffects {
+			if eff.Blocked {
+				blockExposure++
+				if len(eff.BlockRules) == 0 {
+					if exposureByRule == nil {
+						exposureByRule = make(map[string]int)
+					}
+					exposureByRule[constraintReasonUnknown]++
+					continue
+				}
+				for _, ruleID := range eff.BlockRules {
+					if exposureByRule == nil {
+						exposureByRule = make(map[string]int)
+					}
+					exposureByRule[ruleID.String()]++
+				}
+			}
+		}
+		summary.RuleBlockExposure = blockExposure
+		if len(exposureByRule) > 0 {
+			summary.RuleBlockExposureByRule = exposureByRule
+		} else {
+			summary.RuleBlockExposureByRule = nil
+		}
+	} else {
+		summary.RuleBlockExposure = 0
+		summary.RuleBlockExposureByRule = nil
+	}
 	summary.constraintFilteredLookup = nil
+	summary.constraintFilteredReasons = nil
 }
 
 func filterScoreMapByCandidates(scores map[string]float64, candidates []types.ScoredItem) map[string]float64 {
@@ -1004,6 +1155,15 @@ func filterScoreMapByCandidates(scores map[string]float64, candidates []types.Sc
 		}
 	}
 	return filtered
+}
+
+func appendUniqueString(dst []string, value string) []string {
+	for _, existing := range dst {
+		if existing == value {
+			return dst
+		}
+	}
+	return append(dst, value)
 }
 
 // getBlendWeights returns the blend weights to use.
@@ -1384,10 +1544,7 @@ func (e *Engine) applyPersonalizationBoost(
 
 // getModelVersion determines the model version based on weights.
 func (e *Engine) getModelVersion(weights BlendWeights) string {
-	if weights.Cooc == 0 && weights.ALS == 0 {
-		return modelVersionPopularity
-	}
-	return modelVersionBlend
+	return ModelVersionForWeights(weights)
 }
 
 // shouldUseMMR returns true if MMR should be applied.

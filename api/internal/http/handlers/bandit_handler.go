@@ -23,14 +23,14 @@ import (
 type BanditHandler struct {
 	store      *store.Store
 	service    RecommendationService
-	config     RecommendationConfig
+	config     *RecommendationConfigManager
 	tracer     *decisionTracer
 	logger     *zap.Logger
 	defaultOrg uuid.UUID
 	banditAlgo internaltypes.Algorithm
 }
 
-func NewBanditHandler(store *store.Store, service RecommendationService, cfg RecommendationConfig, tracer *decisionTracer, defaultOrg uuid.UUID, banditAlgo internaltypes.Algorithm, logger *zap.Logger) *BanditHandler {
+func NewBanditHandler(store *store.Store, service RecommendationService, cfg *RecommendationConfigManager, tracer *decisionTracer, defaultOrg uuid.UUID, banditAlgo internaltypes.Algorithm, logger *zap.Logger) *BanditHandler {
 	if logger == nil {
 		logger = zap.NewNop()
 	}
@@ -43,6 +43,13 @@ func NewBanditHandler(store *store.Store, service RecommendationService, cfg Rec
 		defaultOrg: defaultOrg,
 		banditAlgo: banditAlgo,
 	}
+}
+
+func (h *BanditHandler) currentConfig() RecommendationConfig {
+	if h == nil || h.config == nil {
+		return RecommendationConfig{}
+	}
+	return h.config.Current()
 }
 
 // BanditPoliciesUpsert godoc
@@ -265,7 +272,8 @@ func (h *BanditHandler) RecommendWithBandit(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	algoCfg := h.config.BaseConfig()
+	cfg := h.currentConfig()
+	algoCfg := cfg.BaseConfig()
 	// Reset policy-driven fields prior to applying overrides.
 	algoCfg.BlendAlpha = 0
 	algoCfg.BlendBeta = 0
@@ -378,13 +386,14 @@ func (h *BanditHandler) banditAlgoOverride(s string) internaltypes.Algorithm {
 
 func (h *BanditHandler) newBanditStoreManager(algo internaltypes.Algorithm) *bandit.Manager {
 	wrapped := &banditStoreAdapter{Store: h.store}
+	cfg := h.currentConfig()
 	exp := bandit.ExperimentConfig{
-		Enabled:        h.config.BanditExperiment.Enabled,
-		HoldoutPercent: h.config.BanditExperiment.HoldoutPercent,
-		Label:          h.config.BanditExperiment.Label,
-		Surfaces:       make(map[string]struct{}, len(h.config.BanditExperiment.Surfaces)),
+		Enabled:        cfg.BanditExperiment.Enabled,
+		HoldoutPercent: cfg.BanditExperiment.HoldoutPercent,
+		Label:          cfg.BanditExperiment.Label,
+		Surfaces:       make(map[string]struct{}, len(cfg.BanditExperiment.Surfaces)),
 	}
-	for k := range h.config.BanditExperiment.Surfaces {
+	for k := range cfg.BanditExperiment.Surfaces {
 		exp.Surfaces[k] = struct{}{}
 	}
 	return bandit.NewManager(wrapped, algo, bandit.WithExperiment(exp))

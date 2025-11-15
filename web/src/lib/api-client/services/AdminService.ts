@@ -5,6 +5,8 @@
 import type { types_ManualOverrideCancelRequest } from '../models/types_ManualOverrideCancelRequest';
 import type { types_ManualOverrideRequest } from '../models/types_ManualOverrideRequest';
 import type { types_ManualOverrideResponse } from '../models/types_ManualOverrideResponse';
+import type { types_RecommendationConfigDocument } from '../models/types_RecommendationConfigDocument';
+import type { types_RecommendationConfigUpdateRequest } from '../models/types_RecommendationConfigUpdateRequest';
 import type { types_RuleDryRunRequest } from '../models/types_RuleDryRunRequest';
 import type { types_RuleDryRunResponse } from '../models/types_RuleDryRunResponse';
 import type { types_RulePayload } from '../models/types_RulePayload';
@@ -89,6 +91,38 @@ export class AdminService {
                 404: `Not Found`,
                 500: `Internal Server Error`,
             },
+        });
+    }
+    /**
+     * Fetch the active recommendation config snapshot
+     * @param namespace Namespace
+     * @returns types_RecommendationConfigDocument OK
+     * @throws ApiError
+     */
+    public static getV1AdminRecommendationConfig(
+        namespace: string = 'default',
+    ): CancelablePromise<types_RecommendationConfigDocument> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/v1/admin/recommendation/config',
+            query: {
+                'namespace': namespace,
+            },
+        });
+    }
+    /**
+     * Update the active recommendation config
+     * @param payload Updated config
+     * @returns types_RecommendationConfigDocument OK
+     * @throws ApiError
+     */
+    public static postV1AdminRecommendationConfig(
+        payload: types_RecommendationConfigUpdateRequest,
+    ): CancelablePromise<types_RecommendationConfigDocument> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/v1/admin/recommendation/config',
+            body: payload,
         });
     }
     /**

@@ -48,11 +48,12 @@ curl -X POST https://api.example.com/v1/items:upsert \
 
 ## Ranking & Explainability
 
-| Endpoint                      | Method | Purpose                                                 | Notes                                                                                                                                                                                                            |
-|-------------------------------|--------|---------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `/v1/recommendations`         | POST   | Core ranking endpoint returning top-K items for a user. | Requires `namespace`, `k`, optional `user_id`. Supports `overrides` (blend/MMR/profile knobs) and `include_reasons`. Returns trace extras (policy summary, starter profile) and feeds audit/coverage guardrails. |
-| `/v1/items/{item_id}/similar` | GET    | Fetch similar items by collaborative/content signals.   | Needs `namespace` and `item_id`. Used for “related products.”                                                                                                                                                    |
-| `/v1/explain/llm`             | POST   | Ask the LLM explainer for narrative summaries.          | Provide target type (`recommendation`, `order`), time window, question. Requires LLM env vars.                                                                                                                   |
+| Endpoint                      | Method | Purpose                                                 | Notes                                                                                                                                                                                                                    |
+|-------------------------------|--------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `/v1/recommendations`         | POST   | Core ranking endpoint returning top-K items for a user. | Requires `namespace`, `k`, optional `user_id`. Supports `overrides` (blend/MMR/profile knobs) and `include_reasons`. Returns trace extras (policy summary, starter profile) and feeds audit/coverage guardrails.         |
+| `/v1/rerank`                  | POST   | Re-score a caller-supplied candidate list.              | Send up to ~200 `items[]` (optional prior scores) plus user/context. Engine reuses blend/MMR/policy/personalization but never injects new IDs, so search/cart services can control retrieval while inheriting telemetry. |
+| `/v1/items/{item_id}/similar` | GET    | Fetch similar items by collaborative/content signals.   | Needs `namespace` and `item_id`. Used for “related products.”                                                                                                                                                            |
+| `/v1/explain/llm`             | POST   | Ask the LLM explainer for narrative summaries.          | Provide target type (`recommendation`, `order`), time window, question. Requires LLM env vars.                                                                                                                           |
 
 **Key request fields (`/v1/recommendations`)**
 
@@ -76,6 +77,28 @@ curl -X POST https://api.example.com/v1/recommendations \
           "profile_starter_blend_weight": 0.45
         },
         "include_reasons": true
+      }'
+```
+
+### Rerank workflow
+
+- **When to use it:** downstream systems already have a candidate list (search/browse/cart) but want the same personalization, policy, and telemetry as `/v1/recommendations`.
+- **Payload:** identical top-level fields plus an `items[]` array (≤200 entries) supplying `item_id` and optional `score`. The service never injects new IDs; it only reorders what you send.
+- **Response:** same schema as `/v1/recommendations` (items + `trace.extras`, audit ID) so guardrail automation and evidence capture work unchanged.
+
+```bash
+curl -X POST https://api.example.com/v1/rerank \
+  -H "Content-Type: application/json" \
+  -d '{
+        "namespace": "retail_us",
+        "user_id": "shopper_42",
+        "k": 4,
+        "context": {"surface": "search", "query": "wireless earbuds"},
+        "items": [
+          {"item_id": "sku_a", "score": 0.71},
+          {"item_id": "sku_b", "score": 0.65},
+          {"item_id": "sku_c"}
+        ]
       }'
 ```
 
@@ -111,6 +134,7 @@ Policies are defined via `/v1/bandit/policies:upsert`. Each policy lists arms, t
 | `/v1/segment-profiles:delete`      | POST   | Remove starter profiles.                        |                                                           |
 | `/v1/segments:dry-run`             | POST   | Test segment definitions without saving.        |                                                           |
 | `/v1/admin/recommendation/presets` | GET    | Fetch recommended MMR presets per surface.      | UI tooling can show validated values.                     |
+| `/v1/admin/recommendation/config`  | GET/POST | Fetch/apply the active recommendation config.   | Use `analysis/scripts/recommendation_config.py export/apply` to keep git-backed JSON templates per namespace. |
 
 **Usage tips**
 
@@ -131,6 +155,14 @@ Policies are defined via `/v1/bandit/policies:upsert`. Each policy lists arms, t
 
 Rules are long-lived merchandising controls. Manual overrides map to temporary rules behind the scenes. Both obey namespace/surface scoping and appear in decision traces (`trace.extras.policy`). Always dry-run complex rules before enabling them in production.
 
+### Rule testing & evidence
+
+1. `POST /v1/admin/rules/dry-run` (or run `analysis/scripts/test_rules.py --base-url <url> --org-id <uuid> --namespace <ns>`) to see how the new rule would modify a seeded namespace. The script writes before/after payloads plus metric samples to `analysis/results/rules_effect_sample.json`.
+2. Inspect the dry-run response (`preview.items`, `policy.preview`) and verify the expected rule IDs show up under `trace.extras.policy.rules`.
+3. Enable the rule with `POST /v1/admin/rules` and watch `/metrics` for `policy_rule_blocked_items_total{rule_id="<id>"}` and `policy_constraint_leak_total` so you can prove the change behaves safely.
+
+Include the JSON artifacts when filing guardrail evidence or peer reviews.
+
 ## Audit & Coverage
 
 | Endpoint                            | Method   | Purpose                                 | Notes                                                                                       |
@@ -143,10 +175,21 @@ Traces include the full request, resolved algorithm config, policy summaries, an
 
 ## Data Governance / Maintenance
 
-| Endpoint  | Method | Purpose                   | Notes                                            |
-|-----------|--------|---------------------------|--------------------------------------------------|
-| `/health` | GET    | Liveness/readiness probe. | Returns `{ "status": "ok" }`. Used by Docker/CI. |
-| `/docs`   | GET    | Swagger UI / API docs.    | Serves `swagger.json` / `swagger.yaml`.          |
+| Endpoint   | Method | Purpose                                               | Notes                                                                                         |
+|------------|--------|-------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| `/version` | GET    | Emit git commit, build timestamp, and model version.  | Relies on `RECSYS_GIT_COMMIT` / `RECSYS_BUILD_TIME` env vars; falls back to runtime defaults. |
+| `/health`  | GET    | Liveness/readiness probe.                             | Returns `{ "status": "ok" }`. Used by Docker/CI.                                              |
+| `/docs`    | GET    | Swagger UI / API docs.                                | Serves `swagger.json` / `swagger.yaml`.                                                       |
+| `/metrics` | GET    | Prometheus metrics (if enabled via observability env) | Scrape `policy_*`, HTTP latency, DB stats, etc.                                               |
+
+Pair `/version` with determinism artifacts (see `analysis/results/determinism_ci.json` or `make determinism`) when capturing evidence for evaluations or incident reviews.
+
+### Load & chaos workflows
+
+- `make load-test LOAD_BASE_URL=<url> LOAD_ORG_ID=<uuid> LOAD_NAMESPACE=<ns> LOAD_RPS=10,100,1000` – runs the k6 script `analysis/load/recommendations_k6.js`, ramps through each RPS stage, and writes `analysis/results/load_test_summary.json` (latency percentiles, iteration count, error rate).
+- `LOAD_USER_POOL`, `LOAD_SURFACE`, and `LOAD_STAGE_DURATION` let you tailor the traffic mix without editing code; set `SUMMARY_PATH` to capture multiple environments (e.g., staging vs. prod) side by side.
+- `python analysis/scripts/chaos_toggle.py api pause 15` (or `db stop 20`) temporarily pauses a docker-compose service so you can observe how `/v1/recommendations` behaves during cache/DB outages while the load test is running.
+- Share the resulting JSON summaries alongside determinism and scenario evidence when answering evaluation rubrics.
 
 ## Using the reference
 

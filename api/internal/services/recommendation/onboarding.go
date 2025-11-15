@@ -12,11 +12,14 @@ import (
 func defaultStarterPresets() map[string]map[string]float64 {
 	return map[string]map[string]float64{
 		"new_users": {
-			"electronics": 0.25,
-			"books":       0.2,
-			"home":        0.2,
-			"fashion":     0.2,
-			"beauty":      0.15,
+			"electronics": 0.18,
+			"books":       0.14,
+			"home":        0.14,
+			"fashion":     0.12,
+			"beauty":      0.08,
+			"fitness":     0.1,
+			"outdoors":    0.12,
+			"gourmet":     0.12,
 		},
 	}
 }
