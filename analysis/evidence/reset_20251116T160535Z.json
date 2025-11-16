@@ -1,0 +1,35 @@
+{
+  "timestamp": "2025-11-16T16:05:35.040096+00:00",
+  "base_url": "https://api.pepe.local",
+  "namespace": "default",
+  "org_id": "00000000-0000-0000-0000-000000000001",
+  "operations": [
+    {
+      "resource": "events",
+      "endpoint": "https://api.pepe.local/v1/events:delete",
+      "deleted_count": 0,
+      "response": {
+        "deleted_count": 0,
+        "message": "Events deleted successfully"
+      }
+    },
+    {
+      "resource": "users",
+      "endpoint": "https://api.pepe.local/v1/users:delete",
+      "deleted_count": 0,
+      "response": {
+        "deleted_count": 0,
+        "message": "Users deleted successfully"
+      }
+    },
+    {
+      "resource": "items",
+      "endpoint": "https://api.pepe.local/v1/items:delete",
+      "deleted_count": 0,
+      "response": {
+        "deleted_count": 0,
+        "message": "Items deleted successfully"
+      }
+    }
+  ]
+}

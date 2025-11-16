@@ -339,6 +339,9 @@ func (e *Engine) Recommend(
 	if req.InjectAnchors && len(req.AnchorItemIDs) > 0 && len(response.Items) > 0 {
 		promoteAnchors(response, req.AnchorItemIDs, 3)
 	}
+	if ruleResult != nil && len(response.Items) > 0 {
+		promoteManualBoosts(response, ruleResult)
+	}
 	if len(trace.Anchors) == 0 && candidateData.AnchorsFetched {
 		trace.Anchors = append(trace.Anchors, "(no_recent_activity)")
 	}
@@ -468,6 +471,65 @@ func promoteAnchors(resp *Response, anchors []string, maxPromote int) {
 		rest = append(rest, item)
 	}
 	resp.Items = append(promoted, rest...)
+}
+
+func promoteManualBoosts(resp *Response, ruleResult *rules.EvaluateResult) {
+	if resp == nil || ruleResult == nil || len(resp.Items) == 0 {
+		return
+	}
+
+	boostedSet := make(map[string]struct{})
+	for id, effect := range ruleResult.ItemEffects {
+		if effect.BoostDelta > 0 {
+			boostedSet[id] = struct{}{}
+		}
+	}
+	if len(boostedSet) == 0 {
+		return
+	}
+
+	pinnedSet := make(map[string]struct{}, len(ruleResult.Pinned))
+	for _, pin := range ruleResult.Pinned {
+		pinnedSet[pin.ItemID] = struct{}{}
+	}
+
+	boosted := make([]ScoredItem, 0, len(boostedSet))
+	for _, item := range resp.Items {
+		if _, pinned := pinnedSet[item.ItemID]; pinned {
+			continue
+		}
+		if _, ok := boostedSet[item.ItemID]; ok {
+			boosted = append(boosted, item)
+		}
+	}
+	if len(boosted) == 0 {
+		return
+	}
+
+	pinnedItems := make([]ScoredItem, 0, len(pinnedSet))
+	for _, item := range resp.Items {
+		if _, pinned := pinnedSet[item.ItemID]; pinned {
+			pinnedItems = append(pinnedItems, item)
+		}
+	}
+
+	seen := make(map[string]struct{}, len(resp.Items))
+	for _, item := range pinnedItems {
+		seen[item.ItemID] = struct{}{}
+	}
+	for _, item := range boosted {
+		seen[item.ItemID] = struct{}{}
+	}
+
+	rest := make([]ScoredItem, 0, len(resp.Items)-len(seen))
+	for _, item := range resp.Items {
+		if _, skip := seen[item.ItemID]; skip {
+			continue
+		}
+		rest = append(rest, item)
+	}
+
+	resp.Items = append(append(pinnedItems, boosted...), rest...)
 }
 
 // getPopularityCandidates fetches a popularity-based candidate pool.

@@ -7,10 +7,10 @@
       "price": 123.23,
       "available": true,
       "tags": [
-        "reading",
-        "books",
+        "leafpress",
         "literature",
-        "leafpress"
+        "books",
+        "reading"
       ],
       "description": "limited books pick by LeafPress",
       "props": {
@@ -413,10 +413,10 @@
       "price": 155.56,
       "available": true,
       "tags": [
-        "decor",
         "living",
-        "home",
-        "havencraft"
+        "decor",
+        "havencraft",
+        "home"
       ],
       "description": "artisan home pick by HavenCraft",
       "props": {
@@ -819,9 +819,9 @@
       "price": 20.34,
       "available": true,
       "tags": [
-        "smart",
-        "nimbus",
         "electronics",
+        "nimbus",
+        "smart",
         "gadgets"
       ],
       "description": "artisan electronics pick by Nimbus",
@@ -1225,9 +1225,9 @@
       "price": 171.84,
       "available": true,
       "tags": [
-        "reading",
-        "books",
         "literature",
+        "books",
+        "reading",
         "atlasreads",
         "high_margin"
       ],
@@ -1632,10 +1632,10 @@
       "price": 189.29,
       "available": true,
       "tags": [
-        "wellness",
         "skincare",
         "beauty",
         "velvetsky",
+        "wellness",
         "new_arrival"
       ],
       "description": "smart beauty pick by VelvetSky",

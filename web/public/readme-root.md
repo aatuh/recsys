@@ -13,6 +13,8 @@ users, items, and events. The service returns top-K recommendations and
 
 ## Start Here
 
+### 0. Recsys Tuning Playbook
+
 | Persona / Need                                                              | Go To                                                                                                                                                      |
 |-----------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Business/Product stakeholder – understand guardrails, overrides, telemetry  | `docs/overview.md` (Business section), [Onboarding & Coverage Checklist](#onboarding--coverage-checklist), `docs/rules-runbook.md`                         |
@@ -26,6 +28,48 @@ users, items, and events. The service returns top-K recommendations and
 - Database Schema & SQL tips: `docs/database_schema.md`
 - Persona Overview & lifecycle: `docs/overview.md`
 - Simulation workflow: `docs/bespoke_simulations.md`
+
+### Tuning Workflow (Reset → Ship)
+
+1. **Reset namespace (clean slate)**  
+   `python analysis/scripts/reset_namespace.py --base-url https://api.pepe.local --org-id $ORG_ID --namespace demo --force`
+
+2. **Seed catalog/users/events**  
+   `python analysis/scripts/seed_dataset.py --base-url https://api.pepe.local --org-id $ORG_ID --namespace demo --users 600 --events 40000`
+
+3. **Fetch/edit profile**  
+   `python analysis/scripts/env_profile_manager.py --namespace demo fetch --base-url https://api.pepe.local --org-id $ORG_ID --profile sweep_baseline`  
+   Edit `analysis/env_profiles/demo/sweep_baseline.json` (e.g., `segment_profiles`, blend, starter knobs), then apply with the same CLI (`--apply`).
+
+4. **Run the tuning harness**  
+   ```
+   python analysis/scripts/tuning_harness.py \
+     --base-url https://api.pepe.local --org-id $ORG_ID \
+     --namespace demo --profile-name sweep_baseline \
+     --segment power_users --samples 3 --seed 2025 \
+     --alphas 0.32,0.38 --betas 0.44,0.50 --gammas 0.18,0.24 \
+     --mmrs 0.18,0.26 --fanouts 450,650 \
+     --profile-boosts 0.6,0.75 --starter-blend-weights 0.7,0.9 \
+     --reset-namespace --sleep-ms 400 --quality-limit-users 150 \
+     --quality-request-timeout 180
+   ```
+   Outputs land in `analysis/results/tuning_runs/demo_<timestamp>/`.
+
+5. **Optional: AI-assisted suggestions**  
+   `python analysis/scripts/ai_optimizer.py --namespace tune_seg_ --objective segment_ndcg_lift --suggestions 5 --alpha-range 0.3 0.5 --beta-range 0.4 0.6 --gamma-range 0.1 0.3 --mmr-range 0.15 0.35 --fanout-range 400 800 --output analysis/results/next_suggestions.json`
+
+6. **Guardrail check**  
+   `python analysis/scripts/check_guardrails.py --namespace tune_seg_ --min-ndcg 0.1 --min-mrr 0.1` (also runs in CI).
+
+7. **Snapshot winning profile & evidence**  
+   Apply the winning config via `env_profile_manager.py --apply`, commit `analysis/env_profiles/...` plus `analysis/results/tuning_runs/.../summary.json`, and include metrics in the PR/findings.
+
+#### Troubleshooting & Guardrail Tips
+
+- **Segment guardrail failure**: Rerun the harness with a narrower sweep for the failing cohort (e.g., `--segment power_users --fanouts 450,550 --mmrs 0.2,0.3`). Examine `analysis/results/tuning_runs/<ns>_<ts>/run_###.json` to confirm lifts before applying.
+- **Coverage shortfall**: Use the coverage pattern (`tune_cov_*` runs) by raising `POPULARITY_FANOUT` and lowering `MMR_LAMBDA`. Recheck `catalog_coverage` and `long_tail_share` in the summary JSON.
+- **Seed or connection issues**: If you see `user_XXXX 502` or `Connection refused`, ensure Docker/`make cycle` finished, rerun `seed_dataset.py`, and use the proxy host (`https://api.pepe.local --insecure`).
+- **Guardrail script failures**: `analysis/scripts/check_guardrails.py` prints each failing run (e.g., `run_001: overall ndcg_lift=0.08 < 0.10`). Fix the offending segment via the harness, then rerun the script (CI runs it automatically).
 
 ### API Surface at a Glance
 
@@ -258,6 +302,67 @@ The command iterates through each run, generates the per-customer report folders
   ```
 
 - Each iteration saves `run_###.json` plus `summary.json` under `analysis/results/tuning_runs/<namespace>_<timestamp>/`, capturing the parameter set, guardrail metrics, and evidence paths so you can chart lifts or feed the data to more advanced optimizers.
+- Use `analysis/scripts/env_profile_manager.py` to fetch/apply configs per namespace/profile:
+
+  ```bash
+  python analysis/scripts/env_profile_manager.py --namespace default fetch \
+    --base-url https://api.pepe.local --org-id "$ORG_ID" --profile coverage_sweep
+  # edit analysis/env_profiles/default/coverage_sweep.json (segment_profiles, blend, etc.)
+  python analysis/scripts/env_profile_manager.py --namespace default apply \
+    --base-url https://api.pepe.local --org-id "$ORG_ID" --profile coverage_sweep \
+    --author codex --notes "trend seekers sweep"
+  ```
+
+- `analysis/scripts/tuning_harness.py` runs the full sweep (seed → quality eval). Example segment + starter profile sweep:
+
+  ```bash
+  python analysis/scripts/tuning_harness.py \
+    --base-url https://api.pepe.local \
+    --org-id "$ORG_ID" \
+    --namespace default \
+    --profile-name segment_power \
+    --segment power_users \
+    --samples 3 --seed 2025 \
+    --alphas 0.32,0.38 \
+    --betas 0.44,0.50 \
+    --gammas 0.18,0.24 \
+    --mmrs 0.18,0.26 \
+    --fanouts 450,650 \
+    --profile-boosts 0.6,0.75 \
+    --profile-min-events 2,4 \
+    --starter-blend-weights 0.7,0.9 \
+    --reset-namespace --sleep-ms 400 \
+    --quality-limit-users 150 \
+    --quality-request-timeout 180
+  ```
+
+- Use `analysis/scripts/check_guardrails.py` (also runs in CI) to verify sweeps:
+
+  ```bash
+  python analysis/scripts/check_guardrails.py --namespace tune_seg_ --min-ndcg 0.1 --min-mrr 0.1
+  ```
+
+- `analysis/scripts/ai_optimizer.py` layers an AI-assisted optimizer on top of the harness. It ingests past runs, fits a surrogate model (Gaussian process when `scikit-learn` is available), and proposes the next parameter sets to try. Example:
+
+  ```bash
+  python analysis/scripts/ai_optimizer.py \
+    --namespace tune_seg_ \
+    --objective segment_ndcg_lift \
+    --suggestions 5 \
+    --alpha-range 0.3 0.5 \
+    --beta-range 0.4 0.6 \
+    --gamma-range 0.1 0.3 \
+    --mmr-range 0.15 0.35 \
+    --fanout-range 400 800 \
+    --output analysis/results/next_suggestions.json
+  ```
+
+  Feed the suggestions back into `tuning_harness.py` (optionally with `--segment`) to automate exploration/exploitation loops.
+- Starter-profile tuning: pass `--profile-boosts`, `--profile-min-events`, and/or `--starter-blend-weights` to sweep personalization knobs.  
+  - `PROFILE_BOOST` ↑ = stronger personalization; nice for high-signal cohorts but risky for sparse users.  
+  - `PROFILE_MIN_EVENTS_FOR_BOOST` ↓ = personalization kicks in sooner; use for cold-start segments.  
+  - `PROFILE_STARTER_BLEND_WEIGHT` ↑ = rely on starter presets longer; ideal when you want curated anchors for new users.  
+  - Example: `--profile-boosts 0.6,0.75,0.9 --profile-min-events 2,4,6 --starter-blend-weights 0.7,0.9`
 - Switch to random sampling with `--samples N` (omit `--grid`) for quick exploration. Because profiles are applied via `/v1/admin/recommendation/config`, no container restart is needed between iterations; just remember to re-seed so the dataset stays consistent.
 
 ### Guardrail configuration
@@ -688,14 +793,10 @@ Tiny example (3 items, tags)
 
 ### Segment profiles & rules
 
-- You can use the API to upload segment profiles to define reusable weight
-  bundles (blend weights, MMR, caps, personalization settings, time windows).
-- Attach those profiles to audience segments with the API. Segments can match
-  users on traits, request context, or namespace-level rules. The active profile
-  is applied automatically during recommendation.
-- Dry running lets you test which profile a hypothetical user would receive.
-  This makes it straightforward to tailor ranking knobs for cohorts such as
-  "new", "returning", or "VIP" players without code changes.
+- Segment profiles (via `/v1/admin/recommendation/config`) let you define reusable weight bundles per cohort—blend weights, MMR, fanout, starter weight, etc.—without editing `.env`.
+- Use `analysis/scripts/env_profile_manager.py --namespace <ns> fetch/apply` to version these configs in `analysis/env_profiles/<namespace>/profile.json`.
+- The tuning harness supports segment-specific sweeps (`python analysis/scripts/tuning_harness.py --segment power_users ...`), updating only that profile while recording segment lifts under `analysis/results/tuning_runs/`.
+- Guardrails are enforced by CI via `analysis/scripts/check_guardrails.py` to ensure stored sweeps keep ≥+10 % lifts and coverage.
 
 ### Manual overrides for boosts and suppressions
 

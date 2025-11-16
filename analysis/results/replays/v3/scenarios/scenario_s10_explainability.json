@@ -1,0 +1,662 @@
+{
+  "request": {
+    "namespace": "default",
+    "user_id": "user_0004",
+    "k": 10,
+    "context": {
+      "surface": "home"
+    },
+    "include_reasons": true,
+    "explain_level": "full"
+  },
+  "response": {
+    "model_version": "popularity_v1",
+    "items": [
+      {
+        "item_id": "item_new_explore",
+        "score": 0.7048752170773935,
+        "reasons": [
+          "recent_popularity",
+          "content_similarity",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ],
+        "explain": {
+          "blend": {
+            "alpha": 0.45,
+            "beta": 0.45,
+            "gamma": 0.1,
+            "pop_norm": 1,
+            "emb_norm": 1,
+            "contrib": {
+              "pop": 0.45,
+              "emb": 0.1
+            },
+            "raw": {
+              "pop": 4,
+              "emb": 4
+            }
+          },
+          "personalization": {
+            "overlap": 0.36101449202189606,
+            "boost_multiplier": 1.281591303777079
+          },
+          "mmr": {
+            "lambda": 0.23,
+            "relevance": 0.23,
+            "rank": 1
+          },
+          "caps": {
+            "brand": {
+              "applied": false
+            },
+            "category": {
+              "applied": false
+            }
+          },
+          "anchors": [
+            "item_0318",
+            "item_0030",
+            "item_0162",
+            "item_0210",
+            "item_0143",
+            "item_0230",
+            "item_0007",
+            "item_0201",
+            "item_0138",
+            "item_0044"
+          ]
+        }
+      },
+      {
+        "item_id": "item_0188",
+        "score": 0.5252277391091913,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ],
+        "explain": {
+          "blend": {
+            "alpha": 0.45,
+            "beta": 0.45,
+            "gamma": 0.1,
+            "pop_norm": 0.06917237456950125,
+            "cooc_norm": 1,
+            "emb_norm": 0.018775544054384252,
+            "contrib": {
+              "pop": 0.03112756855627556,
+              "cooc": 0.45,
+              "emb": 0.0018775544054384253
+            },
+            "raw": {
+              "pop": 0.276689498278005,
+              "cooc": 5,
+              "emb": 0.07510217621753701
+            }
+          },
+          "personalization": {
+            "overlap": 0.11207243275496953,
+            "boost_multiplier": 1.0874164975488763
+          },
+          "mmr": {
+            "lambda": 0.23,
+            "relevance": 0.1713812275823711,
+            "rank": 2
+          },
+          "caps": {
+            "brand": {
+              "applied": false
+            },
+            "category": {
+              "applied": false
+            }
+          },
+          "anchors": [
+            "item_0318",
+            "item_0030",
+            "item_0162",
+            "item_0210",
+            "item_0143",
+            "item_0230",
+            "item_0007",
+            "item_0201",
+            "item_0138",
+            "item_0044"
+          ]
+        }
+      },
+      {
+        "item_id": "item_0318",
+        "score": 0.44581845524312713,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ],
+        "explain": {
+          "blend": {
+            "alpha": 0.45,
+            "beta": 0.45,
+            "gamma": 0.1,
+            "pop_norm": 0.11036691674144304,
+            "cooc_norm": 0.6,
+            "emb_norm": 0.01779841118800865,
+            "contrib": {
+              "pop": 0.04966511253364937,
+              "cooc": 0.27,
+              "emb": 0.001779841118800865
+            },
+            "raw": {
+              "pop": 0.44146766696577217,
+              "cooc": 3,
+              "emb": 0.0711936447520346
+            }
+          },
+          "personalization": {
+            "overlap": 0.4960513623117476,
+            "boost_multiplier": 1.386920062603163
+          },
+          "mmr": {
+            "lambda": 0.23,
+            "max_sim": 0.2857142857142857,
+            "penalty": 0.22,
+            "relevance": 0.14547006650492125,
+            "rank": 9
+          },
+          "caps": {
+            "brand": {
+              "applied": false
+            },
+            "category": {
+              "applied": false
+            }
+          },
+          "anchors": [
+            "item_0318",
+            "item_0030",
+            "item_0162",
+            "item_0210",
+            "item_0143",
+            "item_0230",
+            "item_0007",
+            "item_0201",
+            "item_0138",
+            "item_0044"
+          ]
+        }
+      },
+      {
+        "item_id": "item_0132",
+        "score": 0.41346780919695836,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ],
+        "explain": {
+          "blend": {
+            "alpha": 0.45,
+            "beta": 0.45,
+            "gamma": 0.1,
+            "pop_norm": 0.09264764830664136,
+            "cooc_norm": 0.8,
+            "emb_norm": 0.032448458442692424,
+            "contrib": {
+              "pop": 0.04169144173798862,
+              "cooc": 0.36000000000000004,
+              "emb": 0.0032448458442692427
+            },
+            "raw": {
+              "pop": 0.37059059322656546,
+              "cooc": 4,
+              "emb": 0.1297938337707697
+            }
+          },
+          "personalization": {
+            "overlap": 0.02701128192111713,
+            "boost_multiplier": 1.0210687998984713
+          },
+          "mmr": {
+            "lambda": 0.23,
+            "relevance": 0.134914086651537,
+            "rank": 3
+          },
+          "caps": {
+            "brand": {
+              "applied": false
+            },
+            "category": {
+              "applied": false
+            }
+          },
+          "anchors": [
+            "item_0318",
+            "item_0030",
+            "item_0162",
+            "item_0210",
+            "item_0143",
+            "item_0230",
+            "item_0007",
+            "item_0201",
+            "item_0138",
+            "item_0044"
+          ]
+        }
+      },
+      {
+        "item_id": "item_0005",
+        "score": 0.3778251658888383,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ],
+        "explain": {
+          "blend": {
+            "alpha": 0.45,
+            "beta": 0.45,
+            "gamma": 0.1,
+            "pop_norm": 0.18126132383652518,
+            "cooc_norm": 0.6,
+            "emb_norm": 0.005334968928879497,
+            "contrib": {
+              "pop": 0.08156759572643633,
+              "cooc": 0.27,
+              "emb": 0.0005334968928879497
+            },
+            "raw": {
+              "pop": 0.7250452953461007,
+              "cooc": 3,
+              "emb": 0.021339875715517986
+            }
+          },
+          "personalization": {
+            "overlap": 0.09366509166280124,
+            "boost_multiplier": 1.073058771496985
+          },
+          "mmr": {
+            "lambda": 0.23,
+            "max_sim": 0.42857142857142855,
+            "penalty": 0.33,
+            "relevance": 0.12328393174999575,
+            "rank": 10
+          },
+          "caps": {
+            "brand": {
+              "applied": false
+            },
+            "category": {
+              "applied": false
+            }
+          },
+          "anchors": [
+            "item_0318",
+            "item_0030",
+            "item_0162",
+            "item_0210",
+            "item_0143",
+            "item_0230",
+            "item_0007",
+            "item_0201",
+            "item_0138",
+            "item_0044"
+          ]
+        }
+      },
+      {
+        "item_id": "item_0044",
+        "score": 0.377537835221172,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ],
+        "explain": {
+          "blend": {
+            "alpha": 0.45,
+            "beta": 0.45,
+            "gamma": 0.1,
+            "pop_norm": 0.15734104698782928,
+            "cooc_norm": 0.6,
+            "emb_norm": 0.017197955728957798,
+            "contrib": {
+              "pop": 0.07080347114452318,
+              "cooc": 0.27,
+              "emb": 0.00171979557289578
+            },
+            "raw": {
+              "pop": 0.6293641879513171,
+              "cooc": 3,
+              "emb": 0.06879182291583119
+            }
+          },
+          "personalization": {
+            "overlap": 0.1310581697731606,
+            "boost_multiplier": 1.1022253724230653
+          },
+          "mmr": {
+            "lambda": 0.23,
+            "relevance": 0.12319017607244864,
+            "rank": 4
+          },
+          "caps": {
+            "brand": {
+              "applied": false
+            },
+            "category": {
+              "applied": false
+            }
+          },
+          "anchors": [
+            "item_0318",
+            "item_0030",
+            "item_0162",
+            "item_0210",
+            "item_0143",
+            "item_0230",
+            "item_0007",
+            "item_0201",
+            "item_0138",
+            "item_0044"
+          ]
+        }
+      },
+      {
+        "item_id": "item_0001",
+        "score": 0.3643890839017841,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ],
+        "explain": {
+          "blend": {
+            "alpha": 0.45,
+            "beta": 0.45,
+            "gamma": 0.1,
+            "pop_norm": 0.38918437821177554,
+            "cooc_norm": 0.4,
+            "emb_norm": 0.01750576195858264,
+            "contrib": {
+              "pop": 0.175132970195299,
+              "cooc": 0.18000000000000002,
+              "emb": 0.0017505761958582639
+            },
+            "raw": {
+              "pop": 1.5567375128471022,
+              "cooc": 2,
+              "emb": 0.07002304783433055
+            }
+          },
+          "personalization": {
+            "overlap": 0.026962531854681032,
+            "boost_multiplier": 1.0210307748466512
+          },
+          "mmr": {
+            "lambda": 0.23,
+            "relevance": 0.1188997531292241,
+            "rank": 5
+          },
+          "caps": {
+            "brand": {
+              "applied": false
+            },
+            "category": {
+              "applied": false
+            }
+          },
+          "anchors": [
+            "item_0318",
+            "item_0030",
+            "item_0162",
+            "item_0210",
+            "item_0143",
+            "item_0230",
+            "item_0007",
+            "item_0201",
+            "item_0138",
+            "item_0044"
+          ]
+        }
+      },
+      {
+        "item_id": "item_0180",
+        "score": 0.2353799641202185,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ],
+        "explain": {
+          "blend": {
+            "alpha": 0.45,
+            "beta": 0.45,
+            "gamma": 0.1,
+            "pop_norm": 0.11532741208688166,
+            "cooc_norm": 0.4,
+            "emb_norm": 0.01420031627016305,
+            "contrib": {
+              "pop": 0.05189733543909675,
+              "cooc": 0.18000000000000002,
+              "emb": 0.001420031627016305
+            },
+            "raw": {
+              "pop": 0.46130964834752664,
+              "cooc": 2,
+              "emb": 0.0568012650806522
+            }
+          },
+          "personalization": {
+            "overlap": 0.01133372637803571,
+            "boost_multiplier": 1.008840306574868
+          },
+          "mmr": {
+            "lambda": 0.23,
+            "relevance": 0.07680422071316222,
+            "rank": 6
+          },
+          "caps": {
+            "brand": {
+              "applied": false
+            },
+            "category": {
+              "applied": false
+            }
+          },
+          "anchors": [
+            "item_0318",
+            "item_0030",
+            "item_0162",
+            "item_0210",
+            "item_0143",
+            "item_0230",
+            "item_0007",
+            "item_0201",
+            "item_0138",
+            "item_0044"
+          ]
+        }
+      },
+      {
+        "item_id": "item_0220",
+        "score": 0.2145451735803762,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity",
+          "personalization"
+        ],
+        "explain": {
+          "blend": {
+            "alpha": 0.45,
+            "beta": 0.45,
+            "gamma": 0.1,
+            "pop_norm": 0.06630467347615007,
+            "cooc_norm": 0.4,
+            "emb_norm": 0.014297108890089644,
+            "contrib": {
+              "pop": 0.029837103064267533,
+              "cooc": 0.18000000000000002,
+              "emb": 0.0014297108890089644
+            },
+            "raw": {
+              "pop": 0.2652186939046003,
+              "cooc": 2,
+              "emb": 0.057188435560358575
+            }
+          },
+          "personalization": {
+            "overlap": 0.01989439365464117,
+            "boost_multiplier": 1.01551762705062
+          },
+          "mmr": {
+            "lambda": 0.23,
+            "relevance": 0.07000585171384814,
+            "rank": 7
+          },
+          "caps": {
+            "brand": {
+              "applied": false
+            },
+            "category": {
+              "applied": false
+            }
+          },
+          "anchors": [
+            "item_0318",
+            "item_0030",
+            "item_0162",
+            "item_0210",
+            "item_0143",
+            "item_0230",
+            "item_0007",
+            "item_0201",
+            "item_0138",
+            "item_0044"
+          ]
+        }
+      },
+      {
+        "item_id": "item_0088",
+        "score": 0.21169743602568605,
+        "reasons": [
+          "recent_popularity",
+          "co_visitation",
+          "embedding_similarity",
+          "diversity"
+        ],
+        "explain": {
+          "blend": {
+            "alpha": 0.45,
+            "beta": 0.45,
+            "gamma": 0.1,
+            "pop_norm": 0.06767846965609689,
+            "cooc_norm": 0.4,
+            "emb_norm": 0.01242124680442433,
+            "contrib": {
+              "pop": 0.0304553113452436,
+              "cooc": 0.18000000000000002,
+              "emb": 0.0012421246804424331
+            },
+            "raw": {
+              "pop": 0.27071387862438756,
+              "cooc": 2,
+              "emb": 0.04968498721769732
+            }
+          },
+          "mmr": {
+            "lambda": 0.23,
+            "relevance": 0.06907663811446177,
+            "rank": 8
+          },
+          "caps": {
+            "brand": {
+              "applied": false
+            },
+            "category": {
+              "applied": false
+            }
+          },
+          "anchors": [
+            "item_0318",
+            "item_0030",
+            "item_0162",
+            "item_0210",
+            "item_0143",
+            "item_0230",
+            "item_0007",
+            "item_0201",
+            "item_0138",
+            "item_0044"
+          ]
+        }
+      }
+    ],
+    "trace": {
+      "extras": {
+        "candidate_sources": {
+          "collaborative": {
+            "count": 0,
+            "duration_ms": 0.249868
+          },
+          "content": {
+            "count": 1,
+            "duration_ms": 5.762211
+          },
+          "merged": {
+            "count": 304,
+            "duration_ms": 0.023345
+          },
+          "popularity": {
+            "count": 303,
+            "duration_ms": 25.939486
+          },
+          "post_exclusion": {
+            "count": 303,
+            "duration_ms": 1.947692
+          },
+          "session": {
+            "count": 0,
+            "duration_ms": 1.092047
+          }
+        },
+        "policy": {
+          "total_candidates": 304,
+          "explicit_exclude_hits": 0,
+          "recent_event_exclude_hits": 1,
+          "after_exclusions": 303,
+          "constraint_filtered_count": 0,
+          "after_constraint_filters": 303,
+          "rule_block_count": 0,
+          "rule_pin_count": 0,
+          "rule_boost_count": 0,
+          "rule_boost_injected": 0,
+          "rule_block_exposure": 0,
+          "rule_boost_exposure": 0,
+          "rule_pin_exposure": 0,
+          "after_rules": 303,
+          "final_count": 10,
+          "constraint_leak_count": 0
+        },
+        "recent_event_count": 10
+      }
+    }
+  }
+}

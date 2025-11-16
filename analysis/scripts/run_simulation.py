@@ -249,11 +249,11 @@ def seed_dataset(args: SimpleNamespace) -> None:
         args.namespace,
         "--org-id",
         args.org_id,
-        "--item-count",
+        "--items",
         str(args.item_count),
-        "--user-count",
+        "--users",
         str(args.user_count),
-        "--min-events",
+        "--events",
         str(args.min_events),
     ]
     if args.fixture_path:
