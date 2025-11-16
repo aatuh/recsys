@@ -4,6 +4,17 @@ RecSys is a domain-agnostic recommendation platform. You send opaque item/user/e
 
 ---
 
+## New here? Start with this path
+
+1. **Understand the product** – Read `docs/business_overview.md` to see what RecSys does, why guardrails matter, and how it fits into your business workflows.
+2. **Follow the narrative tour** – Walk through `docs/zero_to_first_recommendation.md` to ingest a tiny catalog and fetch your first recommendations with Acme Outfitters.
+3. **Integrate via HTTP** – Use `docs/quickstart_http.md` for the full hosted API quickstart (ingestion, troubleshooting, error handling).
+4. **Dive into the reference** – Keep `docs/api_reference.md` handy for every endpoint, limits, and behavioral guarantees.
+
+Prefer persona/lifecycle views or a phase-based checklist? After finishing the four steps above, skim `docs/overview.md` (personas) and `docs/onboarding_checklist.md` (week-by-week plan).
+
+---
+
 ## What you can build
 
 - **Personalized feeds** for storefronts, news, or OTT apps.
@@ -24,6 +35,13 @@ RecSys is a domain-agnostic recommendation platform. You send opaque item/user/e
 4. **Call the API:** `curl -H "X-Org-ID: …" -d '{"namespace":"demo","user_id":"user_0001","k":8}' http://localhost:8000/v1/recommendations`
 
 Need the detailed walkthrough (logs, troubleshooting, screenshots)? Head to `GETTING_STARTED.md`. For hosted integrations that only need HTTP calls, use `docs/quickstart_http.md`.
+
+---
+
+### Hosted API vs local stack
+
+- **Hosted integration** – Follow `docs/quickstart_http.md` (plus `docs/zero_to_first_recommendation.md`) if you only need the managed HTTP API.
+- **Local stack / contributors** – Follow `GETTING_STARTED.md` if you want to run the repo locally, inspect internals, or contribute code.
 
 ---
 
@@ -57,6 +75,10 @@ New teammate? Follow `docs/onboarding_checklist.md` for a suggested week-one ram
 - `docs/api_reference.md` – endpoint catalog with payload notes, error codes, and common patterns.
 - `docs/rules_runbook.md` – operational runbook for overrides, telemetry, and incident response.
 - `docs/configuration.md` – conceptual explanation of how ingestion, signals, blending, personalization, and rules fit together.
+- `docs/security_and_data_handling.md` – transport security, auth, retention expectations.
+- `docs/doc_ci.md` – how to run the documentation link checker and client example tests locally or in CI.
+- `docs/analytics_index.md` – map of analytics plans to the questions they answer (blend eval, diversity validation, dashboards, etc.).
+- `docs/doc_style.md` – shared style and terminology guide for writing/maintaining these docs.
 
 ---
 

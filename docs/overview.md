@@ -1,10 +1,8 @@
 # Recsys Overview (Personas & Lifecycle)
 
-This guide explains Recsys from three vantage points—business stakeholders,
-integration engineers, and developers. Each section links to the deeper docs
-so you can jump directly into the material relevant to you.
+This guide explains Recsys from three vantage points—business stakeholders, integration engineers, and developers. Each section links to deeper docs so you can jump directly into the material relevant to you. **Read the four-step “New here?” path in `README.md` first** (business overview → narrative → HTTP quickstart → API reference) and then use this overview as a persona map and lifecycle reference.
 
-> **Who should read this?** Everyone. Start here if you want to understand how the pieces fit together before diving into specific docs. When you see commands referencing `make` or `analysis/scripts`, they assume you cloned the repo; hosted API users can ignore those sections and stick to `docs/quickstart_http.md`.
+> **Who should read this?** Everyone who completed the main onboarding path and now needs a persona-oriented map of the docs. When you see commands referencing `make` or `analysis/scripts`, they assume you cloned the repo; hosted API users can ignore those sections and stick to `docs/quickstart_http.md`.
 > Looking for a full script index? See `docs/analysis_scripts_reference.md`.
 
 ## Business / Product Stakeholders
@@ -12,7 +10,7 @@ so you can jump directly into the material relevant to you.
 **Goal:** Understand the value narrative, rollout plan, and safety controls.
 
 1. **Start here:** `docs/business_overview.md` for the product story and rollout expectations.
-2. **Learn the language:** Skim `docs/concepts_and_metrics.md` to decode ALS/MMR/coverage, then keep it nearby for guardrail reviews.
+2. **Learn the language:** Skim `docs/concepts_and_metrics.md` to decode key metrics (NDCG, MRR, coverage) and keep it nearby for guardrail reviews.
    _Local stack note: commands such as `make scenario-suite` assume you cloned the repo; hosted API users can skip them._
 3. **Plan guardrail reviews:** Coordinate with engineering on the scenario suite (`make scenario-suite`) and quality evaluations. Expect to hear about starter-profile guardrails, coverage, long-tail share, and segment lifts—each defined in `docs/concepts_and_metrics.md`.
 4. **Campaign overrides:** Merchandising teams use `/v1/admin/rules` & `/v1/admin/manual_overrides`. `docs/rules_runbook.md` explains precedence, telemetry, and audit expectations.
@@ -70,6 +68,6 @@ _Figure: High-level RecSys architecture showing clients, API, storage, tooling, 
 1. **Seed data** – Load items/users/events (`analysis/scripts/seed_dataset.py` or ingestion APIs). Confirm via `/v1/items|users|events` and `analysis/evidence/seed_segments.json`. See `GETTING_STARTED.md` for the step-by-step.
 2. **Configure env/profile** – Adjust `.env` or namespace profiles, referencing `docs/configuration.md` + `docs/env_reference.md`. Apply via `analysis/scripts/configure_env.py` or `env_profile_manager.py`.
 3. **Tune & explore** – Run `analysis/scripts/tuning_harness.py` following `docs/tuning_playbook.md` to explore blend/MMR/personalization settings per segment/surface.
-4. **Run simulations & guardrails** – Execute `analysis/scripts/run_simulation.py` (or `make scenario-suite`) and review bundles under `analysis/reports/...`. Guardrail guidance lives in `docs/simulations_and_guardrails.md`.
+4. **Run simulations & guardrails** – Execute `analysis/scripts/run_simulation.py` (or `make scenario-suite`) and review bundles under `analysis/reports/<customer>/<timestamp>/`. Guardrail guidance lives in `docs/simulations_and_guardrails.md`.
 5. **Deploy / Update rules** – Use `/v1/admin/rules` & `/v1/admin/manual_overrides`. Follow `docs/rules_runbook.md` for dry-run, telemetry, and rollback instructions.
 6. **Monitor & audit** – Watch Prometheus dashboards, log guardrail failures, and query decision traces via `/v1/audit/decisions` or the `rec_decisions` table. Loop back to Step 3 whenever catalogs, knobs, or overrides change.

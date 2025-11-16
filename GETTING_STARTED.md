@@ -1,6 +1,6 @@
 # Getting Started (Local Repo Workflow)
 
-Follow this guide after cloning the repo to bring the RecSys stack up locally, seed sample data, and call `/v1/recommendations`. It focuses on **running from source**. If you only need hosted HTTP examples, skip this file and read `docs/quickstart_http.md`.
+Follow this guide after cloning the repo to bring the RecSys stack up locally, seed sample data, and call `/v1/recommendations`. It focuses on **running from source**—use it if you are contributing to RecSys, need to inspect internals, or want an offline sandbox. If you only need hosted HTTP examples, skip this file and read `docs/quickstart_http.md`.
 
 ---
 

@@ -98,6 +98,19 @@ curl -X POST https://api.example.com/v1/rerank \
       }'
 ```
 
+## Behavioral guarantees
+
+- **Idempotency**
+  - `POST /v1/items:upsert`, `POST /v1/users:upsert`, and `POST /v1/events:batch` overwrite existing rows based on `item_id` / `user_id` / `event_id`. Resending the same payload is safe and acts as an upsert.
+  - Rules/overrides are not idempotent by name—use unique IDs or fetch existing resources before recreating.
+- **Consistency & freshness**
+  - Ingested items/users/events typically show up in `/v1/recommendations` within seconds; caches refresh automatically. Heavy batch jobs can take up to ~1 minute to propagate retriever signals.
+  - Derived components (embedding retrievers, bandit policies) depend on nightly/batch pipelines—consult the relevant analytics docs for expected lag.
+- **Pagination**
+  - `GET /v1/items`, `/v1/users`, `/v1/events` use cursor-based pagination (`page_token`). Responses include `next_page_token`; pass it to fetch the next page.
+  - Default sort is `updated_at desc`. Replaying a request with the same `page_token` yields stable results unless data changed.
+  - Max page size is 100 records.
+
 ## Bandit (Multi-arm) API
 
 > Need a refresher on what “multi-armed bandit” means? See the plain-language definition in `docs/concepts_and_metrics.md`.
@@ -203,7 +216,7 @@ All errors return JSON with `code`, `message`, and sometimes `details`. Include 
 - **Rules dry-run workflow:** `POST /v1/admin/rules/dry-run` with the proposed payload, review the before/after samples, then create the rule. `docs/rules_runbook.md` explains how to monitor telemetry afterward.
 - **Error triage loop:** Capture `trace_id`, query `/v1/audit/decisions/{trace_id}`, and cross-reference with guardrail dashboards. Refer to `docs/concepts_and_metrics.md` to explain coverage/diversity terminology in reports.
 
-Need more narrative examples? Start with `GETTING_STARTED.md` for local walkthroughs or `docs/quickstart_http.md` for hosted integrations.
+Need more narrative examples? Start with `GETTING_STARTED.md` for local walkthroughs or `docs/quickstart_http.md` for hosted integrations. For detailed error codes, limits, and retry guidance, see `docs/api_errors_and_limits.md`.
 
 ## Using the reference
 
@@ -211,6 +224,7 @@ Need more narrative examples? Start with `GETTING_STARTED.md` for local walkthro
 - Authentication: by default API keys are disabled (`API_AUTH_ENABLED=false`). If enabled, set `X-API-Key` header.
 - Namespacing: every write/read call requires `namespace` (explicit field or inferred from user/item). Guardrails and env profiles apply per namespace.
 - Rate limiting: configure via `API_RATE_LIMIT_RPM`/`BURST`; admins should mention limits in partner docs once keys are issued.
+- Security & data handling: see `docs/security_and_data_handling.md` for TLS/auth, PII guidance, and retention expectations.
 For deeper walkthroughs and examples, see:
 - `GETTING_STARTED.md` / `docs/quickstart_http.md` (hands-on ingestion + recommendation flow)
 - `docs/simulations_and_guardrails.md` (seeding + simulation)

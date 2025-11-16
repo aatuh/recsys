@@ -96,7 +96,9 @@ customers:
     namespace: default
     quality:
       min_segment_lift_ndcg: 0.12
-      ...
+      min_segment_lift_mrr: 0.11
+      min_catalog_coverage: 0.65
+      min_long_tail_share: 0.25
 ```
 
 - **Quality thresholds** map to metrics emitted by `run_quality_eval.py` (`segment_ndcg_lift`, `catalog_coverage`, etc.).
@@ -132,7 +134,7 @@ customers:
 
 ## 7. Related commands & docs
 
-- `make scenario-suite SCENARIO_BASE_URL=...` – seeds + runs the full scenario suite quickly.
+- `make scenario-suite SCENARIO_BASE_URL=http://localhost:8000` – seeds + runs the full scenario suite quickly (override variables as needed).
 - `make determinism`, `make load-test` – specialty guardrails for reproducibility and scale.
 - `docs/rules_runbook.md` – operational steps when guardrails trip or rules misbehave.
 - `docs/concepts_and_metrics.md` – definitions for metrics mentioned here.

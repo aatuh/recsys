@@ -150,7 +150,7 @@ ORDER BY updated_at DESC
 LIMIT 10;
 ```
 
-3. For large seeding jobs, run `analysis/scripts/seed_dataset.py --fixture-path ...` and inspect `analysis/evidence/seed_segments.json` to confirm segment distributions.
+3. For large seeding jobs, run `analysis/scripts/seed_dataset.py --fixture-path analysis/fixtures/customers/<customer>.json` and inspect `analysis/evidence/seed_segments.json` to confirm segment distributions.
 
 ### Troubleshooting guardrails
 
@@ -181,7 +181,7 @@ DELETE FROM rec_decisions WHERE org_id = :org AND namespace = 'retail_us';
 ### Schema evolution
 
 - New columns/tables are added via `api/migrations/*.up.sql`. Run `make migrate-up` (or `docker-compose run api make migrate-up`) to apply them. For rollbacks, use the paired `.down.sql`.
-- Keep fixtures/templates (`analysis/fixtures/...`) in sync with schema changes (e.g., new item props or user traits).
+- Keep fixtures/templates (under `analysis/fixtures/`) in sync with schema changes (e.g., new item props or user traits).
 
 ### Exporting data
 

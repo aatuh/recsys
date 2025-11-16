@@ -1,6 +1,13 @@
 # Onboarding Checklist
 
-Use this guide as a suggested ramp-up path for new teammates. Timelines are indicative—feel free to move faster or slower based on your background. Focus on the persona closest to your role; you do **not** have to complete every item.
+Use this guide as a suggested ramp-up path for new teammates. Timelines are indicative—feel free to move faster or slower based on your background. Focus on the persona closest to your role; you do **not** have to complete every item. **Before starting, complete the “New here?” path in `README.md` (business overview → narrative → hosted quickstart → API reference).**
+
+---
+
+### Phase 0 – All personas
+
+- Follow the four-step path in `README.md` so you have the business context, the narrative walkthrough (`docs/zero_to_first_recommendation.md`), the hosted HTTP quickstart, and the API reference baseline.
+- Skim `docs/concepts_and_metrics.md` as part of that path so guardrail terms sound familiar.
 
 ---
 
@@ -8,9 +15,8 @@ Use this guide as a suggested ramp-up path for new teammates. Timelines are indi
 
 ### Phase 1 – Day 1–2: Understand the surface area
 
-- Read `README.md` to learn what RecSys provides and where the docs live.
-- Skim `docs/business_overview.md` for the product/value narrative.
-- Read `docs/concepts_and_metrics.md` to learn the core terminology (namespace, guardrails, MMR, etc.).
+- After the README path, skim `docs/business_overview.md` again with your integration hat on and note the surfaces your team owns.
+- Revisit `docs/concepts_and_metrics.md` focusing on namespace isolation, guardrails, and metrics you’ll expose in telemetry.
 - Explore `docs/quickstart_http.md` and send the sample ingest + `/v1/recommendations` requests against the hosted environment (no code changes needed).
 
 ### Phase 2 – Day 3–4: Wire data and configs
@@ -33,7 +39,7 @@ Use this guide as a suggested ramp-up path for new teammates. Timelines are indi
 
 ### Phase 1 – Day 1–2: Context & data
 
-- Complete the Backend/Integration Phase 1 steps (README, Business Overview, Concepts & Metrics).
+- Complete the Backend/Integration Phase 1 steps (with emphasis on concepts & metrics).
 - Read `docs/overview.md` to understand personas, lifecycle, and architecture at a glance.
 - Skim recent tuning or guardrail evidence under `analysis/results/` to see examples of acceptable artifacts.
 

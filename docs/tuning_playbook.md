@@ -71,7 +71,7 @@ python analysis/scripts/env_profile_manager.py \
 ```
 
 - Edit `analysis/env_profiles/$NS/sweep_baseline.json` (blend weights, personalization knobs, per-segment bundles).
-- Apply changes via `... --apply` once the JSON looks good.
+- Apply changes via `python analysis/scripts/env_profile_manager.py --namespace $NS --base-url $BASE_URL --org-id $ORG_ID --profile sweep_baseline --apply` once the JSON looks good.
 
 4. **Run the tuning harness**
 
@@ -132,7 +132,7 @@ These thresholds map to `guardrails.yml`. CI also runs this command; keep it fas
 7. **Snapshot winning profile & evidence**
 
 - Apply via `env_profile_manager.py --apply`.
-- Commit `analysis/env_profiles/...` and `analysis/results/tuning_runs/.../summary.json`.
+- Commit updated `analysis/env_profiles/<namespace>/<profile>.json` files and the relevant `analysis/results/tuning_runs/<namespace_timestamp>/summary.json`.
 - Include top metrics (NDCG lift, coverage, long-tail share) in your PR or ticket.
 
 ---

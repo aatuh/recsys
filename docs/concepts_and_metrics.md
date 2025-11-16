@@ -4,84 +4,182 @@ Read this when you need plain-language definitions of the jargon that appears th
 
 ---
 
+## How to use this doc
+
+Skim the cards below when a term shows up in another doc. Each card follows the same structure:
+
+- **What it is** – 1–2 sentences in plain language.
+- **Where you’ll see it** – Endpoints, dashboards, or config files that reference the concept.
+- **Why you should care** – Business or engineering stakes.
+- **Advanced details** – Optional deeper notes (math, knobs, acronyms). Feel free to skip on your first pass.
+
+---
+
 ## 1. Core concepts
 
-- **Namespace** – A logical tenant/surface bucket. Every request specifies it explicitly so data, guardrails, and overrides stay isolated.
-- **Org** – A company/customer identifier passed via `X-Org-ID`. One org can own many namespaces.
-- **Candidate** – An item ID that is eligible to be ranked. Candidate pools come from popularity, collaborative filtering, content similarity, and session heuristics before we pick the final top-K.
-- **Signals** – Independent evidence that scores a candidate (popularity, co-visitation, embeddings, personalization boosts, etc.). Signals are normalized to `[0,1]` within a request before blending.
-- **Blended scoring** – A weighted sum of normalized signals: `alpha*pop + beta*co_vis + gamma*embed + …`. Overrides let you change weights per call.
-- **Retrieval vs. ranking** – Retrieval builds the candidate pool (fanout) from the data lake. Ranking (MMR + caps + overrides) orders those candidates and enforces constraints.
-- **Personalization** – A lightweight user tag profile built from recent events. Candidates that share tags with the profile receive a boost controlled by `PROFILE_BOOST` and related knobs.
-- **MMR & caps** – Maximal Marginal Relevance plus brand/category caps inject diversity so the top of the list is not dominated by one brand or topic.
-- **Guardrails** – Automatic checks (NDCG/MRR floors, coverage targets, diversity expectations) that block configs or deployments when the corpus looks risky. Implemented via simulations and CI jobs (`docs/simulations_and_guardrails.md`).
-- **Rules & overrides** – Manual pin/boost/block operations that merchandising or ops teams can apply per namespace, surface, or segment. Guardrails verify their effect before rollout.
-- **Bandits** – Optional contextual multi-armed bandit that chooses among policies (e.g., “dense personalization” vs “high diversity”) based on downstream rewards.
+### Namespace
+
+- **What it is:** A logical tenant or surface bucket. Every request includes `namespace` so RecSys knows which catalog, rules, and guardrails to apply.
+- **Where you’ll see it:** All ingest calls (`*:upsert`), `/v1/recommendations`, guardrail bundles, admin APIs, and traces.
+- **Why you should care:** Namespaces isolate data and safety controls. Mixing customers or surfaces in one namespace makes troubleshooting and guardrails harder.
+- **Advanced details:** Pair namespaces with env profiles in `config/profiles.yml`. Simulation reports use namespaces as folder names under `analysis/reports/`.
+
+### Org
+
+- **What it is:** A company/customer identifier passed via `X-Org-ID`.
+- **Where you’ll see it:** Every HTTP request header, database schemas (`org_id` column), audit logs.
+- **Why you should care:** Multi-tenant isolation happens at org + namespace. Ensure your clients always send the correct UUID.
+- **Advanced details:** Org IDs map to tenant-specific auth/keys if `API_AUTH_ENABLED=true`.
+
+### Candidate
+
+- **What it is:** An item ID that is eligible to be ranked.
+- **Where you’ll see it:** Trace extras (`candidate_sources`), `analysis/results/*_rerank.json`, retrieval dashboards.
+- **Why you should care:** Candidate quality affects recall and coverage before ranking even runs.
+- **Advanced details:** Candidate pools come from popularity, co-visitation, embeddings, rules, and session heuristics.
+
+### Signals
+
+- **What it is:** Independent evidence that scores a candidate (popularity, co-visitation, embeddings, personalization boosts, etc.).
+- **Where you’ll see it:** Blend overrides (`overrides.blend`), traces, tuning harness summaries.
+- **Why you should care:** Understanding signals helps explain “why” an item appeared and where to tune.
+- **Advanced details:** Signals are normalized to `[0,1]` per request before blending; see `docs/env_reference.md` for knobs.
+
+### Blended scoring
+
+- **What it is:** A weighted sum of normalized signals (e.g., `alpha*pop + beta*co_vis + gamma*embed`).
+- **Where you’ll see it:** `/v1/recommendations` overrides, env profiles, tuning harness output.
+- **Why you should care:** It’s the core ranking formula; changing weights shifts the balance between relevance and exploration.
+- **Advanced details:** Overrides let you change weights per call; tuning harness stores best-performing blends under `analysis/results/tuning_runs/`.
+
+### Retrieval vs ranking
+
+- **What it is:** Retrieval builds the candidate pool; ranking orders candidates while enforcing diversity caps and rules.
+- **Where you’ll see it:** `candidate_sources` in traces, retriever dashboards, rule runbooks.
+- **Why you should care:** Retrieval problems show up as missing catalog coverage; ranking problems show up as poor ordering even with good candidates.
+- **Advanced details:** Retrieval fanout is controlled by `POPULARITY_FANOUT` and related knobs; ranking uses MMR, caps, guardrails.
+
+### Personalization
+
+- **What it is:** A lightweight tag profile per user built from recent events; overlapping tags boost candidates.
+- **Where you’ll see it:** Trace reasons (`personalization`), env vars (`PROFILE_BOOST`), personalization dashboards.
+- **Why you should care:** Personalized share is a key KPI and guardrail; too low means bland lists, too high can hurt exploration.
+- **Advanced details:** Profile knobs include `PROFILE_WINDOW_DAYS`, `PROFILE_MIN_EVENTS_FOR_BOOST`, `PROFILE_STARTER_BLEND_WEIGHT`.
+
+### MMR & caps
+
+- **What it is:** Maximal Marginal Relevance plus brand/category caps that inject diversity so one brand/category doesn’t dominate.
+- **Where you’ll see it:** Guardrail reports, diversity dashboards, env profiles.
+- **Why you should care:** Diversity guardrails rely on these knobs; tightening caps can reduce CTR, loosening can degrade long-tail fairness.
+- **Advanced details:** `MMR_LAMBDA` controls the trade-off; caps use `BRAND_CAP`/`CATEGORY_CAP`. Exposed via env overrides and admin APIs.
+
+### Guardrails
+
+- **What it is:** Automatic checks (NDCG/MRR floors, coverage targets, starter-profile requirements) defined in `guardrails.yml`.
+- **Where you’ll see it:** `make scenario-suite`, `analysis/reports/*/guardrail_summary.json`, CI logs, `docs/simulations_and_guardrails.md`.
+- **Why you should care:** Guardrails block unsafe changes before they hit production.
+- **Advanced details:** Each customer/namespace can override thresholds; scenario outputs live under `analysis/evidence/`.
+
+### Rules & overrides
+
+- **What it is:** Manual pin/boost/block operations that merchandising or ops teams apply per namespace/surface.
+- **Where you’ll see it:** `/v1/admin/rules`, `/v1/admin/manual_overrides`, `docs/rules_runbook.md`, decision traces (`trace.extras.policy`).
+- **Why you should care:** Rules let humans enforce campaigns or safety constraints; guardrails verify their effect before rollout.
+- **Advanced details:** Overrides compile to rules internally; telemetry surfaces via Prometheus (`policy_rule_actions_total`).
+
+### Bandits
+
+- **What it is:** Contextual multi-armed bandits that choose among policies (e.g., “dense personalization” vs “high diversity”) based on rewards.
+- **Where you’ll see it:** `/v1/bandit/*` endpoints, experiments dashboards, analytics plans (`analytics/bandit_*.md`).
+- **Why you should care:** Bandits automate experimentation and can gradually move traffic to winning policies.
+- **Advanced details:** Policies live in `/v1/bandit/policies`; rewards come from `/v1/bandit/reward`. Use guardrails alongside bandits to enforce safety.
 
 ---
 
 ## 2. Metrics primer
 
-These show up in tuning dashboards, guardrails, and CI reports.
+### NDCG (Normalized Discounted Cumulative Gain)
 
-- **NDCG (Normalized Discounted Cumulative Gain):** Measures how well the order of recommendations matches ground-truth relevance. The closer items your users actually clicked/purchased appear to the top, the closer NDCG is to 1.0. Dropping a relevant item from rank 1 to rank 5 hurts more than shifting items lower in the list.
-- **MRR (Mean Reciprocal Rank):** Looks at the position of the first relevant item in each list: `1/rank`. Averaged across users/segments. Useful for “did we show *anything* they'll love near the top?” guardrails (e.g., the starter-profile scenario).
-- **Segment lift:** Percentage improvement of a metric (NDCG, conversion, etc.) for a given cohort vs. baseline. Example: `((new_ndcg - baseline_ndcg) / baseline_ndcg) * 100`. Ensures no cohort regresses badly when tuning.
-- **Catalog coverage:** Fraction of the catalog that appears in the eligible candidate pool over a window. We use it to verify the system doesn’t overfit to a handful of products. Guardrails often check coverage ≥ 0.60.
-- **Long-tail share:** Portion of impressions allocated to items outside the top popularity decile. High share = better breadth; low share may require raising `POPULARITY_FANOUT` or increasing MMR.
-- **Diversity index:** Derived from MMR/cap telemetry (`policy_mmr_selected_count`, cap hit counters). Ensures surfaces show ≥N categories/brands within the top K.
-- **Determinism:** Re-running the same request 10× should yield identical item order when the namespace is frozen. Guardrails call `make determinism` (local repo command) to ensure reproducibility for audits.
+- **What it is:** Measures how well the recommendation order matches ground-truth relevance. Higher NDCG means relevant items appear earlier.
+- **Where you’ll see it:** `analysis/quality_metrics.json`, tuning dashboards, guardrail reports.
+- **Why you should care:** NDCG is often the headline “quality” metric; regressions block rollouts.
+- **Advanced details:** Items at the top are weighted exponentially (rank 1 vs rank 5). Guardrails typically expect NDCG lift ≥ +10%.
+
+### MRR (Mean Reciprocal Rank)
+
+- **What it is:** Looks at the position of the first relevant item: `1 / rank`.
+- **Where you’ll see it:** Starter-profile guardrails, tuning harness summaries.
+- **Why you should care:** Ensures users see at least one great recommendation near the top, critical for cold-start scenarios.
+- **Advanced details:** Averaged across users/segments; used heavily in scenario S7 checks.
+
+### Segment lift
+
+- **What it is:** Percent improvement of a metric for a cohort vs. baseline (e.g., `((new - baseline) / baseline) * 100`).
+- **Where you’ll see it:** `analysis/quality_metrics.json` under `segments`, tuning reports, CI logs.
+- **Why you should care:** Prevents improvements for one cohort from harming another (especially new vs returning users).
+- **Advanced details:** Guardrails often require lift ≥ +10% for specific segments.
+
+### Catalog coverage
+
+- **What it is:** Fraction of the catalog that appears in the candidate pool over a window.
+- **Where you’ll see it:** Guardrail dashboards, `/analysis/results/*_warm_quality.json`, Prometheus metrics.
+- **Why you should care:** Low coverage means RecSys is fixating on a few items; it hurts discovery and revenue.
+- **Advanced details:** Guardrails often check coverage ≥ 0.60; tune `POPULARITY_FANOUT` or retriever weights if coverage dips.
+
+### Long-tail share
+
+- **What it is:** Portion of impressions allocated to items outside the top popularity decile.
+- **Where you’ll see it:** Diversity dashboards, guardrail summaries.
+- **Why you should care:** Ensures the system explores beyond bestsellers and keeps merchants happy.
+- **Advanced details:** Often paired with catalog coverage; raising MMR diversity or fanout can lift long-tail share.
+
+### Diversity index
+
+- **What it is:** Entropy-style metrics derived from MMR/cap telemetry (`policy_mmr_selected_count`, cap hit counters).
+- **Where you’ll see it:** Diversity validation playbook (`analytics/diversity_validation.md`), Grafana panels.
+- **Why you should care:** Low diversity can trigger guardrails and frustrate shoppers with repetitive lists.
+- **Advanced details:** Entropy calculations live in nightly jobs; adjust `MMR_LAMBDA` and caps to influence them.
+
+### Determinism
+
+- **What it is:** Re-running the same request should yield identical rankings when the namespace is frozen.
+- **Where you’ll see it:** `make determinism`, `.github/workflows/determinism.yml`, `analysis/scripts/check_determinism.py`.
+- **Why you should care:** Determinism is vital for audits, customer trust, and reproducibility.
+- **Advanced details:** Store baseline payloads under `analysis/results/determinism_baseline.json`; guardrails compare current runs to these baselines.
 
 ---
 
 ## 3. Guardrails in context
 
-Guardrails are small YAML policies (`guardrails.yml`) interpreted by the simulation harness before a config ships. They answer questions like:
+### Guardrails in practice
 
-- “Did the starter profile scenario still produce ≥4 unique categories and MRR ≥ 0.2?”
-- “Did long-tail items receive at least 30% exposure during rerank?”
-- “Do any rules break tie-breaking or introduce dead ends?”
-
-Failures block merges/rollouts until someone tunes the offending knobs or rules. Learn how to define and run them in `docs/simulations_and_guardrails.md`. Business stakeholders can read `docs/business_overview.md#safety-and-guardrails` for the narrative version.
+- **What it is:** YAML policies interpreted by the simulation harness before a config ships.
+- **Where you’ll see it:** `guardrails.yml`, CI logs, simulation reports under `analysis/reports/`.
+- **Why you should care:** Guardrails answer questions like:
+  - “Did the starter-profile scenario still produce ≥4 unique categories and MRR ≥ 0.2?”
+  - “Did long-tail items receive enough exposure?”
+  - “Do any rules introduce dead ends?”
+- **Advanced details:** See `docs/simulations_and_guardrails.md` for fixtures + CLI usage. Business stakeholders can read `docs/business_overview.md#safety-and-guardrails` for the narrative.
 
 ---
 
 ## 4. Glossary
 
-**ALS** – The embedding similarity signal (the “gamma” term). In our system it measures cosine similarity versus anchors; it is not a matrix-factorization job despite the familiar acronym.
+### Quick glossary highlights
 
-**Anchors** – A user’s most recent interacted items (within `COVIS_WINDOW_DAYS`). Used to compute co-visitation edges and embedding similarity for the current request.
-
-**Blended scoring** – Converts multiple normalized signals into one score: `alpha*pop_norm + beta*co_vis_norm + gamma*embed_norm`. Falls back to popularity if other weights are zero.
-
-**Caps** – Hard limits such as `BRAND_CAP`/`CATEGORY_CAP` that prevent too many items from the same brand/category appearing in the final list.
-
-**Cold start** – Lack of historical data for a user or item. Starter profiles, embeddings, and popularity help fill the gap until enough events accrue.
-
-**Constraints** – Filters applied before/during ranking (`exclude_item_ids`, exclude purchased, price/availability filters, etc.).
-
-**Co-visitation** – “Users who touched X also touched Y shortly after.” Aggregated globally per namespace within a rolling window; used as the beta term.
-
-**Embeddings** – 384‑dimensional vectors that represent item meaning; cosine distance measures similarity.
-
-**Event** – Evidence about interactions (view, add-to-cart, purchase). Weighted via `EVENT_TYPE_WEIGHTS`.
-
-**Fanout** – Number of popularity candidates fetched before reranking (`POPULARITY_FANOUT`). Must exceed `k` to give downstream filters room to work.
-
-**Half-life** – How fast old events decay in popularity scoring (e.g., 14 days halves influence).
-
-**Light personalization** – Multiplicative boost derived from overlap between a user’s tag profile and a candidate’s tags. Controlled by `PROFILE_BOOST`, `PROFILE_WINDOW_DAYS`, and friends.
-
-**MMR (Maximal Marginal Relevance)** – Balances relevance with novelty. `lambda=1` behaves like pure relevance; `lambda=0` maximizes diversity.
-
-**Normalization** – Rescales each signal within the candidate set to `[0,1]` per request so weights are comparable.
-
-**Reasons** – Audit trace labels per item (popularity, co_visitation, embedding, personalization, diversity, caps, excluded events). Only the applicable ones appear.
-
-**Signals** – Popularity, co-visitation, embedding similarity, personalization, contextual bandit priors, etc.
-
-**Top-K** – The K items returned after ranking, caps, and overrides.
-
-**UserTagProfile** – Short-lived map of tag → weight summarizing a user’s recent interests. Drives personalization reasons in responses.
-
-**Windows** – Lookback durations such as `COVIS_WINDOW_DAYS` or `PROFILE_WINDOW_DAYS`. Shorter windows favor recency; longer capture more history.
+- **ALS** – Our embedding similarity signal (cosine similarity against anchors). Despite the name, it isn’t a matrix-factorization job here.
+- **Anchors** – A user’s most recent interacted items; drive co-visitation and embeddings.
+- **Caps** – Hard limits like `BRAND_CAP`/`CATEGORY_CAP` to avoid repeating the same brand/category.
+- **Cold start** – Lack of history for a user/item; handled via starter profiles, embeddings, popularity.
+- **Constraints** – Filters (`exclude_item_ids`, price bands, availability) applied before or during ranking.
+- **Co-visitation** – “Users who touched X also touched Y shortly after.” Feeds the co-visitation signal.
+- **Embeddings** – Vector representations of items used for content similarity.
+- **Event** – A view/click/add/purchase record; ingested via `/v1/events:batch`.
+- **Fanout** – Number of popularity candidates fetched before reranking (`POPULARITY_FANOUT`).
+- **Half-life** – How fast old events decay in popularity scoring.
+- **Light personalization** – Boost derived from overlap between a user’s tag profile and candidate tags.
+- **Normalization** – Rescales each signal to `[0,1]` per request so blend weights stay meaningful.
+- **Reasons** – Human-readable explanations per recommendation in traces/responses.
+- **Top-K** – The `k` items returned after ranking, caps, and overrides.
+- **UserTagProfile** – Short-lived map of tag → weight summarizing a user’s interests.
+- **Windows** – Lookback durations (`COVIS_WINDOW_DAYS`, `PROFILE_WINDOW_DAYS`) that trade recency vs history.

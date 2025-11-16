@@ -1,6 +1,6 @@
 # HTTP Quickstart
 
-This guide is for teams integrating against a hosted RecSys deployment using only HTTP calls. Follow it when you cannot or do not want to run the repo locally.
+This guide is for teams integrating against a hosted RecSys deployment using only HTTP calls. Follow it when you consume RecSys as a managed service and do **not** need to run the repo locally. If you prefer a story-driven tour before diving into reference material, read `docs/zero_to_first_recommendation.md` first and then return here for the exhaustive details. Want to run the entire stack from source? Switch to `GETTING_STARTED.md` instead.
 
 ---
 
@@ -144,6 +144,8 @@ Useful for PDP “you may also like” modules. This endpoint relies heavily on 
 ## 5. Next steps
 
 - **Full endpoint details:** `docs/api_reference.md`
+- **Language examples:** `docs/client_examples.md` (Python + Node.js snippets)
+- **Errors & limits:** `docs/api_errors_and_limits.md` (status codes, payload limits, retry guidance)
 - **Environment & algorithm knobs:** `docs/env_reference.md`
 - **Concepts, metrics, guardrails primer:** `docs/concepts_and_metrics.md`
 - **Business + lifecycle overview:** `docs/business_overview.md`, `docs/overview.md`

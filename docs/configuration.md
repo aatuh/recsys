@@ -81,7 +81,7 @@ Every config change (env var, profile, or override bundle) should be validated t
 > Local stack note: the commands below assume you are running the RecSys stack from this repo. Hosted API consumers can skip them and refer to `docs/quickstart_http.md` for integration-only flows.
 
 1. **Reset namespace + seed** – deterministic dataset ensures comparable metrics.
-2. **Run tuning harness** – `analysis/scripts/tuning_harness.py` explores candidate knobs and records evidence under `analysis/results/...`.
+2. **Run tuning harness** – `analysis/scripts/tuning_harness.py` explores candidate knobs and records evidence under `analysis/results/<namespace_timestamp>/`.
 3. **Check guardrails** – `analysis/scripts/check_guardrails.py` enforces YAML policies (starter profile MRR, coverage floors, diversity counts). Review `docs/simulations_and_guardrails.md` for details.
 4. **Scenario suite** – `make scenario-suite` replays the full set of guardrail flows (cold start, existing users, rule-heavy cases) and produces CSV/JSON you can share with PMs.
 5. **Dry-run rules** – For manual overrides, call `/v1/admin/rules/dry-run` or the helper script before rollout (`docs/rules_runbook.md`).
