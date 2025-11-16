@@ -32,7 +32,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # Configuration
 # ---------------------------------------------------------------------------
 
-DEFAULT_BASE_URL = "https://api.pepe.local"
+DEFAULT_BASE_URL = "http://localhost:8000"
 DEFAULT_NAMESPACE = "default"
 DEFAULT_ORG_ID = "00000000-0000-0000-0000-000000000001"
 
@@ -91,7 +91,8 @@ SEGMENTS: List[SegmentProfile] = [
     SegmentProfile(
         name="power_users",
         description="High-activity shoppers across electronics and fitness with broad interests.",
-        category_weights={"Electronics": 0.35, "Fitness": 0.2, "Home": 0.15, "Fashion": 0.1, "Outdoors": 0.2},
+        category_weights={"Electronics": 0.35, "Fitness": 0.2,
+                          "Home": 0.15, "Fashion": 0.1, "Outdoors": 0.2},
         activity_level=1.4,
         purchase_bias=1.2,
         diversity_bias=0.7,
@@ -99,7 +100,8 @@ SEGMENTS: List[SegmentProfile] = [
     SegmentProfile(
         name="new_users",
         description="Recently onboarded users exploring popular categories with limited actions.",
-        category_weights={"Electronics": 0.25, "Books": 0.2, "Home": 0.2, "Fashion": 0.2, "Beauty": 0.15},
+        category_weights={"Electronics": 0.25, "Books": 0.2,
+                          "Home": 0.2, "Fashion": 0.2, "Beauty": 0.15},
         activity_level=0.6,
         purchase_bias=0.4,
         diversity_bias=1.0,
@@ -115,7 +117,8 @@ SEGMENTS: List[SegmentProfile] = [
     SegmentProfile(
         name="trend_seekers",
         description="Fashion and beauty enthusiasts with high novelty appetite.",
-        category_weights={"Fashion": 0.4, "Beauty": 0.35, "Electronics": 0.1, "Home": 0.15},
+        category_weights={"Fashion": 0.4, "Beauty": 0.35,
+                          "Electronics": 0.1, "Home": 0.15},
         activity_level=1.1,
         purchase_bias=0.9,
         diversity_bias=1.2,
@@ -123,7 +126,8 @@ SEGMENTS: List[SegmentProfile] = [
     SegmentProfile(
         name="weekend_adventurers",
         description="Outdoor-focused users with taste for fitness and gourmet gear.",
-        category_weights={"Outdoors": 0.5, "Fitness": 0.25, "Gourmet": 0.15, "Electronics": 0.1},
+        category_weights={"Outdoors": 0.5, "Fitness": 0.25,
+                          "Gourmet": 0.15, "Electronics": 0.1},
         activity_level=0.9,
         purchase_bias=0.7,
         diversity_bias=0.8,
@@ -213,7 +217,8 @@ def post_json(session: requests.Session, url: str, payload: Dict, retries: int =
         if response.status_code >= 500 and attempt < retries - 1:
             time.sleep(1 + attempt)
             continue
-        raise RuntimeError(f"POST {url} failed: {response.status_code} {response.text}")
+        raise RuntimeError(
+            f"POST {url} failed: {response.status_code} {response.text}")
     raise AssertionError("unreachable")
 
 
@@ -233,6 +238,7 @@ def load_fixture(path: str) -> Dict[str, List[Dict]]:
             raise ValueError(f"Fixture field '{key}' must be a list.")
         fixture[key] = value
     return fixture
+
 
 def generate_items(count: int) -> List[Dict]:
     items: List[Dict] = []
@@ -285,7 +291,8 @@ def generate_users(total_users: int) -> List[Dict]:
     for idx in range(total_users):
         segment = SEGMENTS[idx % len(SEGMENTS)]
         join_delta = random.randint(0, 45)
-        join_date = datetime(2025, 9, 1, tzinfo=timezone.utc) + timedelta(days=join_delta)
+        join_date = datetime(2025, 9, 1, tzinfo=timezone.utc) + \
+            timedelta(days=join_delta)
         traits = {
             "segment": segment.name,
             "description": segment.description,
@@ -312,12 +319,14 @@ def generate_events(users: List[Dict], items: List[Dict], min_events: int) -> Li
 
     while len(events) < min_events:
         user = random.choice(users)
-        segment = next(seg for seg in SEGMENTS if seg.name == user["traits"]["segment"])
+        segment = next(seg for seg in SEGMENTS if seg.name ==
+                       user["traits"]["segment"])
         interactions = max(3, int(random.gauss(8 * segment.activity_level, 3)))
 
         for _ in range(interactions):
             event_ts = base_date + timedelta(
-                seconds=random.randint(0, int((final_date - base_date).total_seconds()))
+                seconds=random.randint(
+                    0, int((final_date - base_date).total_seconds()))
             )
             category = weighted_choice(segment.category_weights)
             category_items = item_by_category.get(category, items)
@@ -487,7 +496,8 @@ def seed_dataset(
         "segment_counts": dict(sorted(segment_counts.items())),
         "time_span_days": (
             (
-                datetime.fromisoformat(events[-1]["ts"]) - datetime.fromisoformat(events[0]["ts"])
+                datetime.fromisoformat(
+                    events[-1]["ts"]) - datetime.fromisoformat(events[0]["ts"])
             ).days
             if events
             else 0
@@ -509,7 +519,8 @@ def seed_dataset(
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Seed evaluation dataset via API.")
+    parser = argparse.ArgumentParser(
+        description="Seed evaluation dataset via API.")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
     parser.add_argument("--org-id", default=DEFAULT_ORG_ID)
     parser.add_argument("--namespace", default=DEFAULT_NAMESPACE)
@@ -527,7 +538,8 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    fixture_data = load_fixture(args.fixture_path) if args.fixture_path else None
+    fixture_data = load_fixture(
+        args.fixture_path) if args.fixture_path else None
     stats = seed_dataset(
         base_url=args.base_url,
         namespace=args.namespace,

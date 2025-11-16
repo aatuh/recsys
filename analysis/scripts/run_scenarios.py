@@ -6,6 +6,17 @@ Captures supporting evidence under analysis/evidence/ for each scenario.
 """
 
 from __future__ import annotations
+from run_quality_eval import (  # type: ignore
+    EVENT_WEIGHTS,
+    build_session,
+    compute_metrics_for_user,
+    compute_split_timestamp,
+    load_catalog,
+    load_events,
+    load_users,
+    intra_list_similarity,
+)
+from env_utils import env_metadata
 
 import argparse
 import csv
@@ -21,29 +32,21 @@ from typing import Dict, List, Tuple
 
 sys.path.append(os.path.dirname(__file__))
 
-from env_utils import env_metadata
-from run_quality_eval import (  # type: ignore
-    EVENT_WEIGHTS,
-    build_session,
-    compute_metrics_for_user,
-    compute_split_timestamp,
-    load_catalog,
-    load_events,
-    load_users,
-    intra_list_similarity,
-)
 
-DEFAULT_BASE_URL = os.getenv("SCENARIOS_BASE_URL", "https://api.pepe.local")
+DEFAULT_BASE_URL = os.getenv("SCENARIOS_BASE_URL", "http://localhost:8000")
 DEFAULT_NAMESPACE = os.getenv("SCENARIOS_NAMESPACE", "default")
-DEFAULT_ORG_ID = os.getenv("SCENARIOS_ORG_ID", "00000000-0000-0000-0000-000000000001")
+DEFAULT_ORG_ID = os.getenv(
+    "SCENARIOS_ORG_ID", "00000000-0000-0000-0000-000000000001")
 
 SURFACE = "home"
 K_DEFAULT = 20
 SLEEP_BETWEEN_CALLS = 0.12
 
-EVIDENCE_DIR = os.getenv("SCENARIO_EVIDENCE_DIR", os.path.join("analysis", "evidence"))
+EVIDENCE_DIR = os.getenv("SCENARIO_EVIDENCE_DIR",
+                         os.path.join("analysis", "evidence"))
 
-SCENARIO_HEADERS = ["id", "name", "input", "expected", "observed", "result", "env_hash"]
+SCENARIO_HEADERS = ["id", "name", "input",
+                    "expected", "observed", "result", "env_hash"]
 
 
 @dataclass
@@ -81,7 +84,8 @@ def recommend(session, namespace: str, payload: Dict) -> Dict:
     url = f"{session.base_url}/v1/recommendations"
     response = session.post(url, json=payload, timeout=30)
     if response.status_code != 200:
-        raise RuntimeError(f"Recommendation failed ({response.status_code}): {response.text}")
+        raise RuntimeError(
+            f"Recommendation failed ({response.status_code}): {response.text}")
     return response.json()
 
 
@@ -130,7 +134,8 @@ def create_rule(session, payload: Dict) -> Dict:
     url = f"{session.base_url}/v1/admin/rules"
     resp = session.post(url, json=payload, timeout=30)
     if resp.status_code != 201:
-        raise RuntimeError(f"Create rule failed ({resp.status_code}): {resp.text}")
+        raise RuntimeError(
+            f"Create rule failed ({resp.status_code}): {resp.text}")
     return resp.json()
 
 
@@ -138,7 +143,8 @@ def update_rule(session, rule_id: str, payload: Dict) -> Dict:
     url = f"{session.base_url}/v1/admin/rules/{rule_id}"
     resp = session.put(url, json=payload, timeout=30)
     if resp.status_code not in (200, 201):
-        raise RuntimeError(f"Update rule failed ({resp.status_code}): {resp.text}")
+        raise RuntimeError(
+            f"Update rule failed ({resp.status_code}): {resp.text}")
     return resp.json()
 
 
@@ -146,7 +152,8 @@ def create_manual_override(session, payload: Dict) -> Dict:
     url = f"{session.base_url}/v1/admin/manual_overrides"
     resp = session.post(url, json=payload, timeout=30)
     if resp.status_code != 201:
-        raise RuntimeError(f"Create manual override failed ({resp.status_code}): {resp.text}")
+        raise RuntimeError(
+            f"Create manual override failed ({resp.status_code}): {resp.text}")
     return resp.json()
 
 
@@ -154,7 +161,8 @@ def cancel_manual_override(session, override_id: str) -> Dict:
     url = f"{session.base_url}/v1/admin/manual_overrides/{override_id}/cancel"
     resp = session.post(url, json={}, timeout=30)
     if resp.status_code != 200:
-        raise RuntimeError(f"Cancel manual override failed ({resp.status_code}): {resp.text}")
+        raise RuntimeError(
+            f"Cancel manual override failed ({resp.status_code}): {resp.text}")
     return resp.json()
 
 
@@ -163,7 +171,8 @@ def upsert_item(session, namespace: str, item: Dict) -> Dict:
     payload = {"namespace": namespace, "items": [item]}
     resp = session.post(url, json=payload, timeout=30)
     if resp.status_code not in (200, 202):
-        raise RuntimeError(f"Item upsert failed ({resp.status_code}): {resp.text}")
+        raise RuntimeError(
+            f"Item upsert failed ({resp.status_code}): {resp.text}")
     return resp.json()
 
 
@@ -172,7 +181,8 @@ def upsert_user(session, namespace: str, user: Dict) -> Dict:
     payload = {"namespace": namespace, "users": [user]}
     resp = session.post(url, json=payload, timeout=30)
     if resp.status_code not in (200, 202):
-        raise RuntimeError(f"User upsert failed ({resp.status_code}): {resp.text}")
+        raise RuntimeError(
+            f"User upsert failed ({resp.status_code}): {resp.text}")
     return resp.json()
 
 
@@ -227,7 +237,8 @@ def scenario_simple_filter(session, namespace, catalog) -> ScenarioResult:
         if "books" not in tags:
             failing.append(item["item_id"])
     observed = f"Returned {len(items)} items; offending items={failing}" if failing else f"Returned {len(items)} items, all tagged 'books'."
-    write_evidence("scenario_s1_response.json", {"request": payload, "response": resp})
+    write_evidence("scenario_s1_response.json", {
+                   "request": payload, "response": resp})
     return ScenarioResult(
         id="S1",
         name="Strict include filter",
@@ -315,7 +326,8 @@ def scenario_boost_monotonicity(session, namespace, catalog) -> ScenarioResult:
     before = recommend(session, namespace, payload)
     items_before = [item["item_id"] for item in before.get("items", [])]
     if len(items_before) < 2:
-        raise RuntimeError("Not enough items in baseline recommendation for scenario S3.")
+        raise RuntimeError(
+            "Not enough items in baseline recommendation for scenario S3.")
     target_item = items_before[2] if len(items_before) > 2 else items_before[1]
 
     override_payload = {
@@ -336,8 +348,10 @@ def scenario_boost_monotonicity(session, namespace, catalog) -> ScenarioResult:
 
     cancel_manual_override(session, override_id)
 
-    rank_before = items_before.index(target_item) if target_item in items_before else None
-    rank_after = items_after.index(target_item) if target_item in items_after else None
+    rank_before = items_before.index(
+        target_item) if target_item in items_before else None
+    rank_after = items_after.index(
+        target_item) if target_item in items_after else None
 
     write_evidence(
         "scenario_s3_boost.json",
@@ -397,7 +411,8 @@ def scenario_diversity_knob(
     diverse_items = [item["item_id"] for item in diversified.get("items", [])]
 
     ndcg_base, _, _ = compute_metrics_for_user(base_items, relevance, k=20)
-    ndcg_diverse, _, _ = compute_metrics_for_user(diverse_items, relevance, k=20)
+    ndcg_diverse, _, _ = compute_metrics_for_user(
+        diverse_items, relevance, k=20)
 
     sim_base = compute_similarity(base_items, catalog)
     sim_diverse = compute_similarity(diverse_items, catalog)
@@ -467,7 +482,8 @@ def scenario_pin_position(session, namespace) -> ScenarioResult:
 
     write_evidence(
         "scenario_s5_pin.json",
-        {"response": response, "target_item": target_item, "rank": rank, "rule": created},
+        {"response": response, "target_item": target_item,
+            "rank": rank, "rule": created},
     )
 
     observed = f"Target item rank={rank}; recommendation count={len(items)}"
@@ -500,7 +516,8 @@ def scenario_whitelist_brand(session, namespace, catalog) -> ScenarioResult:
         if brand_tag not in tags:
             failing.append(item["item_id"])
 
-    write_evidence("scenario_s6_whitelist.json", {"request": payload, "response": response})
+    write_evidence("scenario_s6_whitelist.json", {
+                   "request": payload, "response": response})
 
     observed = f"Returned {len(items)} items; non-whitelisted={failing}"
     passed = len(items) > 0 and not failing
@@ -523,11 +540,14 @@ def scenario_cold_start(
     min_avg_mrr: float,
     min_avg_categories: float,
 ) -> ScenarioResult:
-    new_user_ids = [uid for uid, traits in users.items() if traits.get("segment") == "new_users"]
+    new_user_ids = [uid for uid, traits in users.items(
+    ) if traits.get("segment") == "new_users"]
     if not new_user_ids:
-        raise RuntimeError("No users with segment=new_users found for scenario S7.")
+        raise RuntimeError(
+            "No users with segment=new_users found for scenario S7.")
 
-    eligible = [uid for uid in new_user_ids if user_relevance.get(uid, (set(), {}))[1]]
+    eligible = [uid for uid in new_user_ids if user_relevance.get(uid, (set(), {}))[
+        1]]
     source_ids = eligible if eligible else new_user_ids
     sample_ids = source_ids[:10]
 
@@ -546,9 +566,11 @@ def scenario_cold_start(
         }
         response = recommend(session, namespace, payload)
         items = [item["item_id"] for item in response.get("items", [])]
-        categories = {catalog.get(item_id, {}).get("category") for item_id in items if catalog.get(item_id)}
+        categories = {catalog.get(item_id, {}).get("category")
+                      for item_id in items if catalog.get(item_id)}
         train_items, relevance = user_relevance.get(user_id, (set(), {}))
-        ndcg, recall, mrr = compute_metrics_for_user(items, relevance, k=min(len(items), 10))
+        ndcg, recall, mrr = compute_metrics_for_user(
+            items, relevance, k=min(len(items), 10))
         per_user_results.append(
             {
                 "user_id": user_id,
@@ -566,11 +588,13 @@ def scenario_cold_start(
         if len(relevance) > 0:
             mrr_values.append(mrr)
 
-    write_evidence("scenario_s7_cold_start.json", {"results": per_user_results})
+    write_evidence("scenario_s7_cold_start.json",
+                   {"results": per_user_results})
 
     evaluated = len(mrr_values)
     avg_mrr = statistics.mean(mrr_values) if evaluated else 0.0
-    avg_categories = statistics.mean(category_counts) if category_counts else 0.0
+    avg_categories = statistics.mean(
+        category_counts) if category_counts else 0.0
     observed = (
         f"users={len(sample_ids)}, evaluated={evaluated}, avg_mrr={avg_mrr:.3f}, "
         f"avg_categories={avg_categories:.2f}, min_items={int(min_items)}, "
@@ -663,8 +687,10 @@ def scenario_new_item_exposure(session, namespace, catalog, users_sample: List[s
         },
     )
 
-    base_rate = sum(1 for e in baseline["exposures"] if e["recommended"]) / len(baseline["exposures"])
-    boost_rate = sum(1 for e in boosted["exposures"] if e["recommended"]) / len(boosted["exposures"])
+    base_rate = sum(1 for e in baseline["exposures"]
+                    if e["recommended"]) / len(baseline["exposures"])
+    boost_rate = sum(
+        1 for e in boosted["exposures"] if e["recommended"]) / len(boosted["exposures"])
 
     boosted_policy = summarize_policy_samples(boosted["policy_samples"])
     observed = (
@@ -738,23 +764,30 @@ def scenario_multi_objective(
 
         avg_ndcg = statistics.mean(ndcgs) if ndcgs else 0.0
         avg_margin = statistics.mean(margins) if margins else 0.0
-        curve.append({"boost_value": boost_value, "ndcg": avg_ndcg, "margin": avg_margin})
+        curve.append({"boost_value": boost_value,
+                     "ndcg": avg_ndcg, "margin": avg_margin})
 
     rule_payload["enabled"] = False
     update_rule(session, rule_id, rule_payload)
 
-    write_evidence("scenario_s9_tradeoff.json", {"curve": curve, "rule": created})
+    write_evidence("scenario_s9_tradeoff.json", {
+                   "curve": curve, "rule": created})
 
-    ndcg_tolerance = 0.02  # allow small improvements when boosts surface higher quality anchors
-    increasing_margin = all(curve[i + 1]["margin"] >= curve[i]["margin"] for i in range(len(curve) - 1))
+    # allow small improvements when boosts surface higher quality anchors
+    ndcg_tolerance = 0.02
+    increasing_margin = all(
+        curve[i + 1]["margin"] >= curve[i]["margin"] for i in range(len(curve) - 1))
     decreasing_ndcg = all(
         curve[i + 1]["ndcg"] <= curve[i]["ndcg"] + ndcg_tolerance for i in range(len(curve) - 1)
     )
-    margin_shift_threshold = 0.003  # tightened after flatter margin response with exploration tuning
-    margin_span = max(p["margin"] for p in curve) - min(p["margin"] for p in curve)
+    # tightened after flatter margin response with exploration tuning
+    margin_shift_threshold = 0.003
+    margin_span = max(p["margin"] for p in curve) - \
+        min(p["margin"] for p in curve)
     observed_shift = margin_span > margin_shift_threshold
 
-    observed = "; ".join(f"boost {p['boost_value']}: margin={p['margin']:.3f}, ndcg={p['ndcg']:.3f}" for p in curve)
+    observed = "; ".join(
+        f"boost {p['boost_value']}: margin={p['margin']:.3f}, ndcg={p['ndcg']:.3f}" for p in curve)
     passed = increasing_margin and decreasing_ndcg and observed_shift
     return ScenarioResult(
         id="S9",
@@ -777,7 +810,8 @@ def scenario_explainability(session, namespace) -> ScenarioResult:
         "explain_level": "full",
     }
     response = recommend(session, namespace, payload)
-    write_evidence("scenario_s10_explainability.json", {"request": payload, "response": response})
+    write_evidence("scenario_s10_explainability.json", {
+                   "request": payload, "response": response})
 
     items = response.get("items", [])
     explain_available = any(item.get("explain") for item in items)
@@ -836,7 +870,8 @@ def run_all(
             min_avg_categories=s7_min_avg_categories,
         ),
         scenario_new_item_exposure(session, namespace, catalog, users_sample),
-        scenario_multi_objective(session, namespace, catalog, user_relevance, users_sample),
+        scenario_multi_objective(
+            session, namespace, catalog, user_relevance, users_sample),
         scenario_explainability(session, namespace),
     ]
 
@@ -844,10 +879,14 @@ def run_all(
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Execute S1-S10 scenario suite against a RecSys API.")
-    parser.add_argument("--base-url", default=DEFAULT_BASE_URL, help="Recommendation API base URL (default: %(default)s)")
-    parser.add_argument("--namespace", default=DEFAULT_NAMESPACE, help="Namespace to target (default: %(default)s)")
-    parser.add_argument("--org-id", default=DEFAULT_ORG_ID, help="Org ID / tenant identifier (default: %(default)s)")
+    parser = argparse.ArgumentParser(
+        description="Execute S1-S10 scenario suite against a RecSys API.")
+    parser.add_argument("--base-url", default=DEFAULT_BASE_URL,
+                        help="Recommendation API base URL (default: %(default)s)")
+    parser.add_argument("--namespace", default=DEFAULT_NAMESPACE,
+                        help="Namespace to target (default: %(default)s)")
+    parser.add_argument("--org-id", default=DEFAULT_ORG_ID,
+                        help="Org ID / tenant identifier (default: %(default)s)")
     parser.add_argument(
         "--env-file",
         default="api/.env",
@@ -896,7 +935,8 @@ def main() -> None:
     write_evidence("scenario_summary.json", summary)
     overall_pass = all(r.passed for r in results)
     status = "PASS" if overall_pass else "CHECK FINDINGS"
-    print(json.dumps({"status": status, "scenarios": [r.to_row() for r in results]}, indent=2))
+    print(json.dumps({"status": status, "scenarios": [
+          r.to_row() for r in results]}, indent=2))
     if not overall_pass:
         sys.exit(1)
 

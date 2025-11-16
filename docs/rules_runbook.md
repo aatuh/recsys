@@ -4,6 +4,7 @@ This runbook explains how to verify, monitor, and troubleshoot the rule/override
 pipeline in production.
 
 > **Who should read this?** Business stakeholders and engineers responsible for merchandising overrides and guardrail monitoring (terms are defined in `docs/concepts_and_metrics.md`). Sections that mention `make`/`analysis/scripts` assume you run the RecSys stack; hosted API-only consumers can stick to `docs/quickstart_http.md`.
+> Need exact commands or inputs? The shared script catalog (`docs/analysis_scripts_reference.md`) lists every helper under `analysis/scripts/`.
 
 ## 1. Rule precedence refresher
 

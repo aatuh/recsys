@@ -6,6 +6,7 @@ Use it alongside:
 - `docs/api_reference.md` (where overrides live in API requests)
 - `docs/rules_runbook.md` (how overrides affect guardrails)
 - `docs/simulations_and_guardrails.md` (how to run simulations with different profiles)
+- `docs/analysis_scripts_reference.md` (which script manages each profile/env change)
 
 > **Who should read this?** Integration engineers and developers tuning ranking behavior. Business stakeholders can skim the interaction notes to understand how overrides relate to guardrails.
 
@@ -21,6 +22,7 @@ Use it alongside:
   - [Runtime overrides vs. env profiles](#runtime-overrides-vs-env-profiles)
     - [Interaction considerations](#interaction-considerations)
     - [Reference](#reference)
+    - [Service metadata](#service-metadata)
 
 ---
 

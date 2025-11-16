@@ -5,6 +5,7 @@ integration engineers, and developers. Each section links to the deeper docs
 so you can jump directly into the material relevant to you.
 
 > **Who should read this?** Everyone. Start here if you want to understand how the pieces fit together before diving into specific docs. When you see commands referencing `make` or `analysis/scripts`, they assume you cloned the repo; hosted API users can ignore those sections and stick to `docs/quickstart_http.md`.
+> Looking for a full script index? See `docs/analysis_scripts_reference.md`.
 
 ## Business / Product Stakeholders
 

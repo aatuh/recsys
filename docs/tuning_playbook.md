@@ -4,6 +4,8 @@ Use this guide when you need to change blend weights, personalization knobs, cap
 
 > **Who should read this?** Developers/Ops responsible for experiment design, coverage fixes, or customer onboarding. Pair it with `docs/simulations_and_guardrails.md` for safety checks and `docs/env_reference.md` for the knob catalog. Hosted API consumers who never run the stack can skip this doc and stick to `docs/quickstart_http.md`.
 
+> **Need a script cheat sheet?** See `docs/analysis_scripts_reference.md` for a catalog of every tool under `analysis/scripts/` plus inputs/outputs.
+
 ### TL;DR
 
 - **Purpose:** Walk-through of the reset → seed → tune → validate workflow using the analysis scripts and tuning harness.
@@ -31,7 +33,7 @@ Set common vars first:
 > Local-only note: the commands that follow assume you are running the RecSys stack from this repo (Docker/Make + Python). Hosted API consumers can ignore them.
 
 ```bash
-export BASE_URL=https://api.pepe.local
+export BASE_URL=http://localhost:8000
 export ORG_ID=00000000-0000-0000-0000-000000000001
 export NS=demo
 ```

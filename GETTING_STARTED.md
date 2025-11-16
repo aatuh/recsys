@@ -122,5 +122,6 @@ Where to go next:
 - **Persona/lifecycle map:** `docs/overview.md`
 - **Full endpoint reference:** `docs/api_reference.md`
 - **Tuning & guardrails:** `docs/tuning_playbook.md`, `docs/simulations_and_guardrails.md`
+- **Script catalog & automation:** `docs/analysis_scripts_reference.md`
 
 Raise any gaps or confusion by filing an issue—this file should make onboarding painless for anyone running RecSys locally from source.

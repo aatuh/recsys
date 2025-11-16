@@ -20,16 +20,20 @@ import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-DEFAULT_BASE_URL = "https://api.pepe.local"
+DEFAULT_BASE_URL = "http://localhost:8000"
 DEFAULT_NAMESPACE = "default"
 DEFAULT_ORG_ID = "00000000-0000-0000-0000-000000000001"
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Reset a namespace via delete endpoints.")
-    parser.add_argument("--base-url", default=DEFAULT_BASE_URL, help="API base URL.")
-    parser.add_argument("--namespace", default=DEFAULT_NAMESPACE, help="Namespace to wipe.")
-    parser.add_argument("--org-id", default=DEFAULT_ORG_ID, help="Org ID header for multi-tenancy.")
+    parser = argparse.ArgumentParser(
+        description="Reset a namespace via delete endpoints.")
+    parser.add_argument(
+        "--base-url", default=DEFAULT_BASE_URL, help="API base URL.")
+    parser.add_argument(
+        "--namespace", default=DEFAULT_NAMESPACE, help="Namespace to wipe.")
+    parser.add_argument("--org-id", default=DEFAULT_ORG_ID,
+                        help="Org ID header for multi-tenancy.")
     parser.add_argument(
         "--force",
         action="store_true",
@@ -63,7 +67,8 @@ def post_json(session: requests.Session, url: str, payload: Dict, retries: int =
             return {"status": "ok"}
         if response.status_code >= 500 and attempt < retries - 1:
             continue
-        raise RuntimeError(f"POST {url} failed: {response.status_code} {response.text}")
+        raise RuntimeError(
+            f"POST {url} failed: {response.status_code} {response.text}")
     raise AssertionError("unreachable")
 
 

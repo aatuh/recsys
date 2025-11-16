@@ -30,7 +30,7 @@ from env_utils import compute_env_hash
 from guardrails import load_guardrails, resolve_guardrails
 
 
-DEFAULT_BASE_URL = "https://api.pepe.local"
+DEFAULT_BASE_URL = "http://localhost:8000"
 DEFAULT_NAMESPACE = "default"
 DEFAULT_ORG_ID = "00000000-0000-0000-0000-000000000001"
 DEFAULT_ENV_FILE = "api/.env"
@@ -50,14 +50,21 @@ ARTIFACT_SOURCES = [
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run an end-to-end RecSys simulation.")
+    parser = argparse.ArgumentParser(
+        description="Run an end-to-end RecSys simulation.")
     parser.add_argument("--customer", help="Customer or experiment label.")
-    parser.add_argument("--batch-file", help="YAML/JSON manifest describing multiple simulations.")
-    parser.add_argument("--batch-name", help="Optional batch label (defaults to manifest filename).")
-    parser.add_argument("--base-url", default=DEFAULT_BASE_URL, help="Recommendation API base URL.")
-    parser.add_argument("--namespace", default=DEFAULT_NAMESPACE, help="Namespace to target.")
-    parser.add_argument("--org-id", default=DEFAULT_ORG_ID, help="Org ID / tenant identifier.")
-    parser.add_argument("--env-file", default=DEFAULT_ENV_FILE, help="Env file to rewrite (default: api/.env).")
+    parser.add_argument(
+        "--batch-file", help="YAML/JSON manifest describing multiple simulations.")
+    parser.add_argument(
+        "--batch-name", help="Optional batch label (defaults to manifest filename).")
+    parser.add_argument("--base-url", default=DEFAULT_BASE_URL,
+                        help="Recommendation API base URL.")
+    parser.add_argument(
+        "--namespace", default=DEFAULT_NAMESPACE, help="Namespace to target.")
+    parser.add_argument("--org-id", default=DEFAULT_ORG_ID,
+                        help="Org ID / tenant identifier.")
+    parser.add_argument("--env-file", default=DEFAULT_ENV_FILE,
+                        help="Env file to rewrite (default: api/.env).")
     parser.add_argument(
         "--env-profile",
         help="Optional profile to load via configure_env.py before overrides (namespace mappings from --profiles-file take precedence).",
@@ -74,23 +81,40 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_PROFILES_FILE,
         help="Profiles registry (YAML/JSON) describing namespace→profile mappings.",
     )
-    parser.add_argument("--fixture-path", help="Optional JSON fixture for seeding.")
-    parser.add_argument("--item-count", type=int, default=320, help="Synthetic item count when not using fixtures.")
-    parser.add_argument("--user-count", type=int, default=120, help="Synthetic user count when not using fixtures.")
-    parser.add_argument("--min-events", type=int, default=5000, help="Minimum events when generating synthetic data.")
-    parser.add_argument("--quality-limit-users", type=int, default=0, help="Optional cap for quality eval users.")
-    parser.add_argument("--quality-sleep-ms", type=int, default=120, help="Sleep between quality eval calls.")
-    parser.add_argument("--min-segment-lift-ndcg", type=float, default=0.1, help="Segment NDCG lift guardrail.")
-    parser.add_argument("--min-segment-lift-mrr", type=float, default=0.1, help="Segment MRR lift guardrail.")
-    parser.add_argument("--min-catalog-coverage", type=float, default=0.0, help="Min catalog coverage guardrail.")
-    parser.add_argument("--min-long-tail-share", type=float, default=0.0, help="Min long-tail share guardrail.")
-    parser.add_argument("--s7-min-avg-mrr", type=float, default=0.2, help="Scenario S7 MRR guardrail.")
-    parser.add_argument("--s7-min-avg-categories", type=float, default=4.0, help="Scenario S7 category guardrail.")
-    parser.add_argument("--skip-reset", action="store_true", help="Skip namespace reset step.")
-    parser.add_argument("--skip-seed", action="store_true", help="Skip dataset seeding.")
-    parser.add_argument("--skip-quality", action="store_true", help="Skip quality evaluation.")
-    parser.add_argument("--skip-scenarios", action="store_true", help="Skip scenario suite.")
-    parser.add_argument("--dry-run", action="store_true", help="Print planned steps without executing.")
+    parser.add_argument(
+        "--fixture-path", help="Optional JSON fixture for seeding.")
+    parser.add_argument("--item-count", type=int, default=320,
+                        help="Synthetic item count when not using fixtures.")
+    parser.add_argument("--user-count", type=int, default=120,
+                        help="Synthetic user count when not using fixtures.")
+    parser.add_argument("--min-events", type=int, default=5000,
+                        help="Minimum events when generating synthetic data.")
+    parser.add_argument("--quality-limit-users", type=int,
+                        default=0, help="Optional cap for quality eval users.")
+    parser.add_argument("--quality-sleep-ms", type=int,
+                        default=120, help="Sleep between quality eval calls.")
+    parser.add_argument("--min-segment-lift-ndcg", type=float,
+                        default=0.1, help="Segment NDCG lift guardrail.")
+    parser.add_argument("--min-segment-lift-mrr", type=float,
+                        default=0.1, help="Segment MRR lift guardrail.")
+    parser.add_argument("--min-catalog-coverage", type=float,
+                        default=0.0, help="Min catalog coverage guardrail.")
+    parser.add_argument("--min-long-tail-share", type=float,
+                        default=0.0, help="Min long-tail share guardrail.")
+    parser.add_argument("--s7-min-avg-mrr", type=float,
+                        default=0.2, help="Scenario S7 MRR guardrail.")
+    parser.add_argument("--s7-min-avg-categories", type=float,
+                        default=4.0, help="Scenario S7 category guardrail.")
+    parser.add_argument("--skip-reset", action="store_true",
+                        help="Skip namespace reset step.")
+    parser.add_argument("--skip-seed", action="store_true",
+                        help="Skip dataset seeding.")
+    parser.add_argument("--skip-quality", action="store_true",
+                        help="Skip quality evaluation.")
+    parser.add_argument("--skip-scenarios",
+                        action="store_true", help="Skip scenario suite.")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Print planned steps without executing.")
     parser.add_argument(
         "--reports-dir",
         default="analysis/reports",
@@ -132,7 +156,8 @@ def prepare_run_args(
     base_config.update(overrides)
     for key in ("batch_file", "batch_name"):
         base_config.pop(key, None)
-    env_overrides = overrides.get("env_overrides", base_config.get("env_overrides"))
+    env_overrides = overrides.get(
+        "env_overrides", base_config.get("env_overrides"))
     if env_overrides is None:
         env_overrides = []
     if isinstance(env_overrides, str):
@@ -140,7 +165,8 @@ def prepare_run_args(
     base_config["env_overrides"] = list(env_overrides)
     fixture_path = base_config.get("fixture_path")
     if fixture_path and manifest_dir and not Path(fixture_path).is_absolute():
-        base_config["fixture_path"] = str((manifest_dir / fixture_path).resolve())
+        base_config["fixture_path"] = str(
+            (manifest_dir / fixture_path).resolve())
     customer = base_config.get("customer")
     if not customer:
         raise ValueError("Each simulation run must set 'customer'.")
@@ -153,7 +179,8 @@ def prepare_run_args(
 def apply_guardrails(sim_args: SimpleNamespace, guardrails_cfg: Optional[Dict]) -> None:
     if not guardrails_cfg or not sim_args.customer:
         return
-    resolved = resolve_guardrails(guardrails_cfg, sim_args.customer, sim_args.namespace)
+    resolved = resolve_guardrails(
+        guardrails_cfg, sim_args.customer, sim_args.namespace)
     quality = resolved.get("quality", {})
     scenarios = resolved.get("scenarios", {})
     for attr, key in (
@@ -325,7 +352,8 @@ def copy_artifacts(report_dir: Path) -> List[Dict[str, str]]:
         dest_path = artifacts_dir / name
         dest_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src_path, dest_path)
-        copied.append({"name": name, "path": str(dest_path.relative_to(report_dir))})
+        copied.append({"name": name, "path": str(
+            dest_path.relative_to(report_dir))})
     return copied
 
 
@@ -340,12 +368,17 @@ def load_json_safe(path: Optional[Path]) -> Optional[Dict]:
 
 
 def write_summary(report_dir: Path, metadata: Dict, artifacts: List[Dict[str, str]]) -> None:
-    artifacts_map = {art["name"]: report_dir / art["path"] for art in artifacts}
+    artifacts_map = {art["name"]: report_dir / art["path"]
+                     for art in artifacts}
     quality = load_json_safe(artifacts_map.get("quality_metrics.json", Path()))
-    scenarios = load_json_safe(artifacts_map.get("scenario_summary.json", Path()))
-    exposure = load_json_safe(artifacts_map.get("exposure_dashboard.json", Path()))
-    load_summary = load_json_safe(artifacts_map.get("load_test_summary.json", Path()))
-    rules_effect = load_json_safe(artifacts_map.get("rules_effect_sample.json", Path()))
+    scenarios = load_json_safe(
+        artifacts_map.get("scenario_summary.json", Path()))
+    exposure = load_json_safe(artifacts_map.get(
+        "exposure_dashboard.json", Path()))
+    load_summary = load_json_safe(
+        artifacts_map.get("load_test_summary.json", Path()))
+    rules_effect = load_json_safe(
+        artifacts_map.get("rules_effect_sample.json", Path()))
 
     lines = [
         "# Simulation Report",
@@ -400,7 +433,8 @@ def write_summary(report_dir: Path, metadata: Dict, artifacts: List[Dict[str, st
         lines.append("| ID | Name | Result |")
         lines.append("|----|------|--------|")
         for r in results:
-            lines.append(f"| {r.get('id')} | {r.get('name')} | {'PASS' if r.get('passed') else 'FAIL'} |")
+            lines.append(
+                f"| {r.get('id')} | {r.get('name')} | {'PASS' if r.get('passed') else 'FAIL'} |")
         lines.append("")
     else:
         lines.append("## Scenario Suite")
@@ -416,7 +450,8 @@ def write_summary(report_dir: Path, metadata: Dict, artifacts: List[Dict[str, st
             lines.append("| Namespace | Ratio | Status | Max/Mean |")
             lines.append("|-----------|-------|--------|----------|")
             for ns, stats in names.items():
-                ratio = stats.get("exposure_ratio") or stats.get("brand_ratio") or 0
+                ratio = stats.get("exposure_ratio") or stats.get(
+                    "brand_ratio") or 0
                 status = stats.get("status", "unknown")
                 lines.append(
                     f"| {ns} | {ratio:.2f} | {status.upper()} | "
@@ -424,7 +459,8 @@ def write_summary(report_dir: Path, metadata: Dict, artifacts: List[Dict[str, st
                 )
             lines.append("")
         else:
-            lines.append("- Exposure dashboard file present but no namespace data found.")
+            lines.append(
+                "- Exposure dashboard file present but no namespace data found.")
             lines.append("")
 
     if load_summary:
@@ -515,16 +551,20 @@ def run_single(sim_args: SimpleNamespace) -> Dict:
     steps.append({"step": "restart_api"})
 
     reset_namespace(sim_args)
-    steps.append({"step": "reset_namespace", "skipped": str(sim_args.skip_reset)})
+    steps.append({"step": "reset_namespace",
+                 "skipped": str(sim_args.skip_reset)})
 
     seed_dataset(sim_args)
-    steps.append({"step": "seed_dataset", "fixture": sim_args.fixture_path or "", "skipped": str(sim_args.skip_seed)})
+    steps.append({"step": "seed_dataset", "fixture": sim_args.fixture_path or "",
+                 "skipped": str(sim_args.skip_seed)})
 
     run_quality(sim_args)
-    steps.append({"step": "run_quality", "skipped": str(sim_args.skip_quality)})
+    steps.append(
+        {"step": "run_quality", "skipped": str(sim_args.skip_quality)})
 
     run_scenarios(sim_args)
-    steps.append({"step": "run_scenarios", "skipped": str(sim_args.skip_scenarios)})
+    steps.append({"step": "run_scenarios",
+                 "skipped": str(sim_args.skip_scenarios)})
 
     env_hash = compute_env_hash(sim_args.env_file)
     report_path = write_report(sim_args, steps, env_hash)
@@ -534,7 +574,8 @@ def run_single(sim_args: SimpleNamespace) -> Dict:
     if scenario_data:
         results = scenario_data.get("results", [])
         if results:
-            scenario_status = "pass" if all(r.get("passed") for r in results) else "fail"
+            scenario_status = "pass" if all(
+                r.get("passed") for r in results) else "fail"
     return {
         "customer": sim_args.customer,
         "report_path": report_path,
@@ -549,16 +590,20 @@ def main() -> None:
         manifest = load_manifest(args.batch_file)
         manifest_dir = Path(args.batch_file).resolve().parent
         batch_results: List[Dict[str, str]] = []
-        guardrails_cfg = load_guardrails(args.guardrails_file) if args.guardrails_file else None
+        guardrails_cfg = load_guardrails(
+            args.guardrails_file) if args.guardrails_file else None
         for idx, entry in enumerate(manifest, start=1):
-            run_args = prepare_run_args(args, entry, manifest_dir, guardrails_cfg)
-            print(f"=== [{idx}/{len(manifest)}] Running simulation for {run_args.customer} ===")
+            run_args = prepare_run_args(
+                args, entry, manifest_dir, guardrails_cfg)
+            print(
+                f"=== [{idx}/{len(manifest)}] Running simulation for {run_args.customer} ===")
             result = run_single(run_args)
             batch_results.append(result)
         summary_path = write_batch_summary(args, batch_results)
         print(f"Batch summary written to {summary_path}")
     else:
-        guardrails_cfg = load_guardrails(args.guardrails_file) if args.guardrails_file else None
+        guardrails_cfg = load_guardrails(
+            args.guardrails_file) if args.guardrails_file else None
         run_args = prepare_run_args(args, {}, None, guardrails_cfg)
         result = run_single(run_args)
         if result["report_path"]:
@@ -567,8 +612,11 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
 def write_batch_summary(args: argparse.Namespace, runs: List[Dict[str, str]]) -> str:
-    batch_name = args.batch_name or (Path(args.batch_file).stem if args.batch_file else "batch")
+    batch_name = args.batch_name or (
+        Path(args.batch_file).stem if args.batch_file else "batch")
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     payload = {
         "batch": batch_name,

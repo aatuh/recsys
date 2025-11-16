@@ -29,7 +29,7 @@ from env_utils import env_metadata
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-DEFAULT_BASE_URL = "https://api.pepe.local"
+DEFAULT_BASE_URL = "http://localhost:8000"
 DEFAULT_NAMESPACE = "default"
 DEFAULT_ORG_ID = "00000000-0000-0000-0000-000000000001"
 DEFAULT_REQUEST_TIMEOUT = 30.0
@@ -96,7 +96,8 @@ class EvaluationContext:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run Recsys quality evaluation.")
+    parser = argparse.ArgumentParser(
+        description="Run Recsys quality evaluation.")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
     parser.add_argument("--namespace", default=DEFAULT_NAMESPACE)
     parser.add_argument("--org-id", default=DEFAULT_ORG_ID)
@@ -105,8 +106,10 @@ def parse_args() -> argparse.Namespace:
         default="api/.env",
         help="Path to the env file whose hash should be recorded for provenance (default: %(default)s).",
     )
-    parser.add_argument("--limit-users", type=int, default=0, help="Optional cap for evaluation users (0 = no cap).")
-    parser.add_argument("--sleep-ms", type=int, default=120, help="Sleep between recommendation calls to avoid throttling.")
+    parser.add_argument("--limit-users", type=int, default=0,
+                        help="Optional cap for evaluation users (0 = no cap).")
+    parser.add_argument("--sleep-ms", type=int, default=120,
+                        help="Sleep between recommendation calls to avoid throttling.")
     parser.add_argument(
         "--min-segment-lift-ndcg",
         type=float,
@@ -216,9 +219,11 @@ def fetch_paginated(session: requests.Session, path: str, namespace: str, limit:
     offset = 0
     while True:
         params = {"namespace": namespace, "limit": limit, "offset": offset}
-        response = session.get(f"{session.base_url}{path}", params=params, timeout=session.request_timeout)
+        response = session.get(
+            f"{session.base_url}{path}", params=params, timeout=session.request_timeout)
         if response.status_code != 200:
-            raise RuntimeError(f"GET {path} failed: {response.status_code} {response.text}")
+            raise RuntimeError(
+                f"GET {path} failed: {response.status_code} {response.text}")
         payload = response.json()
         items = payload.get("items", [])
         records.extend(items)
@@ -406,7 +411,8 @@ def score_warm_users(
             "include_reasons": True,
             "explain_level": "numeric",
         }
-        response = session.post(f"{session.base_url}/v1/recommendations", json=payload, timeout=session.request_timeout)
+        response = session.post(
+            f"{session.base_url}/v1/recommendations", json=payload, timeout=session.request_timeout)
         if response.status_code != 200:
             raise RuntimeError(
                 f"Recommendations failed for {candidate.user_id}: "
@@ -445,7 +451,8 @@ def score_warm_users(
 
         baseline_lts = long_tail_share(baseline_candidates)
         system_lts = long_tail_share(rec_items)
-        baseline_sim = intra_list_similarity(baseline_candidates, catalog, INTRA_K)
+        baseline_sim = intra_list_similarity(
+            baseline_candidates, catalog, INTRA_K)
         system_sim = intra_list_similarity(rec_items, catalog, INTRA_K)
         baseline_nov = average_novelty(baseline_candidates, catalog, MAX_K)
         system_nov = average_novelty(rec_items, catalog, MAX_K)
@@ -568,7 +575,8 @@ def build_rerank_candidate_items(
     for item in global_pop_ranking:
         if item in used or item in candidate.train_items:
             continue
-        items.append({"item_id": item, "score": float(popularity.get(item, 0.0))})
+        items.append(
+            {"item_id": item, "score": float(popularity.get(item, 0.0))})
         used.add(item)
         if len(items) >= pool_size:
             break
@@ -631,7 +639,8 @@ def evaluate_rerank_suite(
     for candidate in candidates:
         if len(rows) >= query_limit:
             break
-        items = build_rerank_candidate_items(candidate, global_pop_ranking, popularity, pool_size)
+        items = build_rerank_candidate_items(
+            candidate, global_pop_ranking, popularity, pool_size)
         if len(items) < MAX_K:
             continue
         baseline_order = [
@@ -645,14 +654,16 @@ def evaluate_rerank_suite(
             "items": items,
             "include_reasons": False,
         }
-        response = session.post(f"{session.base_url}/v1/rerank", json=payload, timeout=session.request_timeout)
+        response = session.post(
+            f"{session.base_url}/v1/rerank", json=payload, timeout=session.request_timeout)
         if response.status_code != 200:
             raise RuntimeError(
                 f"Rerank failed for {candidate.user_id}: "
                 f"{response.status_code} {response.text}"
             )
         rerank_payload = response.json()
-        rerank_items = [item["item_id"] for item in rerank_payload.get("items", [])]
+        rerank_items = [item["item_id"]
+                        for item in rerank_payload.get("items", [])]
         baseline_ndcg, baseline_recall, baseline_mrr = compute_metrics_for_user(
             baseline_order, candidate.test_relevance, k=MAX_K
         )
@@ -810,8 +821,10 @@ def evaluate_warm_users(
     events = load_events(session, namespace)
 
     split_ts = compute_split_timestamp(events, percentile=0.75)
-    popularity = aggregate_popularity([e for e in events if e["ts"] <= split_ts])
-    long_tail_threshold = derive_long_tail_threshold(popularity, tail_fraction=0.4)
+    popularity = aggregate_popularity(
+        [e for e in events if e["ts"] <= split_ts])
+    long_tail_threshold = derive_long_tail_threshold(
+        popularity, tail_fraction=0.4)
 
     events_by_user = defaultdict(list)
     for event in events:
@@ -819,8 +832,10 @@ def evaluate_warm_users(
 
     global_pop_ranking = [item for item, _ in popularity.most_common()]
 
-    warm_candidates = build_warm_candidates(events_by_user, users, split_ts, warm_min_events)
-    selected_candidates = select_warm_candidates(warm_candidates, min_users, limit_users)
+    warm_candidates = build_warm_candidates(
+        events_by_user, users, split_ts, warm_min_events)
+    selected_candidates = select_warm_candidates(
+        warm_candidates, min_users, limit_users)
     user_metrics, sample_recommendations = score_warm_users(
         session=session,
         namespace=namespace,
@@ -834,9 +849,11 @@ def evaluate_warm_users(
     )
 
     if not user_metrics:
-        raise RuntimeError("No evaluable warm users with hold-out interactions were found.")
+        raise RuntimeError(
+            "No evaluable warm users with hold-out interactions were found.")
 
-    results = summarize_metrics(user_metrics, catalog, popularity, MAX_K, long_tail_threshold)
+    results = summarize_metrics(
+        user_metrics, catalog, popularity, MAX_K, long_tail_threshold)
     results["meta"] = {
         "base_url": base_url,
         "namespace": namespace,
@@ -1002,7 +1019,8 @@ def build_recommendation_dump_payload(
         for item in rec_items:
             item_id = item.get("item_id")
             catalog_entry = catalog.get(item_id, {})
-            brand = catalog_entry.get("brand") or catalog_entry.get("props", {}).get("brand")
+            brand = catalog_entry.get("brand") or catalog_entry.get(
+                "props", {}).get("brand")
             category = catalog_entry.get("category")
             if brand:
                 brand_counts[brand] += 1
@@ -1072,9 +1090,11 @@ def main() -> None:
     )
     quality_path = Path("analysis/quality_metrics.json")
     write_json(quality_path, warm_results)
-    write_json(EVIDENCE_DIR / "recommendation_samples_after_seed.json", warm_samples)
+    write_json(EVIDENCE_DIR /
+               "recommendation_samples_after_seed.json", warm_samples)
     results_dir = Path(args.results_dir)
-    write_json(results_dir / f"{args.namespace}_warm_quality.json", warm_results)
+    write_json(results_dir /
+               f"{args.namespace}_warm_quality.json", warm_results)
     if args.recommendation_dump:
         dump_payload = build_recommendation_dump_payload(
             namespace=args.namespace,
@@ -1087,7 +1107,8 @@ def main() -> None:
         if dump_payload:
             write_json(Path(args.recommendation_dump), dump_payload)
         else:
-            print(f"No sample recommendations captured; skipping dump write to {args.recommendation_dump}")
+            print(
+                f"No sample recommendations captured; skipping dump write to {args.recommendation_dump}")
 
     rerank_summary, rerank_samples = evaluate_rerank_suite(
         session=context.session,
@@ -1107,7 +1128,8 @@ def main() -> None:
             "queries": rerank_summary["queries"],
             "candidate_pool": args.rerank_candidates,
         }
-        write_json(results_dir / f"{args.namespace}_rerank.json", rerank_summary)
+        write_json(results_dir /
+                   f"{args.namespace}_rerank.json", rerank_summary)
     if rerank_samples:
         write_json(EVIDENCE_DIR / "rerank_samples.json", rerank_samples)
 
@@ -1133,7 +1155,8 @@ def main() -> None:
             "head_seeds": args.similar_head,
             "tail_seeds": args.similar_tail,
         }
-        write_json(results_dir / f"{args.namespace}_similar.json", similar_summary)
+        write_json(results_dir /
+                   f"{args.namespace}_similar.json", similar_summary)
     if similar_details:
         write_json(EVIDENCE_DIR / "similar_samples.json", similar_details)
 

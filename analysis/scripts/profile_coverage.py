@@ -2,6 +2,7 @@
 """Profile candidate generation and pruning stages for coverage analysis."""
 
 from __future__ import annotations
+from run_quality_eval import build_session, load_catalog, load_events, load_users  # type: ignore
 
 import argparse
 import json
@@ -15,11 +16,11 @@ from typing import Dict, List
 
 sys.path.append(os.path.dirname(__file__))
 
-from run_quality_eval import build_session, load_catalog, load_events, load_users  # type: ignore
 
-DEFAULT_BASE_URL = os.getenv("SCENARIOS_BASE_URL", "https://api.pepe.local")
+DEFAULT_BASE_URL = os.getenv("SCENARIOS_BASE_URL", "http://localhost:8000")
 DEFAULT_NAMESPACE = os.getenv("SCENARIOS_NAMESPACE", "default")
-DEFAULT_ORG_ID = os.getenv("SCENARIOS_ORG_ID", "00000000-0000-0000-0000-000000000001")
+DEFAULT_ORG_ID = os.getenv(
+    "SCENARIOS_ORG_ID", "00000000-0000-0000-0000-000000000001")
 
 EVIDENCE_PATH = "analysis/evidence/coverage_profile.json"
 SAMPLE_LIMIT = 120
@@ -31,7 +32,8 @@ def recommend(session, namespace: str, user_id: str) -> Dict:
     url = f"{session.base_url}/v1/recommendations"
     resp = session.post(url, json=payload, timeout=30)
     if resp.status_code != 200:
-        raise RuntimeError(f"Recommendation failed ({resp.status_code}): {resp.text}")
+        raise RuntimeError(
+            f"Recommendation failed ({resp.status_code}): {resp.text}")
     return resp.json()
 
 
@@ -89,7 +91,8 @@ def profile_coverage(base_url: str, namespace: str, org_id: str) -> Dict:
 
     for user_id in sample_ids:
         resp = recommend(session, namespace, user_id)
-        items = [item.get("item_id") for item in resp.get("items", []) if item.get("item_id")]
+        items = [item.get("item_id") for item in resp.get(
+            "items", []) if item.get("item_id")]
         final_lengths.append(len(items))
         unique_items.update(items)
 
@@ -130,7 +133,8 @@ def profile_coverage(base_url: str, namespace: str, org_id: str) -> Dict:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Profile coverage across candidate stages.")
+    parser = argparse.ArgumentParser(
+        description="Profile coverage across candidate stages.")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
     parser.add_argument("--namespace", default=DEFAULT_NAMESPACE)
     parser.add_argument("--org-id", default=DEFAULT_ORG_ID)

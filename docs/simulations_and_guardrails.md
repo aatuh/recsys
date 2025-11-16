@@ -3,6 +3,7 @@
 Simulations let you replay realistic catalogs and user journeys against RecSys before shipping any configuration or rule changes. Guardrails (defined in `docs/concepts_and_metrics.md`) enforce the business rules around coverage, diversity, and starter experience. Treat them as one workflow: simulations create evidence; guardrails encode the pass/fail criteria.
 
 > Who should read this? Developers and ops engineers running RecSys from source (local Docker or managed deployments). Hosted API users who only need HTTP payloads can stop at `docs/quickstart_http.md`.
+> Need a quick reference for every script mentioned here? Check `docs/analysis_scripts_reference.md`.
 
 ### TL;DR
 

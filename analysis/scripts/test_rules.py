@@ -23,12 +23,14 @@ from typing import Dict, List, Tuple
 import requests
 
 
-DEFAULT_BASE_URL = os.getenv("RECSYS_BASE_URL", "https://api.pepe.local")
+DEFAULT_BASE_URL = os.getenv("RECSYS_BASE_URL", "http://localhost:8000")
 DEFAULT_NAMESPACE = os.getenv("RECSYS_NAMESPACE", "default")
-DEFAULT_ORG_ID = os.getenv("RECSYS_ORG_ID", "00000000-0000-0000-0000-000000000001")
+DEFAULT_ORG_ID = os.getenv(
+    "RECSYS_ORG_ID", "00000000-0000-0000-0000-000000000001")
 DEFAULT_SURFACE = "home"
 DEFAULT_USER_ID = "user_0001"
-DEFAULT_EVIDENCE = os.path.join("analysis", "evidence", "rules_test_report.json")
+DEFAULT_EVIDENCE = os.path.join(
+    "analysis", "evidence", "rules_test_report.json")
 
 
 class APIClient:
@@ -44,17 +46,21 @@ class APIClient:
         )
 
     def post_json(self, path: str, payload: Dict, expected: Tuple[int, ...] = (200,)) -> Dict:
-        resp = self.session.post(f"{self.base_url}{path}", json=payload, timeout=30)
+        resp = self.session.post(
+            f"{self.base_url}{path}", json=payload, timeout=30)
         if resp.status_code not in expected:
-            raise RuntimeError(f"POST {path} failed ({resp.status_code}): {resp.text}")
+            raise RuntimeError(
+                f"POST {path} failed ({resp.status_code}): {resp.text}")
         if resp.content:
             return resp.json()
         return {}
 
     def put_json(self, path: str, payload: Dict, expected: Tuple[int, ...] = (200,)) -> Dict:
-        resp = self.session.put(f"{self.base_url}{path}", json=payload, timeout=30)
+        resp = self.session.put(
+            f"{self.base_url}{path}", json=payload, timeout=30)
         if resp.status_code not in expected:
-            raise RuntimeError(f"PUT {path} failed ({resp.status_code}): {resp.text}")
+            raise RuntimeError(
+                f"PUT {path} failed ({resp.status_code}): {resp.text}")
         if resp.content:
             return resp.json()
         return {}
@@ -118,7 +124,8 @@ def build_rule_payload(
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Smoke-test merchandising rules.")
+    parser = argparse.ArgumentParser(
+        description="Smoke-test merchandising rules.")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
     parser.add_argument("--org-id", default=DEFAULT_ORG_ID)
     parser.add_argument("--namespace", default=DEFAULT_NAMESPACE)
@@ -126,7 +133,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--user-id", default=DEFAULT_USER_ID)
     parser.add_argument("--k", type=int, default=10)
     parser.add_argument("--evidence-path", default=DEFAULT_EVIDENCE)
-    parser.add_argument("--sleep-seconds", type=float, default=0.5, help="Wait after creating rules.")
+    parser.add_argument("--sleep-seconds", type=float,
+                        default=0.5, help="Wait after creating rules.")
     parser.add_argument(
         "--keep-rules",
         action="store_true",
@@ -139,10 +147,12 @@ def main() -> None:
     args = parse_args()
     client = APIClient(args.base_url, args.org_id)
 
-    baseline = recommend(client, args.namespace, args.user_id, args.surface, args.k)
+    baseline = recommend(client, args.namespace,
+                         args.user_id, args.surface, args.k)
     base_items = baseline.get("items", [])
     if len(base_items) < 3:
-        raise RuntimeError("Need at least 3 baseline items to exercise block/boost/pin.")
+        raise RuntimeError(
+            "Need at least 3 baseline items to exercise block/boost/pin.")
 
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
     rule_prefix = f"auto-rule-test-{timestamp}"
@@ -174,15 +184,19 @@ def main() -> None:
     failure_message: str | None = None
     try:
         for payload in (block_payload, boost_payload, pin_payload):
-            resp = client.post_json("/v1/admin/rules", payload, expected=(201,))
+            resp = client.post_json(
+                "/v1/admin/rules", payload, expected=(201,))
             rule_id = resp.get("rule_id")
             if not isinstance(rule_id, str):
-                raise RuntimeError(f"Rule creation response missing rule_id: {resp}")
-            created_rules.append({"rule_id": rule_id, "response": resp, "payload": payload})
+                raise RuntimeError(
+                    f"Rule creation response missing rule_id: {resp}")
+            created_rules.append(
+                {"rule_id": rule_id, "response": resp, "payload": payload})
             disable_specs.append((rule_id, payload))
 
         time.sleep(args.sleep_seconds)
-        mutated = recommend(client, args.namespace, args.user_id, args.surface, args.k)
+        mutated = recommend(client, args.namespace,
+                            args.user_id, args.surface, args.k)
         policy = extract_policy(mutated)
         validation = {
             "block_hits": policy.get("rule_block_count", 0),
@@ -194,7 +208,8 @@ def main() -> None:
         block_ok = validation["block_hits"] >= 1
         boost_ok = validation["boost_hits"] >= 1 or validation["boost_exposure"] >= 1
         pin_ok = validation["pin_hits"] >= 1 or validation["pin_exposure"] >= 1
-        validation["status"] = "PASSED" if (block_ok and boost_ok and pin_ok) else "FAILED"
+        validation["status"] = "PASSED" if (
+            block_ok and boost_ok and pin_ok) else "FAILED"
 
         evidence = {
             "metadata": {
@@ -225,7 +240,8 @@ def main() -> None:
             if not pin_ok:
                 missing.append("pin")
             failure_message = (
-                "Rules validation failed; missing effects for " + ", ".join(missing)
+                "Rules validation failed; missing effects for " +
+                ", ".join(missing)
             )
         else:
             print(
@@ -239,9 +255,11 @@ def main() -> None:
                 disable_payload = dict(payload)
                 disable_payload["enabled"] = False
                 try:
-                    client.put_json(f"/v1/admin/rules/{rule_id}", disable_payload, expected=(200,))
+                    client.put_json(
+                        f"/v1/admin/rules/{rule_id}", disable_payload, expected=(200,))
                 except Exception as exc:  # pragma: no cover - best effort cleanup
-                    print(f"Failed to disable rule {rule_id}: {exc}", file=sys.stderr)
+                    print(
+                        f"Failed to disable rule {rule_id}: {exc}", file=sys.stderr)
 
     if failure_message:
         raise RuntimeError(failure_message)
