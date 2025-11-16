@@ -4,7 +4,14 @@ This guide summarizes the key Postgres tables Recsys uses, describing the
 columns, types, and how each table powers the system. Use it when mapping your
 catalog/users/events, troubleshooting audits, or exporting evidence.
 
-> **Who should read this?** Integration engineers and developers who need to map existing data into Recsys (or export traces). Pair with `docs/api_endpoints.md` for the ingest APIs and `docs/env_vars.md` for tuning behaviour.
+> **Who should read this?** Integration engineers and developers who need to map existing data into Recsys (or export traces). Pair with `docs/api_reference.md` for the ingest APIs and `docs/env_reference.md` for tuning behaviour. Commands referencing `make` or `analysis/scripts` assume local repo access; hosted API-only readers can focus on `docs/quickstart_http.md`.
+
+### TL;DR
+
+- **Purpose:** Explain what lives in each Postgres table (items, users, events, traces, overrides, etc.) and how RecSys uses those columns.
+- **Use this when:** You are mapping data pipelines, debugging ingestion/audit issues, or exporting evidence for stakeholders.
+- **Outcome:** Clear guidance on required fields, useful SQL snippets, and tips for keeping namespaces/data healthy.
+- **Not for:** Learning the API schema or high-level concepts—see `docs/api_reference.md` and `docs/concepts_and_metrics.md` instead.
 
 ## Catalog & User Tables
 

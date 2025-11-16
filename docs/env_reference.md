@@ -1,10 +1,11 @@
 # Algorithm & Environment Configuration Reference
 
-This guide explains every environment variable (and matching runtime override)
-that influences Recsys ranking. Use it alongside:
-- `docs/api_endpoints.md` (where overrides live in API requests)
+This is the **canonical** list of environment variables (and matching runtime overrides) that influence RecSys ranking. Other docs intentionally link here instead of duplicating tables—update this file first whenever a knob changes.
+
+Use it alongside:
+- `docs/api_reference.md` (where overrides live in API requests)
 - `docs/rules-runbook.md` (how overrides affect guardrails)
-- `docs/bespoke_simulations.md` (how to run simulations with different profiles)
+- `docs/simulations_and_guardrails.md` (how to run simulations with different profiles)
 
 > **Who should read this?** Integration engineers and developers tuning ranking behavior. Business stakeholders can skim the interaction notes to understand how overrides relate to guardrails.
 
@@ -44,7 +45,7 @@ that influences Recsys ranking. Use it alongside:
 |-------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|-----------------------------------------------------------------------------|------------------------------------------------------------------|-------------------------------------------------|
 | `PROFILE_BOOST`                                                                           | Multiplicative boost applied to tag overlap.                              | Raise (0.6–0.8) when you trust historical signals; lower (0.3–0.5) for sparse cohorts. | `PROFILE_COLD_START_MULTIPLIER`, `PROFILE_MIN_EVENTS_FOR_BOOST`. | Yes (`overrides.profile_boost`).                |
 | `PROFILE_MIN_EVENTS_FOR_BOOST`, `PROFILE_COLD_START_MULTIPLIER`                           | Minimum events before full boost + attenuation for sparse history.       | Lower the threshold (2–4) to kick in personalization sooner; `COLD_START_MULTIPLIER` near 1.0 keeps starters prominent. | Starter decay, `PROFILE_STARTER_BLEND_WEIGHT`.                   | `PROFILE_MIN_EVENTS_FOR_BOOST` via admin config; multiplier is static. |
-| `PROFILE_STARTER_BLEND_WEIGHT`, `PROFILE_STARTER_DECAY_EVENTS`, `PROFILE_STARTER_PRESETS` | Control curated starter profiles for new users.                           | Higher weight/decay values keep curated anchors longer; adjust per segment to guide cold-start experiences. | `docs/bespoke_simulations.md` fixtures; harness `--starter-blend-weights`. | Yes (`overrides.profile_starter_blend_weight`). |
+| `PROFILE_STARTER_BLEND_WEIGHT`, `PROFILE_STARTER_DECAY_EVENTS`, `PROFILE_STARTER_PRESETS` | Control curated starter profiles for new users.                           | Higher weight/decay values keep curated anchors longer; adjust per segment to guide cold-start experiences. | `docs/simulations_and_guardrails.md` fixtures; harness `--starter-blend-weights`. | Yes (`overrides.profile_starter_blend_weight`). |
 | `NEW_USER_BLEND_ALPHA/BETA/GAMMA`, `NEW_USER_POP_FANOUT`, `NEW_USER_MMR_LAMBDA`           | Optional overrides for cold-start surfaces.                               | Use when `surface=new_user` needs more exploration or different trade-offs. | Guardrails (coverage, S7).                                       | Yes (`overrides.*`).                            |
 
 ## Diversity, MMR, and coverage

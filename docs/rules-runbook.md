@@ -3,7 +3,7 @@
 This runbook explains how to verify, monitor, and troubleshoot the rule/override
 pipeline in production.
 
-> **Who should read this?** Business stakeholders and engineers responsible for merchandising overrides and guardrail monitoring.
+> **Who should read this?** Business stakeholders and engineers responsible for merchandising overrides and guardrail monitoring (terms are defined in `docs/concepts_and_metrics.md`). Sections that mention `make`/`analysis/scripts` assume you run the RecSys stack; hosted API-only consumers can stick to `docs/quickstart_http.md`.
 
 ## 1. Rule precedence refresher
 
@@ -72,66 +72,40 @@ Dashboards and alerts should watch the zero-effect counter and the ratio of
 `rule_*_exposure` to `rule_*_count` so merchandising regressions are detected
 quickly.
 
-## 3. Coverage guardrails
+## 3. Coverage telemetry (ops view)
 
-Every response now contributes to coverage telemetry so you can alert when
-catalog breadth shrinks:
+Track breadth via Prometheus rather than duplicating guardrail definitions here:
 
-- `policy_item_served_total{namespace, surface, item_id}` – increments once per
-  item delivered.
-- `policy_coverage_bucket_total{namespace, surface, bucket}` – `bucket` is
-  `all` or `long_tail`, letting you track exposure mix.
-- `policy_catalog_items_total{namespace}` – gauge of the available catalog size.
+- `policy_item_served_total{namespace, surface, item_id}` – shows unique exposure counts.
+- `policy_coverage_bucket_total{namespace, surface, bucket}` – `bucket=all` vs `bucket=long_tail` for exposure mix.
+- `policy_catalog_items_total{namespace}` – denominator for coverage ratios.
 
-Use PromQL (tweak the look-back window to taste):
+Sample PromQL:
 
 ```promql
 # Unique items shown in the past hour
-unique_items =
-  count(count_over_time(policy_item_served_total{namespace="default"}[1h]) > 0)
+count(count_over_time(policy_item_served_total{namespace="default"}[1h]) > 0)
 
 # Catalog coverage ratio (target ≥ 0.60)
-coverage_ratio = unique_items / max(policy_catalog_items_total{namespace="default"})
+count(count_over_time(policy_item_served_total{namespace="default"}[1h]) > 0)
+  / max(policy_catalog_items_total{namespace="default"})
 
 # Long-tail share (target ≥ 0.20)
-long_tail_share =
-  sum(rate(policy_coverage_bucket_total{namespace="default", bucket="long_tail"}[1h])) /
-  sum(rate(policy_coverage_bucket_total{namespace="default", bucket="all"}[1h]))
+sum(rate(policy_coverage_bucket_total{namespace="default", bucket="long_tail"}[1h])) /
+sum(rate(policy_coverage_bucket_total{namespace="default", bucket="all"}[1h]))
 ```
 
-Alert if `coverage_ratio < 0.60` or `long_tail_share < 0.20` for your chosen
-window.
-
-**If a guardrail fires** (see README tuning workflow for commands):
-
-1. Re-run the quality suite or `analysis/scripts/profile_coverage.py` against
-   the affected environment to confirm the regression.
-2. Inspect recent deployments for changes to `POPULARITY_FANOUT`,
-   `BLEND_*`, `MMR_LAMBDA`, or rule overrides that may concentrate exposure.
-3. Temporarily raise exploration knobs (fan-out, ALS weight) and re-check the
-   telemetry. When the targets recover, bake the updated settings into the
-   environment (`COVERAGE_LONG_TAIL_HINT_THRESHOLD`, `COVERAGE_CACHE_TTL`) and
-   document the change.
-4. If the regression is segment-specific (e.g., `power_users` guardrail only), re-run the segment harness (`analysis/scripts/tuning_harness.py --segment power_users ...`) and reapply the resulting profile.
-
-## 3a. Configuring guardrails via `guardrails.yml`
-
-Automated suites (simulation, CI, make targets) source their thresholds from the root-level `guardrails.yml`. The file includes a `defaults` block plus per-customer overrides—each override may also scope to a namespace. Fields under `quality` map to the CLI flags on `analysis/scripts/run_quality_eval.py` (segment lifts, minimum catalog coverage, long-tail share), while `scenarios` defines the S7 checks enforced by `analysis/scripts/run_scenarios.py`.
-
-Workflow:
-
-1. **Edit `guardrails.yml`** – add or update the customer entry, optionally providing namespace-specific overrides.
-2. **Dry-run the simulation** – `python analysis/scripts/run_simulation.py --customer <name> --dry-run` prints the resolved thresholds so you can confirm the edits.
-3. **Commit + run CI** – the GitHub workflows read the same file, so the new guardrails apply immediately to the scenario suite and quality eval jobs.
-
-If you need to test with a different guardrail set (e.g., staging vs. prod), pass `--guardrails-file path/to/guardrails.yml` when invoking the simulation runner or override `GUARDRAILS_FILE` in the workflow environment. Set it to an empty string only when debugging; otherwise leave it at the repo default to ensure every evidence artifact records the enforced thresholds.
+If ratios dip below guardrail targets, coordinate with the tuning team (`docs/tuning_playbook.md`) and consult `docs/simulations_and_guardrails.md` for the formal thresholds enforced in CI. Ops should focus on alerting + escalation, not editing guardrail YAML.
 
 ## 4. New-user onboarding playbook
 
 1. **Seed starter data** via `analysis/scripts/seed_dataset.py` using the same org/namespace as production; this mirrors the catalog/users captured in `analysis/evidence/seed_manifest.json`.
+   _Local stack note: commands such as `make scenario-suite` assume repository access with Docker/Make._
 2. **Run scenario S7** (`make scenario-suite …`) and review `analysis/evidence/scenario_s7_cold_start.json` to confirm ≥4 categories and personalization reasons for the first item.
 3. **Compare segment lifts** with `analysis/quality_metrics.json`; new_users should stay ≥+10% on NDCG@10/MRR@10 after any rollout (use `analysis/scripts/run_quality_eval.py` to regenerate metrics).
 4. **Audit determinism** using `.github/workflows/determinism.yml` (or run `analysis/scripts/check_determinism.py --baseline analysis/evidence/determinism_check.json`) before exposing a new surface.
+
+> For the YAML guardrails, simulation steps, and CI wiring, see `docs/simulations_and_guardrails.md`.
 
 ## 5. Operational checklist
 

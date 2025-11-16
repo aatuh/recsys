@@ -1620,7 +1620,6 @@ func (e *Engine) shouldUseCaps() bool {
 }
 
 // buildResponse builds the final response.
-
 func (e *Engine) buildResponse(
 	data *CandidateData,
 	k int,

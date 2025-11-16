@@ -2,7 +2,7 @@
 
 This reference groups every public REST endpoint by domain. For payload schemas see `api/swagger/swagger.yaml`; this document explains what each route is for, who uses it, and notable parameters or behaviors.
 
-> **Who should read this?** Integration engineers and developers implementing against the API. Pair it with `docs/env_vars.md` for algorithm knobs and `docs/database_schema.md` for storage details.
+> **Who should read this?** Integration engineers and developers implementing against the API. Pair it with `docs/env_reference.md` for algorithm knobs and `docs/database_schema.md` for storage details.
 
 ## Ingestion & Data Management
 
@@ -50,7 +50,7 @@ curl -X POST https://api.example.com/v1/items:upsert \
 
 | Endpoint                      | Method | Purpose                                                 | Notes                                                                                                                                                                                                                    |
 |-------------------------------|--------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `/v1/recommendations`         | POST   | Core ranking endpoint returning top-K items for a user. | Requires `namespace`, `k`, optional `user_id`. Supports `overrides` (blend/MMR/profile knobs) and `include_reasons`. Returns trace extras (policy summary, starter profile) and feeds audit/coverage guardrails.         |
+| `/v1/recommendations`         | POST   | Core ranking endpoint returning top-K items for a user. | Requires `namespace`, `k`, optional `user_id`. Supports `overrides` (blend / Maximal Marginal Relevance (MMR; see `docs/concepts_and_metrics.md`) / profile knobs) and `include_reasons`. Returns trace extras (policy summary, starter profile) and feeds audit/coverage guardrails (terminology also covered in `docs/concepts_and_metrics.md`).         |
 | `/v1/rerank`                  | POST   | Re-score a caller-supplied candidate list.              | Send up to ~200 `items[]` (optional prior scores) plus user/context. Engine reuses blend/MMR/policy/personalization but never injects new IDs, so search/cart services can control retrieval while inheriting telemetry. |
 | `/v1/items/{item_id}/similar` | GET    | Fetch similar items by collaborative/content signals.   | Needs `namespace` and `item_id`. Used for “related products.”                                                                                                                                                            |
 | `/v1/explain/llm`             | POST   | Ask the LLM explainer for narrative summaries.          | Provide target type (`recommendation`, `order`), time window, question. Requires LLM env vars.                                                                                                                           |
@@ -103,6 +103,8 @@ curl -X POST https://api.example.com/v1/rerank \
 ```
 
 ## Bandit (Multi-arm) API
+
+> Need a refresher on what “multi-armed bandit” means? See the plain-language definition in `docs/concepts_and_metrics.md`.
 
 | Endpoint                     | Method | Purpose                                             | Notes                                                                                     |
 |------------------------------|--------|-----------------------------------------------------|-------------------------------------------------------------------------------------------|
@@ -186,10 +188,38 @@ Pair `/version` with determinism artifacts (see `analysis/results/determinism_ci
 
 ### Load & chaos workflows
 
+> Local-only note: the commands below assume you cloned this repo and can run Docker/Make. Hosted API consumers can skip this section.
+
 - `make load-test LOAD_BASE_URL=<url> LOAD_ORG_ID=<uuid> LOAD_NAMESPACE=<ns> LOAD_RPS=10,100,1000` – runs the k6 script `analysis/load/recommendations_k6.js`, ramps through each RPS stage, and writes `analysis/results/load_test_summary.json` (latency percentiles, iteration count, error rate).
 - `LOAD_USER_POOL`, `LOAD_SURFACE`, and `LOAD_STAGE_DURATION` let you tailor the traffic mix without editing code; set `SUMMARY_PATH` to capture multiple environments (e.g., staging vs. prod) side by side.
 - `python analysis/scripts/chaos_toggle.py api pause 15` (or `db stop 20`) temporarily pauses a docker-compose service so you can observe how `/v1/recommendations` behaves during cache/DB outages while the load test is running.
 - Share the resulting JSON summaries alongside determinism and scenario evidence when answering evaluation rubrics.
+
+## Error handling & status codes
+
+| Code | When you’ll see it | What to check |
+|------|--------------------|---------------|
+| `200 OK` | Successful write/read. Responses often include `trace_id` for audits. | — |
+| `400 Bad Request` | Missing `namespace`, malformed payloads, missing `X-Org-ID`. Error body includes `code` (e.g., `missing_org_id`). | Validate headers, JSON shape, enum names. |
+| `401/403 Unauthorized` | API key missing/invalid when auth is enabled. | Add `X-API-Key` or `Authorization` header. |
+| `404 Not Found` | Namespace doesn’t exist, item/user not seeded, or endpoint typo. | Confirm namespace spelling and data ingestion. |
+| `409 Conflict` | Duplicate IDs during manual override/rule creation when dedupe keys clash. | Fetch existing resource, resolve conflict, retry. |
+| `422 Unprocessable Entity` | Invalid override values (`overrides.blend` sums to zero, unknown event type, etc.). | Refer to `docs/env_reference.md` for valid ranges. |
+| `429 Too Many Requests` | Rate limit exceeded (`API_RATE_LIMIT_RPM`). | Back off or request higher limits. |
+| `500 Internal Server Error` | Unexpected bug or downstream outage. | Retry with jitter; capture `trace_id` and escalate with logs. |
+
+All errors return JSON with `code`, `message`, and sometimes `details`. Include the `trace_id` when reporting incidents.
+
+## Common patterns
+
+- **Recommendations vs rerank:** Use `/v1/recommendations` when the service can assemble candidates from its own data; use `/v1/rerank` when your application already has a candidate list but wants consistent blend/MMR/personalization. Both return the same trace schema, so guardrails and audits work identically.
+- **Minimal ingestion loop:** Follow `docs/quickstart_http.md` for the canonical order (items → users → events → recommendations). Missing steps are the #1 cause of empty lists.
+- **Per-surface overrides:** Pass `context.surface` (home, pdp, email) and supply `overrides.blend`/`overrides.mmr` per request. When an override sticks, capture it in env profiles via `analysis/scripts/env_profile_manager.py`.
+- **Namespace resets:** Use `analysis/scripts/reset_namespace.py` → `seed_dataset.py` before tuning or running scenarios to eliminate leftover catalog noise.
+- **Rules dry-run workflow:** `POST /v1/admin/rules/dry-run` with the proposed payload, review the before/after samples, then create the rule. `docs/rules-runbook.md` explains how to monitor telemetry afterward.
+- **Error triage loop:** Capture `trace_id`, query `/v1/audit/decisions/{trace_id}`, and cross-reference with guardrail dashboards. Refer to `docs/concepts_and_metrics.md` to explain coverage/diversity terminology in reports.
+
+Need more narrative examples? Start with `GETTING_STARTED.md` for local walkthroughs or `docs/quickstart_http.md` for hosted integrations.
 
 ## Using the reference
 
@@ -198,6 +228,7 @@ Pair `/version` with determinism artifacts (see `analysis/results/determinism_ci
 - Namespacing: every write/read call requires `namespace` (explicit field or inferred from user/item). Guardrails and env profiles apply per namespace.
 - Rate limiting: configure via `API_RATE_LIMIT_RPM`/`BURST`; admins should mention limits in partner docs once keys are issued.
 For deeper walkthroughs and examples, see:
-- `README.md` (operational checklist, overrides, bandit flows)
-- `docs/bespoke_simulations.md` (seeding + simulation) 
+- `GETTING_STARTED.md` / `docs/quickstart_http.md` (hands-on ingestion + recommendation flow)
+- `docs/simulations_and_guardrails.md` (seeding + simulation)
 - `docs/rules-runbook.md` (override troubleshooting)
+- `docs/concepts_and_metrics.md` (terminology used in traces/guardrails)
