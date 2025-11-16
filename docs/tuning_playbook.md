@@ -170,5 +170,5 @@ Key checks:
 
 - `docs/env_reference.md` – knob definitions and override mapping.
 - `docs/simulations_and_guardrails.md` – scenario fixtures, guardrail YAML, CI hooks.
-- `docs/rules-runbook.md` – operational checklist once the tuned profile is live.
+- `docs/rules_runbook.md` – operational checklist once the tuned profile is live.
 - `docs/concepts_and_metrics.md` – metric definitions used throughout the playbook.

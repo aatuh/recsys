@@ -133,13 +133,13 @@ Useful for PDP “you may also like” modules. This endpoint relies heavily on 
 
 ## 4. Common mistakes
 
-| Symptom | Likely cause | Fix |
-|---------|--------------|-----|
-| `400 missing_org_id` | `X-Org-ID` header absent or not a UUID | Send the header on every request, even for GETs. |
-| `404 namespace_not_found` | Namespace typo or never seeded | Double-check the namespace string, seed data, or create it via admin APIs. |
-| `422 invalid blend` | `overrides.blend` weights missing/negative | Normalize weights to positive floats; omit `overrides` to use defaults. |
-| Empty recommendation list | Catalog empty or items `available=false` | Upsert items with `available=true`, check `/v1/items`. |
-| Slow responses (>1s) | Too large `k`/`fanout`, network to region | Reduce `k`, avoid unnecessary `include_reasons`, ensure calls hit the closest region. |
+| Symptom                   | Likely cause                               | Fix                                                                                   |
+|---------------------------|--------------------------------------------|---------------------------------------------------------------------------------------|
+| `400 missing_org_id`      | `X-Org-ID` header absent or not a UUID     | Send the header on every request, even for GETs.                                      |
+| `404 namespace_not_found` | Namespace typo or never seeded             | Double-check the namespace string, seed data, or create it via admin APIs.            |
+| `422 invalid blend`       | `overrides.blend` weights missing/negative | Normalize weights to positive floats; omit `overrides` to use defaults.               |
+| Empty recommendation list | Catalog empty or items `available=false`   | Upsert items with `available=true`, check `/v1/items`.                                |
+| Slow responses (>1s)      | Too large `k`/`fanout`, network to region  | Reduce `k`, avoid unnecessary `include_reasons`, ensure calls hit the closest region. |
 
 ---
 
@@ -151,4 +151,4 @@ Useful for PDP “you may also like” modules. This endpoint relies heavily on 
 - **Business + lifecycle overview:** `docs/business_overview.md`, `docs/overview.md`
 - **Simulation & guardrail workflows:** `docs/simulations_and_guardrails.md`
 
-When you need to apply rules or debug ranking issues, jump to `docs/rules-runbook.md`. For local experiments or deeper tuning, follow `GETTING_STARTED.md` plus `docs/tuning_playbook.md`.
+When you need to apply rules or debug ranking issues, jump to `docs/rules_runbook.md`. For local experiments or deeper tuning, follow `GETTING_STARTED.md` plus `docs/tuning_playbook.md`.

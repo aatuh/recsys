@@ -133,6 +133,6 @@ customers:
 
 - `make scenario-suite SCENARIO_BASE_URL=...` – seeds + runs S1–S10 quickly.
 - `make determinism`, `make load-test` – specialty guardrails for reproducibility and scale.
-- `docs/rules-runbook.md` – operational steps when guardrails trip or rules misbehave.
+- `docs/rules_runbook.md` – operational steps when guardrails trip or rules misbehave.
 - `docs/concepts_and_metrics.md` – definitions for metrics mentioned here.
 - `docs/env_reference.md` – canonical knob list referenced while tuning for guardrail targets.

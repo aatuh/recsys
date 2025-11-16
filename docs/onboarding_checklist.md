@@ -16,12 +16,12 @@ Use this guide as a suggested ramp-up path for new teammates. Timelines are indi
 - Follow `GETTING_STARTED.md` to run the local stack, seed data, and hit `/v1/recommendations` on localhost.
 - Read `docs/api_reference.md` fully; take notes on key headers (`X-Org-ID`, auth) and error cases that matter for your client(s).
 - Review `docs/database_schema.md` to see how catalog, user, and event tables are shaped.
-- Browse `docs/env_reference.md` and `CONFIGURATION.md` to understand how defaults, profiles, and overrides interact.
+- Browse `docs/env_reference.md` and `docs/configuration.md` to understand how defaults, profiles, and overrides interact.
 
 ### Phase 3 – Day 5+: Operate confidently
 - Run one pass of `docs/tuning_playbook.md` (reset → seed → tune → guardrails) on a sandbox namespace to understand the workflow.
 - Skim `docs/simulations_and_guardrails.md` to learn how CI guardrails work and where evidence is stored.
-- Review the relevant sections of `docs/rules-runbook.md` so you can support merchandising or override questions.
+- Review the relevant sections of `docs/rules_runbook.md` so you can support merchandising or override questions.
 - Pair with a teammate to review the integration points you own (SDKs, backend services, admin tooling) and log future improvements in backlog.
 
 ---
@@ -40,7 +40,7 @@ Use this guide as a suggested ramp-up path for new teammates. Timelines are indi
 - Review `docs/env_reference.md` for knobs you are likely to change and note any unknowns for follow-up.
 
 ### Phase 3 – Day 6+: Advanced operations
-- Read `docs/rules-runbook.md` and experiment with `/v1/admin/manual_overrides` in a sandbox namespace to observe telemetry changes.
+- Read `docs/rules_runbook.md` and experiment with `/v1/admin/manual_overrides` in a sandbox namespace to observe telemetry changes.
 - Examine Prometheus/Grafana dashboards (or their JSON definitions) so you know where guardrail and coverage metrics surface.
 - Meet with the product/merch team to understand upcoming experiments and document how ML/tuning efforts support them.
 
@@ -55,7 +55,7 @@ Use this guide as a suggested ramp-up path for new teammates. Timelines are indi
 
 ### Phase 2 – Day 3–4: Rules, audits, and API fluency
 - Walk through `docs/quickstart_http.md` so you can recognize the key fields involved in ingests and recommendation calls.
-- Read the introductory sections of `docs/rules-runbook.md` to understand precedence, telemetry, and day-to-day monitoring.
+- Read the introductory sections of `docs/rules_runbook.md` to understand precedence, telemetry, and day-to-day monitoring.
 - Review `docs/business_overview.md#evidence--auditability` plus `docs/simulations_and_guardrails.md` (high level) to know what evidence to expect in reviews.
 
 ### Phase 3 – Day 5+: Collaborate and plan

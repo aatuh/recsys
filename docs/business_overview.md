@@ -27,12 +27,12 @@ Think of it as a recommender **control plane**: ingestion, ranking, and guardrai
 
 ## 3. Rollout story
 
-| Phase | What happens |
-|-------|--------------|
-| **Week 1 – Foundations** | Spin up the stack (`GETTING_STARTED.md`), mirror a sample catalog, and wire ingestion (items/users/events). Verify the `/v1/recommendations` response matches expectations for a few sample users. |
-| **Week 2–4 – Tuning & guardrails** | Adjust environment knobs (blend weights, MMR, caps) per surface, run the tuning harness on representative segments, and lock down guardrails via simulations before onboarding more traffic. |
-| **Week 5–8 – Operationalization** | Enable bandits or multi-surface namespaces, expose the rule engine to merchandising teams, integrate dashboards/alerts, and document rollout plans per region. |
-| **8+ weeks – Continuous improvement** | Experiment with custom signals, expand guardrails (fairness, supply balancing), and plug the auditing endpoints into governance/compliance tooling. |
+| Phase                                 | What happens                                                                                                                                                                                       |
+|---------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Week 1 – Foundations**              | Spin up the stack (`GETTING_STARTED.md`), mirror a sample catalog, and wire ingestion (items/users/events). Verify the `/v1/recommendations` response matches expectations for a few sample users. |
+| **Week 2–4 – Tuning & guardrails**    | Adjust environment knobs (blend weights, MMR, caps) per surface, run the tuning harness on representative segments, and lock down guardrails via simulations before onboarding more traffic.       |
+| **Week 5–8 – Operationalization**     | Enable bandits or multi-surface namespaces, expose the rule engine to merchandising teams, integrate dashboards/alerts, and document rollout plans per region.                                     |
+| **8+ weeks – Continuous improvement** | Experiment with custom signals, expand guardrails (fairness, supply balancing), and plug the auditing endpoints into governance/compliance tooling.                                                |
 
 This cadence gives business stakeholders confidence that quality and safety checks accompany every change, not just the initial launch.
 
@@ -63,6 +63,6 @@ Together they create a “trust but verify” loop: experimentation is easy, but
 - `README.md` – Front-door summary plus persona map.
 - `docs/overview.md` – Lifecycle checklist for business, integration, and ops personas.
 - `docs/concepts_and_metrics.md` – Definitions of ALS/MMR/coverage/guardrails.
-- `docs/rules-runbook.md` – Operational steps for overrides and incident response.
+- `docs/rules_runbook.md` – Operational steps for overrides and incident response.
 - `docs/simulations_and_guardrails.md` – How automated protection works.
 - `docs/quickstart_http.md` – Copy-paste API examples your engineers will use.

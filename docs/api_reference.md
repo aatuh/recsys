@@ -48,12 +48,12 @@ curl -X POST https://api.example.com/v1/items:upsert \
 
 ## Ranking & Explainability
 
-| Endpoint                      | Method | Purpose                                                 | Notes                                                                                                                                                                                                                    |
-|-------------------------------|--------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `/v1/recommendations`         | POST   | Core ranking endpoint returning top-K items for a user. | Requires `namespace`, `k`, optional `user_id`. Supports `overrides` (blend / Maximal Marginal Relevance (MMR; see `docs/concepts_and_metrics.md`) / profile knobs) and `include_reasons`. Returns trace extras (policy summary, starter profile) and feeds audit/coverage guardrails (terminology also covered in `docs/concepts_and_metrics.md`).         |
-| `/v1/rerank`                  | POST   | Re-score a caller-supplied candidate list.              | Send up to ~200 `items[]` (optional prior scores) plus user/context. Engine reuses blend/MMR/policy/personalization but never injects new IDs, so search/cart services can control retrieval while inheriting telemetry. |
-| `/v1/items/{item_id}/similar` | GET    | Fetch similar items by collaborative/content signals.   | Needs `namespace` and `item_id`. Used for “related products.”                                                                                                                                                            |
-| `/v1/explain/llm`             | POST   | Ask the LLM explainer for narrative summaries.          | Provide target type (`recommendation`, `order`), time window, question. Requires LLM env vars.                                                                                                                           |
+| Endpoint                      | Method | Purpose                                                 | Notes                                                                                                                                                                                                                                                                                                                                              |
+|-------------------------------|--------|---------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `/v1/recommendations`         | POST   | Core ranking endpoint returning top-K items for a user. | Requires `namespace`, `k`, optional `user_id`. Supports `overrides` (blend / Maximal Marginal Relevance (MMR; see `docs/concepts_and_metrics.md`) / profile knobs) and `include_reasons`. Returns trace extras (policy summary, starter profile) and feeds audit/coverage guardrails (terminology also covered in `docs/concepts_and_metrics.md`). |
+| `/v1/rerank`                  | POST   | Re-score a caller-supplied candidate list.              | Send up to ~200 `items[]` (optional prior scores) plus user/context. Engine reuses blend/MMR/policy/personalization but never injects new IDs, so search/cart services can control retrieval while inheriting telemetry.                                                                                                                           |
+| `/v1/items/{item_id}/similar` | GET    | Fetch similar items by collaborative/content signals.   | Needs `namespace` and `item_id`. Used for “related products.”                                                                                                                                                                                                                                                                                      |
+| `/v1/explain/llm`             | POST   | Ask the LLM explainer for narrative summaries.          | Provide target type (`recommendation`, `order`), time window, question. Requires LLM env vars.                                                                                                                                                                                                                                                     |
 
 **Key request fields (`/v1/recommendations`)**
 
@@ -124,18 +124,18 @@ Policies are defined via `/v1/bandit/policies:upsert`. Each policy lists arms, t
 
 ## Configuration (Event Types, Segments, Presets)
 
-| Endpoint                           | Method | Purpose                                         | Notes                                                     |
-|------------------------------------|--------|-------------------------------------------------|-----------------------------------------------------------|
-| `/v1/event-types`                  | GET    | List effective event-type weights & half-lives. | Shows what the ranking engine currently uses.             |
-| `/v1/event-types:upsert`           | POST   | Configure event-type weights/half-lives.        | E.g., change purchase weight or deactivate custom events. |
-| `/v1/segments`                     | GET    | List behavioral segments.                       | Segments drive cohort-specific tuning.                    |
-| `/v1/segments:upsert`              | POST   | Create/update segments.                         | Provide `segment_id`, description, eligibility rules.     |
-| `/v1/segments:delete`              | POST   | Remove segments.                                | Use when retiring cohorts.                                |
-| `/v1/segment-profiles`             | GET    | Preset starter profiles per segment.            | Useful for cold-start curation.                           |
-| `/v1/segment-profiles:upsert`      | POST   | Create/update starter profile weights.          | Map categories/tags to weights.                           |
-| `/v1/segment-profiles:delete`      | POST   | Remove starter profiles.                        |                                                           |
-| `/v1/segments:dry-run`             | POST   | Test segment definitions without saving.        |                                                           |
-| `/v1/admin/recommendation/presets` | GET    | Fetch recommended MMR presets per surface.      | UI tooling can show validated values.                     |
+| Endpoint                           | Method   | Purpose                                         | Notes                                                                                                         |
+|------------------------------------|----------|-------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
+| `/v1/event-types`                  | GET      | List effective event-type weights & half-lives. | Shows what the ranking engine currently uses.                                                                 |
+| `/v1/event-types:upsert`           | POST     | Configure event-type weights/half-lives.        | E.g., change purchase weight or deactivate custom events.                                                     |
+| `/v1/segments`                     | GET      | List behavioral segments.                       | Segments drive cohort-specific tuning.                                                                        |
+| `/v1/segments:upsert`              | POST     | Create/update segments.                         | Provide `segment_id`, description, eligibility rules.                                                         |
+| `/v1/segments:delete`              | POST     | Remove segments.                                | Use when retiring cohorts.                                                                                    |
+| `/v1/segment-profiles`             | GET      | Preset starter profiles per segment.            | Useful for cold-start curation.                                                                               |
+| `/v1/segment-profiles:upsert`      | POST     | Create/update starter profile weights.          | Map categories/tags to weights.                                                                               |
+| `/v1/segment-profiles:delete`      | POST     | Remove starter profiles.                        |                                                                                                               |
+| `/v1/segments:dry-run`             | POST     | Test segment definitions without saving.        |                                                                                                               |
+| `/v1/admin/recommendation/presets` | GET      | Fetch recommended MMR presets per surface.      | UI tooling can show validated values.                                                                         |
 | `/v1/admin/recommendation/config`  | GET/POST | Fetch/apply the active recommendation config.   | Use `analysis/scripts/recommendation_config.py export/apply` to keep git-backed JSON templates per namespace. |
 
 **Usage tips**
@@ -197,16 +197,16 @@ Pair `/version` with determinism artifacts (see `analysis/results/determinism_ci
 
 ## Error handling & status codes
 
-| Code | When you’ll see it | What to check |
-|------|--------------------|---------------|
-| `200 OK` | Successful write/read. Responses often include `trace_id` for audits. | — |
-| `400 Bad Request` | Missing `namespace`, malformed payloads, missing `X-Org-ID`. Error body includes `code` (e.g., `missing_org_id`). | Validate headers, JSON shape, enum names. |
-| `401/403 Unauthorized` | API key missing/invalid when auth is enabled. | Add `X-API-Key` or `Authorization` header. |
-| `404 Not Found` | Namespace doesn’t exist, item/user not seeded, or endpoint typo. | Confirm namespace spelling and data ingestion. |
-| `409 Conflict` | Duplicate IDs during manual override/rule creation when dedupe keys clash. | Fetch existing resource, resolve conflict, retry. |
-| `422 Unprocessable Entity` | Invalid override values (`overrides.blend` sums to zero, unknown event type, etc.). | Refer to `docs/env_reference.md` for valid ranges. |
-| `429 Too Many Requests` | Rate limit exceeded (`API_RATE_LIMIT_RPM`). | Back off or request higher limits. |
-| `500 Internal Server Error` | Unexpected bug or downstream outage. | Retry with jitter; capture `trace_id` and escalate with logs. |
+| Code                        | When you’ll see it                                                                                                | What to check                                                 |
+|-----------------------------|-------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------|
+| `200 OK`                    | Successful write/read. Responses often include `trace_id` for audits.                                             | —                                                             |
+| `400 Bad Request`           | Missing `namespace`, malformed payloads, missing `X-Org-ID`. Error body includes `code` (e.g., `missing_org_id`). | Validate headers, JSON shape, enum names.                     |
+| `401/403 Unauthorized`      | API key missing/invalid when auth is enabled.                                                                     | Add `X-API-Key` or `Authorization` header.                    |
+| `404 Not Found`             | Namespace doesn’t exist, item/user not seeded, or endpoint typo.                                                  | Confirm namespace spelling and data ingestion.                |
+| `409 Conflict`              | Duplicate IDs during manual override/rule creation when dedupe keys clash.                                        | Fetch existing resource, resolve conflict, retry.             |
+| `422 Unprocessable Entity`  | Invalid override values (`overrides.blend` sums to zero, unknown event type, etc.).                               | Refer to `docs/env_reference.md` for valid ranges.            |
+| `429 Too Many Requests`     | Rate limit exceeded (`API_RATE_LIMIT_RPM`).                                                                       | Back off or request higher limits.                            |
+| `500 Internal Server Error` | Unexpected bug or downstream outage.                                                                              | Retry with jitter; capture `trace_id` and escalate with logs. |
 
 All errors return JSON with `code`, `message`, and sometimes `details`. Include the `trace_id` when reporting incidents.
 
@@ -216,7 +216,7 @@ All errors return JSON with `code`, `message`, and sometimes `details`. Include 
 - **Minimal ingestion loop:** Follow `docs/quickstart_http.md` for the canonical order (items → users → events → recommendations). Missing steps are the #1 cause of empty lists.
 - **Per-surface overrides:** Pass `context.surface` (home, pdp, email) and supply `overrides.blend`/`overrides.mmr` per request. When an override sticks, capture it in env profiles via `analysis/scripts/env_profile_manager.py`.
 - **Namespace resets:** Use `analysis/scripts/reset_namespace.py` → `seed_dataset.py` before tuning or running scenarios to eliminate leftover catalog noise.
-- **Rules dry-run workflow:** `POST /v1/admin/rules/dry-run` with the proposed payload, review the before/after samples, then create the rule. `docs/rules-runbook.md` explains how to monitor telemetry afterward.
+- **Rules dry-run workflow:** `POST /v1/admin/rules/dry-run` with the proposed payload, review the before/after samples, then create the rule. `docs/rules_runbook.md` explains how to monitor telemetry afterward.
 - **Error triage loop:** Capture `trace_id`, query `/v1/audit/decisions/{trace_id}`, and cross-reference with guardrail dashboards. Refer to `docs/concepts_and_metrics.md` to explain coverage/diversity terminology in reports.
 
 Need more narrative examples? Start with `GETTING_STARTED.md` for local walkthroughs or `docs/quickstart_http.md` for hosted integrations.
@@ -230,5 +230,5 @@ Need more narrative examples? Start with `GETTING_STARTED.md` for local walkthro
 For deeper walkthroughs and examples, see:
 - `GETTING_STARTED.md` / `docs/quickstart_http.md` (hands-on ingestion + recommendation flow)
 - `docs/simulations_and_guardrails.md` (seeding + simulation)
-- `docs/rules-runbook.md` (override troubleshooting)
+- `docs/rules_runbook.md` (override troubleshooting)
 - `docs/concepts_and_metrics.md` (terminology used in traces/guardrails)

@@ -29,11 +29,11 @@ Need the detailed walkthrough (logs, troubleshooting, screenshots)? Head to `GET
 
 ## Persona map – where to go next
 
-| Persona / Goal | Read this |
-|----------------|-----------|
-| **Business / Product** – understand the value, rollout story, guardrails | `docs/business_overview.md`, `docs/overview.md`, `docs/concepts_and_metrics.md`, `docs/rules-runbook.md` |
-| **Integration Engineer** – ingest data, hit APIs, configure namespaces | `GETTING_STARTED.md`, `docs/quickstart_http.md`, `docs/api_reference.md`, `docs/env_reference.md`, `docs/database_schema.md` |
-| **Developer / Ops** – tune policies, run guardrails, support on-call | `docs/tuning_playbook.md`, `docs/simulations_and_guardrails.md`, `docs/rules-runbook.md`, `docs/overview.md` |
+| Persona / Goal                                                           | Read this                                                                                                                    |
+|--------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| **Business / Product** – understand the value, rollout story, guardrails | `docs/business_overview.md`, `docs/overview.md`, `docs/concepts_and_metrics.md`, `docs/rules_runbook.md`                     |
+| **Integration Engineer** – ingest data, hit APIs, configure namespaces   | `GETTING_STARTED.md`, `docs/quickstart_http.md`, `docs/api_reference.md`, `docs/env_reference.md`, `docs/database_schema.md` |
+| **Developer / Ops** – tune policies, run guardrails, support on-call     | `docs/tuning_playbook.md`, `docs/simulations_and_guardrails.md`, `docs/rules_runbook.md`, `docs/overview.md`                 |
 
 Each doc starts with “Who should read this?” so you can skim with confidence.
 
@@ -55,20 +55,20 @@ Each doc starts with “Who should read this?” so you can skim with confidence
 - `docs/simulations_and_guardrails.md` – how bespoke fixtures and guardrails cooperate in CI/CD.
 - `docs/env_reference.md` – canonical environment/config knob list with override guidance.
 - `docs/api_reference.md` – endpoint catalog with payload notes, error codes, and common patterns.
-- `docs/rules-runbook.md` – operational runbook for overrides, telemetry, and incident response.
-- `CONFIGURATION.md` – conceptual explanation of how ingestion, signals, blending, personalization, and rules fit together.
+- `docs/rules_runbook.md` – operational runbook for overrides, telemetry, and incident response.
+- `docs/configuration.md` – conceptual explanation of how ingestion, signals, blending, personalization, and rules fit together.
 
 ---
 
 ## Repository layout & key commands
 
-| Path | What lives here |
-|------|-----------------|
-| `api/` | Go service, migrations, REST handlers. Run `make test` here for API tests. |
-| `web/` | Vite + React admin/demo UI. Use `pnpm dev`, `pnpm lint`, `pnpm typecheck`. |
-| `docs/` | Conceptual, runbook, and reference docs (see persona map). |
-| `analysis/` | Scripts for seeding, tuning, guardrails, load tests, and evidence artifacts. |
-| `db/`, `proxy/`, `shop/`, `demo/` | Supporting services for local development. |
+| Path                              | What lives here                                                              |
+|-----------------------------------|------------------------------------------------------------------------------|
+| `api/`                            | Go service, migrations, REST handlers. Run `make test` here for API tests.   |
+| `web/`                            | Vite + React admin/demo UI. Use `pnpm dev`, `pnpm lint`, `pnpm typecheck`.   |
+| `docs/`                           | Conceptual, runbook, and reference docs (see persona map).                   |
+| `analysis/`                       | Scripts for seeding, tuning, guardrails, load tests, and evidence artifacts. |
+| `db/`, `proxy/`, `shop/`, `demo/` | Supporting services for local development.                                   |
 
 Common commands:
 
@@ -89,6 +89,6 @@ Run `make help` to list everything else (`load-test`, `reset-namespace`, etc.).
 - Metrics & jargon primer – `docs/concepts_and_metrics.md`
 - Business storytelling – `docs/business_overview.md`
 - Database schema & SQL tips – `docs/database_schema.md`
-- Configuration mindsets – `CONFIGURATION.md`
+- Configuration mindsets – `docs/configuration.md`
 
 File an issue or open a PR with improvement ideas; follow the guidelines in `AGENTS.md` for coding style, testing expectations, and documentation conventions.
