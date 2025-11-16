@@ -2,23 +2,29 @@
 
 Use this guide when you need to change blend weights, personalization knobs, caps, or other ranking parameters for a namespace or surface. It packages the reset → seed → tune → validate → ship workflow plus troubleshooting tips.
 
-> **Who should read this?** Developers/Ops responsible for experiment design, coverage fixes, or customer onboarding. Pair it with `docs/simulations_and_guardrails.md` for safety checks and `docs/env_reference.md` for the knob catalog. Hosted API consumers who never run the stack can skip this doc and stick to `docs/quickstart_http.md`.
+> ⚠️ **Advanced topic**
+>
+> Read this after you have a basic integration running and some data flowing through a namespace.
+>
+> **Who should read this?** Developers/Ops responsible for experiment design, coverage fixes, or customer onboarding. Pair it with `docs/simulations_and_guardrails.md` for safety checks and `docs/env_reference.md` for the knob catalog. Hosted API consumers who never run the stack can skip this doc.
+>
+> **Where this fits:** Ranking & personalization.
 
-> **Need a script cheat sheet?** See `docs/analysis_scripts_reference.md` for a catalog of every tool under `analysis/scripts/` plus inputs/outputs.
+> **Need a script cheat sheet?** See [`docs/analysis_scripts_reference.md`](analysis_scripts_reference.md) for a catalog of every tool under `analysis/scripts/` plus inputs/outputs.
 
 ### TL;DR
 
 - **Purpose:** Walk-through of the reset → seed → tune → validate workflow using the analysis scripts and tuning harness.
-- **Use this when:** You need to onboard a new tenant, adjust blend/MMR/personalization knobs, or reproduce guardrail failures locally.
+- **Use this when:** You need to onboard a new tenant, adjust blend/Maximal Marginal Relevance (MMR, a diversity-aware re-ranking method)/personalization knobs, or reproduce guardrail failures locally.
 - **Outcome:** A curated env profile plus evidence bundles (tuning summaries, guardrail checks) that you can commit or share with stakeholders.
-- **Not for:** Simple HTTP integrations or read-only reviews—stick to `GETTING_STARTED.md` / `docs/quickstart_http.md` if you aren’t running the stack yourself.
+- **Not for:** Simple HTTP integrations or read-only reviews—stick to [`GETTING_STARTED.md`](../GETTING_STARTED.md) / [`docs/quickstart_http.md`](quickstart_http.md) if you aren’t running the stack yourself.
 
 ---
 
 ## 1. When to run the tuning harness
 
 - Onboard a new tenant or namespace.
-- Investigate regressions flagged by guardrails (coverage, NDCG, starter profile MRR—see `docs/concepts_and_metrics.md` for definitions).
+- Investigate regressions flagged by guardrails (coverage—how much of the catalog appears over time, NDCG—Normalized Discounted Cumulative Gain, a ranking quality score, starter profile MRR—Mean Reciprocal Rank, “how early do good items appear?”; see `docs/concepts_and_metrics.md` for definitions).
 - Try a new signal mix (e.g., heavier embeddings, stricter diversity).
 - Prior to exposing new rule bundles or surfaces to production traffic.
 
@@ -174,3 +180,36 @@ Key checks:
 - `docs/simulations_and_guardrails.md` – scenario fixtures, guardrail YAML, CI hooks.
 - `docs/rules_runbook.md` – operational checklist once the tuned profile is live.
 - `docs/concepts_and_metrics.md` – metric definitions used throughout the playbook.
+
+---
+
+## 7. Tuning run checklist
+
+Copy this checklist into your tickets or runbooks when planning a tuning cycle.
+
+- [ ] **Pre-conditions**
+  - [ ] Target org and namespace chosen and documented.
+  - [ ] Baseline env profile checked into version control.
+  - [ ] Recent data seeded (items/users/events) and basic `/v1/recommendations` calls return non-empty lists.
+  - [ ] Guardrail expectations agreed with stakeholders (coverage, starter experience, key metrics).
+
+- [ ] **Steps**
+  - [ ] Reset namespace or create a clean test namespace.
+  - [ ] Seed fixtures or representative segments (`analysis/scripts/seed_dataset.py` or customer fixtures).
+  - [ ] Run baseline tuning harness sweep and capture `summary.json`.
+  - [ ] Propose configuration changes (blend, MMR, caps, profiles) and run new sweeps.
+  - [ ] Run simulations and guardrail checks (`analysis/scripts/run_simulation.py`, `analysis/scripts/check_guardrails.py`).
+  - [ ] Compare metrics and guardrail verdicts against baseline.
+
+- [ ] **Post-conditions**
+  - [ ] Winning profile applied via `env_profile_manager.py --apply`.
+  - [ ] Evidence bundle (summaries, guardrail reports, key plots) stored under `analysis/results/` and linked from the ticket.
+  - [ ] Rollout/rollback plan agreed and, if needed, wired into bandits or feature flags.
+
+---
+
+## Where to go next
+
+- If you’re integrating HTTP calls → see `docs/quickstart_http.md`.
+- If you’re a PM → skim `docs/business_overview.md`.
+- If you’re refining safety checks → read `docs/simulations_and_guardrails.md`.

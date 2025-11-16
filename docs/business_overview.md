@@ -2,13 +2,37 @@
 
 This narrative explains the RecSys platform for product managers, merchandisers, and business stakeholders. It focuses on value, rollout expectations, and safety controls instead of scripts or infrastructure.
 
+If you prefer a very short, non-technical overview first, start with [`docs/recsys_in_plain_language.md`](recsys_in_plain_language.md).
+
+---
+
+## Value, Risks, and Anti-goals
+
+**Value**
+
+- **Faster iteration on recommendation strategies** – product and merchandising teams can change blends, rules, and guardrails (automatic checks that block risky changes before they reach users) without shipping new app releases. See [`docs/concepts_and_metrics.md`](concepts_and_metrics.md) for how these guardrails are defined.
+- **Less manual merchandising** – recurring surfaces (home feed, PDP widgets, campaigns) are driven by policies instead of static lists.
+- **Built-in safety and auditability** – simulations, guardrails, and decision traces make it clear what changed, who changed it, and how it affected key KPIs.
+
+**Risks**
+
+- **Data quality and ingestion issues** – missing or delayed catalog/users/events can degrade recommendation quality or cause empty carousels.
+- **Misconfigured guardrails** – overly strict or overly loose thresholds can either block legitimate improvements or let regressions through. See [`docs/simulations_and_guardrails.md`](simulations_and_guardrails.md) for how we test changes safely.
+- **Overfitting to narrow KPIs** – optimizing only for short-term clicks can harm longer-term outcomes (loyalty, supply balance). [`docs/concepts_and_metrics.md`](concepts_and_metrics.md) explains the trade-offs between metrics.
+
+**Anti-goals**
+
+- RecSys is **not** a general feature store or data warehouse; it expects your existing systems to remain the source of truth.
+- RecSys is **not** a full experimentation platform; it integrates with your flags/bandits rather than replacing them.
+- RecSys is **not** a BI or dashboarding tool; it exposes metrics and traces that you can wire into your existing observability stack.
+
 ---
 
 ## 1. What the system does
 
 - Serves **domain-agnostic recommendations** (products, content, listings) through a stable HTTP API.
 - Supports multiple surfaces: personalized feeds, PDP “similar items,” search/rerank, cart/checkout upsells, and triggered emails.
-- Keeps **business guardrails** front and center—caps, overrides, curated starter experiences—so experimentation cannot silently damage key KPIs (see `docs/concepts_and_metrics.md` for definitions).
+- Keeps **business guardrails** front and center—caps, overrides, curated starter experiences—so experimentation cannot silently damage key KPIs. Guardrails are automatic policies that fail builds or block rollouts when quality or coverage fall below agreed thresholds (see [`docs/concepts_and_metrics.md`](concepts_and_metrics.md) for definitions).
 - Provides an **audit trail** for every decision (who/what/why) and plugs into Prometheus for fleet health monitoring.
 
 Think of it as a recommender **control plane**: ingestion, ranking, and guardrails that your apps and merchandising tools sit on top of.
@@ -23,6 +47,8 @@ Think of it as a recommender **control plane**: ingestion, ranking, and guardrai
 4. **Email / CRM:** Send weekly digests by calling `/v1/recommendations` with a dedicated namespace tuned for long-tail exposure, ensuring repeat content is throttled.
 5. **Internal catalog tooling:** Merchandisers preview rule changes via `/v1/admin/rules/dry-run` before promoting curated collections to customers.
 
+If you want concrete JSON examples of how items, users, and events look in each of these verticals, see the “Examples by vertical” section in [`object_model_concepts.md`](object_model_concepts.md).
+
 - **Acme Retail rollout (fictional case study):**
   1. **Pain:** Acme’s PDP widgets were static “top sellers” picked manually. Merchandisers spent hours curating lists, and cold-start shoppers saw irrelevant items.
   2. **Implementation:** Over three weeks they ingested their catalog/users/events, tuned blend weights for home/PDP/cart surfaces, and enforced guardrails via the simulation suite. They piloted on PDP with a 50/50 bandit experiment before rolling out globally.
@@ -33,8 +59,8 @@ Think of it as a recommender **control plane**: ingestion, ranking, and guardrai
 
 ## 3. Rollout story
 
-- **Week 1 – Foundations** — Spin up the stack (`GETTING_STARTED.md`), mirror a sample catalog, wire ingestion (items/users/events), and verify `/v1/recommendations` output for sample users.
-- **Week 2–4 – Tuning & guardrails** — Adjust blend/MMR/cap knobs per surface, run the tuning harness on representative segments, and enforce guardrails via simulations before onboarding traffic.
+- **Week 1 – Foundations** — Spin up the stack ([`GETTING_STARTED.md`](../GETTING_STARTED.md)), mirror a sample catalog, wire ingestion (items/users/events), and verify `/v1/recommendations` output for sample users.
+- **Week 2–4 – Tuning & guardrails** — Adjust blend/Maximal Marginal Relevance (MMR, a diversity-aware re-ranking method)/cap knobs per surface, run the tuning harness on representative segments, and enforce guardrails via simulations before onboarding traffic.
 - **Week 5–8 – Operationalization** — Enable bandits or multi-surface namespaces, expose the rule engine to merchandising, integrate dashboards/alerts, and document rollout plans per region.
 - **8+ weeks – Continuous improvement** — Experiment with custom signals, expand guardrails (fairness, supply balancing), and plug auditing endpoints into governance/compliance tooling.
 
@@ -45,11 +71,13 @@ This cadence gives business stakeholders confidence that quality and safety chec
 ## 4. Safety and guardrails
 
 - **Automated simulations** replay scripted user journeys (cold start, power users, long-tail shoppers) before config changes ship. They produce metrics + screenshots that PMs can review.
-- **Guardrail policies** (YAML) encode coverage floors, diversity requirements, and “starter experience” checks. CI fails fast if any metric drops below thresholds.
+- **Guardrail policies** (YAML) encode coverage floors (how much of the catalog should appear over time), diversity requirements, and “starter experience” checks. CI fails fast if any metric drops below thresholds.
 - **Rules runbook** defines how overrides interact with guardrails, ensuring manual boosts cannot starve critical cohorts.
 - **Observation hooks** (Prometheus metrics + structured traces) make regressions visible in dashboards within minutes.
 
 Together they create a “trust but verify” loop: experimentation is easy, but nothing rolls out silently.
+
+For a plain-language explanation of how guardrails and simulations work together, see the “What guardrails are (plain language)” section in `docs/simulations_and_guardrails.md`.
 
 ---
 
@@ -66,7 +94,7 @@ Together they create a “trust but verify” loop: experimentation is easy, but
 
 - `README.md` – Front-door summary plus persona map.
 - `docs/overview.md` – Lifecycle checklist for business, integration, and ops personas.
-- `docs/concepts_and_metrics.md` – Definitions of key metrics (NDCG/MRR), diversity, guardrails, and other terminology.
+- `docs/concepts_and_metrics.md` – Definitions of key metrics such as Normalized Discounted Cumulative Gain (NDCG, a ranking quality score) and Mean Reciprocal Rank (MRR, “how early do good items appear?”), plus diversity, guardrails, and other terminology.
 - `docs/rules_runbook.md` – Operational steps for overrides and incident response.
 - `docs/simulations_and_guardrails.md` – How automated protection works.
 - `docs/quickstart_http.md` – Copy-paste API examples your engineers will use.
@@ -81,15 +109,23 @@ Curious about the algorithms behind the scenes (embedding signals, blend weights
 
 ---
 
+## Where to go next
+
+- If you’re integrating HTTP calls → see `docs/quickstart_http.md`.
+- If you’re a PM → continue with `docs/overview.md` and `docs/recsys_in_plain_language.md`.
+- If you’re tuning quality → read `docs/tuning_playbook.md`.
+
+---
+
 ## Product & PM FAQ
 
 **How do we measure success?**
 
-- Track CTR/add-to-cart/revenue per surface, plus guardrail metrics (NDCG, MRR, coverage, long-tail share). Each tuning run and simulation bundle includes these values so you can compare before/after.
+- Track click-through rate (CTR), add-to-cart, and revenue per surface, plus guardrail metrics such as NDCG (Normalized Discounted Cumulative Gain, a ranking quality score), MRR (Mean Reciprocal Rank, “how early do good items appear?”), coverage (how much of the catalog we show), and long-tail share. Each tuning run and simulation bundle includes these values so you can compare before/after.
 
 **Who owns algorithm knobs vs rules?**
 
-- Engineering/ML teams own blend weights, MMR, personalization, and retriever tuning (see `docs/tuning_playbook.md`). Merchandising owns rules/overrides via `/v1/admin/rules` and `/v1/admin/manual_overrides` following `docs/rules_runbook.md`. Guardrails ensure neither side accidentally hurts key cohorts.
+- Engineering/ML teams own blend weights and Maximal Marginal Relevance (MMR, a diversity-aware re-ranking method), personalization, and retriever tuning (see `docs/tuning_playbook.md`). Merchandising owns rules/overrides via `/v1/admin/rules` and `/v1/admin/manual_overrides` following `docs/rules_runbook.md`. Guardrails ensure neither side accidentally hurts key cohorts.
 
 **How long before we see impact after launch?**
 

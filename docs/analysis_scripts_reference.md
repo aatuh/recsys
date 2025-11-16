@@ -1,6 +1,12 @@
 # Analysis Scripts Reference
 
-Use this catalog to understand what lives under `analysis/scripts/`, when to reach for each tool, and what inputs/outputs to expect. Scripts intentionally keep flags consistent (`--base-url`, `--org-id`, `--namespace`) so you can swap them into the workflows described in `GETTING_STARTED.md`, `docs/tuning_playbook.md`, and `docs/simulations_and_guardrails.md`.
+Use this catalog to understand what lives under `analysis/scripts/`, when to reach for each tool, and what inputs/outputs to expect. Scripts intentionally keep flags consistent (`--base-url`, `--org-id`, `--namespace`) so you can swap them into the workflows described in [`GETTING_STARTED.md`](../GETTING_STARTED.md), [`docs/tuning_playbook.md`](tuning_playbook.md), and [`docs/simulations_and_guardrails.md`](simulations_and_guardrails.md).
+
+> ⚠️ **Advanced topic**
+>
+> Read this after you have a basic integration running (see [`docs/quickstart_http.md`](quickstart_http.md)) and are comfortable running the stack locally.
+>
+> **Where this fits:** Observability & analysis.
 
 ## Seeding & Reset
 

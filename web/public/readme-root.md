@@ -1,6 +1,21 @@
 # RecSys: A Recommendation Service
 
-RecSys is a domain-agnostic recommendation platform. You send opaque item/user/event IDs and receive top-K recommendations or “similar items” tuned per namespace. The system favors safe defaults, multi-tenant isolation, and clear guardrails (see `docs/concepts_and_metrics.md` for terminology) so you can ship quickly without sacrificing control.
+RecSys is a domain-agnostic recommendation platform. You send opaque item/user/event IDs and receive top-K recommendations or “similar items” tuned per namespace. The system favors safe defaults, multi-tenant isolation, and clear guardrails (automatic thresholds that block risky changes before they ship; see `docs/concepts_and_metrics.md` for terminology) so you can ship quickly without sacrificing control.
+
+> **Where this fits:** Architecture & mental model.
+
+---
+
+## New here? Start with this path
+
+If you want a two-minute, non-technical explanation first, read `docs/recsys_in_plain_language.md`.
+
+1. **Understand the product** – Read `docs/business_overview.md` to see what RecSys does, why guardrails matter, and how it fits into your business workflows.
+2. **Follow the narrative tour** – Walk through `docs/zero_to_first_recommendation.md` to ingest a tiny catalog and fetch your first recommendations with Acme Outfitters.
+3. **Integrate via HTTP** – Use `docs/quickstart_http.md` for the full hosted API quickstart (ingestion, troubleshooting, error handling). If you only want to prove the loop works end to end, start with the “Hello RecSys in 3 calls” section in that doc.
+4. **Dive into the reference** – Keep `docs/api_reference.md` handy for every endpoint, limits, and behavioral guarantees.
+
+Prefer persona/lifecycle views or a phase-based checklist? After finishing the four steps above, skim `docs/overview.md` (personas) and `docs/onboarding_checklist.md` (week-by-week plan).
 
 ---
 
@@ -27,6 +42,13 @@ Need the detailed walkthrough (logs, troubleshooting, screenshots)? Head to `GET
 
 ---
 
+### Hosted API vs local stack
+
+- **Hosted integration** – Follow `docs/quickstart_http.md` (plus `docs/zero_to_first_recommendation.md`) if you only need the managed HTTP API.
+- **Local stack / contributors** – Follow `GETTING_STARTED.md` if you want to run the repo locally, inspect internals, or contribute code.
+
+---
+
 ## Persona map – where to go next
 
 - **Business / Product** – focus on value narrative, rollout, and guardrails. Read: `docs/business_overview.md`, `docs/overview.md`, `docs/concepts_and_metrics.md`, `docs/rules_runbook.md`.
@@ -42,8 +64,8 @@ New teammate? Follow `docs/onboarding_checklist.md` for a suggested week-one ram
 ## Core capabilities at a glance
 
 - **Opinionated ingestion pipeline** – `/v1/items:upsert`, `/v1/users:upsert`, `/v1/events:batch` plus tooling to seed fixtures and reset namespaces safely.
-- **Blend + personalization engine** – popularity, co-visitation, embeddings, and tag profiles combined with Maximal Marginal Relevance (MMR; see `docs/concepts_and_metrics.md`) and caps for diversity.
-- **Guardrails & simulations** – repeatable scenario harness, quality metrics (NDCG, MRR, coverage), and YAML guardrails that block regressions automatically.
+- **Blend + personalization engine** – popularity, co-visitation, embeddings, and tag profiles combined with Maximal Marginal Relevance (MMR, a diversity-aware re-ranking method; see `docs/concepts_and_metrics.md`) and caps for diversity.
+- **Guardrails & simulations** – repeatable scenario harness, quality metrics (Normalized Discounted Cumulative Gain (NDCG, a ranking quality score), Mean Reciprocal Rank (MRR, “how early do relevant items appear?”), coverage (how much of the catalog we actually surface)), and YAML guardrails that block regressions automatically. See `docs/concepts_and_metrics.md` for full definitions.
 - **Rule engine & overrides** – boost/pin/block APIs, dry-run support, and telemetry for exposure caps.
 - **Observability** – structured traces, Prometheus metrics, and decision evidence stored with every tuning run.
 
@@ -57,6 +79,9 @@ New teammate? Follow `docs/onboarding_checklist.md` for a suggested week-one ram
 - `docs/api_reference.md` – endpoint catalog with payload notes, error codes, and common patterns.
 - `docs/rules_runbook.md` – operational runbook for overrides, telemetry, and incident response.
 - `docs/configuration.md` – conceptual explanation of how ingestion, signals, blending, personalization, and rules fit together.
+- `docs/security_and_data_handling.md` – transport security, auth, retention expectations.
+- `docs/doc_ci.md` – how to run the documentation link checker and client example tests locally or in CI.
+- `docs/doc_style.md` – shared style and terminology guide for writing/maintaining these docs.
 
 ---
 
@@ -88,3 +113,6 @@ Run `make help` to list everything else (`load-test`, `reset-namespace`, etc.).
 - Business storytelling – `docs/business_overview.md`
 - Database schema & SQL tips – `docs/database_schema.md`
 - Configuration mindsets – `docs/configuration.md`
+- System architecture overview – `docs/system_overview.md`
+- Doc map by role/task – `docs/doc_map.md`
+- FAQ & troubleshooting – `docs/faq_and_troubleshooting.md`

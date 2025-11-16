@@ -1,17 +1,19 @@
 # Database Schema Guide
 
-This guide summarizes the key Postgres tables Recsys uses, describing the
+This guide summarizes the key Postgres tables RecSys uses, describing the
 columns, types, and how each table powers the system. Use it when mapping your
 catalog/users/events, troubleshooting audits, or exporting evidence.
 
-> **Who should read this?** Integration engineers and developers who need to map existing data into Recsys (or export traces). Pair with `docs/api_reference.md` for the ingest APIs and `docs/env_reference.md` for tuning behaviour. Commands referencing `make` or `analysis/scripts` assume local repo access; hosted API-only readers can focus on `docs/quickstart_http.md`.
+> **Where this fits:** Ingestion & storage.
+>
+> **Who should read this?** Integration engineers and developers who need to map existing data into RecSys (or export traces). Pair with [`docs/object_model_schema_mapping.md`](object_model_schema_mapping.md) for how objects map to tables, [`docs/object_model_concepts.md`](object_model_concepts.md) for the conceptual view of items/users/events, [`docs/api_reference.md`](api_reference.md) for the ingest APIs, and [`docs/env_reference.md`](env_reference.md) for tuning behaviour. Commands referencing `make` or `analysis/scripts` assume local repo access; hosted API-only readers can focus on [`docs/quickstart_http.md`](quickstart_http.md).
 
 ### TL;DR
 
 - **Purpose:** Explain what lives in each Postgres table (items, users, events, traces, overrides, etc.) and how RecSys uses those columns.
 - **Use this when:** You are mapping data pipelines, debugging ingestion/audit issues, or exporting evidence for stakeholders.
 - **Outcome:** Clear guidance on required fields, useful SQL snippets, and tips for keeping namespaces/data healthy.
-- **Not for:** Learning the API schema or high-level concepts—see `docs/api_reference.md` and `docs/concepts_and_metrics.md` instead.
+- **Not for:** Learning the API schema or high-level concepts—see [`docs/api_reference.md`](api_reference.md) and [`docs/concepts_and_metrics.md`](concepts_and_metrics.md) instead.
 
 ## Catalog & User Tables
 
@@ -203,5 +205,5 @@ COPY (
 
 - Use the APIs for ingest/delete operations whenever possible.
 - Query the tables for verification, analytics, and troubleshooting.
-- Always include `org_id` + `namespace` filters to avoid leaking data between tenants.
+- Always include `org_id` + `namespace` filters to avoid leaking data between orgs.
 - After schema or config changes, run the simulation suite to ensure guardrails still pass.

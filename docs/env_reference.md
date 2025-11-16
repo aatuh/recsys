@@ -2,13 +2,12 @@
 
 This is the **canonical** list of environment variables (and matching runtime overrides) that influence RecSys ranking. Other docs intentionally link here instead of duplicating tables—update this file first whenever a knob changes.
 
-Use it alongside:
-
-- `docs/api_reference.md` (where overrides live in API requests)
-- `docs/rules_runbook.md` (how overrides affect guardrails)
-- `docs/simulations_and_guardrails.md` (how to run simulations with different profiles)
-- `docs/analysis_scripts_reference.md` (which script manages each profile/env change)
-
+> ⚠️ **Advanced topic**
+>
+> Read this after you understand the basic configuration concepts and need to tune or debug behavior.
+>
+> **Where this fits:** Ranking & personalization.
+>
 > **Who should read this?** Integration engineers and developers tuning ranking behavior. Business stakeholders can skim the interaction notes to understand how overrides relate to guardrails.
 
 ## Contents
@@ -24,6 +23,7 @@ Use it alongside:
     - [Interaction considerations](#interaction-considerations)
     - [Reference](#reference)
     - [Service metadata](#service-metadata)
+  - [Related docs](#related-docs)
 
 ---
 
@@ -106,3 +106,13 @@ Remember to update `/v1/bandit/policies` when changing env defaults so experimen
 **`RECSYS_BUILD_TIME`** — Populates `/version.build_time` (UTC ISO-8601). Optional; defaults to process start time if not provided.
 
 Supplying both makes `/version` output—and therefore determinism/quality evidence—traceable to a single build without digging through CI logs.
+
+---
+
+## Related docs
+
+- `docs/configuration.md` – conceptual explanation of how these knobs fit into the ranking pipeline.
+- `docs/api_reference.md` – request/response schemas and where overrides live in API payloads.
+- `docs/rules_runbook.md` – how overrides interact with rules and incident workflows.
+- `docs/simulations_and_guardrails.md` – how to run simulations and guardrail checks for profile changes.
+- `docs/analysis_scripts_reference.md` – which script manages each profile or env change.

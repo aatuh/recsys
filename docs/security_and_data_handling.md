@@ -10,9 +10,9 @@ This document summarizes the basic security expectations when integrating with R
 
 ## Authentication & multi-tenancy
 
-- **Org header:** Every request must include `X-Org-ID: <uuid>`. This enforces tenant isolation. Missing or incorrect headers are rejected with `400` or `401` responses.
-- **API keys:** When `API_AUTH_ENABLED=true`, include `X-API-Key: <token>` or the configured `Authorization` header. Keys are managed per org/tenant.
-- **Namespacing:** Payloads include a `namespace` field. Namespaces isolate catalogs, rules, guardrails, and audit logs. Use separate namespaces for different surfaces/customers to avoid cross-tenant leakage.
+- **Org header:** Every request must include `X-Org-ID: <uuid>`. This enforces org-level isolation and prevents data from leaking across customers. Missing or incorrect headers are rejected with `400` or `401` responses.
+- **API keys:** When `API_AUTH_ENABLED=true`, include `X-API-Key: <token>` or the configured `Authorization` header. Keys are managed per org.
+- **Namespacing:** Payloads include a `namespace` field. Namespaces isolate catalogs, rules, guardrails, and audit logs. Use separate namespaces for different surfaces/customers to avoid accidental cross-org leakage.
 - **Permissions:** Admin endpoints (`/v1/admin/*`) require org + namespace scoping. We recommend issuing API keys with least privilege (e.g., read-only vs admin).
 
 ## PII guidance
@@ -26,7 +26,7 @@ This document summarizes the basic security expectations when integrating with R
 - **Items/users/events:** Use the corresponding `*:delete` endpoints to remove records when they should no longer participate in recommendations. Deletions cascade through guardrails and are honored by `/v1/recommendations` once caches refresh.
 - **Decision traces:** Guardrail and audit traces are stored in `rec_decisions`. Retention defaults to 30 days; adjust via database/ops tooling if stricter policies apply.
 - **Manual overrides/rules:** Use `/v1/admin/rules/{id}` and `/v1/admin/manual_overrides/{id}/cancel` to remove or expire rules.
-- RecSys does not automatically purge tenant data; work with your ops team to schedule periodic cleanups if needed.
+- RecSys does not automatically purge org data; work with your ops team to schedule periodic cleanups if needed.
 
 ## Incident response & auditability
 

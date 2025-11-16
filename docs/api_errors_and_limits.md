@@ -43,7 +43,7 @@ All errors return JSON:
 
 - **Recommendation parameters**
 
-  - `k` (list length): typical range 10–50 per surface. Values over ~200 increase latency substantially; default guardrails assume `k ≤ 100`.
+  - `k` (list length): typical range 10–50 per surface. Values over ~200 increase latency substantially; default guardrails (automatic checks that block risky configurations; see `docs/concepts_and_metrics.md`) assume `k ≤ 100`.
   - `fanout`: control via env/overrides; ensure `fanout ≥ k + diversity headroom`.
 
 - **Idempotency**
@@ -61,5 +61,6 @@ All errors return JSON:
 
 ## Where this applies
 
-- Linked from `docs/quickstart_http.md` and `docs/api_reference.md` to keep the detailed quickstart and endpoint reference concise.
+- Linked from [`docs/quickstart_http.md`](quickstart_http.md) and [`docs/api_reference.md`](api_reference.md) to keep the detailed quickstart and endpoint reference concise.
 - Applies to both hosted and local deployments; local stacks may not enforce RPM limits but will still use the same status codes and payload size expectations.
+- For symptom-based guidance (“I get empty lists”, “I see many 429s”), see [`docs/faq_and_troubleshooting.md`](faq_and_troubleshooting.md).

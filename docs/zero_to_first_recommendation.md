@@ -2,7 +2,7 @@
 
 This narrative walks through a fictional “Acme Outfitters” storefront from zero data to the first recommendation response. Follow it when you need a story-oriented tour before diving into the detailed quickstarts or API reference.
 
-> Already comfortable with the concepts? Jump to `docs/quickstart_http.md` for the full hosted API guide or `GETTING_STARTED.md` if you want to run the stack locally.
+> Already comfortable with the concepts? Jump to [`docs/quickstart_http.md`](quickstart_http.md) for the full hosted API guide or [`GETTING_STARTED.md`](../GETTING_STARTED.md) if you want to run the stack locally.
 
 ---
 
@@ -16,7 +16,7 @@ We only need a handful of records to see meaningful output:
 - **User** – Sam, an outdoors enthusiast.
 - **Events** – Sam views and purchases the backpack.
 
-All requests include the `X-Org-ID` header (tenant UUID) and the `namespace` field so data stays isolated.
+All requests include the `X-Org-ID` header (org UUID) and the `namespace` field so data stays isolated.
 
 ---
 
@@ -53,7 +53,7 @@ curl -X POST https://api.example.com/v1/items:upsert \
 ```
 
 - `item_id` can be any unique string; we often reuse the catalog SKU.
-- `tags` power rules, personalization, and diversity guardrails.
+- `tags` power rules, personalization, and diversity guardrails (automatic checks that keep lists from over-focusing on a narrow slice of the catalog; see [`docs/concepts_and_metrics.md`](concepts_and_metrics.md)).
 
 ---
 
@@ -78,7 +78,7 @@ curl -X POST https://api.example.com/v1/users:upsert \
       }'
 ```
 
-- `traits.segment` is optional but makes guardrail dashboards more informative.
+- `traits.segment` is optional but makes guardrail dashboards (guardrails are safety checks on changes before they go live) more informative.
 
 ---
 
@@ -112,7 +112,7 @@ curl -X POST https://api.example.com/v1/events:batch \
 ```
 
 - `type` codes: 0 = view, 1 = click, 2 = add-to-cart, 3 = purchase.
-- The `meta.surface` field is useful later when investigating guardrails (`docs/simulations_and_guardrails.md`).
+- The `meta.surface` field is useful later when investigating guardrails (automatic safety checks; see [`docs/simulations_and_guardrails.md`](simulations_and_guardrails.md)).
 
 ---
 
@@ -179,9 +179,9 @@ Example response (shortened):
 
 ---
 
-## 7. Where to Go Next
+## Where to go next
 
-1. **Hosted quickstart** – `docs/quickstart_http.md` for a comprehensive reference with troubleshooting.
-2. **API reference** – `docs/api_reference.md` for every endpoint, error codes, and behavioral guarantees.
-3. **Safety & simulations** – `docs/simulations_and_guardrails.md` to understand guardrails, fixtures, and CI.
-4. **Local development** – `GETTING_STARTED.md` if you want to run RecSys from source.
+- If you’re integrating HTTP calls → see `docs/quickstart_http.md`.
+- If you’re a PM → skim `docs/business_overview.md`.
+- If you’re tuning quality → read `docs/tuning_playbook.md`.
+- If something doesn’t work → check `docs/faq_and_troubleshooting.md`.

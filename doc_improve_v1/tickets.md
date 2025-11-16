@@ -1091,7 +1091,7 @@ You don’t need fancy tooling — a PNG/SVG exported from draw.io, Excalidraw, 
 
 5. **Check relative paths**
 
-   * Ensure image paths work from each doc (e.g. `![caption](images/recsys_pipeline.png)` from inside `docs/`).
+   * Ensure image paths work from each doc (for example, refer to `images/recsys_pipeline.png` from inside `docs/`).
    * Preview markdown in GitHub or your IDE to confirm images render.
 
 **Definition of Done**

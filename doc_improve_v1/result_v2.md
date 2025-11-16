@@ -14,26 +14,26 @@ I’ll walk through:
 
 You now have an actual *doc system*, not a pile of markdown:
 
-* **README.md** = front door (what it is, what you can build, quickstart summary, persona map, repo layout).
+* [**README.md**](../README.md) = front door (what it is, what you can build, quickstart summary, persona map, repo layout).
 * **Conceptual docs**
 
-  * `CONFIGURATION.md` – mental model + configuration *layers*.
-  * `docs/overview.md` – personas & lifecycle.
-  * `docs/concepts_and_metrics.md` – centralised jargon + metrics primer.
-  * `docs/business_overview.md` – narrative for PMs / execs.
+  * [`CONFIGURATION.md`](../docs/configuration.md) – mental model + configuration *layers*.
+  * [`docs/overview.md`](../docs/overview.md) – personas & lifecycle.
+  * [`docs/concepts_and_metrics.md`](../docs/concepts_and_metrics.md) – centralised jargon + metrics primer.
+  * [`docs/business_overview.md`](../docs/business_overview.md) – narrative for PMs / execs.
 * **Reference docs**
 
-  * `docs/api_reference.md` – grouped endpoint ref + error handling + patterns.
-  * `docs/env_reference.md` – clearly labeled canonical env reference.
-  * `docs/database_schema.md` – schema + usage tips.
+  * [`docs/api_reference.md`](../docs/api_reference.md) – grouped endpoint ref + error handling + patterns.
+  * [`docs/env_reference.md`](../docs/env_reference.md) – clearly labeled canonical env reference.
+  * [`docs/database_schema.md`](../docs/database_schema.md) – schema + usage tips.
 * **Ops / tuning docs**
 
-  * `docs/tuning_playbook.md` – tuning harness & AI optimizer.
-  * `docs/simulations_and_guardrails.md` – sims + guardrails in one place.
-  * `docs/rules-runbook.md` – actual runbook for rules/overrides.
+  * [`docs/tuning_playbook.md`](../docs/tuning_playbook.md) – tuning harness & AI optimizer.
+  * [`docs/simulations_and_guardrails.md`](../docs/simulations_and_guardrails.md) – sims + guardrails in one place.
+  * [`docs/rules-runbook.md`](../docs/rules_runbook.md) – actual runbook for rules/overrides.
 * **Integration doc**
 
-  * `docs/quickstart_http.md` – pure-HTTP integration, with “Common mistakes”.
+  * [`docs/quickstart_http.md`](../docs/quickstart_http.md) – pure-HTTP integration, with “Common mistakes”.
 
 This is *exactly* the separation you want: intro → concepts → integration → reference → advanced.
 
@@ -62,7 +62,7 @@ Major improvements:
 * Almost every doc now has a **“Who should read this?”** line. That alone reduces confusion.
 * The **concepts and metrics** doc explicitly states it’s “plain-language definitions” and then actually does that — no hardcore math walls.
 * `CONFIGURATION.md` is now clearly “how to think about configuration” rather than another random list of env vars.
-* `docs/env_reference.md` explicitly calls itself the canonical env var list and references where overrides live in API requests / profiles / guardrails.
+* [`docs/env_reference.md`](../docs/env_reference.md) explicitly calls itself the canonical env var list and references where overrides live in API requests / profiles / guardrails.
 
 Remaining rough edges:
 
@@ -80,7 +80,7 @@ Remaining rough edges:
   * persona map
   * repo layout
   * “Need deeper context?” links
-* `docs/overview.md` is a proper hub: 3 personas, each with 4–5 concrete next docs, plus a lifecycle checklist.
+* [`docs/overview.md`](../docs/overview.md) is a proper hub: 3 personas, each with 4–5 concrete next docs, plus a lifecycle checklist.
 * The “advanced” stuff (tuning harness, AI optimizer, sims + guardrails) has been pushed into their own docs, with README only linking to them.
 
 This is a massive improvement over the original “README tries to do everything.”
@@ -109,11 +109,11 @@ From an engineer inheriting this repo:
 
 * You now have:
 
-  * `docs/quickstart_http.md` for hosted/HTTP-only integration.
-  * `docs/api_reference.md` for full endpoint details, error codes and patterns.
-  * `docs/env_reference.md` for all knobs.
-  * `docs/database_schema.md` for how data is laid out and how to debug/seed/troubleshoot.
-  * `docs/tuning_playbook.md` and `docs/simulations_and_guardrails.md` for advanced tuning & safety.
+  * [`docs/quickstart_http.md`](../docs/quickstart_http.md) for hosted/HTTP-only integration.
+  * [`docs/api_reference.md`](../docs/api_reference.md) for full endpoint details, error codes and patterns.
+  * [`docs/env_reference.md`](../docs/env_reference.md) for all knobs.
+  * [`docs/database_schema.md`](../docs/database_schema.md) for how data is laid out and how to debug/seed/troubleshoot.
+  * [`docs/tuning_playbook.md`](../docs/tuning_playbook.md) and [`docs/simulations_and_guardrails.md`](../docs/simulations_and_guardrails.md) for advanced tuning & safety.
 
 * The layering is clear:
 
@@ -184,7 +184,7 @@ You don’t need another giant backlog; you already did the big surgery. At this
 
    * Given the amount of refactoring, do one pass over all markdown files and:
 
-     * Click through references to `api_reference.md`, `env_reference.md`, `business_overview.md`, etc.
+     * Click through references to [`api_reference.md`](../docs/api_reference.md), [`env_reference.md`](../docs/env_reference.md), [`business_overview.md`](../docs/business_overview.md), etc.
      * Kill any lingering mentions of `api_endpoints.md` / `env_vars.md`.
 
 4. **Optional polish: add tiny “if you’re confused” notes**

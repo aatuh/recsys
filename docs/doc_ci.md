@@ -4,7 +4,7 @@ Use these lightweight scripts to keep Markdown healthy and ensure embedded code 
 
 ## 1. Markdown link checker
 
-Validates that local links (e.g., `[overview](docs/overview.md)`) point to existing files.
+Validates that local links (e.g., `[overview](overview.md)`) point to existing files.
 
 ```bash
 python scripts/check_docs_links.py
@@ -16,7 +16,7 @@ python scripts/check_docs_links.py
 
 ## 2. Client example syntax tests
 
-Compiles the Python and JavaScript snippets in `docs/client_examples.md` to ensure they stay valid as the docs evolve.
+Compiles the Python and JavaScript snippets in [`docs/client_examples.md`](client_examples.md) to ensure they stay valid as the docs evolve.
 
 ```bash
 python scripts/test_client_examples.py
@@ -39,3 +39,12 @@ python scripts/test_client_examples.py
 
 - Combine with spell-checkers or linters if desired.
 - For repos with many docs, consider running the link checker only on changed files to keep CI fast.
+- As part of manual review, run a quick search (`rg "Recsys|RecSYS" README.md docs`) to ensure product naming stays consistent as **RecSys** in prose. Keep uppercase variants (such as `RECSYS_GIT_COMMIT`) only for environment variables and identifiers.
+
+## 4. Acronym review (manual)
+
+Until we add a dedicated checker, keep acronym usage consistent by:
+
+- Expanding key acronyms on first use in each doc (for example, “Maximal Marginal Relevance (MMR, a diversity-aware re-ranking method)”).
+- Skimming for upper-case metric names such as `NDCG`, `MRR`, `MMR`, `CTR`, and `KPI` and confirming they are expanded nearby.
+- Using the canonical phrases listed in [`docs/doc_style.md`](doc_style.md) under the acronym section.

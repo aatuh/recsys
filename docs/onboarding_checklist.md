@@ -1,13 +1,13 @@
 # Onboarding Checklist
 
-Use this guide as a suggested ramp-up path for new teammates. Timelines are indicative—feel free to move faster or slower based on your background. Focus on the persona closest to your role; you do **not** have to complete every item. **Before starting, complete the “New here?” path in `README.md` (business overview → narrative → hosted quickstart → API reference).**
+Use this guide as a suggested ramp-up path for new teammates. Timelines are indicative—feel free to move faster or slower based on your background. Focus on the persona closest to your role; you do **not** have to complete every item. **Before starting, complete the “New here?” path in [`README.md`](../README.md) (business overview → narrative → hosted quickstart → API reference).**
 
 ---
 
 ### Phase 0 – All personas
 
-- Follow the four-step path in `README.md` so you have the business context, the narrative walkthrough (`docs/zero_to_first_recommendation.md`), the hosted HTTP quickstart, and the API reference baseline.
-- Skim `docs/concepts_and_metrics.md` as part of that path so guardrail terms sound familiar.
+- Follow the four-step path in [`README.md`](../README.md) so you have the business context, the narrative walkthrough ([`docs/zero_to_first_recommendation.md`](zero_to_first_recommendation.md)), the hosted HTTP quickstart, and the API reference baseline.
+- Skim [`docs/concepts_and_metrics.md`](concepts_and_metrics.md) as part of that path so guardrail terms sound familiar.
 
 ---
 
@@ -15,22 +15,22 @@ Use this guide as a suggested ramp-up path for new teammates. Timelines are indi
 
 ### Phase 1 – Day 1–2: Understand the surface area
 
-- After the README path, skim `docs/business_overview.md` again with your integration hat on and note the surfaces your team owns.
-- Revisit `docs/concepts_and_metrics.md` focusing on namespace isolation, guardrails, and metrics you’ll expose in telemetry.
-- Explore `docs/quickstart_http.md` and send the sample ingest + `/v1/recommendations` requests against the hosted environment (no code changes needed).
+- After the README path, skim [`docs/business_overview.md`](business_overview.md) again with your integration hat on and note the surfaces your team owns.
+- Revisit [`docs/concepts_and_metrics.md`](concepts_and_metrics.md) focusing on namespace isolation, guardrails, and metrics you’ll expose in telemetry.
+- Explore [`docs/quickstart_http.md`](quickstart_http.md) and send the sample ingest + `/v1/recommendations` requests against the hosted environment (no code changes needed).
 
 ### Phase 2 – Day 3–4: Wire data and configs
 
-- Follow `GETTING_STARTED.md` to run the local stack, seed data, and hit `/v1/recommendations` on localhost.
-- Read `docs/api_reference.md` fully; take notes on key headers (`X-Org-ID`, auth) and error cases that matter for your client(s).
-- Review `docs/database_schema.md` to see how catalog, user, and event tables are shaped.
-- Browse `docs/env_reference.md` and `docs/configuration.md` to understand how defaults, profiles, and overrides interact.
+- Follow [`GETTING_STARTED.md`](../GETTING_STARTED.md) to run the local stack, seed data, and hit `/v1/recommendations` on localhost.
+- Read [`docs/api_reference.md`](api_reference.md) fully; take notes on key headers (`X-Org-ID`, auth) and error cases that matter for your client(s).
+- Review [`docs/database_schema.md`](database_schema.md) to see how catalog, user, and event tables are shaped.
+- Browse [`docs/env_reference.md`](env_reference.md) and [`docs/configuration.md`](configuration.md) to understand how defaults, profiles, and overrides interact.
 
 ### Phase 3 – Day 5+: Operate confidently
 
-- Run one pass of `docs/tuning_playbook.md` (reset → seed → tune → guardrails) on a sandbox namespace to understand the workflow.
-- Skim `docs/simulations_and_guardrails.md` to learn how CI guardrails work and where evidence is stored.
-- Review the relevant sections of `docs/rules_runbook.md` so you can support merchandising or override questions.
+- Run one pass of [`docs/tuning_playbook.md`](tuning_playbook.md) (reset → seed → tune → guardrails) on a sandbox namespace to understand the workflow.
+- Skim [`docs/simulations_and_guardrails.md`](simulations_and_guardrails.md) to learn how CI guardrails work and where evidence is stored.
+- Review the relevant sections of [`docs/rules_runbook.md`](rules_runbook.md) so you can support merchandising or override questions.
 - Pair with a teammate to review the integration points you own (SDKs, backend services, admin tooling) and log future improvements in backlog.
 
 ---
@@ -40,12 +40,12 @@ Use this guide as a suggested ramp-up path for new teammates. Timelines are indi
 ### Phase 1 – Day 1–2: Context & data
 
 - Complete the Backend/Integration Phase 1 steps (with emphasis on concepts & metrics).
-- Read `docs/overview.md` to understand personas, lifecycle, and architecture at a glance.
+- Read [`docs/overview.md`](overview.md) to understand personas, lifecycle, and architecture at a glance.
 - Skim recent tuning or guardrail evidence under `analysis/results/` to see examples of acceptable artifacts.
 
 ### Phase 2 – Day 3–5: Tuning & evaluation toolchain
 
-- Work through `GETTING_STARTED.md` to run the stack locally if you haven’t already.
+- Work through [`GETTING_STARTED.md`](../GETTING_STARTED.md) to run the stack locally if you haven’t already.
 - Deep dive `docs/tuning_playbook.md`; run the harness once with your own parameter sweep and commit the evidence to a throwaway branch.
 - Follow `docs/simulations_and_guardrails.md` to build a small fixture and execute `run_simulation.py`, then read the generated report.
 - Review `docs/env_reference.md` for knobs you are likely to change and note any unknowns for follow-up.
@@ -68,9 +68,9 @@ Use this guide as a suggested ramp-up path for new teammates. Timelines are indi
 
 ### Phase 2 – Day 3–4: Rules, audits, and API fluency
 
-- Walk through `docs/quickstart_http.md` so you can recognize the key fields involved in ingests and recommendation calls.
-- Read the introductory sections of `docs/rules_runbook.md` to understand precedence, telemetry, and day-to-day monitoring.
-- Review `docs/business_overview.md#evidence--auditability` plus `docs/simulations_and_guardrails.md` (high level) to know what evidence to expect in reviews.
+- Walk through [`docs/quickstart_http.md`](quickstart_http.md) so you can recognize the key fields involved in ingests and recommendation calls.
+- Read the introductory sections of [`docs/rules_runbook.md`](rules_runbook.md) to understand precedence, telemetry, and day-to-day monitoring.
+- Review `docs/business_overview.md#evidence--auditability` plus [`docs/simulations_and_guardrails.md`](simulations_and_guardrails.md) (high level) to know what evidence to expect in reviews.
 
 ### Phase 3 – Day 5+: Collaborate and plan
 

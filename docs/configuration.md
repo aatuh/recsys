@@ -1,8 +1,16 @@
 # RecSys Configuration & Data Guide
 
-This document explains *how to think* about configuration rather than listing every environment variable (see `docs/env_reference.md` for the canonical reference). Use it when you need to understand how data ingestion, signals, blending, personalization, rules, and guardrails (defined in `docs/concepts_and_metrics.md`) interact.
+This document explains *how to think* about configuration rather than listing every environment variable (see `docs/env_reference.md` for the canonical reference). Use it when you need to understand how data ingestion, signals, blending, personalization, rules, and guardrails interact at a conceptual level.
 
-> Who should read this? Engineers configuring RecSys via env files, profiles, or overrides—typically when running the stack locally or managing deployments. Hosted API consumers who just need request/response examples can stick to `docs/quickstart_http.md` and `docs/api_reference.md`.
+> **Where this fits:** Ranking & personalization.
+>
+> Who should read this? Engineers configuring RecSys via env files, profiles, or overrides—typically when running the stack locally or managing deployments. Hosted API consumers who just need request/response examples can stick to `docs/quickstart_http.md`.
+
+## TL;DR
+
+- Use this doc to understand the *pipeline* (ingestion → signals → blending → personalization → diversity/caps → rules → response).
+- Read it when you plan changes to ranking behavior or env profiles.
+- You can skip the deeper tuning details on first pass and come back once you are familiar with `docs/quickstart_http.md` and `docs/object_model_concepts.md`.
 
 ---
 
@@ -90,12 +98,20 @@ If a guardrail fails, bias toward tightening the problematic knob rather than wi
 
 ---
 
-## 6. Where to look next
+## Related docs
 
 - **Canonical env knobs:** `docs/env_reference.md`
 - **Endpoint schemas:** `docs/api_reference.md`
 - **Concept & metric definitions:** `docs/concepts_and_metrics.md`
 - **Persona-specific lifecycle guidance:** `docs/overview.md`
 - **Operational runbook for overrides & incidents:** `docs/rules_runbook.md`
+
+---
+
+## Where to go next
+
+- If you’re integrating HTTP calls → see `docs/quickstart_http.md`.
+- If you’re a PM → skim `docs/business_overview.md`.
+- If you’re tuning quality → read `docs/tuning_playbook.md`.
 
 Combine this conceptual map with the quickstart and tuning docs to onboard new teammates without overwhelming them with variable tables.

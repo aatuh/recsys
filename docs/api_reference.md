@@ -2,7 +2,15 @@
 
 This reference groups every public REST endpoint by domain. For payload schemas see `api/swagger/swagger.yaml`; this document explains what each route is for, who uses it, and notable parameters or behaviors.
 
-> **Who should read this?** Integration engineers and developers implementing against the API. Pair it with `docs/env_reference.md` for algorithm knobs and `docs/database_schema.md` for storage details.
+> **Where this fits:** Client integration.
+>
+> **Who should read this?** Integration engineers and developers implementing against the API. Pair it with [`docs/env_reference.md`](env_reference.md) for algorithm knobs and [`docs/database_schema.md`](database_schema.md) for storage details.
+
+## TL;DR
+
+- Use this doc when you already know the basics from [`docs/quickstart_http.md`](quickstart_http.md) and need per-endpoint details.
+- It is organized by domain (ingestion, ranking, admin, audit) so you can jump directly to the routes you care about.
+- On first read, focus on ingestion and `/v1/recommendations`; you can skip admin and audit sections until you are wiring rules or debugging incidents.
 
 ## Ingestion & Data Management
 
@@ -10,7 +18,7 @@ This reference groups every public REST endpoint by domain. For payload schemas 
 - **`POST /v1/users:upsert`** — Bulk insert/update user profiles (≤100 per request). Provide `traits` JSON with segments, locale, etc.
 - **`POST /v1/events:batch`** — Record behavioral events (view/click/purchase). Up to 500 events per batch; `type` codes 0=view…3=purchase.
 - **`POST /v1/items:delete`** — Delete items by namespace/ID filter. Supply `delete_request.namespace` plus optional `item_id`.
-- **`POST /v1/users:delete`** — Delete users by namespace/filter. Handy when resetting a tenant namespace.
+- **`POST /v1/users:delete`** — Delete users by namespace/filter. Handy when resetting a namespace for a given org.
 - **`POST /v1/events:delete`** — Delete historical events for a namespace. Supports filters (`user_id`, `event_type`, time ranges).
 - **`GET /v1/items`** — Paginated list of items with filters (ID, created_after/before). Useful for QA/audits.
 - **`GET /v1/users`** — Paginated list of users, filterable by ID or creation timestamps.
@@ -18,7 +26,7 @@ This reference groups every public REST endpoint by domain. For payload schemas 
 
 **Common request fields**
 
-- `namespace` (string, required): logical tenant. Every request must supply it explicitly.
+- `namespace` (string, required): logical bucket under an org. Every request must supply it explicitly.
 - `items[]/users[]/events[]`: see Swagger for full schema; recommended properties:
   - Items: `item_id`, `category`, `brand`, `price`, `available`, `tags[]`, `props{}`
   - Users: `user_id`, `traits{ segment, locale, device }`
@@ -210,13 +218,13 @@ All errors return JSON with `code`, `message`, and sometimes `details`. Include 
 ## Common patterns
 
 - **Recommendations vs rerank:** Use `/v1/recommendations` when the service can assemble candidates from its own data; use `/v1/rerank` when your application already has a candidate list but wants consistent blend/MMR/personalization. Both return the same trace schema, so guardrails and audits work identically.
-- **Minimal ingestion loop:** Follow `docs/quickstart_http.md` for the canonical order (items → users → events → recommendations). Missing steps are the #1 cause of empty lists.
+- **Minimal ingestion loop:** Follow [`docs/quickstart_http.md`](quickstart_http.md) for the canonical order (items → users → events → recommendations). Missing steps are the #1 cause of empty lists.
 - **Per-surface overrides:** Pass `context.surface` (home, pdp, email) and supply `overrides.blend`/`overrides.mmr` per request. When an override sticks, capture it in env profiles via `analysis/scripts/env_profile_manager.py`.
 - **Namespace resets:** Use `analysis/scripts/reset_namespace.py` → `seed_dataset.py` before tuning or running scenarios to eliminate leftover catalog noise.
-- **Rules dry-run workflow:** `POST /v1/admin/rules/dry-run` with the proposed payload, review the before/after samples, then create the rule. `docs/rules_runbook.md` explains how to monitor telemetry afterward.
-- **Error triage loop:** Capture `trace_id`, query `/v1/audit/decisions/{trace_id}`, and cross-reference with guardrail dashboards. Refer to `docs/concepts_and_metrics.md` to explain coverage/diversity terminology in reports.
+- **Rules dry-run workflow:** `POST /v1/admin/rules/dry-run` with the proposed payload, review the before/after samples, then create the rule. [`docs/rules_runbook.md`](rules_runbook.md) explains how to monitor telemetry afterward.
+- **Error triage loop:** Capture `trace_id`, query `/v1/audit/decisions/{trace_id}`, and cross-reference with guardrail dashboards. Refer to [`docs/concepts_and_metrics.md`](concepts_and_metrics.md) to explain coverage/diversity terminology in reports.
 
-Need more narrative examples? Start with `GETTING_STARTED.md` for local walkthroughs or `docs/quickstart_http.md` for hosted integrations. For detailed error codes, limits, and retry guidance, see `docs/api_errors_and_limits.md`.
+Need more narrative examples? Start with [`GETTING_STARTED.md`](../GETTING_STARTED.md) for local walkthroughs or [`docs/quickstart_http.md`](quickstart_http.md) for hosted integrations. For detailed error codes, limits, and retry guidance, see [`docs/api_errors_and_limits.md`](api_errors_and_limits.md).
 
 ## Using the reference
 
@@ -224,9 +232,9 @@ Need more narrative examples? Start with `GETTING_STARTED.md` for local walkthro
 - Authentication: by default API keys are disabled (`API_AUTH_ENABLED=false`). If enabled, set `X-API-Key` header.
 - Namespacing: every write/read call requires `namespace` (explicit field or inferred from user/item). Guardrails and env profiles apply per namespace.
 - Rate limiting: configure via `API_RATE_LIMIT_RPM`/`BURST`; admins should mention limits in partner docs once keys are issued.
-- Security & data handling: see `docs/security_and_data_handling.md` for TLS/auth, PII guidance, and retention expectations.
+- Security & data handling: see [`docs/security_and_data_handling.md`](security_and_data_handling.md) for TLS/auth, PII guidance, and retention expectations.
 For deeper walkthroughs and examples, see:
-- `GETTING_STARTED.md` / `docs/quickstart_http.md` (hands-on ingestion + recommendation flow)
-- `docs/simulations_and_guardrails.md` (seeding + simulation)
-- `docs/rules_runbook.md` (override troubleshooting)
-- `docs/concepts_and_metrics.md` (terminology used in traces/guardrails)
+- [`GETTING_STARTED.md`](../GETTING_STARTED.md) / [`docs/quickstart_http.md`](quickstart_http.md) (hands-on ingestion + recommendation flow)
+- [`docs/simulations_and_guardrails.md`](simulations_and_guardrails.md) (seeding + simulation)
+- [`docs/rules_runbook.md`](rules_runbook.md) (override troubleshooting)
+- [`docs/concepts_and_metrics.md`](concepts_and_metrics.md) (terminology used in traces/guardrails)

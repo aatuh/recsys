@@ -1,9 +1,15 @@
 # Simulations & Guardrails
 
-Simulations let you replay realistic catalogs and user journeys against RecSys before shipping any configuration or rule changes. Guardrails (defined in `docs/concepts_and_metrics.md`) enforce the business rules around coverage, diversity, and starter experience. Treat them as one workflow: simulations create evidence; guardrails encode the pass/fail criteria.
+Simulations let you replay realistic catalogs and user journeys against RecSys before shipping any configuration or rule changes. Guardrails (automatic checks defined in `docs/concepts_and_metrics.md`) enforce the business rules around coverage (how much of the catalog appears over time), diversity (how varied the recommendations are), and starter experience (what new or low-data users see). Treat them as one workflow: simulations create evidence; guardrails encode the pass/fail criteria.
 
+> ⚠️ **Advanced topic**
+>
+> Read this after you have a basic integration running and want to make changes safely.
+>
 > Who should read this? Developers and ops engineers running RecSys from source (local Docker or managed deployments). Hosted API users who only need HTTP payloads can stop at `docs/quickstart_http.md`.
 > Need a quick reference for every script mentioned here? Check `docs/analysis_scripts_reference.md`.
+>
+> **Where this fits:** Guardrails & safety.
 
 ### TL;DR
 
@@ -11,6 +17,20 @@ Simulations let you replay realistic catalogs and user journeys against RecSys b
 - **Use this when:** You need pre-deployment evidence, want to replay a customer catalog, or must diagnose a guardrail failure from CI.
 - **Outcome:** Bundled reports (quality metrics, scenario summaries, guardrail verdicts) tied to specific env profiles and fixtures.
 - **Not for:** Simple QA of API payloads or hosted integrations—stick to `docs/quickstart_http.md` for those scenarios.
+
+---
+
+## What guardrails are (plain language)
+
+- Guardrails are **automatic checks** that block bad changes (for example, drops in key metrics or loss of starter experiences) before they reach real users.
+- They encode **minimum expectations** for coverage, diversity, and quality so experiments cannot silently erode your KPIs.
+- They run the same way on every change, which means stakeholders can trust that configuration and rule updates meet an agreed safety bar.
+
+### How simulations fit in
+
+- Simulations **replay traffic or scripted scenarios** against proposed configurations to produce metrics and evidence bundles.
+- Guardrails read those metrics and decide whether a change passes or fails.
+- Together, they let you review a change with data (“show me the impact on coverage and starter profiles”) before pushing it live.
 
 ---
 
@@ -114,7 +134,7 @@ customers:
 
 - **`quality_metrics.json`** – segment lifts, coverage, long-tail share, determinism stats. Compare against the guardrail thresholds above.
 - **`scenario_summary.json` / CSV** – pass/fail per scenario. Pay special attention to:
-  - **Starter-profile guardrail**: cold-start experience requires ≥ MRR & category diversity.
+  - **Starter-profile guardrail**: cold-start experience requires at least a minimum Mean Reciprocal Rank (MRR, “how early do good items appear?”) and category diversity.
   - **Boost exposure checks**: validate promotion knobs and diversity caps.
   - **Rule-heavy flows**: ensure pin/boost/block behavior remains correct.
 - **`seed_manifest.json` / `seed_segments.json`** – prove the seeded dataset matches expectations when diagnosing coverage issues.
@@ -139,3 +159,11 @@ customers:
 - `docs/rules_runbook.md` – operational steps when guardrails trip or rules misbehave.
 - `docs/concepts_and_metrics.md` – definitions for metrics mentioned here.
 - `docs/env_reference.md` – canonical knob list referenced while tuning for guardrail targets.
+
+---
+
+## Where to go next
+
+- If you’re integrating HTTP calls → see `docs/quickstart_http.md`.
+- If you’re a PM → skim `docs/business_overview.md`.
+- If you’re tuning quality → read `docs/tuning_playbook.md`.

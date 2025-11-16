@@ -27,6 +27,25 @@ Use this guide to keep RecSys docs consistent and easy to scan. Apply these conv
 - Refer to RecSys as a “recommendation control plane” when describing the platform at a high level.
 - Namespaces are lower_snake_case in examples (`retail_demo`); org IDs are UUIDs.
 
+Preferred terms:
+
+- Use **org** and **namespace** instead of “tenant” when describing isolation.
+- Use **env profile** for configuration bundles, and prefer that over vague “environment” when you mean a named profile applied to a namespace.
+
+### Canonical acronym expansions
+
+Use these phrases the first time each acronym appears in a doc:
+
+- **MMR** – “Maximal Marginal Relevance (MMR, a diversity-aware re-ranking method)”
+- **NDCG** – “Normalized Discounted Cumulative Gain (NDCG, a ranking quality score)”
+- **MRR** – “Mean Reciprocal Rank (MRR, ‘how early do good items appear?’)”
+- **CTR** – “click-through rate (CTR)”
+- **KPI** – “key performance indicator (KPI)”
+
+For key ranking terms, prefer:
+
+- **Blend / blend weights** – “blend weights (how much each signal contributes to the final score)”
+
 ## 5. Formatting & samples
 
 - Code blocks use triple backticks with a language hint: ```bash, ```python, ```javascript, etc.
