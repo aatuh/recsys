@@ -406,36 +406,37 @@ type AuditTraceCapUsage struct {
 }
 
 type RecommendationConfigPayload struct {
-	HalfLifeDays                  float64                `json:"half_life_days"`
-	CoVisWindowDays               float64                `json:"co_vis_window_days"`
-	PopularityFanout              int                    `json:"popularity_fanout"`
-	MMRLambda                     float64                `json:"mmr_lambda"`
-	BrandCap                      int                    `json:"brand_cap"`
-	CategoryCap                   int                    `json:"category_cap"`
-	RuleExcludeEvents             bool                   `json:"rule_exclude_events"`
-	ExcludeEventTypes             []int16                `json:"exclude_event_types,omitempty"`
-	BrandTagPrefixes              []string               `json:"brand_tag_prefixes,omitempty"`
-	CategoryTagPrefixes           []string               `json:"category_tag_prefixes,omitempty"`
-	PurchasedWindowDays           float64                `json:"purchased_window_days"`
-	ProfileWindowDays             float64                `json:"profile_window_days"`
-	ProfileBoost                  float64                `json:"profile_boost"`
-	ProfileTopNTags               int                    `json:"profile_top_n_tags"`
-	ProfileMinEventsForBoost      int                    `json:"profile_min_events_for_boost"`
-	ProfileColdStartMultiplier    float64                `json:"profile_cold_start_multiplier"`
-	ProfileStarterBlendWeight     float64                `json:"profile_starter_blend_weight"`
-	MMRPresets                    map[string]float64     `json:"mmr_presets,omitempty"`
-	BlendAlpha                    float64                `json:"blend_alpha"`
-	BlendBeta                     float64                `json:"blend_beta"`
-	BlendGamma                    float64                `json:"blend_gamma"`
-	NewUserBlendAlpha             *float64               `json:"new_user_blend_alpha,omitempty"`
-	NewUserBlendBeta              *float64               `json:"new_user_blend_beta,omitempty"`
-	NewUserBlendGamma             *float64               `json:"new_user_blend_gamma,omitempty"`
-	NewUserMMRLambda              *float64               `json:"new_user_mmr_lambda,omitempty"`
-	NewUserPopFanout              *int                   `json:"new_user_pop_fanout,omitempty"`
-	BanditExperiment              BanditExperimentConfig `json:"bandit_experiment"`
-	RulesEnabled                  bool                   `json:"rules_enabled"`
-	CoverageCacheTTLSeconds       float64                `json:"coverage_cache_ttl_seconds"`
-	CoverageLongTailHintThreshold float64                `json:"coverage_long_tail_hint_threshold"`
+	HalfLifeDays                  float64                                `json:"half_life_days"`
+	CoVisWindowDays               float64                                `json:"co_vis_window_days"`
+	PopularityFanout              int                                    `json:"popularity_fanout"`
+	MMRLambda                     float64                                `json:"mmr_lambda"`
+	BrandCap                      int                                    `json:"brand_cap"`
+	CategoryCap                   int                                    `json:"category_cap"`
+	RuleExcludeEvents             bool                                   `json:"rule_exclude_events"`
+	ExcludeEventTypes             []int16                                `json:"exclude_event_types,omitempty"`
+	BrandTagPrefixes              []string                               `json:"brand_tag_prefixes,omitempty"`
+	CategoryTagPrefixes           []string                               `json:"category_tag_prefixes,omitempty"`
+	PurchasedWindowDays           float64                                `json:"purchased_window_days"`
+	ProfileWindowDays             float64                                `json:"profile_window_days"`
+	ProfileBoost                  float64                                `json:"profile_boost"`
+	ProfileTopNTags               int                                    `json:"profile_top_n_tags"`
+	ProfileMinEventsForBoost      int                                    `json:"profile_min_events_for_boost"`
+	ProfileColdStartMultiplier    float64                                `json:"profile_cold_start_multiplier"`
+	ProfileStarterBlendWeight     float64                                `json:"profile_starter_blend_weight"`
+	MMRPresets                    map[string]float64                     `json:"mmr_presets,omitempty"`
+	BlendAlpha                    float64                                `json:"blend_alpha"`
+	BlendBeta                     float64                                `json:"blend_beta"`
+	BlendGamma                    float64                                `json:"blend_gamma"`
+	NewUserBlendAlpha             *float64                               `json:"new_user_blend_alpha,omitempty"`
+	NewUserBlendBeta              *float64                               `json:"new_user_blend_beta,omitempty"`
+	NewUserBlendGamma             *float64                               `json:"new_user_blend_gamma,omitempty"`
+	NewUserMMRLambda              *float64                               `json:"new_user_mmr_lambda,omitempty"`
+	NewUserPopFanout              *int                                   `json:"new_user_pop_fanout,omitempty"`
+	BanditExperiment              BanditExperimentConfig                 `json:"bandit_experiment"`
+	RulesEnabled                  bool                                   `json:"rules_enabled"`
+	CoverageCacheTTLSeconds       float64                                `json:"coverage_cache_ttl_seconds"`
+	CoverageLongTailHintThreshold float64                                `json:"coverage_long_tail_hint_threshold"`
+	SegmentProfiles               map[string]SegmentProfileConfigPayload `json:"segment_profiles,omitempty"`
 }
 
 type BanditExperimentConfig struct {
@@ -443,6 +444,15 @@ type BanditExperimentConfig struct {
 	HoldoutPercent float64  `json:"holdout_percent"`
 	Label          string   `json:"label,omitempty"`
 	Surfaces       []string `json:"surfaces,omitempty"`
+}
+
+type SegmentProfileConfigPayload struct {
+	BlendAlpha                float64  `json:"blend_alpha"`
+	BlendBeta                 float64  `json:"blend_beta"`
+	BlendGamma                float64  `json:"blend_gamma"`
+	MMRLambda                 *float64 `json:"mmr_lambda,omitempty"`
+	PopularityFanout          *int     `json:"popularity_fanout,omitempty"`
+	ProfileStarterBlendWeight *float64 `json:"profile_starter_blend_weight,omitempty"`
 }
 
 type RecommendationConfigMetadata struct {

@@ -1,788 +1,1335 @@
 {
+  "meta": {
+    "base_url": "https://api.pepe.local",
+    "namespace": "tune_seg_power",
+    "org_id": "00000000-0000-0000-0000-000000000001",
+    "generated_at": "2025-11-16T07:42:07.016868+00:00",
+    "sample_count": 10,
+    "env": {
+      "env_file": "api/.env",
+      "env_hash": "0f75018df10f8c56fc95af4dd46d6f850f0535c6250dd69c8d6f41321f63cecf"
+    }
+  },
   "summary": {
-    "retail_en_us": {
+    "tune_seg_power": {
       "user_count": 10,
       "brand_counts": {
-        "BrightLiving": 10,
-        "Voltify": 20,
-        "Epicurean": 10,
-        "SummitPeak": 10,
-        "AuraThreads": 10,
-        "Quanta": 10,
-        "PulseGear": 10,
         "LeafPress": 10,
-        "IndieWeave": 10
+        "HavenCraft": 10,
+        "PulseGear": 8,
+        "Nimbus": 10,
+        "AtlasReads": 7,
+        "LoomLab": 3,
+        "Skyline": 8,
+        "IronWorks": 5,
+        "CoutureX": 7,
+        "AcmeTech": 8,
+        "TerraQuest": 7,
+        "CircuitLab": 8,
+        "HarvestBite": 3,
+        "LuxeGlow": 9,
+        "AuraThreads": 9,
+        "Epicurean": 10,
+        "CozyNest": 8,
+        "PioneerWords": 6,
+        "SpiceTrail": 7,
+        "RadiantHue": 8,
+        "Trailblaze": 4,
+        "Voltify": 6,
+        "VelvetSky": 4,
+        "ZenMotion": 6,
+        "MidnightLane": 8,
+        "Stride": 5,
+        "BrightLiving": 3,
+        "SummitPeak": 7,
+        "Quanta": 1,
+        "UrbanDwelling": 2,
+        "SavoryCo": 2,
+        "PureBloom": 1
       },
-      "max_brand_exposure": 20,
-      "mean_brand_exposure": 11.11111111111111,
-      "exposure_ratio": 1.8
-    },
-    "media_fi_fi": {
-      "user_count": 7,
-      "brand_counts": {
-        "NordicSignal": 21,
-        "BrightNordic": 7,
-        "SuomiPlay": 14,
-        "AuroraShows": 14,
-        "NorthDocs": 7
+      "category_counts": {
+        "Books": 24,
+        "Home": 23,
+        "Fitness": 24,
+        "Electronics": 32,
+        "Fashion": 27,
+        "Outdoors": 26,
+        "Gourmet": 22,
+        "Beauty": 22
       },
-      "max_brand_exposure": 21,
-      "mean_brand_exposure": 12.6,
-      "exposure_ratio": 1.6666666666666667
+      "max_brand_exposure": 10,
+      "mean_brand_exposure": 6.25,
+      "exposure_ratio": 1.6
     }
   },
   "samples": [
     {
-      "namespace": "retail_en_us",
-      "user_id": "retail_zero_002",
+      "namespace": "tune_seg_power",
+      "user_id": "user_0306",
+      "segment": "power_users",
       "items": [
         {
-          "item_id": "sku_retail_home_002",
-          "score": 0.20132767408614374
+          "item_id": "item_0001",
+          "score": 0.9557083338965179,
+          "brand": "LeafPress",
+          "category": "Books"
         },
         {
-          "item_id": "sku_retail_electronics_001",
-          "score": 0.16914351145463188
+          "item_id": "item_0002",
+          "score": 0.5557958256360503,
+          "brand": "HavenCraft",
+          "category": "Home"
         },
         {
-          "item_id": "sku_retail_newdrop_001",
-          "score": 0.26466666666666666
+          "item_id": "item_0006",
+          "score": 0.40205454429049614,
+          "brand": "PulseGear",
+          "category": "Fitness"
         },
         {
-          "item_id": "sku_retail_gourmet_001",
-          "score": 0.20173296836247392
+          "item_id": "item_0003",
+          "score": 0.38295031915264427,
+          "brand": "Nimbus",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_outdoors_001",
-          "score": 0.19902627506496712
+          "item_id": "item_0004",
+          "score": 0.37204515356723805,
+          "brand": "AtlasReads",
+          "category": "Books"
         },
         {
-          "item_id": "sku_retail_fashion_001",
-          "score": 0.19482224434716305
+          "item_id": "item_0105",
+          "score": 0.37005495812345784,
+          "brand": "LoomLab",
+          "category": "Fashion"
         },
         {
-          "item_id": "sku_retail_books_002",
-          "score": 0.18664530382231992
+          "item_id": "item_0183",
+          "score": 0.3011090276269797,
+          "brand": "Skyline",
+          "category": "Outdoors"
         },
         {
-          "item_id": "sku_retail_fitness_001",
-          "score": 0.17677669980599953
+          "item_id": "item_0145",
+          "score": 0.2791617368721134,
+          "brand": "IronWorks",
+          "category": "Fitness"
         },
         {
-          "item_id": "sku_retail_books_001",
-          "score": 0.17144480703705717
+          "item_id": "item_0007",
+          "score": 0.25327224333518783,
+          "brand": "CoutureX",
+          "category": "Fashion"
         },
         {
-          "item_id": "sku_retail_longtail_001",
-          "score": 0.15963043114363015
+          "item_id": "item_0040",
+          "score": 0.25196060091767347,
+          "brand": "AcmeTech",
+          "category": "Electronics"
+        },
+        {
+          "item_id": "item_0264",
+          "score": 0.21954131952372416,
+          "brand": "TerraQuest",
+          "category": "Outdoors"
+        },
+        {
+          "item_id": "item_0320",
+          "score": 0.21188900738465274,
+          "brand": "CircuitLab",
+          "category": "Electronics"
+        },
+        {
+          "item_id": "item_0013",
+          "score": 0.2084752145228978,
+          "brand": "HarvestBite",
+          "category": "Gourmet"
+        },
+        {
+          "item_id": "item_0262",
+          "score": 0.19525552196131507,
+          "brand": "LuxeGlow",
+          "category": "Beauty"
+        },
+        {
+          "item_id": "item_0313",
+          "score": 0.19511740039352296,
+          "brand": "AuraThreads",
+          "category": "Fashion"
+        },
+        {
+          "item_id": "item_0068",
+          "score": 0.1846163466999739,
+          "brand": "Epicurean",
+          "category": "Gourmet"
+        },
+        {
+          "item_id": "item_0080",
+          "score": 0.1699468227222006,
+          "brand": "CozyNest",
+          "category": "Home"
+        },
+        {
+          "item_id": "item_0096",
+          "score": 0.15665362237695638,
+          "brand": "PioneerWords",
+          "category": "Books"
+        },
+        {
+          "item_id": "item_0251",
+          "score": 0.14323073794695332,
+          "brand": "SpiceTrail",
+          "category": "Gourmet"
+        },
+        {
+          "item_id": "item_0212",
+          "score": 0.10823464194640002,
+          "brand": "RadiantHue",
+          "category": "Beauty"
         }
       ]
     },
     {
-      "namespace": "retail_en_us",
-      "user_id": "retail_zero_001",
+      "namespace": "tune_seg_power",
+      "user_id": "user_0371",
+      "segment": "power_users",
       "items": [
         {
-          "item_id": "sku_retail_home_002",
-          "score": 0.20132767408614383
+          "item_id": "item_0001",
+          "score": 0.8558164233005027,
+          "brand": "LeafPress",
+          "category": "Books"
         },
         {
-          "item_id": "sku_retail_electronics_001",
-          "score": 0.16914351145463202
+          "item_id": "item_0183",
+          "score": 0.717006856966633,
+          "brand": "Skyline",
+          "category": "Outdoors"
         },
         {
-          "item_id": "sku_retail_newdrop_001",
-          "score": 0.26466666666666666
+          "item_id": "item_0283",
+          "score": 0.6699144780223188,
+          "brand": "Trailblaze",
+          "category": "Outdoors"
         },
         {
-          "item_id": "sku_retail_gourmet_001",
-          "score": 0.20173296836247406
+          "item_id": "item_0075",
+          "score": 0.6494768527223538,
+          "brand": "CircuitLab",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_outdoors_001",
-          "score": 0.19902627506496726
+          "item_id": "item_0002",
+          "score": 0.6484795910659054,
+          "brand": "HavenCraft",
+          "category": "Home"
         },
         {
-          "item_id": "sku_retail_fashion_001",
-          "score": 0.1948222443471632
+          "item_id": "item_0026",
+          "score": 0.475982301895097,
+          "brand": "Voltify",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_books_002",
-          "score": 0.18664530382232
+          "item_id": "item_0244",
+          "score": 0.43995202573281644,
+          "brand": "AuraThreads",
+          "category": "Fashion"
         },
         {
-          "item_id": "sku_retail_fitness_001",
-          "score": 0.1767766998059996
+          "item_id": "item_0005",
+          "score": 0.4363872229132253,
+          "brand": "VelvetSky",
+          "category": "Beauty"
         },
         {
-          "item_id": "sku_retail_books_001",
-          "score": 0.17144480703705725
+          "item_id": "item_0048",
+          "score": 0.4177338576853718,
+          "brand": "ZenMotion",
+          "category": "Fitness"
         },
         {
-          "item_id": "sku_retail_longtail_001",
-          "score": 0.15963043114363032
+          "item_id": "item_0168",
+          "score": 0.41009112762521455,
+          "brand": "AcmeTech",
+          "category": "Electronics"
+        },
+        {
+          "item_id": "item_0181",
+          "score": 0.375365319128894,
+          "brand": "SpiceTrail",
+          "category": "Gourmet"
+        },
+        {
+          "item_id": "item_0004",
+          "score": 0.36478488053914276,
+          "brand": "AtlasReads",
+          "category": "Books"
+        },
+        {
+          "item_id": "item_0204",
+          "score": 0.36114278119043147,
+          "brand": "TerraQuest",
+          "category": "Outdoors"
+        },
+        {
+          "item_id": "item_0128",
+          "score": 0.33758056527254854,
+          "brand": "MidnightLane",
+          "category": "Fashion"
+        },
+        {
+          "item_id": "item_0220",
+          "score": 0.33452731387551493,
+          "brand": "IronWorks",
+          "category": "Fitness"
+        },
+        {
+          "item_id": "item_0232",
+          "score": 0.31759604167948996,
+          "brand": "Nimbus",
+          "category": "Electronics"
+        },
+        {
+          "item_id": "item_0285",
+          "score": 0.3117351032948553,
+          "brand": "Epicurean",
+          "category": "Gourmet"
+        },
+        {
+          "item_id": "item_0229",
+          "score": 0.2765405774458831,
+          "brand": "Stride",
+          "category": "Fitness"
+        },
+        {
+          "item_id": "item_0008",
+          "score": 0.2676907624142291,
+          "brand": "LuxeGlow",
+          "category": "Beauty"
+        },
+        {
+          "item_id": "item_0080",
+          "score": 0.22968488458100447,
+          "brand": "CozyNest",
+          "category": "Home"
         }
       ]
     },
     {
-      "namespace": "retail_en_us",
-      "user_id": "retail_weekend_002",
+      "namespace": "tune_seg_power",
+      "user_id": "user_0496",
+      "segment": "power_users",
       "items": [
         {
-          "item_id": "sku_retail_newdrop_001",
-          "score": 0.2624666666666667
+          "item_id": "item_0001",
+          "score": 0.9516057777069487,
+          "brand": "LeafPress",
+          "category": "Books"
         },
         {
-          "item_id": "sku_retail_gourmet_001",
-          "score": 0.20173296836247398
+          "item_id": "item_0002",
+          "score": 0.7215910284750703,
+          "brand": "HavenCraft",
+          "category": "Home"
         },
         {
-          "item_id": "sku_retail_home_002",
-          "score": 0.1986156143988183
+          "item_id": "item_0003",
+          "score": 0.5737107928317818,
+          "brand": "Nimbus",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_outdoors_001",
-          "score": 0.1975146831024484
+          "item_id": "item_0320",
+          "score": 0.5279519220747022,
+          "brand": "CircuitLab",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_fashion_001",
-          "score": 0.1926575527433057
+          "item_id": "item_0120",
+          "score": 0.5014497871912602,
+          "brand": "ZenMotion",
+          "category": "Fitness"
         },
         {
-          "item_id": "sku_retail_books_002",
-          "score": 0.18536300784186122
+          "item_id": "item_0078",
+          "score": 0.44775213343808573,
+          "brand": "MidnightLane",
+          "category": "Fashion"
         },
         {
-          "item_id": "sku_retail_fitness_001",
-          "score": 0.176087959417145
+          "item_id": "item_0260",
+          "score": 0.425525178675293,
+          "brand": "LoomLab",
+          "category": "Fashion"
         },
         {
-          "item_id": "sku_retail_books_001",
-          "score": 0.16919224752854112
+          "item_id": "item_0091",
+          "score": 0.4152094849940065,
+          "brand": "RadiantHue",
+          "category": "Beauty"
         },
         {
-          "item_id": "sku_retail_electronics_001",
-          "score": 0.16647919838637273
+          "item_id": "item_0039",
+          "score": 0.4135166354888193,
+          "brand": "BrightLiving",
+          "category": "Home"
         },
         {
-          "item_id": "sku_retail_longtail_001",
-          "score": 0.15870948634857074
+          "item_id": "item_0139",
+          "score": 0.4037375869182199,
+          "brand": "SummitPeak",
+          "category": "Outdoors"
+        },
+        {
+          "item_id": "item_0008",
+          "score": 0.3846085529153026,
+          "brand": "LuxeGlow",
+          "category": "Beauty"
+        },
+        {
+          "item_id": "item_0103",
+          "score": 0.3445645498860806,
+          "brand": "AcmeTech",
+          "category": "Electronics"
+        },
+        {
+          "item_id": "item_0005",
+          "score": 0.32564234845209483,
+          "brand": "VelvetSky",
+          "category": "Beauty"
+        },
+        {
+          "item_id": "item_0006",
+          "score": 0.307309165586398,
+          "brand": "PulseGear",
+          "category": "Fitness"
+        },
+        {
+          "item_id": "item_0238",
+          "score": 0.27353109682416304,
+          "brand": "CoutureX",
+          "category": "Fashion"
+        },
+        {
+          "item_id": "item_0092",
+          "score": 0.25995681674486126,
+          "brand": "CozyNest",
+          "category": "Home"
+        },
+        {
+          "item_id": "item_0242",
+          "score": 0.2491581713149991,
+          "brand": "HarvestBite",
+          "category": "Gourmet"
+        },
+        {
+          "item_id": "item_0011",
+          "score": 0.2264358873516024,
+          "brand": "Skyline",
+          "category": "Outdoors"
+        },
+        {
+          "item_id": "item_0094",
+          "score": 0.20061906915734307,
+          "brand": "Quanta",
+          "category": "Books"
+        },
+        {
+          "item_id": "item_0285",
+          "score": 0.08562261503606786,
+          "brand": "Epicurean",
+          "category": "Gourmet"
         }
       ]
     },
     {
-      "namespace": "retail_en_us",
-      "user_id": "retail_weekend_001",
+      "namespace": "tune_seg_power",
+      "user_id": "user_0296",
+      "segment": "power_users",
       "items": [
         {
-          "item_id": "sku_retail_newdrop_001",
-          "score": 0.2624666666666667
+          "item_id": "item_0001",
+          "score": 0.9060444421560502,
+          "brand": "LeafPress",
+          "category": "Books"
         },
         {
-          "item_id": "sku_retail_gourmet_001",
-          "score": 0.20173296836247395
+          "item_id": "item_0187",
+          "score": 0.5626229897003848,
+          "brand": "AuraThreads",
+          "category": "Fashion"
         },
         {
-          "item_id": "sku_retail_home_002",
-          "score": 0.19861561439881836
+          "item_id": "item_0003",
+          "score": 0.5506304589970179,
+          "brand": "Nimbus",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_outdoors_001",
-          "score": 0.19751468310244846
+          "item_id": "item_0002",
+          "score": 0.5175476300457929,
+          "brand": "HavenCraft",
+          "category": "Home"
         },
         {
-          "item_id": "sku_retail_fashion_001",
-          "score": 0.19265755274330584
+          "item_id": "item_0070",
+          "score": 0.5102466744767715,
+          "brand": "Trailblaze",
+          "category": "Outdoors"
         },
         {
-          "item_id": "sku_retail_books_002",
-          "score": 0.1853630078418613
+          "item_id": "item_0320",
+          "score": 0.46891739500690516,
+          "brand": "CircuitLab",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_fitness_001",
-          "score": 0.17608795941714508
+          "item_id": "item_0183",
+          "score": 0.4537681915892645,
+          "brand": "Skyline",
+          "category": "Outdoors"
         },
         {
-          "item_id": "sku_retail_books_001",
-          "score": 0.1691922475285412
+          "item_id": "item_0040",
+          "score": 0.44795466053463984,
+          "brand": "AcmeTech",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_electronics_001",
-          "score": 0.16647919838637285
+          "item_id": "item_0120",
+          "score": 0.4070459948950772,
+          "brand": "ZenMotion",
+          "category": "Fitness"
         },
         {
-          "item_id": "sku_retail_longtail_001",
-          "score": 0.15870948634857085
+          "item_id": "item_0121",
+          "score": 0.38609605075643044,
+          "brand": "IronWorks",
+          "category": "Fitness"
+        },
+        {
+          "item_id": "item_0189",
+          "score": 0.3483992420358345,
+          "brand": "TerraQuest",
+          "category": "Outdoors"
+        },
+        {
+          "item_id": "item_0006",
+          "score": 0.31691824815618835,
+          "brand": "PulseGear",
+          "category": "Fitness"
+        },
+        {
+          "item_id": "item_0262",
+          "score": 0.29732187912313474,
+          "brand": "LuxeGlow",
+          "category": "Beauty"
+        },
+        {
+          "item_id": "item_0319",
+          "score": 0.28384555973750286,
+          "brand": "SpiceTrail",
+          "category": "Gourmet"
+        },
+        {
+          "item_id": "item_0238",
+          "score": 0.27464410036152787,
+          "brand": "CoutureX",
+          "category": "Fashion"
+        },
+        {
+          "item_id": "item_0018",
+          "score": 0.22905625500607138,
+          "brand": "MidnightLane",
+          "category": "Fashion"
+        },
+        {
+          "item_id": "item_0080",
+          "score": 0.21268605963106219,
+          "brand": "CozyNest",
+          "category": "Home"
+        },
+        {
+          "item_id": "item_0212",
+          "score": 0.1538993130509613,
+          "brand": "RadiantHue",
+          "category": "Beauty"
+        },
+        {
+          "item_id": "item_0096",
+          "score": 0.11005160510654564,
+          "brand": "PioneerWords",
+          "category": "Books"
+        },
+        {
+          "item_id": "item_0285",
+          "score": 0.0913489150320472,
+          "brand": "Epicurean",
+          "category": "Gourmet"
         }
       ]
     },
     {
-      "namespace": "retail_en_us",
-      "user_id": "retail_niche_002",
+      "namespace": "tune_seg_power",
+      "user_id": "user_0471",
+      "segment": "power_users",
       "items": [
         {
-          "item_id": "sku_retail_newdrop_001",
-          "score": 0.2624666666666667
+          "item_id": "item_0001",
+          "score": 0.9606457367084958,
+          "brand": "LeafPress",
+          "category": "Books"
         },
         {
-          "item_id": "sku_retail_gourmet_001",
-          "score": 0.20173296836247398
+          "item_id": "item_0002",
+          "score": 0.5942442524535453,
+          "brand": "HavenCraft",
+          "category": "Home"
         },
         {
-          "item_id": "sku_retail_home_002",
-          "score": 0.19861561439881834
+          "item_id": "item_0019",
+          "score": 0.5870966861516742,
+          "brand": "CoutureX",
+          "category": "Fashion"
         },
         {
-          "item_id": "sku_retail_outdoors_001",
-          "score": 0.1975146831024484
+          "item_id": "item_0198",
+          "score": 0.5330206458209267,
+          "brand": "Skyline",
+          "category": "Outdoors"
         },
         {
-          "item_id": "sku_retail_fashion_001",
-          "score": 0.1926575527433057
+          "item_id": "item_0030",
+          "score": 0.4905797166360026,
+          "brand": "MidnightLane",
+          "category": "Fashion"
         },
         {
-          "item_id": "sku_retail_books_002",
-          "score": 0.18536300784186133
+          "item_id": "item_0075",
+          "score": 0.48895993190585896,
+          "brand": "CircuitLab",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_fitness_001",
-          "score": 0.176087959417145
+          "item_id": "item_0004",
+          "score": 0.4846271130154153,
+          "brand": "AtlasReads",
+          "category": "Books"
         },
         {
-          "item_id": "sku_retail_books_001",
-          "score": 0.16919224752854115
+          "item_id": "item_0136",
+          "score": 0.42782879595728757,
+          "brand": "Stride",
+          "category": "Fitness"
         },
         {
-          "item_id": "sku_retail_electronics_001",
-          "score": 0.1664791983863727
+          "item_id": "item_0270",
+          "score": 0.3885102103756593,
+          "brand": "PulseGear",
+          "category": "Fitness"
         },
         {
-          "item_id": "sku_retail_longtail_001",
-          "score": 0.1587094863485708
+          "item_id": "item_0189",
+          "score": 0.36560008063213745,
+          "brand": "TerraQuest",
+          "category": "Outdoors"
+        },
+        {
+          "item_id": "item_0134",
+          "score": 0.3576944089801338,
+          "brand": "PioneerWords",
+          "category": "Books"
+        },
+        {
+          "item_id": "item_0217",
+          "score": 0.34117181987156164,
+          "brand": "SummitPeak",
+          "category": "Outdoors"
+        },
+        {
+          "item_id": "item_0164",
+          "score": 0.2971576989567493,
+          "brand": "Epicurean",
+          "category": "Gourmet"
+        },
+        {
+          "item_id": "item_0232",
+          "score": 0.2929570877933547,
+          "brand": "Nimbus",
+          "category": "Electronics"
+        },
+        {
+          "item_id": "item_0013",
+          "score": 0.26214376207502427,
+          "brand": "HarvestBite",
+          "category": "Gourmet"
+        },
+        {
+          "item_id": "item_0038",
+          "score": 0.24920738163970013,
+          "brand": "VelvetSky",
+          "category": "Beauty"
+        },
+        {
+          "item_id": "item_0251",
+          "score": 0.19118981036443086,
+          "brand": "SpiceTrail",
+          "category": "Gourmet"
+        },
+        {
+          "item_id": "item_0212",
+          "score": 0.1600499300074777,
+          "brand": "RadiantHue",
+          "category": "Beauty"
+        },
+        {
+          "item_id": "item_0127",
+          "score": 0.12056946499865084,
+          "brand": "AuraThreads",
+          "category": "Fashion"
+        },
+        {
+          "item_id": "item_0080",
+          "score": 0.11522782266614792,
+          "brand": "CozyNest",
+          "category": "Home"
         }
       ]
     },
     {
-      "namespace": "retail_en_us",
-      "user_id": "retail_niche_001",
+      "namespace": "tune_seg_power",
+      "user_id": "user_0351",
+      "segment": "power_users",
       "items": [
         {
-          "item_id": "sku_retail_newdrop_001",
-          "score": 0.2624666666666667
+          "item_id": "item_0001",
+          "score": 0.7522521072905768,
+          "brand": "LeafPress",
+          "category": "Books"
         },
         {
-          "item_id": "sku_retail_gourmet_001",
-          "score": 0.20173296836247398
+          "item_id": "item_0003",
+          "score": 0.7166699331260479,
+          "brand": "Nimbus",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_home_002",
-          "score": 0.19861561439881836
+          "item_id": "item_0121",
+          "score": 0.6373387970036907,
+          "brand": "IronWorks",
+          "category": "Fitness"
         },
         {
-          "item_id": "sku_retail_outdoors_001",
-          "score": 0.1975146831024484
+          "item_id": "item_0075",
+          "score": 0.624917036761575,
+          "brand": "CircuitLab",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_fashion_001",
-          "score": 0.19265755274330568
+          "item_id": "item_0002",
+          "score": 0.6248465423624999,
+          "brand": "HavenCraft",
+          "category": "Home"
         },
         {
-          "item_id": "sku_retail_books_002",
-          "score": 0.1853630078418612
+          "item_id": "item_0168",
+          "score": 0.47575228582039086,
+          "brand": "AcmeTech",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_fitness_001",
-          "score": 0.176087959417145
+          "item_id": "item_0201",
+          "score": 0.40976439795900504,
+          "brand": "MidnightLane",
+          "category": "Fashion"
         },
         {
-          "item_id": "sku_retail_books_001",
-          "score": 0.16919224752854106
+          "item_id": "item_0028",
+          "score": 0.40002600242144165,
+          "brand": "SummitPeak",
+          "category": "Outdoors"
         },
         {
-          "item_id": "sku_retail_electronics_001",
-          "score": 0.16647919838637276
+          "item_id": "item_0026",
+          "score": 0.3985414106711178,
+          "brand": "Voltify",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_longtail_001",
-          "score": 0.1587094863485708
+          "item_id": "item_0120",
+          "score": 0.395463583931432,
+          "brand": "ZenMotion",
+          "category": "Fitness"
+        },
+        {
+          "item_id": "item_0008",
+          "score": 0.38525653579228897,
+          "brand": "LuxeGlow",
+          "category": "Beauty"
+        },
+        {
+          "item_id": "item_0184",
+          "score": 0.3735996834018752,
+          "brand": "Skyline",
+          "category": "Outdoors"
+        },
+        {
+          "item_id": "item_0313",
+          "score": 0.35026168750273995,
+          "brand": "AuraThreads",
+          "category": "Fashion"
+        },
+        {
+          "item_id": "item_0264",
+          "score": 0.33948391002673717,
+          "brand": "TerraQuest",
+          "category": "Outdoors"
+        },
+        {
+          "item_id": "item_0229",
+          "score": 0.3058277230417693,
+          "brand": "Stride",
+          "category": "Fitness"
+        },
+        {
+          "item_id": "item_0249",
+          "score": 0.26892334554105407,
+          "brand": "VelvetSky",
+          "category": "Beauty"
+        },
+        {
+          "item_id": "item_0241",
+          "score": 0.26856986438522323,
+          "brand": "SpiceTrail",
+          "category": "Gourmet"
+        },
+        {
+          "item_id": "item_0080",
+          "score": 0.22225871448581289,
+          "brand": "CozyNest",
+          "category": "Home"
+        },
+        {
+          "item_id": "item_0096",
+          "score": 0.21285554559909153,
+          "brand": "PioneerWords",
+          "category": "Books"
+        },
+        {
+          "item_id": "item_0016",
+          "score": 0.2045307832764653,
+          "brand": "Epicurean",
+          "category": "Gourmet"
         }
       ]
     },
     {
-      "namespace": "retail_en_us",
-      "user_id": "retail_trend_002",
+      "namespace": "tune_seg_power",
+      "user_id": "user_0336",
+      "segment": "power_users",
       "items": [
         {
-          "item_id": "sku_retail_newdrop_001",
-          "score": 0.2624666666666667
+          "item_id": "item_0001",
+          "score": 0.8538097558237199,
+          "brand": "LeafPress",
+          "category": "Books"
         },
         {
-          "item_id": "sku_retail_gourmet_001",
-          "score": 0.20173296836247395
+          "item_id": "item_0218",
+          "score": 0.6929253284038607,
+          "brand": "Nimbus",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_home_002",
-          "score": 0.19861561439881825
+          "item_id": "item_0183",
+          "score": 0.6505705007398564,
+          "brand": "Skyline",
+          "category": "Outdoors"
         },
         {
-          "item_id": "sku_retail_outdoors_001",
-          "score": 0.19751468310244846
+          "item_id": "item_0308",
+          "score": 0.5700241205509559,
+          "brand": "Voltify",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_fashion_001",
-          "score": 0.19265755274330576
+          "item_id": "item_0259",
+          "score": 0.5652284649787596,
+          "brand": "PulseGear",
+          "category": "Fitness"
         },
         {
-          "item_id": "sku_retail_books_002",
-          "score": 0.18536300784186122
+          "item_id": "item_0075",
+          "score": 0.5472186249175298,
+          "brand": "CircuitLab",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_fitness_001",
-          "score": 0.17608795941714497
+          "item_id": "item_0002",
+          "score": 0.5416525249671901,
+          "brand": "HavenCraft",
+          "category": "Home"
         },
         {
-          "item_id": "sku_retail_books_001",
-          "score": 0.16919224752854112
+          "item_id": "item_0004",
+          "score": 0.49115430147038003,
+          "brand": "AtlasReads",
+          "category": "Books"
         },
         {
-          "item_id": "sku_retail_electronics_001",
-          "score": 0.16647919838637276
+          "item_id": "item_0139",
+          "score": 0.4545992468570938,
+          "brand": "SummitPeak",
+          "category": "Outdoors"
         },
         {
-          "item_id": "sku_retail_longtail_001",
-          "score": 0.1587094863485708
+          "item_id": "item_0030",
+          "score": 0.4069048694549593,
+          "brand": "MidnightLane",
+          "category": "Fashion"
+        },
+        {
+          "item_id": "item_0283",
+          "score": 0.3905432505219847,
+          "brand": "Trailblaze",
+          "category": "Outdoors"
+        },
+        {
+          "item_id": "item_0019",
+          "score": 0.3784958474780103,
+          "brand": "CoutureX",
+          "category": "Fashion"
+        },
+        {
+          "item_id": "item_0181",
+          "score": 0.3709982737690948,
+          "brand": "SpiceTrail",
+          "category": "Gourmet"
+        },
+        {
+          "item_id": "item_0191",
+          "score": 0.37080127885558,
+          "brand": "BrightLiving",
+          "category": "Home"
+        },
+        {
+          "item_id": "item_0248",
+          "score": 0.35119843307460286,
+          "brand": "ZenMotion",
+          "category": "Fitness"
+        },
+        {
+          "item_id": "item_0033",
+          "score": 0.30197532944305816,
+          "brand": "LuxeGlow",
+          "category": "Beauty"
+        },
+        {
+          "item_id": "item_0313",
+          "score": 0.2520052211002726,
+          "brand": "AuraThreads",
+          "category": "Fashion"
+        },
+        {
+          "item_id": "item_0020",
+          "score": 0.20402634454140284,
+          "brand": "UrbanDwelling",
+          "category": "Home"
+        },
+        {
+          "item_id": "item_0212",
+          "score": 0.16435395739472608,
+          "brand": "RadiantHue",
+          "category": "Beauty"
+        },
+        {
+          "item_id": "item_0285",
+          "score": 0.0936145314152095,
+          "brand": "Epicurean",
+          "category": "Gourmet"
         }
       ]
     },
     {
-      "namespace": "retail_en_us",
-      "user_id": "retail_trend_001",
+      "namespace": "tune_seg_power",
+      "user_id": "user_0486",
+      "segment": "power_users",
       "items": [
         {
-          "item_id": "sku_retail_newdrop_001",
-          "score": 0.2624666666666667
+          "item_id": "item_0001",
+          "score": 0.8354439014265119,
+          "brand": "LeafPress",
+          "category": "Books"
         },
         {
-          "item_id": "sku_retail_gourmet_001",
-          "score": 0.2017329683624739
+          "item_id": "item_0168",
+          "score": 0.7194718115167891,
+          "brand": "AcmeTech",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_home_002",
-          "score": 0.19861561439881822
+          "item_id": "item_0012",
+          "score": 0.5168514880855748,
+          "brand": "Nimbus",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_outdoors_001",
-          "score": 0.19751468310244832
+          "item_id": "item_0002",
+          "score": 0.49832605382323913,
+          "brand": "HavenCraft",
+          "category": "Home"
         },
         {
-          "item_id": "sku_retail_fashion_001",
-          "score": 0.19265755274330568
+          "item_id": "item_0191",
+          "score": 0.4981899853971488,
+          "brand": "BrightLiving",
+          "category": "Home"
         },
         {
-          "item_id": "sku_retail_books_002",
-          "score": 0.18536300784186122
+          "item_id": "item_0026",
+          "score": 0.4417226777425636,
+          "brand": "Voltify",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_fitness_001",
-          "score": 0.17608795941714492
+          "item_id": "item_0136",
+          "score": 0.39179981453935436,
+          "brand": "Stride",
+          "category": "Fitness"
         },
         {
-          "item_id": "sku_retail_books_001",
-          "score": 0.169192247528541
+          "item_id": "item_0004",
+          "score": 0.3688493452146238,
+          "brand": "AtlasReads",
+          "category": "Books"
         },
         {
-          "item_id": "sku_retail_electronics_001",
-          "score": 0.1664791983863727
+          "item_id": "item_0030",
+          "score": 0.3587095719894925,
+          "brand": "MidnightLane",
+          "category": "Fashion"
         },
         {
-          "item_id": "sku_retail_longtail_001",
-          "score": 0.15870948634857077
+          "item_id": "item_0120",
+          "score": 0.3435918639674406,
+          "brand": "ZenMotion",
+          "category": "Fitness"
+        },
+        {
+          "item_id": "item_0263",
+          "score": 0.33385897284414295,
+          "brand": "SummitPeak",
+          "category": "Outdoors"
+        },
+        {
+          "item_id": "item_0313",
+          "score": 0.3188766725361319,
+          "brand": "AuraThreads",
+          "category": "Fashion"
+        },
+        {
+          "item_id": "item_0006",
+          "score": 0.2961326202024745,
+          "brand": "PulseGear",
+          "category": "Fitness"
+        },
+        {
+          "item_id": "item_0079",
+          "score": 0.2712351411695227,
+          "brand": "Trailblaze",
+          "category": "Outdoors"
+        },
+        {
+          "item_id": "item_0049",
+          "score": 0.2676738653679682,
+          "brand": "TerraQuest",
+          "category": "Outdoors"
+        },
+        {
+          "item_id": "item_0285",
+          "score": 0.26032398739597123,
+          "brand": "Epicurean",
+          "category": "Gourmet"
+        },
+        {
+          "item_id": "item_0057",
+          "score": 0.2558999277045312,
+          "brand": "LuxeGlow",
+          "category": "Beauty"
+        },
+        {
+          "item_id": "item_0319",
+          "score": 0.24472182444557025,
+          "brand": "SpiceTrail",
+          "category": "Gourmet"
+        },
+        {
+          "item_id": "item_0020",
+          "score": 0.18514471561539306,
+          "brand": "UrbanDwelling",
+          "category": "Home"
+        },
+        {
+          "item_id": "item_0212",
+          "score": 0.05180180676332098,
+          "brand": "RadiantHue",
+          "category": "Beauty"
         }
       ]
     },
     {
-      "namespace": "retail_en_us",
-      "user_id": "retail_power_002",
+      "namespace": "tune_seg_power",
+      "user_id": "user_0274",
+      "segment": "trend_seekers",
       "items": [
         {
-          "item_id": "sku_retail_newdrop_001",
-          "score": 0.2624666666666667
+          "item_id": "item_0001",
+          "score": 0.7908283042366201,
+          "brand": "LeafPress",
+          "category": "Books"
         },
         {
-          "item_id": "sku_retail_gourmet_001",
-          "score": 0.20173296836247398
+          "item_id": "item_0002",
+          "score": 0.7316162184349408,
+          "brand": "HavenCraft",
+          "category": "Home"
         },
         {
-          "item_id": "sku_retail_home_002",
-          "score": 0.19861561439881836
+          "item_id": "item_0004",
+          "score": 0.44783951251927323,
+          "brand": "AtlasReads",
+          "category": "Books"
         },
         {
-          "item_id": "sku_retail_outdoors_001",
-          "score": 0.19751468310244838
+          "item_id": "item_0054",
+          "score": 0.42092153864540005,
+          "brand": "AuraThreads",
+          "category": "Fashion"
         },
         {
-          "item_id": "sku_retail_fashion_001",
-          "score": 0.1926575527433058
+          "item_id": "item_0226",
+          "score": 0.4176842572360117,
+          "brand": "AcmeTech",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_books_002",
-          "score": 0.18536300784186124
+          "item_id": "item_0019",
+          "score": 0.3928068959369526,
+          "brand": "CoutureX",
+          "category": "Fashion"
         },
         {
-          "item_id": "sku_retail_fitness_001",
-          "score": 0.176087959417145
+          "item_id": "item_0008",
+          "score": 0.3816503525036798,
+          "brand": "LuxeGlow",
+          "category": "Beauty"
         },
         {
-          "item_id": "sku_retail_books_001",
-          "score": 0.16919224752854112
+          "item_id": "item_0091",
+          "score": 0.33443476753550644,
+          "brand": "RadiantHue",
+          "category": "Beauty"
         },
         {
-          "item_id": "sku_retail_electronics_001",
-          "score": 0.1664791983863728
+          "item_id": "item_0308",
+          "score": 0.3235764665594328,
+          "brand": "Voltify",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_longtail_001",
-          "score": 0.1587094863485708
+          "item_id": "item_0149",
+          "score": 0.2442886673103651,
+          "brand": "IronWorks",
+          "category": "Fitness"
+        },
+        {
+          "item_id": "item_0069",
+          "score": 0.24332871362511793,
+          "brand": "SavoryCo",
+          "category": "Gourmet"
+        },
+        {
+          "item_id": "item_0134",
+          "score": 0.22017384843138987,
+          "brand": "PioneerWords",
+          "category": "Books"
+        },
+        {
+          "item_id": "item_0080",
+          "score": 0.21577174407774935,
+          "brand": "CozyNest",
+          "category": "Home"
+        },
+        {
+          "item_id": "item_0006",
+          "score": 0.20715485664956357,
+          "brand": "PulseGear",
+          "category": "Fitness"
+        },
+        {
+          "item_id": "item_0232",
+          "score": 0.20394856424220456,
+          "brand": "Nimbus",
+          "category": "Electronics"
+        },
+        {
+          "item_id": "item_0115",
+          "score": 0.19913383056003386,
+          "brand": "MidnightLane",
+          "category": "Fashion"
+        },
+        {
+          "item_id": "item_0304",
+          "score": 0.1948371125913489,
+          "brand": "TerraQuest",
+          "category": "Outdoors"
+        },
+        {
+          "item_id": "item_0139",
+          "score": 0.18401007444973552,
+          "brand": "SummitPeak",
+          "category": "Outdoors"
+        },
+        {
+          "item_id": "item_0023",
+          "score": 0.1257115677762308,
+          "brand": "PureBloom",
+          "category": "Beauty"
+        },
+        {
+          "item_id": "item_0285",
+          "score": 0.07632767146739336,
+          "brand": "Epicurean",
+          "category": "Gourmet"
         }
       ]
     },
     {
-      "namespace": "retail_en_us",
-      "user_id": "retail_power_001",
+      "namespace": "tune_seg_power",
+      "user_id": "user_0186",
+      "segment": "power_users",
       "items": [
         {
-          "item_id": "sku_retail_newdrop_001",
-          "score": 0.2624666666666667
+          "item_id": "item_0002",
+          "score": 0.7190481644267661,
+          "brand": "HavenCraft",
+          "category": "Home"
         },
         {
-          "item_id": "sku_retail_gourmet_001",
-          "score": 0.20173296836247398
+          "item_id": "item_0001",
+          "score": 0.7180231027348585,
+          "brand": "LeafPress",
+          "category": "Books"
         },
         {
-          "item_id": "sku_retail_home_002",
-          "score": 0.19861561439881834
+          "item_id": "item_0226",
+          "score": 0.5505470294467125,
+          "brand": "AcmeTech",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_outdoors_001",
-          "score": 0.1975146831024484
+          "item_id": "item_0075",
+          "score": 0.48291235435363844,
+          "brand": "CircuitLab",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_fashion_001",
-          "score": 0.1926575527433057
+          "item_id": "item_0308",
+          "score": 0.43786464856575114,
+          "brand": "Voltify",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_books_002",
-          "score": 0.18536300784186122
+          "item_id": "item_0004",
+          "score": 0.37443985790913414,
+          "brand": "AtlasReads",
+          "category": "Books"
         },
         {
-          "item_id": "sku_retail_fitness_001",
-          "score": 0.17608795941714503
+          "item_id": "item_0105",
+          "score": 0.36146014506418495,
+          "brand": "LoomLab",
+          "category": "Fashion"
         },
         {
-          "item_id": "sku_retail_books_001",
-          "score": 0.1691922475285411
+          "item_id": "item_0183",
+          "score": 0.3610255276535381,
+          "brand": "Skyline",
+          "category": "Outdoors"
         },
         {
-          "item_id": "sku_retail_electronics_001",
-          "score": 0.16647919838637276
+          "item_id": "item_0218",
+          "score": 0.3363313960508718,
+          "brand": "Nimbus",
+          "category": "Electronics"
         },
         {
-          "item_id": "sku_retail_longtail_001",
-          "score": 0.1587094863485708
-        }
-      ]
-    },
-    {
-      "namespace": "media_fi_fi",
-      "user_id": "media_zero_001",
-      "items": [
-        {
-          "item_id": "vid_media_newdrop_001",
-          "score": 0.25
-        },
-        {
-          "item_id": "vid_media_kids_001",
-          "score": 0.21079054808625272
-        },
-        {
-          "item_id": "vid_media_sports_002",
-          "score": 0.19735352608482176
-        },
-        {
-          "item_id": "vid_media_sports_001",
-          "score": 0.17250051499760236
-        },
-        {
-          "item_id": "vid_media_news_001",
-          "score": 0.16749534897585608
-        },
-        {
-          "item_id": "vid_media_drama_001",
-          "score": 0.14434160154488915
-        },
-        {
-          "item_id": "vid_media_doc_001",
-          "score": 0.14199874592036105
-        },
-        {
-          "item_id": "vid_media_news_002",
-          "score": 0.13230645643713515
-        },
-        {
-          "item_id": "vid_media_drama_002",
-          "score": 0.1183615875863878
-        }
-      ]
-    },
-    {
-      "namespace": "media_fi_fi",
-      "user_id": "media_family_001",
-      "items": [
-        {
-          "item_id": "vid_media_newdrop_001",
-          "score": 0.25
-        },
-        {
-          "item_id": "vid_media_kids_001",
-          "score": 0.2107905480862528
-        },
-        {
-          "item_id": "vid_media_sports_002",
-          "score": 0.19735352608482176
-        },
-        {
-          "item_id": "vid_media_sports_001",
-          "score": 0.17250051499760238
-        },
-        {
-          "item_id": "vid_media_news_001",
-          "score": 0.16749534897585613
-        },
-        {
-          "item_id": "vid_media_drama_001",
-          "score": 0.14434160154488912
-        },
-        {
-          "item_id": "vid_media_doc_001",
-          "score": 0.14199874592036105
-        },
-        {
-          "item_id": "vid_media_news_002",
-          "score": 0.13230645643713518
-        },
-        {
-          "item_id": "vid_media_drama_002",
-          "score": 0.1183615875863878
-        }
-      ]
-    },
-    {
-      "namespace": "media_fi_fi",
-      "user_id": "media_drama_001",
-      "items": [
-        {
-          "item_id": "vid_media_newdrop_001",
-          "score": 0.25
-        },
-        {
-          "item_id": "vid_media_kids_001",
-          "score": 0.2107905480862527
-        },
-        {
-          "item_id": "vid_media_sports_002",
-          "score": 0.1973535260848217
-        },
-        {
-          "item_id": "vid_media_sports_001",
-          "score": 0.17250051499760233
-        },
-        {
-          "item_id": "vid_media_news_001",
-          "score": 0.16749534897585608
-        },
-        {
-          "item_id": "vid_media_drama_001",
-          "score": 0.14434160154488904
-        },
-        {
-          "item_id": "vid_media_doc_001",
-          "score": 0.14199874592036096
-        },
-        {
-          "item_id": "vid_media_news_002",
-          "score": 0.1323064564371351
+          "item_id": "item_0097",
+          "score": 0.2851639260235989,
+          "brand": "Stride",
+          "category": "Fitness"
         },
         {
-          "item_id": "vid_media_drama_002",
-          "score": 0.11836158758638776
-        }
-      ]
-    },
-    {
-      "namespace": "media_fi_fi",
-      "user_id": "media_sports_002",
-      "items": [
-        {
-          "item_id": "vid_media_newdrop_001",
-          "score": 0.25
-        },
-        {
-          "item_id": "vid_media_kids_001",
-          "score": 0.21079054808625278
-        },
-        {
-          "item_id": "vid_media_sports_002",
-          "score": 0.19735352608482182
-        },
-        {
-          "item_id": "vid_media_sports_001",
-          "score": 0.17250051499760238
-        },
-        {
-          "item_id": "vid_media_news_001",
-          "score": 0.16749534897585613
-        },
-        {
-          "item_id": "vid_media_drama_001",
-          "score": 0.1443416015448891
-        },
-        {
-          "item_id": "vid_media_doc_001",
-          "score": 0.14199874592036105
-        },
-        {
-          "item_id": "vid_media_news_002",
-          "score": 0.13230645643713515
-        },
-        {
-          "item_id": "vid_media_drama_002",
-          "score": 0.11836158758638782
-        }
-      ]
-    },
-    {
-      "namespace": "media_fi_fi",
-      "user_id": "media_sports_001",
-      "items": [
-        {
-          "item_id": "vid_media_newdrop_001",
-          "score": 0.25
-        },
-        {
-          "item_id": "vid_media_kids_001",
-          "score": 0.21079054808625278
-        },
-        {
-          "item_id": "vid_media_sports_002",
-          "score": 0.19735352608482185
-        },
-        {
-          "item_id": "vid_media_sports_001",
-          "score": 0.1725005149976024
-        },
-        {
-          "item_id": "vid_media_news_001",
-          "score": 0.16749534897585613
-        },
-        {
-          "item_id": "vid_media_drama_001",
-          "score": 0.1443416015448891
-        },
-        {
-          "item_id": "vid_media_doc_001",
-          "score": 0.14199874592036107
-        },
-        {
-          "item_id": "vid_media_news_002",
-          "score": 0.13230645643713518
-        },
-        {
-          "item_id": "vid_media_drama_002",
-          "score": 0.11836158758638785
-        }
-      ]
-    },
-    {
-      "namespace": "media_fi_fi",
-      "user_id": "media_news_002",
-      "items": [
-        {
-          "item_id": "vid_media_newdrop_001",
-          "score": 0.25
-        },
-        {
-          "item_id": "vid_media_kids_001",
-          "score": 0.2107905480862527
+          "item_id": "item_0139",
+          "score": 0.25562175534902537,
+          "brand": "SummitPeak",
+          "category": "Outdoors"
         },
-        {
-          "item_id": "vid_media_sports_002",
-          "score": 0.19735352608482176
-        },
-        {
-          "item_id": "vid_media_sports_001",
-          "score": 0.1725005149976023
-        },
-        {
-          "item_id": "vid_media_news_001",
-          "score": 0.16749534897585605
-        },
-        {
-          "item_id": "vid_media_drama_001",
-          "score": 0.14434160154488912
-        },
-        {
-          "item_id": "vid_media_doc_001",
-          "score": 0.141998745920361
-        },
-        {
-          "item_id": "vid_media_news_002",
-          "score": 0.13230645643713512
-        },
-        {
-          "item_id": "vid_media_drama_002",
-          "score": 0.11836158758638779
-        }
-      ]
-    },
-    {
-      "namespace": "media_fi_fi",
-      "user_id": "media_news_001",
-      "items": [
         {
-          "item_id": "vid_media_newdrop_001",
-          "score": 0.25
+          "item_id": "item_0244",
+          "score": 0.2514254929967841,
+          "brand": "AuraThreads",
+          "category": "Fashion"
         },
         {
-          "item_id": "vid_media_kids_001",
-          "score": 0.2107905480862527
+          "item_id": "item_0006",
+          "score": 0.24474133380081955,
+          "brand": "PulseGear",
+          "category": "Fitness"
         },
         {
-          "item_id": "vid_media_sports_002",
-          "score": 0.1973535260848218
+          "item_id": "item_0069",
+          "score": 0.23279454810018232,
+          "brand": "SavoryCo",
+          "category": "Gourmet"
         },
         {
-          "item_id": "vid_media_sports_001",
-          "score": 0.17250051499760238
+          "item_id": "item_0238",
+          "score": 0.21958657774322032,
+          "brand": "CoutureX",
+          "category": "Fashion"
         },
         {
-          "item_id": "vid_media_news_001",
-          "score": 0.1674953489758561
+          "item_id": "item_0080",
+          "score": 0.21430692559559433,
+          "brand": "CozyNest",
+          "category": "Home"
         },
         {
-          "item_id": "vid_media_drama_001",
-          "score": 0.14434160154488906
+          "item_id": "item_0134",
+          "score": 0.21393932623352827,
+          "brand": "PioneerWords",
+          "category": "Books"
         },
         {
-          "item_id": "vid_media_doc_001",
-          "score": 0.14199874592036102
+          "item_id": "item_0262",
+          "score": 0.19531184621906705,
+          "brand": "LuxeGlow",
+          "category": "Beauty"
         },
         {
-          "item_id": "vid_media_news_002",
-          "score": 0.13230645643713515
+          "item_id": "item_0212",
+          "score": 0.10542613283080762,
+          "brand": "RadiantHue",
+          "category": "Beauty"
         },
         {
-          "item_id": "vid_media_drama_002",
-          "score": 0.1183615875863878
+          "item_id": "item_0285",
+          "score": 0.08957318603787282,
+          "brand": "Epicurean",
+          "category": "Gourmet"
         }
       ]
     }

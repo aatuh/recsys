@@ -1,0 +1,25 @@
+{
+  "runs": [
+    {
+      "run": "001",
+      "parameters": {
+        "BLEND_ALPHA": "0.3787",
+        "BLEND_BETA": "0.4776",
+        "BLEND_GAMMA": "0.1804",
+        "MMR_LAMBDA": "0.2529",
+        "POPULARITY_FANOUT": "590"
+      },
+      "metrics": {
+        "ndcg_lift": 0.4803128380391552,
+        "mrr_lift": 0.46827770831330395,
+        "recall_lift": 0.6712191636933977,
+        "catalog_coverage": 0.790625,
+        "long_tail_share": 0.4766666666666667,
+        "user_count": 150,
+        "segment_ndcg_lift": 0.13709601882563233,
+        "segment_mrr_lift": 0.36805755008089436,
+        "segment_user_count": 67
+      }
+    }
+  ]
+}

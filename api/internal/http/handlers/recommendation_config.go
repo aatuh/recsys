@@ -39,6 +39,35 @@ type RecommendationConfig struct {
 	RulesEnabled                  bool
 	CoverageCacheTTL              time.Duration
 	CoverageLongTailHintThreshold float64
+	SegmentProfiles               map[string]SegmentProfileConfig
+}
+
+// SegmentProfileConfig stores overrides for a specific segment.
+type SegmentProfileConfig struct {
+	BlendAlpha                float64
+	BlendBeta                 float64
+	BlendGamma                float64
+	MMRLambda                 *float64
+	PopularityFanout          *int
+	ProfileStarterBlendWeight *float64
+}
+
+// Clone returns a deep copy of the profile config.
+func (c SegmentProfileConfig) Clone() SegmentProfileConfig {
+	clone := c
+	if c.MMRLambda != nil {
+		val := *c.MMRLambda
+		clone.MMRLambda = &val
+	}
+	if c.PopularityFanout != nil {
+		val := *c.PopularityFanout
+		clone.PopularityFanout = &val
+	}
+	if c.ProfileStarterBlendWeight != nil {
+		val := *c.ProfileStarterBlendWeight
+		clone.ProfileStarterBlendWeight = &val
+	}
+	return clone
 }
 
 // Clone returns a deep copy of the config to avoid sharing slice/map references.
@@ -78,6 +107,12 @@ func (c RecommendationConfig) Clone() RecommendationConfig {
 	if c.NewUserPopFanout != nil {
 		val := *c.NewUserPopFanout
 		clone.NewUserPopFanout = &val
+	}
+	if len(c.SegmentProfiles) > 0 {
+		clone.SegmentProfiles = make(map[string]SegmentProfileConfig, len(c.SegmentProfiles))
+		for segment, profile := range c.SegmentProfiles {
+			clone.SegmentProfiles[segment] = profile.Clone()
+		}
 	}
 	if len(c.BanditExperiment.Surfaces) > 0 {
 		clone.BanditExperiment.Surfaces = make(map[string]struct{}, len(c.BanditExperiment.Surfaces))

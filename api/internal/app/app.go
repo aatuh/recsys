@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -108,77 +109,6 @@ func New(ctx context.Context, opts Options) (*App, error) {
 	})
 	ingestionSvc := ingestion.New(st)
 	dataSvc := datamanagement.New(st)
-	rulesManager := rules.NewManager(st, rules.ManagerOptions{
-		RefreshInterval: cfg.Rules.CacheRefresh,
-		MaxPinSlots:     cfg.Rules.MaxPinSlots,
-		Enabled:         cfg.Rules.Enabled,
-	})
-	recommendationSvc := recommendation.New(st, rulesManager)
-	recommendationSvc.WithStarterProfiles(cfg.Recommendation.Profile.StarterPresets, cfg.Recommendation.Profile.StarterDecayEvents)
-	if len(cfg.Recommendation.BlendOverrides) > 0 {
-		entries := make(map[string]recommendation.ResolvedBlendConfig, len(cfg.Recommendation.BlendOverrides))
-		now := time.Now().UTC()
-		for ns, weights := range cfg.Recommendation.BlendOverrides {
-			entries[ns] = recommendation.ResolvedBlendConfig{
-				Namespace: ns,
-				Alpha:     weights.Alpha,
-				Beta:      weights.Beta,
-				Gamma:     weights.Gamma,
-				Source:    "static_config",
-				UpdatedAt: now,
-			}
-		}
-		if resolver := recommendation.NewStaticBlendResolver(entries); resolver != nil {
-			recommendationSvc = recommendationSvc.WithBlendResolver(resolver)
-		}
-	}
-	if len(cfg.Recommendation.BlendSegmentOverrides) > 0 {
-		segmentEntries := make(map[string]recommendation.ResolvedBlendConfig, len(cfg.Recommendation.BlendSegmentOverrides))
-		now := time.Now().UTC()
-		for segment, weights := range cfg.Recommendation.BlendSegmentOverrides {
-			segmentEntries[segment] = recommendation.ResolvedBlendConfig{
-				Namespace: segment,
-				Alpha:     weights.Alpha,
-				Beta:      weights.Beta,
-				Gamma:     weights.Gamma,
-				Source:    "segment_override",
-				UpdatedAt: now,
-			}
-		}
-		recommendationSvc = recommendationSvc.WithSegmentBlendOverrides(segmentEntries)
-	}
-	recommendationSvc = recommendationSvc.WithNewUserOverrides(
-		cfg.Recommendation.NewUserBlendAlpha,
-		cfg.Recommendation.NewUserBlendBeta,
-		cfg.Recommendation.NewUserBlendGamma,
-		cfg.Recommendation.NewUserMMRLambda,
-		cfg.Recommendation.NewUserPopFanout,
-	)
-
-	explainService := newExplainService(cfg.Explain, st, logger)
-
-	writerCfg := audit.WriterConfig{
-		Enabled:           cfg.Audit.DecisionTrace.Enabled,
-		QueueSize:         cfg.Audit.DecisionTrace.QueueSize,
-		BatchSize:         cfg.Audit.DecisionTrace.BatchSize,
-		FlushInterval:     cfg.Audit.DecisionTrace.FlushInterval,
-		SampleDefaultRate: cfg.Audit.DecisionTrace.SampleDefault,
-		NamespaceRates:    cfg.Audit.DecisionTrace.NamespaceSample,
-	}
-
-	decisionRecorder := audit.NewWriter(ctx, st, logger, writerCfg)
-	closers = append(closers, func(parent context.Context) error {
-		closeCtx, cancel := context.WithTimeout(parent, 5*time.Second)
-		defer cancel()
-		if err := decisionRecorder.Close(closeCtx); err != nil && !errors.Is(err, context.DeadlineExceeded) {
-			logger.Warn("decision recorder close", zap.Error(err))
-			return err
-		}
-		return nil
-	})
-
-	tracer := handlers.NewDecisionTracer(decisionRecorder, logger, cfg.Audit.DecisionTrace.Salt, cfg.Rules.AuditSample)
-
 	recConfig := handlers.RecommendationConfig{
 		HalfLifeDays:                  cfg.Recommendation.HalfLifeDays,
 		CoVisWindowDays:               cfg.Recommendation.CoVisWindowDays,
@@ -216,6 +146,20 @@ func New(ctx context.Context, opts Options) (*App, error) {
 			Surfaces:       make(map[string]struct{}),
 		},
 	}
+	if len(cfg.Recommendation.BlendSegmentOverrides) > 0 {
+		recConfig.SegmentProfiles = make(map[string]handlers.SegmentProfileConfig, len(cfg.Recommendation.BlendSegmentOverrides))
+		for segment, weights := range cfg.Recommendation.BlendSegmentOverrides {
+			key := strings.ToLower(strings.TrimSpace(segment))
+			if key == "" {
+				continue
+			}
+			recConfig.SegmentProfiles[key] = handlers.SegmentProfileConfig{
+				BlendAlpha: weights.Alpha,
+				BlendBeta:  weights.Beta,
+				BlendGamma: weights.Gamma,
+			}
+		}
+	}
 	for _, surface := range cfg.Recommendation.BanditExperiment.Surfaces {
 		recConfig.BanditExperiment.Surfaces[surface] = struct{}{}
 	}
@@ -224,6 +168,77 @@ func New(ctx context.Context, opts Options) (*App, error) {
 		Source:    "env",
 		UpdatedBy: "env",
 	})
+
+	rulesManager := rules.NewManager(st, rules.ManagerOptions{
+		RefreshInterval: cfg.Rules.CacheRefresh,
+		MaxPinSlots:     cfg.Rules.MaxPinSlots,
+		Enabled:         cfg.Rules.Enabled,
+	})
+	recommendationSvc := recommendation.New(st, rulesManager)
+	recommendationSvc.WithStarterProfiles(cfg.Recommendation.Profile.StarterPresets, cfg.Recommendation.Profile.StarterDecayEvents)
+	if len(cfg.Recommendation.BlendOverrides) > 0 {
+		entries := make(map[string]recommendation.ResolvedBlendConfig, len(cfg.Recommendation.BlendOverrides))
+		now := time.Now().UTC()
+		for ns, weights := range cfg.Recommendation.BlendOverrides {
+			entries[ns] = recommendation.ResolvedBlendConfig{
+				Namespace: ns,
+				Alpha:     weights.Alpha,
+				Beta:      weights.Beta,
+				Gamma:     weights.Gamma,
+				Source:    "static_config",
+				UpdatedAt: now,
+			}
+		}
+		if resolver := recommendation.NewStaticBlendResolver(entries); resolver != nil {
+			recommendationSvc = recommendationSvc.WithBlendResolver(resolver)
+		}
+	}
+	if len(recConfig.SegmentProfiles) > 0 {
+		segmentEntries := make(map[string]recommendation.ResolvedBlendConfig, len(recConfig.SegmentProfiles))
+		now := time.Now().UTC()
+		for segment, profile := range recConfig.SegmentProfiles {
+			segmentEntries[segment] = recommendation.ResolvedBlendConfig{
+				Namespace: segment,
+				Alpha:     profile.BlendAlpha,
+				Beta:      profile.BlendBeta,
+				Gamma:     profile.BlendGamma,
+				Source:    "segment_override",
+				UpdatedAt: now,
+			}
+		}
+		recommendationSvc = recommendationSvc.WithSegmentBlendOverrides(segmentEntries)
+	}
+	recommendationSvc = recommendationSvc.WithNewUserOverrides(
+		cfg.Recommendation.NewUserBlendAlpha,
+		cfg.Recommendation.NewUserBlendBeta,
+		cfg.Recommendation.NewUserBlendGamma,
+		cfg.Recommendation.NewUserMMRLambda,
+		cfg.Recommendation.NewUserPopFanout,
+	)
+
+	explainService := newExplainService(cfg.Explain, st, logger)
+
+	writerCfg := audit.WriterConfig{
+		Enabled:           cfg.Audit.DecisionTrace.Enabled,
+		QueueSize:         cfg.Audit.DecisionTrace.QueueSize,
+		BatchSize:         cfg.Audit.DecisionTrace.BatchSize,
+		FlushInterval:     cfg.Audit.DecisionTrace.FlushInterval,
+		SampleDefaultRate: cfg.Audit.DecisionTrace.SampleDefault,
+		NamespaceRates:    cfg.Audit.DecisionTrace.NamespaceSample,
+	}
+
+	decisionRecorder := audit.NewWriter(ctx, st, logger, writerCfg)
+	closers = append(closers, func(parent context.Context) error {
+		closeCtx, cancel := context.WithTimeout(parent, 5*time.Second)
+		defer cancel()
+		if err := decisionRecorder.Close(closeCtx); err != nil && !errors.Is(err, context.DeadlineExceeded) {
+			logger.Warn("decision recorder close", zap.Error(err))
+			return err
+		}
+		return nil
+	})
+
+	tracer := handlers.NewDecisionTracer(decisionRecorder, logger, cfg.Audit.DecisionTrace.Salt, cfg.Rules.AuditSample)
 
 	ingHandler := handlers.NewIngestionHandler(ingestionSvc, cfg.Recommendation.DefaultOrgID, logger)
 	dataHandler := handlers.NewDataManagementHandler(dataSvc, cfg.Recommendation.DefaultOrgID, logger)

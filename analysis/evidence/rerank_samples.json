@@ -28,83 +28,83 @@
       "items": [
         {
           "item_id": "item_0004",
-          "score": 0.8169788440689209
+          "score": 0.7245698271810099
         },
         {
-          "item_id": "item_0005",
-          "score": 0.7158300857668297
+          "item_id": "item_0024",
+          "score": 0.6248612708662326
         },
         {
-          "item_id": "item_0019",
-          "score": 0.7098758931336544
+          "item_id": "item_0105",
+          "score": 0.602776288743581
         },
         {
           "item_id": "item_0012",
-          "score": 0.7015567743664097
-        },
-        {
-          "item_id": "item_0082",
-          "score": 0.6885762952400839
-        },
-        {
-          "item_id": "item_0231",
-          "score": 0.6419955190964785
-        },
-        {
-          "item_id": "item_0310",
-          "score": 0.6092281227939823
-        },
-        {
-          "item_id": "item_0084",
-          "score": 0.6046862852710422
+          "score": 0.600077661264503
         },
         {
           "item_id": "item_0077",
-          "score": 0.5836743085292971
+          "score": 0.5863369436652405
         },
         {
-          "item_id": "item_0127",
-          "score": 0.5719322362500042
+          "item_id": "item_0005",
+          "score": 0.5790879296722414
+        },
+        {
+          "item_id": "item_0306",
+          "score": 0.5769969472648524
         },
         {
           "item_id": "item_0040",
-          "score": 0.5716885908498586
+          "score": 0.5658241637791859
+        },
+        {
+          "item_id": "item_0265",
+          "score": 0.5559163834004771
+        },
+        {
+          "item_id": "item_0127",
+          "score": 0.5492422296337687
+        },
+        {
+          "item_id": "item_0049",
+          "score": 0.5236511578896551
+        },
+        {
+          "item_id": "item_0233",
+          "score": 0.4976270800409542
         },
         {
           "item_id": "item_0008",
-          "score": 0.5670603657374045
+          "score": 0.4975234102814175
         },
         {
-          "item_id": "item_0011",
-          "score": 0.5393397441477327
+          "item_id": "item_0007",
+          "score": 0.49624316374379895
         },
         {
-          "item_id": "item_0021",
-          "score": 0.5174696352440172
+          "item_id": "item_0076",
+          "score": 0.49433083150897417
         },
         {
           "item_id": "item_0134",
-          "score": 0.4817029207233197
-        },
-        {
-          "item_id": "item_0090",
-          "score": 0.46832121598727494
-        },
-        {
-          "item_id": "item_0264",
-          "score": 0.44461599224573345
+          "score": 0.4812394650519783
         },
         {
           "item_id": "item_0010",
-          "score": 0.4382332252551499
+          "score": 0.41568700085177485
         },
         {
           "item_id": "item_0080",
-          "score": 0.42463909071831235
+          "score": 0.3724630453856989
         },
         {
           "item_id": "item_0285",
-          "score": 0.3991864111824817
+          "score": 0.3520600124386832
+        },
+        {
+          "item_id": "item_0290",
+          "score": 0.3323794941232245
         }
       ],
       "trace": {
@@ -112,11 +112,11 @@
           "candidate_sources": {
             "merged": {
               "count": 200,
-              "duration_ms": 0.014327
+              "duration_ms": 0.015049
             },
             "post_exclusion": {
               "count": 199,
-              "duration_ms": 1.531396
+              "duration_ms": 1.330241
             },
             "prefetched": {
               "count": 200,
@@ -134,6 +134,7 @@
             "rule_pin_count": 0,
             "rule_boost_count": 0,
             "rule_boost_injected": 0,
+            "rule_block_exposure": 0,
             "rule_boost_exposure": 0,
             "rule_pin_exposure": 0,
             "after_rules": 199,
@@ -216,84 +217,84 @@
       "model_version": "popularity_v1",
       "items": [
         {
-          "item_id": "item_0200",
-          "score": 0.8391817637592874
-        },
-        {
           "item_id": "item_0011",
-          "score": 0.8210314242036488
+          "score": 0.9017901871457296
         },
         {
           "item_id": "item_0283",
-          "score": 0.7805861577723956
+          "score": 0.8596452009157518
         },
         {
           "item_id": "item_0006",
-          "score": 0.7726471866243451
+          "score": 0.8156005870796844
+        },
+        {
+          "item_id": "item_0185",
+          "score": 0.7476678776834877
+        },
+        {
+          "item_id": "item_0113",
+          "score": 0.6920173129263457
+        },
+        {
+          "item_id": "item_0215",
+          "score": 0.6782660056798522
         },
         {
           "item_id": "item_0004",
-          "score": 0.7326987950608332
-        },
-        {
-          "item_id": "item_0139",
-          "score": 0.6530238729867902
-        },
-        {
-          "item_id": "item_0192",
-          "score": 0.6477809655778904
+          "score": 0.6314017113290373
         },
         {
           "item_id": "item_0018",
-          "score": 0.6289827186607294
+          "score": 0.580625895223553
         },
         {
-          "item_id": "item_0020",
-          "score": 0.6210286433853965
+          "item_id": "item_0232",
+          "score": 0.5494265287671579
         },
         {
-          "item_id": "item_0143",
-          "score": 0.5833554394021461
-        },
-        {
-          "item_id": "item_0320",
-          "score": 0.546050149367919
-        },
-        {
-          "item_id": "item_0010",
-          "score": 0.5331976847952457
-        },
-        {
-          "item_id": "item_0267",
-          "score": 0.52391403248673
+          "item_id": "item_0286",
+          "score": 0.5252864997695519
         },
         {
           "item_id": "item_0312",
-          "score": 0.5083093341658346
+          "score": 0.5076076562616494
         },
         {
-          "item_id": "item_0231",
-          "score": 0.48845892718069045
+          "item_id": "item_0034",
+          "score": 0.4902272784651905
         },
         {
-          "item_id": "item_0057",
-          "score": 0.37915287058851377
+          "item_id": "item_0181",
+          "score": 0.48724334940236197
         },
         {
-          "item_id": "item_0313",
-          "score": 0.36873423434161845
+          "item_id": "item_0106",
+          "score": 0.46984632229191164
         },
         {
-          "item_id": "item_0056",
-          "score": 0.3357451036714747
+          "item_id": "item_0010",
+          "score": 0.4304161626415302
         },
         {
           "item_id": "item_0285",
-          "score": 0.30606037874027975
+          "score": 0.4148480512354968
         },
         {
-          "item_id": "item_0289",
-          "score": 0.2891198327009878
+          "item_id": "item_0177",
+          "score": 0.40585332341396035
+        },
+        {
+          "item_id": "item_0223",
+          "score": 0.3936590197717297
+        },
+        {
+          "item_id": "item_0313",
+          "score": 0.3732963000159996
+        },
+        {
+          "item_id": "item_0090",
+          "score": 0.36038591100489514
         }
       ],
       "trace": {
@@ -301,11 +302,11 @@
           "candidate_sources": {
             "merged": {
               "count": 200,
-              "duration_ms": 0.014137
+              "duration_ms": 0.013626
             },
             "post_exclusion": {
               "count": 197,
-              "duration_ms": 1.489395
+              "duration_ms": 1.254747
             },
             "prefetched": {
               "count": 200,
@@ -323,6 +324,7 @@
             "rule_pin_count": 0,
             "rule_boost_count": 0,
             "rule_boost_injected": 0,
+            "rule_block_exposure": 0,
             "rule_boost_exposure": 0,
             "rule_pin_exposure": 0,
             "after_rules": 197,
@@ -406,83 +408,83 @@
       "items": [
         {
           "item_id": "item_0002",
-          "score": 0.9036415051219806
+          "score": 1.141951291162816
         },
         {
           "item_id": "item_0003",
-          "score": 0.8956275784869978
-        },
-        {
-          "item_id": "item_0191",
-          "score": 0.8585947808845021
-        },
-        {
-          "item_id": "item_0078",
-          "score": 0.6721625462148829
+          "score": 0.8348807050812413
         },
         {
           "item_id": "item_0320",
-          "score": 0.628688495291084
+          "score": 0.7152198309914204
         },
         {
-          "item_id": "item_0008",
-          "score": 0.5718402941757926
-        },
-        {
-          "item_id": "item_0059",
-          "score": 0.5487479998077877
-        },
-        {
-          "item_id": "item_0050",
-          "score": 0.53129773778863
-        },
-        {
-          "item_id": "item_0092",
-          "score": 0.527156610847722
-        },
-        {
-          "item_id": "item_0258",
-          "score": 0.5151686628914142
-        },
-        {
-          "item_id": "item_0103",
-          "score": 0.5111495459171921
-        },
-        {
-          "item_id": "item_0084",
-          "score": 0.5021900310602497
-        },
-        {
-          "item_id": "item_0260",
-          "score": 0.45507003857266326
-        },
-        {
-          "item_id": "item_0091",
-          "score": 0.44042362976297555
+          "item_id": "item_0078",
+          "score": 0.6698883536277748
         },
         {
           "item_id": "item_0139",
-          "score": 0.4262001458527369
+          "score": 0.6417549062010541
         },
         {
-          "item_id": "item_0238",
-          "score": 0.42567764297590904
+          "item_id": "item_0252",
+          "score": 0.606000132326908
+        },
+        {
+          "item_id": "item_0103",
+          "score": 0.59586087025163
+        },
+        {
+          "item_id": "item_0091",
+          "score": 0.5779733013898893
+        },
+        {
+          "item_id": "item_0008",
+          "score": 0.5710921656831657
         },
         {
           "item_id": "item_0005",
-          "score": 0.42516688587836665
+          "score": 0.561661039551881
         },
         {
-          "item_id": "item_0096",
-          "score": 0.41192685357449776
+          "item_id": "item_0312",
+          "score": 0.5340243553742962
+        },
+        {
+          "item_id": "item_0225",
+          "score": 0.5008101159126961
+        },
+        {
+          "item_id": "item_0146",
+          "score": 0.4919916683931258
+        },
+        {
+          "item_id": "item_0020",
+          "score": 0.46776650498716604
+        },
+        {
+          "item_id": "item_0060",
+          "score": 0.4612937865021863
+        },
+        {
+          "item_id": "item_0061",
+          "score": 0.4401102393129441
+        },
+        {
+          "item_id": "item_0094",
+          "score": 0.42726425832950965
         },
         {
           "item_id": "item_0242",
-          "score": 0.3568060043551109
+          "score": 0.42347267102177755
         },
         {
-          "item_id": "item_0077",
-          "score": 0.3290517333928206
+          "item_id": "item_0127",
+          "score": 0.37016666593272446
+        },
+        {
+          "item_id": "item_0248",
+          "score": 0.30460637262483736
         }
       ],
       "trace": {
@@ -490,11 +492,11 @@
           "candidate_sources": {
             "merged": {
               "count": 200,
-              "duration_ms": 0.016822
+              "duration_ms": 0.013516
             },
             "post_exclusion": {
               "count": 200,
-              "duration_ms": 1.345059
+              "duration_ms": 1.712051
             },
             "prefetched": {
               "count": 200,
@@ -512,6 +514,7 @@
             "rule_pin_count": 0,
             "rule_boost_count": 0,
             "rule_boost_injected": 0,
+            "rule_block_exposure": 0,
             "rule_boost_exposure": 0,
             "rule_pin_exposure": 0,
             "after_rules": 200,
@@ -588,84 +591,84 @@
       "model_version": "popularity_v1",
       "items": [
         {
-          "item_id": "item_0283",
-          "score": 0.7850847031618375
+          "item_id": "item_0099",
+          "score": 0.7916609164715168
         },
         {
-          "item_id": "item_0009",
-          "score": 0.768856038146779
-        },
-        {
-          "item_id": "item_0215",
-          "score": 0.7678770927261874
-        },
-        {
-          "item_id": "item_0004",
-          "score": 0.7315960884704021
-        },
-        {
-          "item_id": "item_0005",
-          "score": 0.6728122878135585
-        },
-        {
-          "item_id": "item_0008",
-          "score": 0.6640169044024636
-        },
-        {
-          "item_id": "item_0191",
-          "score": 0.6639405401767959
-        },
-        {
-          "item_id": "item_0310",
-          "score": 0.6518768635889248
-        },
-        {
-          "item_id": "item_0200",
-          "score": 0.6364033107002557
-        },
-        {
-          "item_id": "item_0007",
-          "score": 0.6172034123806999
-        },
-        {
-          "item_id": "item_0041",
-          "score": 0.5944354865687836
-        },
-        {
-          "item_id": "item_0084",
-          "score": 0.5867826664888208
+          "item_id": "item_0187",
+          "score": 0.7330024449858129
         },
         {
           "item_id": "item_0026",
-          "score": 0.5620591405000737
+          "score": 0.6803077342396351
         },
         {
-          "item_id": "item_0010",
-          "score": 0.5203580428112562
+          "item_id": "item_0009",
+          "score": 0.6796824753545044
+        },
+        {
+          "item_id": "item_0005",
+          "score": 0.638471559172992
+        },
+        {
+          "item_id": "item_0041",
+          "score": 0.6349715468095916
+        },
+        {
+          "item_id": "item_0121",
+          "score": 0.6243889766524128
+        },
+        {
+          "item_id": "item_0183",
+          "score": 0.5720943157448721
+        },
+        {
+          "item_id": "item_0200",
+          "score": 0.5714252011205969
+        },
+        {
+          "item_id": "item_0191",
+          "score": 0.5663832420428876
+        },
+        {
+          "item_id": "item_0059",
+          "score": 0.5559676551219622
+        },
+        {
+          "item_id": "item_0084",
+          "score": 0.549916008781328
         },
         {
           "item_id": "item_0124",
-          "score": 0.5079825743003229
+          "score": 0.5352635415475214
         },
         {
-          "item_id": "item_0027",
-          "score": 0.5012006240629963
+          "item_id": "item_0008",
+          "score": 0.5223249687948317
         },
         {
-          "item_id": "item_0050",
-          "score": 0.47906535715099985
+          "item_id": "item_0290",
+          "score": 0.46486953334245995
         },
         {
-          "item_id": "item_0313",
-          "score": 0.4657049391195479
+          "item_id": "item_0010",
+          "score": 0.44906117186519895
         },
         {
-          "item_id": "item_0081",
-          "score": 0.4414526635746236
+          "item_id": "item_0094",
+          "score": 0.4471861610911987
+        },
+        {
+          "item_id": "item_0115",
+          "score": 0.44021882406067003
+        },
+        {
+          "item_id": "item_0034",
+          "score": 0.377560778246982
         },
         {
           "item_id": "item_0285",
-          "score": 0.2684188044996026
+          "score": 0.2062798140932034
         }
       ],
       "trace": {
@@ -673,11 +676,11 @@
           "candidate_sources": {
             "merged": {
               "count": 200,
-              "duration_ms": 0.014127
+              "duration_ms": 0.018025
             },
             "post_exclusion": {
-              "count": 197,
-              "duration_ms": 1.431374
+              "count": 198,
+              "duration_ms": 1.753329
             },
             "prefetched": {
               "count": 200,
@@ -687,17 +690,18 @@
           "policy": {
             "total_candidates": 200,
             "explicit_exclude_hits": 0,
-            "recent_event_exclude_hits": 3,
-            "after_exclusions": 197,
+            "recent_event_exclude_hits": 2,
+            "after_exclusions": 198,
             "constraint_filtered_count": 0,
-            "after_constraint_filters": 197,
+            "after_constraint_filters": 198,
             "rule_block_count": 0,
             "rule_pin_count": 0,
             "rule_boost_count": 0,
             "rule_boost_injected": 0,
+            "rule_block_exposure": 0,
             "rule_boost_exposure": 0,
             "rule_pin_exposure": 0,
-            "after_rules": 197,
+            "after_rules": 198,
             "final_count": 20,
             "constraint_leak_count": 0
           },
@@ -774,83 +778,83 @@
       "items": [
         {
           "item_id": "item_0001",
-          "score": 0.8818629516813982
-        },
-        {
-          "item_id": "item_0283",
-          "score": 0.6038404580414068
+          "score": 0.9606457367084958
         },
         {
           "item_id": "item_0002",
-          "score": 0.5923853435596249
+          "score": 0.6363092552303348
+        },
+        {
+          "item_id": "item_0198",
+          "score": 0.5605671149061752
+        },
+        {
+          "item_id": "item_0019",
+          "score": 0.5546692279704507
         },
         {
           "item_id": "item_0004",
-          "score": 0.49364844340397357
-        },
-        {
-          "item_id": "item_0227",
-          "score": 0.4070099441364275
-        },
-        {
-          "item_id": "item_0220",
-          "score": 0.36502220644458633
-        },
-        {
-          "item_id": "item_0071",
-          "score": 0.36420731742781737
-        },
-        {
-          "item_id": "item_0313",
-          "score": 0.36340948800205586
-        },
-        {
-          "item_id": "item_0007",
-          "score": 0.35851198407917023
-        },
-        {
-          "item_id": "item_0134",
-          "score": 0.34569638354409477
-        },
-        {
-          "item_id": "item_0182",
-          "score": 0.32316633567305986
-        },
-        {
-          "item_id": "item_0088",
-          "score": 0.29897038790138164
-        },
-        {
-          "item_id": "item_0005",
-          "score": 0.2966182332062003
-        },
-        {
-          "item_id": "item_0091",
-          "score": 0.2629694339642038
-        },
-        {
-          "item_id": "item_0232",
-          "score": 0.2599310259185052
+          "score": 0.45450098765302765
         },
         {
           "item_id": "item_0297",
-          "score": 0.2490057231165315
+          "score": 0.38974844626950045
         },
         {
-          "item_id": "item_0194",
-          "score": 0.22870284856332185
+          "item_id": "item_0054",
+          "score": 0.3834710987305668
         },
         {
-          "item_id": "item_0177",
-          "score": 0.1951531958021927
+          "item_id": "item_0217",
+          "score": 0.36498592157707177
+        },
+        {
+          "item_id": "item_0134",
+          "score": 0.3413519598089014
+        },
+        {
+          "item_id": "item_0290",
+          "score": 0.33852813571992124
+        },
+        {
+          "item_id": "item_0117",
+          "score": 0.3311856634502533
+        },
+        {
+          "item_id": "item_0220",
+          "score": 0.30443332395442035
+        },
+        {
+          "item_id": "item_0292",
+          "score": 0.28094631130832326
+        },
+        {
+          "item_id": "item_0038",
+          "score": 0.27869767880628776
+        },
+        {
+          "item_id": "item_0115",
+          "score": 0.2769442056826189
+        },
+        {
+          "item_id": "item_0102",
+          "score": 0.2709471405463966
+        },
+        {
+          "item_id": "item_0026",
+          "score": 0.25497176104788677
+        },
+        {
+          "item_id": "item_0137",
+          "score": 0.24328440854693278
         },
         {
           "item_id": "item_0285",
-          "score": 0.17325346611022097
+          "score": 0.08984451598818281
         },
         {
           "item_id": "item_0289",
-          "score": 0.16551365455606679
+          "score": 0.08216583172825917
         }
       ],
       "trace": {
@@ -858,11 +862,11 @@
           "candidate_sources": {
             "merged": {
               "count": 200,
-              "duration_ms": 0.019667
+              "duration_ms": 0.018725
             },
             "post_exclusion": {
               "count": 199,
-              "duration_ms": 1.52303
+              "duration_ms": 1.41337
             },
             "prefetched": {
               "count": 200,
@@ -880,6 +884,7 @@
             "rule_pin_count": 0,
             "rule_boost_count": 0,
             "rule_boost_injected": 0,
+            "rule_block_exposure": 0,
             "rule_boost_exposure": 0,
             "rule_pin_exposure": 0,
             "after_rules": 199,
@@ -939,84 +944,84 @@
       "model_version": "popularity_v1",
       "items": [
         {
-          "item_id": "item_0200",
-          "score": 0.9586104368429222
+          "item_id": "item_0012",
+          "score": 1.0189592273176693
         },
         {
           "item_id": "item_0006",
-          "score": 0.9290145075457813
+          "score": 0.8423130365499731
         },
         {
           "item_id": "item_0102",
-          "score": 0.8208252533869347
+          "score": 0.8394232929910883
         },
         {
           "item_id": "item_0040",
-          "score": 0.7848370191589259
+          "score": 0.7894685141411794
         },
         {
-          "item_id": "item_0004",
-          "score": 0.682428455839259
-        },
-        {
-          "item_id": "item_0139",
-          "score": 0.6093291566547644
-        },
-        {
-          "item_id": "item_0157",
-          "score": 0.6000339595493062
-        },
-        {
-          "item_id": "item_0084",
-          "score": 0.5909694548547033
-        },
-        {
-          "item_id": "item_0313",
-          "score": 0.5881696785596673
-        },
-        {
-          "item_id": "item_0037",
-          "score": 0.5859494386661853
-        },
-        {
-          "item_id": "item_0184",
-          "score": 0.5769797549685162
-        },
-        {
-          "item_id": "item_0005",
-          "score": 0.5390328003236288
+          "item_id": "item_0008",
+          "score": 0.684786723316151
         },
         {
           "item_id": "item_0201",
-          "score": 0.5030928638410489
+          "score": 0.6316035206128494
+        },
+        {
+          "item_id": "item_0264",
+          "score": 0.62770871070365
+        },
+        {
+          "item_id": "item_0084",
+          "score": 0.5896387013192482
+        },
+        {
+          "item_id": "item_0184",
+          "score": 0.5854115257639639
+        },
+        {
+          "item_id": "item_0194",
+          "score": 0.5543448774139961
+        },
+        {
+          "item_id": "item_0290",
+          "score": 0.5398830371357449
+        },
+        {
+          "item_id": "item_0029",
+          "score": 0.5366690163208911
+        },
+        {
+          "item_id": "item_0313",
+          "score": 0.5160393922878556
+        },
+        {
+          "item_id": "item_0035",
+          "score": 0.5146958033658052
         },
         {
           "item_id": "item_0066",
           "score": 0.49492287244714916
         },
         {
-          "item_id": "item_0282",
-          "score": 0.4751269865398819
+          "item_id": "item_0249",
+          "score": 0.4400973406574199
         },
         {
-          "item_id": "item_0290",
-          "score": 0.4601469145028383
-        },
-        {
-          "item_id": "item_0057",
-          "score": 0.3629582835051018
+          "item_id": "item_0096",
+          "score": 0.4259029447771245
         },
         {
           "item_id": "item_0056",
-          "score": 0.34861987641049125
+          "score": 0.4152865430771579
+        },
+        {
+          "item_id": "item_0282",
+          "score": 0.3963128709182685
         },
         {
           "item_id": "item_0285",
-          "score": 0.3390008741432948
-        },
-        {
-          "item_id": "item_0289",
-          "score": 0.2649869428629709
+          "score": 0.34131729282428164
         }
       ],
       "trace": {
@@ -1024,11 +1029,11 @@
           "candidate_sources": {
             "merged": {
               "count": 200,
-              "duration_ms": 0.013896
+              "duration_ms": 0.012704
             },
             "post_exclusion": {
               "count": 200,
-              "duration_ms": 1.259075
+              "duration_ms": 1.22506
             },
             "prefetched": {
               "count": 200,
@@ -1046,6 +1051,7 @@
             "rule_pin_count": 0,
             "rule_boost_count": 0,
             "rule_boost_injected": 0,
+            "rule_block_exposure": 0,
             "rule_boost_exposure": 0,
             "rule_pin_exposure": 0,
             "after_rules": 200,
@@ -1127,80 +1133,80 @@
           "score": 0.8538097558237199
         },
         {
-          "item_id": "item_0002",
-          "score": 0.7938346658681825
-        },
-        {
-          "item_id": "item_0269",
-          "score": 0.6164787764094828
-        },
-        {
-          "item_id": "item_0046",
-          "score": 0.5977622143621413
-        },
-        {
-          "item_id": "item_0026",
-          "score": 0.5310650522925631
-        },
-        {
-          "item_id": "item_0048",
-          "score": 0.5129915794790519
-        },
-        {
-          "item_id": "item_0217",
-          "score": 0.439068774106553
-        },
-        {
-          "item_id": "item_0191",
-          "score": 0.4368959911377648
-        },
-        {
-          "item_id": "item_0018",
-          "score": 0.39631673817226587
-        },
-        {
-          "item_id": "item_0320",
-          "score": 0.39069112801390926
+          "item_id": "item_0011",
+          "score": 0.6438522194415767
         },
         {
           "item_id": "item_0259",
-          "score": 0.36725703867869974
+          "score": 0.6097074146198415
         },
         {
-          "item_id": "item_0182",
-          "score": 0.34232970700733806
+          "item_id": "item_0002",
+          "score": 0.5800649866231831
         },
         {
-          "item_id": "item_0010",
-          "score": 0.3407089930380198
+          "item_id": "item_0308",
+          "score": 0.5655975379288423
         },
         {
-          "item_id": "item_0194",
-          "score": 0.33317778404264997
+          "item_id": "item_0048",
+          "score": 0.5173967803836552
+        },
+        {
+          "item_id": "item_0224",
+          "score": 0.5112430268119856
+        },
+        {
+          "item_id": "item_0030",
+          "score": 0.4052334122658055
+        },
+        {
+          "item_id": "item_0008",
+          "score": 0.39251411193225677
+        },
+        {
+          "item_id": "item_0294",
+          "score": 0.3903217977958304
         },
         {
           "item_id": "item_0137",
-          "score": 0.327916321011055
+          "score": 0.3832295137694059
         },
         {
-          "item_id": "item_0229",
-          "score": 0.2536112701999779
+          "item_id": "item_0181",
+          "score": 0.38192974854808437
         },
         {
-          "item_id": "item_0057",
-          "score": 0.2528538554808842
+          "item_id": "item_0191",
+          "score": 0.3818763169436582
+        },
+        {
+          "item_id": "item_0127",
+          "score": 0.34448245233280694
+        },
+        {
+          "item_id": "item_0072",
+          "score": 0.28714551341041034
+        },
+        {
+          "item_id": "item_0217",
+          "score": 0.25534514031060457
+        },
+        {
+          "item_id": "item_0194",
+          "score": 0.22438603742855764
+        },
+        {
+          "item_id": "item_0230",
+          "score": 0.18626068089239908
+        },
+        {
+          "item_id": "item_0094",
+          "score": 0.18400490059063102
         },
         {
           "item_id": "item_0285",
-          "score": 0.19932443611532674
-        },
-        {
-          "item_id": "item_0096",
-          "score": 0.18557308556573537
-        },
-        {
-          "item_id": "item_0289",
-          "score": 0.13782522708202824
+          "score": 0.08903581744645753
         }
       ],
       "trace": {
@@ -1208,11 +1214,11 @@
           "candidate_sources": {
             "merged": {
               "count": 200,
-              "duration_ms": 0.013176
+              "duration_ms": 0.017453
             },
             "post_exclusion": {
               "count": 198,
-              "duration_ms": 1.447145
+              "duration_ms": 1.2825
             },
             "prefetched": {
               "count": 200,
@@ -1230,6 +1236,7 @@
             "rule_pin_count": 0,
             "rule_boost_count": 0,
             "rule_boost_injected": 0,
+            "rule_block_exposure": 0,
             "rule_boost_exposure": 0,
             "rule_pin_exposure": 0,
             "after_rules": 198,
@@ -1306,83 +1313,83 @@
       "items": [
         {
           "item_id": "item_0003",
-          "score": 1.142801098416567
-        },
-        {
-          "item_id": "item_0009",
-          "score": 0.8052641410687171
-        },
-        {
-          "item_id": "item_0308",
-          "score": 0.7883651704259474
-        },
-        {
-          "item_id": "item_0004",
-          "score": 0.708856077923452
+          "score": 0.9994864022408442
         },
         {
           "item_id": "item_0137",
-          "score": 0.6475943426983638
-        },
-        {
-          "item_id": "item_0005",
-          "score": 0.6204072508288198
-        },
-        {
-          "item_id": "item_0259",
-          "score": 0.5719917520668817
+          "score": 0.865357464466231
         },
         {
           "item_id": "item_0136",
-          "score": 0.565768094916141
+          "score": 0.7839613492245266
         },
         {
-          "item_id": "item_0018",
-          "score": 0.5551924278829158
+          "item_id": "item_0224",
+          "score": 0.7337937039889847
         },
         {
-          "item_id": "item_0008",
-          "score": 0.5414207966575214
+          "item_id": "item_0009",
+          "score": 0.7253070514005157
+        },
+        {
+          "item_id": "item_0065",
+          "score": 0.6903440176298639
+        },
+        {
+          "item_id": "item_0255",
+          "score": 0.6862690375706891
+        },
+        {
+          "item_id": "item_0030",
+          "score": 0.639578288338996
+        },
+        {
+          "item_id": "item_0052",
+          "score": 0.5782283275970342
         },
         {
           "item_id": "item_0010",
-          "score": 0.53676305433476
+          "score": 0.5682715070532053
         },
         {
-          "item_id": "item_0227",
-          "score": 0.5269705199184557
+          "item_id": "item_0153",
+          "score": 0.5585703659208598
         },
         {
-          "item_id": "item_0066",
-          "score": 0.47964173760989237
+          "item_id": "item_0313",
+          "score": 0.519862803663648
         },
         {
-          "item_id": "item_0127",
-          "score": 0.47621236455673205
+          "item_id": "item_0005",
+          "score": 0.5159715779195596
         },
         {
-          "item_id": "item_0217",
-          "score": 0.4470024114324024
-        },
-        {
-          "item_id": "item_0090",
-          "score": 0.4149752925425196
-        },
-        {
-          "item_id": "item_0087",
-          "score": 0.4030610143164895
-        },
-        {
-          "item_id": "item_0134",
-          "score": 0.37829622453188544
-        },
-        {
-          "item_id": "item_0194",
-          "score": 0.3761709069006302
+          "item_id": "item_0008",
+          "score": 0.5008505406085247
         },
         {
           "item_id": "item_0285",
-          "score": 0.30491335356413063
+          "score": 0.4636039232074435
+        },
+        {
+          "item_id": "item_0312",
+          "score": 0.4182132568031611
+        },
+        {
+          "item_id": "item_0221",
+          "score": 0.4125283214350017
+        },
+        {
+          "item_id": "item_0139",
+          "score": 0.410740708938804
+        },
+        {
+          "item_id": "item_0245",
+          "score": 0.4012288355207577
+        },
+        {
+          "item_id": "item_0094",
+          "score": 0.4003319554976786
         }
       ],
       "trace": {
@@ -1390,11 +1397,11 @@
           "candidate_sources": {
             "merged": {
               "count": 200,
-              "duration_ms": 0.013185
+              "duration_ms": 0.015609
             },
             "post_exclusion": {
               "count": 198,
-              "duration_ms": 1.239047
+              "duration_ms": 1.463095
             },
             "prefetched": {
               "count": 200,
@@ -1412,6 +1419,7 @@
             "rule_pin_count": 0,
             "rule_boost_count": 0,
             "rule_boost_injected": 0,
+            "rule_block_exposure": 0,
             "rule_boost_exposure": 0,
             "rule_pin_exposure": 0,
             "after_rules": 198,
@@ -1490,83 +1498,83 @@
       "items": [
         {
           "item_id": "item_0002",
-          "score": 0.961843755172337
-        },
-        {
-          "item_id": "item_0003",
-          "score": 0.5597149066665018
+          "score": 0.9459542489382873
         },
         {
           "item_id": "item_0004",
-          "score": 0.5345496249643729
+          "score": 0.5577147600848796
         },
         {
-          "item_id": "item_0103",
-          "score": 0.4501129990573395
-        },
-        {
-          "item_id": "item_0286",
-          "score": 0.4375036957296327
-        },
-        {
-          "item_id": "item_0238",
-          "score": 0.4374341169297815
+          "item_id": "item_0003",
+          "score": 0.5556275690240834
         },
         {
           "item_id": "item_0078",
-          "score": 0.41556271662492106
-        },
-        {
-          "item_id": "item_0134",
-          "score": 0.39867922638581743
+          "score": 0.4449468881565386
         },
         {
           "item_id": "item_0102",
-          "score": 0.38915918407257805
+          "score": 0.4318198133521917
+        },
+        {
+          "item_id": "item_0286",
+          "score": 0.4197688459690461
+        },
+        {
+          "item_id": "item_0103",
+          "score": 0.4164937617801258
         },
         {
           "item_id": "item_0032",
-          "score": 0.3888204218956233
+          "score": 0.35175270693599014
+        },
+        {
+          "item_id": "item_0034",
+          "score": 0.33229653662063974
         },
         {
           "item_id": "item_0193",
-          "score": 0.37582489478648234
+          "score": 0.32334844994875156
         },
         {
-          "item_id": "item_0080",
-          "score": 0.3467771583286611
+          "item_id": "item_0259",
+          "score": 0.3210214465774476
         },
         {
-          "item_id": "item_0146",
-          "score": 0.3424341212371244
-        },
-        {
-          "item_id": "item_0171",
-          "score": 0.3387379585800838
+          "item_id": "item_0073",
+          "score": 0.3206298886031938
         },
         {
           "item_id": "item_0013",
-          "score": 0.31578754328996794
+          "score": 0.301392456099743
         },
         {
-          "item_id": "item_0090",
-          "score": 0.30518130791557574
-        },
-        {
-          "item_id": "item_0087",
-          "score": 0.27042506865773513
+          "item_id": "item_0080",
+          "score": 0.2885380659582982
         },
         {
           "item_id": "item_0139",
-          "score": 0.26888786573443124
+          "score": 0.2872212462316245
         },
         {
-          "item_id": "item_0056",
-          "score": 0.2660498121772331
+          "item_id": "item_0134",
+          "score": 0.285891704760646
+        },
+        {
+          "item_id": "item_0016",
+          "score": 0.262932315446129
+        },
+        {
+          "item_id": "item_0060",
+          "score": 0.2605575017205269
+        },
+        {
+          "item_id": "item_0315",
+          "score": 0.24853096998930252
         },
         {
           "item_id": "item_0077",
-          "score": 0.18351325761633877
+          "score": 0.18437435959284837
         }
       ],
       "trace": {
@@ -1574,11 +1582,11 @@
           "candidate_sources": {
             "merged": {
               "count": 200,
-              "duration_ms": 0.012694
+              "duration_ms": 0.012905
             },
             "post_exclusion": {
-              "count": 199,
-              "duration_ms": 1.337124
+              "count": 200,
+              "duration_ms": 1.272611
             },
             "prefetched": {
               "count": 200,
@@ -1588,17 +1596,18 @@
           "policy": {
             "total_candidates": 200,
             "explicit_exclude_hits": 0,
-            "recent_event_exclude_hits": 1,
-            "after_exclusions": 199,
+            "recent_event_exclude_hits": 0,
+            "after_exclusions": 200,
             "constraint_filtered_count": 0,
-            "after_constraint_filters": 199,
+            "after_constraint_filters": 200,
             "rule_block_count": 0,
             "rule_pin_count": 0,
             "rule_boost_count": 0,
             "rule_boost_injected": 0,
+            "rule_block_exposure": 0,
             "rule_boost_exposure": 0,
             "rule_pin_exposure": 0,
-            "after_rules": 199,
+            "after_rules": 200,
             "final_count": 20,
             "constraint_leak_count": 0
           },
@@ -1666,83 +1675,83 @@
       "items": [
         {
           "item_id": "item_0002",
-          "score": 0.7543450069927625
+          "score": 0.755473501878921
         },
         {
           "item_id": "item_0001",
-          "score": 0.708714246357975
+          "score": 0.7180231027348585
         },
         {
-          "item_id": "item_0003",
-          "score": 0.5704129217260312
+          "item_id": "item_0226",
+          "score": 0.5977507015836406
         },
         {
-          "item_id": "item_0168",
-          "score": 0.46989707753728666
+          "item_id": "item_0011",
+          "score": 0.34920228975604256
+        },
+        {
+          "item_id": "item_0078",
+          "score": 0.3479160171021266
+        },
+        {
+          "item_id": "item_0008",
+          "score": 0.3245060453175403
         },
         {
           "item_id": "item_0139",
-          "score": 0.37854093283093976
+          "score": 0.3096516070077055
         },
         {
-          "item_id": "item_0049",
-          "score": 0.3703306384152598
+          "item_id": "item_0259",
+          "score": 0.28118726299242863
         },
         {
-          "item_id": "item_0026",
-          "score": 0.36880077146313195
-        },
-        {
-          "item_id": "item_0238",
-          "score": 0.34106803911431277
+          "item_id": "item_0059",
+          "score": 0.24163164860195865
         },
         {
           "item_id": "item_0005",
-          "score": 0.32789845093498793
+          "score": 0.2327782576674875
         },
         {
-          "item_id": "item_0029",
-          "score": 0.3255502844829489
-        },
-        {
-          "item_id": "item_0077",
-          "score": 0.30316961179209095
-        },
-        {
-          "item_id": "item_0146",
-          "score": 0.30144017963591124
+          "item_id": "item_0181",
+          "score": 0.2319297485480843
         },
         {
           "item_id": "item_0080",
-          "score": 0.27518354364397785
+          "score": 0.2282629813677001
         },
         {
-          "item_id": "item_0060",
-          "score": 0.2659829001820711
+          "item_id": "item_0290",
+          "score": 0.2269795431863461
         },
         {
-          "item_id": "item_0010",
-          "score": 0.26195915988537727
+          "item_id": "item_0232",
+          "score": 0.22530029080693553
         },
         {
-          "item_id": "item_0138",
-          "score": 0.26054846581081015
+          "item_id": "item_0034",
+          "score": 0.21951699378585773
         },
         {
-          "item_id": "item_0194",
-          "score": 0.2401071997229745
+          "item_id": "item_0021",
+          "score": 0.20699281975623898
+        },
+        {
+          "item_id": "item_0127",
+          "score": 0.19034308495500762
         },
         {
           "item_id": "item_0094",
-          "score": 0.2367733287724944
+          "score": 0.17520786382968784
+        },
+        {
+          "item_id": "item_0077",
+          "score": 0.14369195957160072
         },
         {
           "item_id": "item_0285",
-          "score": 0.20668598828969226
-        },
-        {
-          "item_id": "item_0089",
-          "score": 0.1988025963075168
+          "score": 0.08519213544735957
         }
       ],
       "trace": {
@@ -1750,11 +1759,11 @@
           "candidate_sources": {
             "merged": {
               "count": 200,
-              "duration_ms": 0.035178
+              "duration_ms": 0.028935
             },
             "post_exclusion": {
               "count": 196,
-              "duration_ms": 1.554279
+              "duration_ms": 1.318028
             },
             "prefetched": {
               "count": 200,
@@ -1772,6 +1781,7 @@
             "rule_pin_count": 0,
             "rule_boost_count": 0,
             "rule_boost_injected": 0,
+            "rule_block_exposure": 0,
             "rule_boost_exposure": 0,
             "rule_pin_exposure": 0,
             "after_rules": 196,

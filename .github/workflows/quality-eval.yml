@@ -84,6 +84,16 @@ PY
             --min-catalog-coverage "${{ steps.guardrails.outputs.min_catalog_coverage }}" \
             --min-long-tail-share "${{ steps.guardrails.outputs.min_long_tail_share }}"
 
+      - name: Check tuning guardrails
+        run: |
+          python analysis/scripts/check_guardrails.py \
+            --namespace tune_seg_ \
+            --min-ndcg "${{ steps.guardrails.outputs.min_segment_lift_ndcg }}" \
+            --min-mrr "${{ steps.guardrails.outputs.min_segment_lift_mrr }}" \
+            --min-segment-ndcg "${{ steps.guardrails.outputs.min_segment_lift_ndcg }}" \
+            --min-segment-mrr "${{ steps.guardrails.outputs.min_segment_lift_mrr }}" \
+            --min-coverage "${{ steps.guardrails.outputs.min_catalog_coverage }}"
+
       - name: Collect artifacts
         run: |
           mkdir -p analysis/evidence/quality

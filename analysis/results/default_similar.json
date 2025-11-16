@@ -1,8 +1,8 @@
 {
-  "avg_jaccard": 0.1260811507936508,
-  "same_category_ratio": 0.17,
-  "same_brand_ratio": 0.079,
-  "long_tail_ratio": 0.6015,
+  "avg_jaccard": 0.12757503607503606,
+  "same_category_ratio": 0.167,
+  "same_brand_ratio": 0.08650000000000001,
+  "long_tail_ratio": 0.632,
   "evaluated_seeds": 100,
   "meta": {
     "base_url": "https://api.pepe.local",

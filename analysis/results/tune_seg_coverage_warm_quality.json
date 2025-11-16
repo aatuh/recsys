@@ -1,0 +1,136 @@
+{
+  "overall": {
+    "baseline": {
+      "ndcg@10": 0.058544346504353785,
+      "recall@20": 0.06497176098679962,
+      "mrr@10": 0.3022647666446041,
+      "long_tail_share@20": 0.0,
+      "intra_list_similarity@10": 0.17289807466196355,
+      "novelty@20": 0.48109291666666665
+    },
+    "system": {
+      "ndcg@10": 0.07989937754102906,
+      "recall@20": 0.10497200593374302,
+      "mrr@10": 0.4290099170981524,
+      "long_tail_share@20": 0.4816666666666667,
+      "intra_list_similarity@10": 0.07900999412110524,
+      "novelty@20": 0.5866458333333333
+    },
+    "lift": {
+      "ndcg@10": 0.3647667505364871,
+      "recall@20": 0.6156558532416921,
+      "mrr@10": 0.41931830778865564
+    }
+  },
+  "segments": {
+    "power_users": {
+      "users": 61,
+      "baseline": {
+        "ndcg@10": 0.07079757981741858,
+        "recall@20": 0.08103829824604798,
+        "mrr@10": 0.3157952903734003,
+        "long_tail_share@20": 0.0,
+        "intra_list_similarity@10": 0.18130959609101688
+      },
+      "system": {
+        "ndcg@10": 0.07547007457583638,
+        "recall@20": 0.10517904370024671,
+        "mrr@10": 0.4314544744872614,
+        "long_tail_share@20": 0.4672131147540984,
+        "intra_list_similarity@10": 0.07402665741463556
+      },
+      "lift": {
+        "ndcg@10": 0.0659979447103672,
+        "recall@20": 0.2978930453463218,
+        "mrr@10": 0.36624733692862926
+      }
+    },
+    "trend_seekers": {
+      "users": 25,
+      "baseline": {
+        "ndcg@10": 0.036474377610451414,
+        "recall@20": 0.04437891333819326,
+        "mrr@10": 0.33226190476190476,
+        "long_tail_share@20": 0.0,
+        "intra_list_similarity@10": 0.17069947089947088
+      },
+      "system": {
+        "ndcg@10": 0.09493424830177494,
+        "recall@20": 0.13074755638371238,
+        "mrr@10": 0.4496536796536797,
+        "long_tail_share@20": 0.502,
+        "intra_list_similarity@10": 0.07361834215167548
+      },
+      "lift": {
+        "ndcg@10": 1.6027654074232196,
+        "recall@20": 1.9461639898061402,
+        "mrr@10": 0.3533109670694767
+      }
+    },
+    "weekend_adventurers": {
+      "users": 16,
+      "baseline": {
+        "ndcg@10": 0.03201710843892312,
+        "recall@20": 0.032233207968502084,
+        "mrr@10": 0.19270833333333334,
+        "long_tail_share@20": 0.0,
+        "intra_list_similarity@10": 0.15147486772486773
+      },
+      "system": {
+        "ndcg@10": 0.06828581214862064,
+        "recall@20": 0.08538043965959483,
+        "mrr@10": 0.30027865312791785,
+        "long_tail_share@20": 0.521875,
+        "intra_list_similarity@10": 0.07238756613756614
+      },
+      "lift": {
+        "ndcg@10": 1.1327913568111525,
+        "recall@20": 1.6488346969072267,
+        "mrr@10": 0.5582027405556818
+      }
+    },
+    "niche_readers": {
+      "users": 18,
+      "baseline": {
+        "ndcg@10": 0.07125200202088136,
+        "recall@20": 0.0682261646920091,
+        "mrr@10": 0.3121321295663401,
+        "long_tail_share@20": 0.0,
+        "intra_list_similarity@10": 0.1664888300999412
+      },
+      "system": {
+        "ndcg@10": 0.08435119743750917,
+        "recall@20": 0.08588572789932143,
+        "mrr@10": 0.5064814814814815,
+        "long_tail_share@20": 0.4666666666666667,
+        "intra_list_similarity@10": 0.10927297668038409
+      },
+      "lift": {
+        "ndcg@10": 0.18384319099958643,
+        "recall@20": 0.25883857442422953,
+        "mrr@10": 0.6226509016715457
+      }
+    }
+  },
+  "coverage": {
+    "system_unique_items": 217,
+    "baseline_unique_items": 42,
+    "catalog_size": 320,
+    "system_catalog_coverage": 0.678125,
+    "baseline_catalog_coverage": 0.13125,
+    "system_long_tail_unique": 131
+  },
+  "user_count": 120,
+  "meta": {
+    "base_url": "https://api.pepe.local",
+    "namespace": "tune_seg_coverage",
+    "org_id": "00000000-0000-0000-0000-000000000001",
+    "evaluated_users": 120,
+    "split_timestamp": "2025-10-16T03:28:36+00:00",
+    "long_tail_threshold": 26.300000000000022,
+    "min_users": 100,
+    "warm_min_events": 50,
+    "env_file": "api/.env",
+    "env_hash": "0f75018df10f8c56fc95af4dd46d6f850f0535c6250dd69c8d6f41321f63cecf"
+  }
+}

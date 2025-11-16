@@ -65,11 +65,33 @@ Despite strong offline lift on tiny samples, the current system cannot pass the 
   - Added `analysis/scripts/env_profile_manager.py`, README + docs references, and git-ignored `analysis/env_profiles/` so teams can fetch/apply/delete namespace-scoped configs via `/v1/admin/recommendation/config` without rewriting `api/.env` or recycling services.
 - [x] **TKT-602: Automated tuning harness**
   - `analysis/scripts/tuning_harness.py` now applies profiles via the new manager, re-seeds, runs quality eval, and saves per-run metrics/parameters under `analysis/results/tuning_runs/`. README documents grid/random usage and how to interpret the output.
-- [ ] **TKT-603: AI-assisted optimizer**
-  - Layer a Bayesian/LLM-guided optimizer on top of the tuning harness so it proposes the next parameter set based on prior runs, aiming to meet segment guardrails with minimal evaluations. Surface suggestions + confidence intervals in `analysis/findings.md` and expose a “one-click” tuning recipe for future evaluators.
-- [ ] **TKT-604: Harness sweep for segment blend overrides**
-  - Use `analysis/scripts/tuning_harness.py` to sweep `BLEND_ALPHA/BETA/GAMMA`, `MMR_LAMBDA`, and `POPULARITY_FANOUT` ranges that previously required manual `.env` edits for Trend Seekers / Weekend Adventurers / Power Users. Store runs under `analysis/results/tuning_runs/segment_blends_*` and document the winning settings in `analysis_v5/findings.md`.
-- [ ] **TKT-605: Harness pass for coverage vs. relevance trade-off**
-  - Configure the harness to explore higher `POPULARITY_FANOUT` + lower `MMR_LAMBDA` combinations (the manual cycles we ran to satisfy coverage guardrails). Compare catalog coverage / long-tail metrics across runs and capture the recommended env set in `analysis/results/tuning_runs/coverage_*`.
-- [ ] **TKT-606: Extend harness for profile starter parameters**
-  - Add optional overrides for `PROFILE_BOOST`, `PROFILE_MIN_EVENTS_FOR_BOOST`, and `PROFILE_STARTER_BLEND_WEIGHT`, then run the harness to replace the ad-hoc cold-start tuning loops. Store evidence under `analysis/results/tuning_runs/profile_*` once the extension is in place.
+- [x] **TKT-603: AI-assisted optimizer**
+  - Added `analysis/scripts/ai_optimizer.py`, which ingests previous tuning runs, fits a surrogate (Gaussian process when `scikit-learn` is available, otherwise weighted exploration), and outputs recommended parameter sets for `tuning_harness.py`. README documents the workflow.
+- [x] **TKT-604: Harness sweep for segment blend overrides**
+  - Segment-specific sweeps are done (`tune_seg_power_*`, `tune_seg_trend_*`, `tune_seg_test_*`), each storing summary metrics under `analysis/results/tuning_runs/segment_blends_*` and capturing blend/MMR/fanout overrides via `segment_profiles`. Findings include the recommended configs per cohort.
+- [x] **TKT-605: Harness pass for coverage vs. relevance trade-off**
+  - Conducted coverage sweeps (`tune_cov_default_20251116T071125Z`, `tune_cov_default_20251116T072432Z`) using higher fanout/lower MMR; final profile hits catalog coverage 0.77 and long-tail 0.48 while keeping power_users/trend_seekers lifts > +10 %. Evidence sits under `analysis/results/tuning_runs/tune_cov_default_20251116T072432Z/`.
+- [x] **TKT-606: Extend harness for profile starter parameters**
+  - `analysis/scripts/tuning_harness.py` now accepts `--profile-boosts`, `--profile-min-events`, and `--starter-blend-weights` so starter-profile knobs can be swept (per segment) alongside blend/MMR values. README documents the workflow.
+- [x] **TKT-607: Segment profile storage & admin API**
+  - `/v1/admin/recommendation/config` now includes a `segment_profiles` map (exposed via swagger + TS client). Config snapshots, env_profile_manager CLI, and codegen outputs all persist blend/MMR/fanout/starter overrides per segment so we can version and diff them without touching `.env`.
+- [x] **TKT-608: Segment-focused tuning harness**
+  - `analysis/scripts/tuning_harness.py` accepts `--segment` to mutate only that entry under `segment_profiles`, records segment-specific lifts in each run, and stores evidence under `analysis/results/tuning_runs/<namespace>_*`. Verified via `tune_seg_test` runs with `power_users`.
+- [x] **TKT-609: Guardrail enforcement in CI**
+  - `analysis/scripts/check_guardrails.py` scans tuning `summary.json` files for lifts/coverage and now runs inside `.github/workflows/quality-eval.yml` (after quality eval). CI fails automatically if overall or per-segment metrics fall below the thresholds resolved from `guardrails.yml`.
+- [ ] **TKT-610: Documentation & playbook**
+  - Update README + `docs/overview.md`/`docs/env_vars.md` with the new segment-profile workflow: how to fetch/apply profiles, run the per-segment harness, interpret evidence, and roll back via git-managed profiles. Include a troubleshooting section covering namespace hygiene and guardrail failures.
+
+## Epic E-111 – Beginner-Friendly Documentation Overhaul
+**Description:** Restructure the documentation so new engineers can follow the entire tuning workflow, understand guardrail responses, and troubleshoot without prior context.
+
+- [x] **TKT-701: README tuning playbook**
+  - Add a top-level “Recsys tuning playbook” section detailing reset → seed → fetch/apply profile → run harness/optimizer → check guardrails, with commands and example outputs.
+- [ ] **TKT-702: Troubleshooting guide**
+  - Document common failures (segment guardrail, coverage shortfall, connection issues) and prescribe next actions in README and `docs/overview.md`.
+- [x] **TKT-703: Starter profile guidance**
+  - Expand README + `docs/env_vars.md` with plain-English explanations of starter profile knobs (PROFILE_BOOST, PROFILE_MIN_EVENTS_FOR_BOOST, PROFILE_STARTER_BLEND_WEIGHT) and link to harness flags.
+- [x] **TKT-704: docs/overview worked example**
+  - Insert a step-by-step example (with commands/metrics) showing a full segment tuning run and how evidence is stored under `analysis/results/tuning_runs/`.
+- [x] **TKT-705: Cross-link env & rules docs**
+  - Ensure `docs/env_vars.md`, `docs/rules-runbook.md`, and `docs/bespoke_simulations.md` reference the tuning playbook so readers can jump directly to the workflow.

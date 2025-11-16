@@ -81,6 +81,7 @@ export type { types_RuleResponse } from './models/types_RuleResponse';
 export type { types_RulesListResponse } from './models/types_RulesListResponse';
 export type { types_SegmentDryRunRequest } from './models/types_SegmentDryRunRequest';
 export type { types_SegmentDryRunResponse } from './models/types_SegmentDryRunResponse';
+export type { types_SegmentProfileConfigPayload } from './models/types_SegmentProfileConfigPayload';
 export type { types_SegmentProfilesListResponse } from './models/types_SegmentProfilesListResponse';
 export type { types_SegmentProfilesUpsertRequest } from './models/types_SegmentProfilesUpsertRequest';
 export type { types_SegmentsListResponse } from './models/types_SegmentsListResponse';

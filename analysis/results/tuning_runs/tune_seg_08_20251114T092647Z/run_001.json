@@ -1,0 +1,18 @@
+{
+  "run": "001",
+  "parameters": {
+    "BLEND_ALPHA": "0.3154",
+    "BLEND_BETA": "0.4281",
+    "BLEND_GAMMA": "0.2507",
+    "MMR_LAMBDA": "0.166",
+    "POPULARITY_FANOUT": "607"
+  },
+  "metrics": {
+    "ndcg_lift": 0.28239296714622425,
+    "mrr_lift": 0.4006410669418797,
+    "recall_lift": 0.36114932941163286,
+    "catalog_coverage": 0.84375,
+    "long_tail_share": 0.5051971326164875,
+    "user_count": 279
+  }
+}

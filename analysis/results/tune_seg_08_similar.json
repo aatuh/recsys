@@ -1,0 +1,14 @@
+{
+  "avg_jaccard": 0.1260811507936508,
+  "same_category_ratio": 0.17,
+  "same_brand_ratio": 0.079,
+  "long_tail_ratio": 0.6015,
+  "evaluated_seeds": 100,
+  "meta": {
+    "base_url": "https://api.pepe.local",
+    "namespace": "tune_seg_08",
+    "org_id": "00000000-0000-0000-0000-000000000001",
+    "head_seeds": 50,
+    "tail_seeds": 50
+  }
+}

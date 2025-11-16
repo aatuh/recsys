@@ -1117,6 +1117,10 @@ definitions:
         type: boolean
       rules_enabled:
         type: boolean
+      segment_profiles:
+        additionalProperties:
+          $ref: '#/definitions/types.SegmentProfileConfigPayload'
+        type: object
     type: object
   types.RecommendationConfigUpdateRequest:
     properties:
@@ -1350,6 +1354,21 @@ definitions:
         type: string
       segment_id:
         type: string
+    type: object
+  types.SegmentProfileConfigPayload:
+    properties:
+      blend_alpha:
+        type: number
+      blend_beta:
+        type: number
+      blend_gamma:
+        type: number
+      mmr_lambda:
+        type: number
+      popularity_fanout:
+        type: integer
+      profile_starter_blend_weight:
+        type: number
     type: object
   types.SegmentProfilesListResponse:
     properties:

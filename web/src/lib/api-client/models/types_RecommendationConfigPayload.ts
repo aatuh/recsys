@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { types_BanditExperimentConfig } from './types_BanditExperimentConfig';
+import type { types_SegmentProfileConfigPayload } from './types_SegmentProfileConfigPayload';
 export type types_RecommendationConfigPayload = {
     bandit_experiment?: types_BanditExperimentConfig;
     blend_alpha?: number;
@@ -34,5 +35,6 @@ export type types_RecommendationConfigPayload = {
     purchased_window_days?: number;
     rule_exclude_events?: boolean;
     rules_enabled?: boolean;
+    segment_profiles?: Record<string, types_SegmentProfileConfigPayload>;
 };
 

@@ -1,0 +1,35 @@
+{
+  "timestamp": "2025-11-12T12:30:22.514388+00:00",
+  "base_url": "http://localhost:8000",
+  "namespace": "tune_seg_04",
+  "org_id": "00000000-0000-0000-0000-000000000001",
+  "operations": [
+    {
+      "resource": "events",
+      "endpoint": "http://localhost:8000/v1/events:delete",
+      "deleted_count": 40000,
+      "response": {
+        "deleted_count": 40000,
+        "message": "Events deleted successfully"
+      }
+    },
+    {
+      "resource": "users",
+      "endpoint": "http://localhost:8000/v1/users:delete",
+      "deleted_count": 600,
+      "response": {
+        "deleted_count": 600,
+        "message": "Users deleted successfully"
+      }
+    },
+    {
+      "resource": "items",
+      "endpoint": "http://localhost:8000/v1/items:delete",
+      "deleted_count": 320,
+      "response": {
+        "deleted_count": 320,
+        "message": "Items deleted successfully"
+      }
+    }
+  ]
+}

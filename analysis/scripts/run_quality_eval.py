@@ -32,6 +32,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 DEFAULT_BASE_URL = "https://api.pepe.local"
 DEFAULT_NAMESPACE = "default"
 DEFAULT_ORG_ID = "00000000-0000-0000-0000-000000000001"
+DEFAULT_REQUEST_TIMEOUT = 30.0
 
 EVENT_WEIGHTS = {
     0: 0.1,  # view
@@ -182,6 +183,12 @@ def parse_args() -> argparse.Namespace:
         default=10,
         help="How many recommendation payloads to retain for the dump/exposure dashboard (0 = unlimited).",
     )
+    parser.add_argument(
+        "--request-timeout",
+        type=float,
+        default=DEFAULT_REQUEST_TIMEOUT,
+        help="HTTP timeout (seconds) for API calls (default: %(default)s).",
+    )
     return parser.parse_args()
 
 
@@ -190,7 +197,7 @@ def parse_args() -> argparse.Namespace:
 # -----------------------------------------------------------------------------
 
 
-def build_session(base_url: str, org_id: str) -> requests.Session:
+def build_session(base_url: str, org_id: str, request_timeout: float = DEFAULT_REQUEST_TIMEOUT) -> requests.Session:
     session = requests.Session()
     session.verify = False
     session.headers.update(
@@ -199,6 +206,7 @@ def build_session(base_url: str, org_id: str) -> requests.Session:
             "X-Org-ID": org_id,
         }
     )
+    session.request_timeout = request_timeout
     session.base_url = base_url.rstrip("/")
     return session
 
@@ -208,7 +216,7 @@ def fetch_paginated(session: requests.Session, path: str, namespace: str, limit:
     offset = 0
     while True:
         params = {"namespace": namespace, "limit": limit, "offset": offset}
-        response = session.get(f"{session.base_url}{path}", params=params, timeout=30)
+        response = session.get(f"{session.base_url}{path}", params=params, timeout=session.request_timeout)
         if response.status_code != 200:
             raise RuntimeError(f"GET {path} failed: {response.status_code} {response.text}")
         payload = response.json()
@@ -398,7 +406,7 @@ def score_warm_users(
             "include_reasons": True,
             "explain_level": "numeric",
         }
-        response = session.post(f"{session.base_url}/v1/recommendations", json=payload, timeout=30)
+        response = session.post(f"{session.base_url}/v1/recommendations", json=payload, timeout=session.request_timeout)
         if response.status_code != 200:
             raise RuntimeError(
                 f"Recommendations failed for {candidate.user_id}: "
@@ -637,7 +645,7 @@ def evaluate_rerank_suite(
             "items": items,
             "include_reasons": False,
         }
-        response = session.post(f"{session.base_url}/v1/rerank", json=payload, timeout=30)
+        response = session.post(f"{session.base_url}/v1/rerank", json=payload, timeout=session.request_timeout)
         if response.status_code != 200:
             raise RuntimeError(
                 f"Rerank failed for {candidate.user_id}: "
@@ -721,7 +729,7 @@ def evaluate_similar_suite(
         response = session.get(
             f"{session.base_url}/v1/items/{seed_id}/similar",
             params={"namespace": namespace, "k": MAX_K},
-            timeout=30,
+            timeout=session.request_timeout,
         )
         if response.status_code != 200:
             continue
@@ -793,8 +801,9 @@ def evaluate_warm_users(
     warm_min_events: int,
     env_meta: Optional[Dict[str, str]] = None,
     sample_limit: int = 10,
+    request_timeout: float = DEFAULT_REQUEST_TIMEOUT,
 ) -> Tuple[EvaluationContext, Dict, List[Dict]]:
-    session = build_session(base_url, org_id)
+    session = build_session(base_url, org_id, request_timeout=request_timeout)
 
     catalog = load_catalog(session, namespace)
     users = load_users(session, namespace)
@@ -1059,6 +1068,7 @@ def main() -> None:
         warm_min_events=args.warm_min_events,
         env_meta=env_meta,
         sample_limit=args.dump_sample_limit,
+        request_timeout=args.request_timeout,
     )
     quality_path = Path("analysis/quality_metrics.json")
     write_json(quality_path, warm_results)

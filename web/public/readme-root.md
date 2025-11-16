@@ -238,6 +238,28 @@ The command iterates through each run, generates the per-customer report folders
 - Fill in the metadata plus the “3 strengths / 3 blockers / 3 fast wins” sections using evidence paths from the freshly generated artifacts (`analysis/results/*.json`, `analysis/evidence/*.json`).
 - Link the completed summary in `analysis/findings.md` (or the relevant handoff doc) so product and exec stakeholders see the key outcomes without digging through the full bundle.
 
+#### Tuning harness
+
+- `analysis/scripts/tuning_harness.py` automates blend/MMR/fanout sweeps by combining the env profile manager, seeding, and `run_quality_eval.py`. Example grid search:
+
+  ```bash
+  python analysis/scripts/tuning_harness.py \
+    --base-url https://api.pepe.local \
+    --org-id "$RECSYS_ORG_ID" \
+    --namespace default \
+    --profile-name sweep-alpha-beta \
+    --grid \
+    --alphas 0.25,0.3,0.35 \
+    --betas 0.35,0.45 \
+    --gammas 0.1 \
+    --mmrs 0.2,0.3 \
+    --fanouts 500,700 \
+    --user-count 600 --event-count 40000
+  ```
+
+- Each iteration saves `run_###.json` plus `summary.json` under `analysis/results/tuning_runs/<namespace>_<timestamp>/`, capturing the parameter set, guardrail metrics, and evidence paths so you can chart lifts or feed the data to more advanced optimizers.
+- Switch to random sampling with `--samples N` (omit `--grid`) for quick exploration. Because profiles are applied via `/v1/admin/recommendation/config`, no container restart is needed between iterations; just remember to re-seed so the dataset stays consistent.
+
 ### Guardrail configuration
 
 Guardrails are centralized in `guardrails.yml`. The file contains a `defaults` block and optional per-customer overrides (namespaces, segment lift thresholds, catalog coverage minimums, S7 expectations). `run_simulation.py`, the CI workflows, and the Make targets load this file automatically so every evidence artifact—including `analysis/quality_metrics.json`, `analysis/scenarios.csv`, and CI runs—enforces the correct targets.
@@ -282,6 +304,30 @@ For an end-to-end walkthrough (profiles, fixtures, simulations, evidence), see `
   with `python analysis/scripts/restart_api.py --base-url http://localhost:8000`
   (or `make restart-api`) to force `docker compose up -d --force-recreate api` and wait
   for `/health` before seeding or running scenarios.
+- Need namespace-scoped env variations without touching `.env`? Use
+  `analysis/scripts/env_profile_manager.py` to fetch/apply configs via the admin API:
+
+  ```bash
+  # capture current config into analysis/env_profiles/default/baseline.json
+  python analysis/scripts/env_profile_manager.py fetch \
+    --base-url https://api.pepe.local \
+    --org-id "$RECSYS_ORG_ID" \
+    --namespace default \
+    --profile baseline
+
+  # tweak the JSON (or clone it), then apply without restarting containers
+  python analysis/scripts/env_profile_manager.py apply \
+    --base-url https://api.pepe.local \
+    --org-id "$RECSYS_ORG_ID" \
+    --namespace default \
+    --profile weekend_experiment \
+    --author simulator --notes "MMR sweep run 3"
+  ```
+
+  Profiles are stored under `analysis/env_profiles/<namespace>/<profile>.json`; `list`
+  and `delete` subcommands keep the directory tidy. Because the script talks directly
+  to `/v1/admin/recommendation/config`, updates take effect immediately and can be
+  versioned/rolled back per namespace.
 - Run `python analysis/scripts/check_env_profiles.py --strict` to ensure
   every profile under `api/env/` contains the same algorithm env vars as
   `api/.env`. Update `config/profiles.yml` to document which namespaces use each
@@ -1212,6 +1258,7 @@ To enable the LLM-powered RCA endpoint following environment variables:
 - `MMR_LAMBDA=0.12` is the catalog-coverage tuned starting point; raise it toward `0.3` if you need tighter relevance.
 - Keep light personalization gentle: `PROFILE_BOOST` around `0.1–0.3`.
 - Caps (`BRAND_CAP`, `CATEGORY_CAP`) enforce catalog variety.
+- For structured sweeps, use `analysis/scripts/tuning_harness.py` (see the “Tuning harness” section above). It automatically applies env-profile overrides, re-seeds, runs quality eval, and stores results under `analysis/results/tuning_runs/` so you can plot lift vs. weights instead of manually editing `.env`.
 
 ## Tenancy
 

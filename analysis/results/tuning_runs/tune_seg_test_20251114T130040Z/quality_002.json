@@ -1,0 +1,158 @@
+{
+  "overall": {
+    "baseline": {
+      "ndcg@10": 0.06894529655091239,
+      "recall@20": 0.08296707049167303,
+      "mrr@10": 0.3734399094213406,
+      "long_tail_share@20": 0.0,
+      "intra_list_similarity@10": 0.15596925949867124,
+      "novelty@20": 0.5030099547511312
+    },
+    "system": {
+      "ndcg@10": 0.0940868744251276,
+      "recall@20": 0.11783335780792732,
+      "mrr@10": 0.4688189261718674,
+      "long_tail_share@20": 0.4628959276018099,
+      "intra_list_similarity@10": 0.08895783954607484,
+      "novelty@20": 0.5735524886877827
+    },
+    "lift": {
+      "ndcg@10": 0.3646597974330201,
+      "recall@20": 0.42024247824627775,
+      "mrr@10": 0.2554065978066464
+    }
+  },
+  "segments": {
+    "power_users": {
+      "users": 71,
+      "baseline": {
+        "ndcg@10": 0.09270117223568113,
+        "recall@20": 0.10800767490753604,
+        "mrr@10": 0.42839603667068454,
+        "long_tail_share@20": 0.0,
+        "intra_list_similarity@10": 0.156474650371364
+      },
+      "system": {
+        "ndcg@10": 0.09157397991555893,
+        "recall@20": 0.11696397641105642,
+        "mrr@10": 0.4724417210332703,
+        "long_tail_share@20": 0.43802816901408453,
+        "intra_list_similarity@10": 0.0824279007377599
+      },
+      "lift": {
+        "ndcg@10": -0.012159418192214942,
+        "recall@20": 0.08292282480099447,
+        "mrr@10": 0.1028153404613415
+      }
+    },
+    "weekend_adventurers": {
+      "users": 37,
+      "baseline": {
+        "ndcg@10": 0.07465782646469511,
+        "recall@20": 0.07007039169529712,
+        "mrr@10": 0.44422829422829424,
+        "long_tail_share@20": 0.0,
+        "intra_list_similarity@10": 0.14506506506506506
+      },
+      "system": {
+        "ndcg@10": 0.11212030773050846,
+        "recall@20": 0.12906540945125175,
+        "mrr@10": 0.41677927927927927,
+        "long_tail_share@20": 0.48783783783783785,
+        "intra_list_similarity@10": 0.08715572715572716
+      },
+      "lift": {
+        "ndcg@10": 0.5017890694089381,
+        "recall@20": 0.8419393174294781,
+        "mrr@10": -0.061790334622198996
+      }
+    },
+    "trend_seekers": {
+      "users": 54,
+      "baseline": {
+        "ndcg@10": 0.048779756749771155,
+        "recall@20": 0.06798377495190434,
+        "mrr@10": 0.32684830219659944,
+        "long_tail_share@20": 0.0,
+        "intra_list_similarity@10": 0.15986478542034097
+      },
+      "system": {
+        "ndcg@10": 0.08297035014844537,
+        "recall@20": 0.13162573951436068,
+        "mrr@10": 0.4631804152637486,
+        "long_tail_share@20": 0.45092592592592595,
+        "intra_list_similarity@10": 0.07589130576784898
+      },
+      "lift": {
+        "ndcg@10": 0.7009176690663717,
+        "recall@20": 0.9361346086986247,
+        "mrr@10": 0.4171112780789215
+      }
+    },
+    "niche_readers": {
+      "users": 47,
+      "baseline": {
+        "ndcg@10": 0.041056327408185586,
+        "recall@20": 0.0582896622814727,
+        "mrr@10": 0.2557343157468314,
+        "long_tail_share@20": 0.0,
+        "intra_list_similarity@10": 0.16136890690082178
+      },
+      "system": {
+        "ndcg@10": 0.08783028022814744,
+        "recall@20": 0.10434040777494263,
+        "mrr@10": 0.5051948051948052,
+        "long_tail_share@20": 0.46489361702127663,
+        "intra_list_similarity@10": 0.11502720552365943
+      },
+      "lift": {
+        "ndcg@10": 1.1392629534281316,
+        "recall@20": 0.7900328066938743,
+        "mrr@10": 0.9754674053791493
+      }
+    },
+    "new_users": {
+      "users": 12,
+      "baseline": {
+        "ndcg@10": 0.11075278976268284,
+        "recall@20": 0.1386529327388861,
+        "mrr@10": 0.5006944444444444,
+        "long_tail_share@20": 0.0,
+        "intra_list_similarity@10": 0.14792181069958846
+      },
+      "system": {
+        "ndcg@10": 0.1278811007650603,
+        "recall@20": 0.0791267084560695,
+        "mrr@10": 0.49074074074074076,
+        "long_tail_share@20": 0.5791666666666667,
+        "intra_list_similarity@10": 0.08984420928865373
+      },
+      "lift": {
+        "ndcg@10": 0.1546535400063456,
+        "recall@20": -0.4293181767378663,
+        "mrr@10": -0.019879796578825673
+      }
+    }
+  },
+  "coverage": {
+    "system_unique_items": 245,
+    "baseline_unique_items": 41,
+    "catalog_size": 320,
+    "system_catalog_coverage": 0.765625,
+    "baseline_catalog_coverage": 0.128125,
+    "system_long_tail_unique": 146
+  },
+  "user_count": 221,
+  "meta": {
+    "base_url": "https://api.pepe.local",
+    "namespace": "tune_seg_test",
+    "org_id": "00000000-0000-0000-0000-000000000001",
+    "evaluated_users": 221,
+    "split_timestamp": "2025-10-16T00:16:41+00:00",
+    "long_tail_threshold": 19.70000000000002,
+    "min_users": 100,
+    "warm_min_events": 50,
+    "env_file": "api/.env",
+    "env_hash": "0f75018df10f8c56fc95af4dd46d6f850f0535c6250dd69c8d6f41321f63cecf"
+  }
+}

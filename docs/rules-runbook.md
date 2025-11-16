@@ -102,7 +102,7 @@ long_tail_share =
 Alert if `coverage_ratio < 0.60` or `long_tail_share < 0.20` for your chosen
 window.
 
-**If a guardrail fires**:
+**If a guardrail fires** (see README tuning workflow for commands):
 
 1. Re-run the quality suite or `analysis/scripts/profile_coverage.py` against
    the affected environment to confirm the regression.
@@ -112,6 +112,7 @@ window.
    telemetry. When the targets recover, bake the updated settings into the
    environment (`COVERAGE_LONG_TAIL_HINT_THRESHOLD`, `COVERAGE_CACHE_TTL`) and
    document the change.
+4. If the regression is segment-specific (e.g., `power_users` guardrail only), re-run the segment harness (`analysis/scripts/tuning_harness.py --segment power_users ...`) and reapply the resulting profile.
 
 ## 3a. Configuring guardrails via `guardrails.yml`
 

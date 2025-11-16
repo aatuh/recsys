@@ -1,158 +1,114 @@
 {
   "overall": {
     "baseline": {
-      "ndcg@10": 0.06785593199617519,
-      "recall@20": 0.0772038831266276,
-      "mrr@10": 0.32913553191275485,
+      "ndcg@10": 0.026807697610126947,
+      "recall@20": 0.08031135531135532,
+      "mrr@10": 0.12531135531135532,
       "long_tail_share@20": 0.0,
-      "intra_list_similarity@10": 0.15935806261971136,
-      "novelty@20": 0.48385053763440866
+      "intra_list_similarity@10": 0.13086067019400352,
+      "novelty@20": 0.48732499999999995
     },
     "system": {
-      "ndcg@10": 0.08700532787523531,
-      "recall@20": 0.10421823925225636,
-      "mrr@10": 0.44663529918906264,
-      "long_tail_share@20": 0.47365591397849466,
-      "intra_list_similarity@10": 0.08458269903909092,
-      "novelty@20": 0.5826164874551971
+      "ndcg@10": 0.25697518785595896,
+      "recall@20": 0.41614010989010985,
+      "mrr@10": 0.4333333333333333,
+      "long_tail_share@20": 0.62,
+      "intra_list_similarity@10": 0.10726278659611992,
+      "novelty@20": 0.5941150000000001
     },
     "lift": {
-      "ndcg@10": 0.2822066592518323,
-      "recall@20": 0.3499092925328715,
-      "mrr@10": 0.3569950852570177
+      "ndcg@10": 8.585873117237913,
+      "recall@20": 4.181584948688711,
+      "mrr@10": 2.4580532008184734
     }
   },
   "segments": {
     "power_users": {
-      "users": 98,
+      "users": 7,
       "baseline": {
-        "ndcg@10": 0.07054550766177947,
-        "recall@20": 0.08493429746097002,
-        "mrr@10": 0.36055380943586224,
+        "ndcg@10": 0.023701248543832487,
+        "recall@20": 0.06711145996860282,
+        "mrr@10": 0.1075876504447933,
         "long_tail_share@20": 0.0,
-        "intra_list_similarity@10": 0.170009988122233
+        "intra_list_similarity@10": 0.12256487780297302
       },
       "system": {
-        "ndcg@10": 0.07951579632331778,
-        "recall@20": 0.11180800794753246,
-        "mrr@10": 0.4205533129002517,
-        "long_tail_share@20": 0.45,
-        "intra_list_similarity@10": 0.07489023699908054
+        "ndcg@10": 0.26103037222662945,
+        "recall@20": 0.4069858712715856,
+        "mrr@10": 0.42857142857142855,
+        "long_tail_share@20": 0.6142857142857142,
+        "intra_list_similarity@10": 0.10590576971529353
       },
       "lift": {
-        "ndcg@10": 0.1271560579667963,
-        "recall@20": 0.3164058724205231,
-        "mrr@10": 0.16640929008146452
-      }
-    },
-    "trend_seekers": {
-      "users": 67,
-      "baseline": {
-        "ndcg@10": 0.06597089138353875,
-        "recall@20": 0.07947476975854023,
-        "mrr@10": 0.3546448430118316,
-        "long_tail_share@20": 0.0,
-        "intra_list_similarity@10": 0.1635619521440417
-      },
-      "system": {
-        "ndcg@10": 0.09162168249076427,
-        "recall@20": 0.1106780590310104,
-        "mrr@10": 0.40695036721156125,
-        "long_tail_share@20": 0.48805970149253736,
-        "intra_list_similarity@10": 0.0742435968306615
-      },
-      "lift": {
-        "ndcg@10": 0.38881983507086565,
-        "recall@20": 0.39261880678952343,
-        "mrr@10": 0.1474870570667925
+        "ndcg@10": 10.013359559682542,
+        "recall@20": 5.064327485380118,
+        "mrr@10": 2.983463035019455
       }
     },
     "weekend_adventurers": {
-      "users": 47,
+      "users": 2,
       "baseline": {
-        "ndcg@10": 0.05867351281143464,
-        "recall@20": 0.050409428583769796,
-        "mrr@10": 0.24538032889096717,
+        "ndcg@10": 0.0,
+        "recall@20": 0.0,
+        "mrr@10": 0.0,
         "long_tail_share@20": 0.0,
-        "intra_list_similarity@10": 0.14818867499718563
+        "intra_list_similarity@10": 0.15081128747795414
       },
       "system": {
-        "ndcg@10": 0.09895027944052888,
-        "recall@20": 0.09271826694255474,
-        "mrr@10": 0.41518068220195875,
-        "long_tail_share@20": 0.48829787234042554,
-        "intra_list_similarity@10": 0.08437014522120904
+        "ndcg@10": 0.35045815011629494,
+        "recall@20": 0.53125,
+        "mrr@10": 0.5,
+        "long_tail_share@20": 0.65,
+        "intra_list_similarity@10": 0.11206349206349206
       },
       "lift": {
-        "ndcg@10": 0.6864556884217246,
-        "recall@20": 0.839304065676456,
-        "mrr@10": 0.6919884494345145
+        "ndcg@10": Infinity,
+        "recall@20": Infinity,
+        "mrr@10": Infinity
       }
     },
-    "niche_readers": {
-      "users": 56,
+    "trend_seekers": {
+      "users": 1,
       "baseline": {
-        "ndcg@10": 0.06417738344601157,
-        "recall@20": 0.07871399660015976,
-        "mrr@10": 0.3020490330993151,
+        "ndcg@10": 0.10216823629444205,
+        "recall@20": 0.3333333333333333,
+        "mrr@10": 0.5,
         "long_tail_share@20": 0.0,
-        "intra_list_similarity@10": 0.14781037414965986
+        "intra_list_similarity@10": 0.1490299823633157
       },
       "system": {
-        "ndcg@10": 0.08479847769960316,
-        "recall@20": 0.10105405611569243,
-        "mrr@10": 0.5378188775510204,
-        "long_tail_share@20": 0.48125,
-        "intra_list_similarity@10": 0.1132262534643487
+        "ndcg@10": 0.04162297274059355,
+        "recall@20": 0.25,
+        "mrr@10": 0.3333333333333333,
+        "long_tail_share@20": 0.6,
+        "intra_list_similarity@10": 0.10716049382716049
       },
       "lift": {
-        "ndcg@10": 0.3213140384718059,
-        "recall@20": 0.28381305079721136,
-        "mrr@10": 0.7805681151582536
-      }
-    },
-    "new_users": {
-      "users": 11,
-      "baseline": {
-        "ndcg@10": 0.11333699802430192,
-        "recall@20": 0.1012987012987013,
-        "mrr@10": 0.3896103896103896,
-        "long_tail_share@20": 0.0,
-        "intra_list_similarity@10": 0.14536556036556036
-      },
-      "system": {
-        "ndcg@10": 0.08580980234015173,
-        "recall@20": 0.062498938969527205,
-        "mrr@10": 0.5909090909090909,
-        "long_tail_share@20": 0.4954545454545455,
-        "intra_list_similarity@10": 0.088994708994709
-      },
-      "lift": {
-        "ndcg@10": -0.24287916712111746,
-        "recall@20": -0.3830232947880007,
-        "mrr@10": 0.5166666666666669
+        "ndcg@10": -0.592603589430291,
+        "recall@20": -0.24999999999999994,
+        "mrr@10": -0.33333333333333337
       }
     }
   },
   "coverage": {
-    "system_unique_items": 257,
-    "baseline_unique_items": 42,
+    "system_unique_items": 82,
+    "baseline_unique_items": 29,
     "catalog_size": 320,
-    "system_catalog_coverage": 0.803125,
-    "baseline_catalog_coverage": 0.13125,
-    "system_long_tail_unique": 156
+    "system_catalog_coverage": 0.25625,
+    "baseline_catalog_coverage": 0.090625,
+    "system_long_tail_unique": 49
   },
-  "user_count": 279,
+  "user_count": 10,
   "meta": {
     "base_url": "https://api.pepe.local",
     "namespace": "default",
     "org_id": "00000000-0000-0000-0000-000000000001",
-    "evaluated_users": 279,
-    "split_timestamp": "2025-10-16T03:28:36+00:00",
-    "long_tail_threshold": 26.300000000000022,
-    "min_users": 100,
-    "warm_min_events": 50,
+    "evaluated_users": 10,
+    "split_timestamp": "2025-10-16T02:52:07+00:00",
+    "long_tail_threshold": 1.4,
+    "min_users": 1,
+    "warm_min_events": 5,
     "env_file": "api/.env",
-    "env_hash": "c1f1f6701a405fd32142927e2a3be4b29794fc6f726cdfa9cef498e0e4756f3b"
+    "env_hash": "0f75018df10f8c56fc95af4dd46d6f850f0535c6250dd69c8d6f41321f63cecf"
   }
 }

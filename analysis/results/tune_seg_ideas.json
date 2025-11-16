@@ -1,0 +1,28 @@
+{
+  "objective": "segment_ndcg_lift",
+  "samples_used": 2,
+  "suggestions": [
+    {
+      "BLEND_ALPHA": 0.3388,
+      "BLEND_BETA": 0.4428,
+      "BLEND_GAMMA": 0.2863,
+      "MMR_LAMBDA": 0.203,
+      "POPULARITY_FANOUT": 614.2576
+    },
+    {
+      "BLEND_ALPHA": 0.2936,
+      "BLEND_BETA": 0.4829,
+      "BLEND_GAMMA": 0.269,
+      "MMR_LAMBDA": 0.1726,
+      "POPULARITY_FANOUT": 684.0247
+    },
+    {
+      "BLEND_ALPHA": 0.3781,
+      "BLEND_BETA": 0.514,
+      "BLEND_GAMMA": 0.2566,
+      "MMR_LAMBDA": 0.2882,
+      "POPULARITY_FANOUT": 506.3412
+    }
+  ],
+  "notes": "Apply via tuning_harness.py --segment ... using these parameter sets."
+}

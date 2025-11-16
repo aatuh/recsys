@@ -78,3 +78,20 @@ external partners—it shows where each persona should dive deeper.
 3. **Run simulations & guardrails** – Execute `analysis/scripts/run_simulation.py --customer <name>` (or the CI workflows) to reset, seed, and run quality/scenario guardrails. Inspect `analysis/reports/<customer>/<timestamp>/` for evidence.
 4. **Deploy / Update rules** – Use `/v1/admin/rules` or `/v1/admin/manual_overrides` for merchandising campaigns; check `docs/rules-runbook.md` for dry-run/testing tips.
 5. **Monitor & audit** – Watch Prometheus metrics (coverage, policy telemetry), and pull decision traces via `/v1/audit/decisions` or the `rec_decisions` table to troubleshoot issues. Repeat the cycle whenever catalog, env knobs, or overrides change.
+6. **Tune segments (example)**  
+   ```bash
+   # Reset + seed
+   python analysis/scripts/reset_namespace.py --base-url https://api.pepe.local --org-id $ORG --namespace demo --force
+   python analysis/scripts/seed_dataset.py --base-url https://api.pepe.local --org-id $ORG --namespace demo --users 600 --events 40000
+   # Fetch/apply profile
+   python analysis/scripts/env_profile_manager.py --namespace demo fetch --base-url https://api.pepe.local --org-id $ORG --profile sweep
+   # Run segment sweep
+   python analysis/scripts/tuning_harness.py --base-url https://api.pepe.local --org-id $ORG \
+     --namespace demo --profile-name sweep --segment power_users \
+     --samples 3 --alphas 0.32,0.38 --betas 0.44,0.50 --gammas 0.18,0.24 \
+     --mmrs 0.18,0.26 --fanouts 450,650 --quality-limit-users 150
+   # Check metrics under analysis/results/tuning_runs/demo_<timestamp>/summary.json
+   # Enforce guardrails
+   python analysis/scripts/check_guardrails.py --namespace tune_seg_ --min-ndcg 0.1 --min-mrr 0.1
+   ```
+6. **Tune segments** – Run `analysis/scripts/tuning_harness.py --segment <name>` to optimize per-cohort knobs via segment profiles, then verify with `analysis/scripts/check_guardrails.py` (or CI) that the stored sweeps continue to meet the ≥+10 % lift targets.

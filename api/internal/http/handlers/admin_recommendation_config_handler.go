@@ -152,6 +152,12 @@ func convertConfigToSpec(cfg RecommendationConfig) *handlerstypes.Recommendation
 		CoverageCacheTTLSeconds:       cfg.CoverageCacheTTL.Seconds(),
 		CoverageLongTailHintThreshold: cfg.CoverageLongTailHintThreshold,
 	}
+	if len(cfg.SegmentProfiles) > 0 {
+		payload.SegmentProfiles = make(map[string]handlerstypes.SegmentProfileConfigPayload, len(cfg.SegmentProfiles))
+		for segment, profile := range cfg.SegmentProfiles {
+			payload.SegmentProfiles[segment] = convertSegmentProfileToSpec(profile)
+		}
+	}
 	return payload
 }
 
@@ -213,7 +219,59 @@ func convertSpecToConfig(payload *handlerstypes.RecommendationConfigPayload) (Re
 			cfg.BanditExperiment.Surfaces[strings.ToLower(strings.TrimSpace(v))] = struct{}{}
 		}
 	}
+	if len(payload.SegmentProfiles) > 0 {
+		cfg.SegmentProfiles = make(map[string]SegmentProfileConfig, len(payload.SegmentProfiles))
+		for segment, profile := range payload.SegmentProfiles {
+			key := strings.ToLower(strings.TrimSpace(segment))
+			if key == "" {
+				continue
+			}
+			cfg.SegmentProfiles[key] = convertSpecToSegmentProfile(profile)
+		}
+	}
 	return cfg, nil
+}
+
+func convertSegmentProfileToSpec(profile SegmentProfileConfig) handlerstypes.SegmentProfileConfigPayload {
+	payload := handlerstypes.SegmentProfileConfigPayload{
+		BlendAlpha: profile.BlendAlpha,
+		BlendBeta:  profile.BlendBeta,
+		BlendGamma: profile.BlendGamma,
+	}
+	if profile.MMRLambda != nil {
+		val := *profile.MMRLambda
+		payload.MMRLambda = &val
+	}
+	if profile.PopularityFanout != nil {
+		val := *profile.PopularityFanout
+		payload.PopularityFanout = &val
+	}
+	if profile.ProfileStarterBlendWeight != nil {
+		val := *profile.ProfileStarterBlendWeight
+		payload.ProfileStarterBlendWeight = &val
+	}
+	return payload
+}
+
+func convertSpecToSegmentProfile(payload handlerstypes.SegmentProfileConfigPayload) SegmentProfileConfig {
+	profile := SegmentProfileConfig{
+		BlendAlpha: payload.BlendAlpha,
+		BlendBeta:  payload.BlendBeta,
+		BlendGamma: payload.BlendGamma,
+	}
+	if payload.MMRLambda != nil {
+		val := *payload.MMRLambda
+		profile.MMRLambda = &val
+	}
+	if payload.PopularityFanout != nil {
+		val := *payload.PopularityFanout
+		profile.PopularityFanout = &val
+	}
+	if payload.ProfileStarterBlendWeight != nil {
+		val := *payload.ProfileStarterBlendWeight
+		profile.ProfileStarterBlendWeight = &val
+	}
+	return profile
 }
 
 func mapKeys(input map[string]struct{}) []string {

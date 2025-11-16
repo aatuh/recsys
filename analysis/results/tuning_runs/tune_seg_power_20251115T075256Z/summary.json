@@ -1,0 +1,46 @@
+{
+  "runs": [
+    {
+      "run": "001",
+      "parameters": {
+        "BLEND_ALPHA": "0.3374",
+        "BLEND_BETA": "0.4611",
+        "BLEND_GAMMA": "0.2502",
+        "MMR_LAMBDA": "0.1826",
+        "POPULARITY_FANOUT": "457"
+      },
+      "metrics": {
+        "ndcg_lift": 0.40233482345411237,
+        "mrr_lift": 0.43251638939128584,
+        "recall_lift": 0.6445218556161026,
+        "catalog_coverage": 0.753125,
+        "long_tail_share": 0.48866666666666664,
+        "user_count": 150,
+        "segment_ndcg_lift": 0.11869068222254887,
+        "segment_mrr_lift": 0.3549741163912783,
+        "segment_user_count": 67
+      }
+    },
+    {
+      "run": "002",
+      "parameters": {
+        "BLEND_ALPHA": "0.3569",
+        "BLEND_BETA": "0.4798",
+        "BLEND_GAMMA": "0.205",
+        "MMR_LAMBDA": "0.187",
+        "POPULARITY_FANOUT": "549"
+      },
+      "metrics": {
+        "ndcg_lift": 0.40233482345411237,
+        "mrr_lift": 0.43251638939128584,
+        "recall_lift": 0.6445218556161026,
+        "catalog_coverage": 0.753125,
+        "long_tail_share": 0.48866666666666664,
+        "user_count": 150,
+        "segment_ndcg_lift": 0.11869068222254887,
+        "segment_mrr_lift": 0.3549741163912783,
+        "segment_user_count": 67
+      }
+    }
+  ]
+}

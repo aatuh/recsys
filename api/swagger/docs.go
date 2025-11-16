@@ -3492,6 +3492,12 @@ const docTemplate = `{
                 },
                 "rules_enabled": {
                     "type": "boolean"
+                },
+                "segment_profiles": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/types.SegmentProfileConfigPayload"
+                    }
                 }
             }
         },
@@ -3842,6 +3848,29 @@ const docTemplate = `{
                 },
                 "segment_id": {
                     "type": "string"
+                }
+            }
+        },
+        "types.SegmentProfileConfigPayload": {
+            "type": "object",
+            "properties": {
+                "blend_alpha": {
+                    "type": "number"
+                },
+                "blend_beta": {
+                    "type": "number"
+                },
+                "blend_gamma": {
+                    "type": "number"
+                },
+                "mmr_lambda": {
+                    "type": "number"
+                },
+                "popularity_fanout": {
+                    "type": "integer"
+                },
+                "profile_starter_blend_weight": {
+                    "type": "number"
                 }
             }
         },
