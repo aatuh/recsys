@@ -16,14 +16,12 @@ go run ./api/cmd/blend_eval \
 
 Flags:
 
-| Flag | Description |
-|------|-------------|
-| `-namespace` | Namespace to sample (defaults to `default`). |
-| `-k` | Recommendation list length for evaluation (`20`). |
-| `-limit` | Maximum user samples to evaluate (`200`). |
-| `-min-events` | Minimum interactions per user (`5`). |
-| `-lookback` | Event lookback window (Go duration). |
-| `-configs` | Optional YAML file describing candidate blends. |
+- `-namespace` — Namespace to sample (defaults to `default`).
+- `-k` — Recommendation list length for evaluation (`20`).
+- `-limit` — Maximum user samples evaluated (`200`).
+- `-min-events` — Minimum interactions per user (`5`).
+- `-lookback` — Event lookback window (Go duration).
+- `-configs` — Optional YAML describing candidate blends.
 
 If `-configs` is omitted the tool runs three baseline presets (`baseline`, `pop-heavy`, `embed-heavy`). Results are printed as a table with hit-rate, mean reciprocal rank, average rank, coverage, and failure counts.
 

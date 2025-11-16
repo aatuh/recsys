@@ -102,7 +102,7 @@ If ratios dip below guardrail targets, coordinate with the tuning team (`docs/tu
 
 1. **Seed starter data** via `analysis/scripts/seed_dataset.py` using the same org/namespace as production; this mirrors the catalog/users captured in `analysis/evidence/seed_manifest.json`.
    _Local stack note: commands such as `make scenario-suite` assume repository access with Docker/Make._
-2. **Run scenario S7** (`make scenario-suite …`) and review `analysis/evidence/scenario_s7_cold_start.json` to confirm ≥4 categories and personalization reasons for the first item.
+2. **Run the starter-profile scenario** (`make scenario-suite …`) and review `analysis/evidence/scenario_s7_cold_start.json` to confirm ≥4 categories and personalization reasons for the first item.
 3. **Compare segment lifts** with `analysis/quality_metrics.json`; new_users should stay ≥+10% on NDCG@10/MRR@10 after any rollout (use `analysis/scripts/run_quality_eval.py` to regenerate metrics).
 4. **Audit determinism** using `.github/workflows/determinism.yml` (or run `analysis/scripts/check_determinism.py --baseline analysis/evidence/determinism_check.json`) before exposing a new surface.
 
@@ -116,7 +116,7 @@ If ratios dip below guardrail targets, coordinate with the tuning team (`docs/tu
   - Hit `/v1/admin/recommendation/presets` if you need the curated `mmr_lambda`
     presets for a surface.
   - Run `make scenario-suite` (or `python analysis/scripts/run_scenarios.py`)
-    pointing at the target environment to revalidate S1–S10.
+    pointing at the target environment to revalidate the full scenario suite.
 
 - **When something looks wrong**
   1. Check `policy_rule_zero_effect` warnings for the surface/namespace in
@@ -126,7 +126,7 @@ If ratios dip below guardrail targets, coordinate with the tuning team (`docs/tu
   3. Use `/v1/audit/decisions` (with `include_reasons=true` in the original
      request) to inspect the stored trace – the policy summary and rule effects
      are persisted.
-  4. Re-run the scenario suite (especially S3/S5/S8/S9) against the
+  4. Re-run the scenario suite (especially the segmentation, pin/boost, and exposure-focused flows) against the
      environment to confirm fixes.
 
 - **If zero-effect persists**

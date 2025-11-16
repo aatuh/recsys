@@ -1,4 +1,4 @@
-# Bandit Exploration Framework (RT-7A)
+# Bandit Exploration Framework
 
 Goal: define the policy and data plumbing necessary to explore new items without harming core metrics.
 
@@ -47,7 +47,7 @@ Goal: define the policy and data plumbing necessary to explore new items without
 - Data science: reward weights, prior tuning.
 - Product analytics: dashboard + success criteria.
 
-## 8. Controlled Experiment (RT-7D)
+## 8. Controlled Experiment
 - Use `BANDIT_EXPERIMENT_*` env vars to configure holdout control traffic (e.g., 10% of `home,cart`).
 - Bandit decisions/rewards now log `experiment` + `variant` metadata for downstream dashboards.
 - Decision tracer extras surface the same fields for quick inspection (`bandit_experiment`, `bandit_variant`).

@@ -25,7 +25,7 @@ Read this when you need plain-language definitions of the jargon that appears th
 These show up in tuning dashboards, guardrails, and CI reports.
 
 - **NDCG (Normalized Discounted Cumulative Gain):** Measures how well the order of recommendations matches ground-truth relevance. The closer items your users actually clicked/purchased appear to the top, the closer NDCG is to 1.0. Dropping a relevant item from rank 1 to rank 5 hurts more than shifting items lower in the list.
-- **MRR (Mean Reciprocal Rank):** Looks at the position of the first relevant item in each list: `1/rank`. Averaged across users/segments. Useful for “did we show *anything* they'll love near the top?” guardrails (e.g., starter profile scenario S7).
+- **MRR (Mean Reciprocal Rank):** Looks at the position of the first relevant item in each list: `1/rank`. Averaged across users/segments. Useful for “did we show *anything* they'll love near the top?” guardrails (e.g., the starter-profile scenario).
 - **Segment lift:** Percentage improvement of a metric (NDCG, conversion, etc.) for a given cohort vs. baseline. Example: `((new_ndcg - baseline_ndcg) / baseline_ndcg) * 100`. Ensures no cohort regresses badly when tuning.
 - **Catalog coverage:** Fraction of the catalog that appears in the eligible candidate pool over a window. We use it to verify the system doesn’t overfit to a handful of products. Guardrails often check coverage ≥ 0.60.
 - **Long-tail share:** Portion of impressions allocated to items outside the top popularity decile. High share = better breadth; low share may require raising `POPULARITY_FANOUT` or increasing MMR.
@@ -38,7 +38,7 @@ These show up in tuning dashboards, guardrails, and CI reports.
 
 Guardrails are small YAML policies (`guardrails.yml`) interpreted by the simulation harness before a config ships. They answer questions like:
 
-- “Did the starter profile (S7) still produce ≥4 unique categories and MRR ≥ 0.2?”
+- “Did the starter profile scenario still produce ≥4 unique categories and MRR ≥ 0.2?”
 - “Did long-tail items receive at least 30% exposure during rerank?”
 - “Do any rules break tie-breaking or introduce dead ends?”
 

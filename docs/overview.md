@@ -14,7 +14,7 @@ so you can jump directly into the material relevant to you.
 1. **Start here:** `docs/business_overview.md` for the product story and rollout expectations.
 2. **Learn the language:** Skim `docs/concepts_and_metrics.md` to decode ALS/MMR/coverage, then keep it nearby for guardrail reviews.
    _Local stack note: commands such as `make scenario-suite` assume you cloned the repo; hosted API users can skip them._
-3. **Plan guardrail reviews:** Coordinate with engineering on the scenario suite (`make scenario-suite`) and quality evaluations. Expect to hear about S7 (starter profile), coverage, long-tail share, and segment lifts—each defined in `docs/concepts_and_metrics.md`.
+3. **Plan guardrail reviews:** Coordinate with engineering on the scenario suite (`make scenario-suite`) and quality evaluations. Expect to hear about starter-profile guardrails, coverage, long-tail share, and segment lifts—each defined in `docs/concepts_and_metrics.md`.
 4. **Campaign overrides:** Merchandising teams use `/v1/admin/rules` & `/v1/admin/manual_overrides`. `docs/rules_runbook.md` explains precedence, telemetry, and audit expectations.
 5. **Audit & reporting:** Decision traces (`/v1/audit/decisions`) provide “why” evidence for VIP reviews. Business stakeholders should know how to request/export these traces.
 
@@ -39,14 +39,12 @@ so you can jump directly into the material relevant to you.
 
 ## Quick Links
 
-| Need                     | Docs / Commands                                                                              |
-|--------------------------|----------------------------------------------------------------------------------------------|
-| Local + HTTP quickstarts | `GETTING_STARTED.md`, `docs/quickstart_http.md`                                              |
-| API behavior & schemas   | `docs/api_reference.md`, Swagger at `/docs`, `docs/database_schema.md`                       |
-| Configuration knobs      | `docs/configuration.md` (concepts), `docs/env_reference.md` (canonical list)                 |
-| Guardrails & simulations | `docs/simulations_and_guardrails.md`, `analysis/scripts/run_simulation.py`, `guardrails.yml` |
-| Rules & ops              | `docs/rules_runbook.md`, Prometheus dashboards                                               |
-| Tuning workflow          | `docs/tuning_playbook.md`, `analysis/scripts/tuning_harness.py`                              |
+- **Local + HTTP quickstarts** — `GETTING_STARTED.md`, `docs/quickstart_http.md`.
+- **API behavior & schemas** — `docs/api_reference.md`, Swagger at `/docs`, `docs/database_schema.md`.
+- **Configuration knobs** — `docs/configuration.md` (concepts), `docs/env_reference.md` (canonical list).
+- **Guardrails & simulations** — `docs/simulations_and_guardrails.md`, `analysis/scripts/run_simulation.py`, `guardrails.yml`.
+- **Rules & ops** — `docs/rules_runbook.md`, Prometheus dashboards.
+- **Tuning workflow** — `docs/tuning_playbook.md`, `analysis/scripts/tuning_harness.py`.
 
 Keep this overview handy when onboarding new teammates or explaining Recsys to
 external partners—it shows where each persona should dive deeper.

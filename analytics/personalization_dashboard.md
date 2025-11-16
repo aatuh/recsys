@@ -1,4 +1,4 @@
-# Personalisation & Overlap Monitoring (RT-3D)
+# Personalisation & Overlap Monitoring
 
 This dashboard closes RT-3D by surfacing trends that prove the blend automation is keeping personalised lift healthy while guarding against homogenised results.
 
@@ -15,7 +15,7 @@ This dashboard closes RT-3D by surfacing trends that prove the blend automation 
 1. **Personalised Share by Surface** – stacked area chart splitting home/PDP/cart. Alert when drop >5% vs baseline.
 2. **Reason Coverage** – line chart with target band (>= 80%).
 3. **Top-K Overlap Heatmap** – table comparing Jaccard overlap percentiles for cohorts (new vs returning, device). Use data from nightly batch job stored in `experiments.blend_weights_daily`.
-4. **Entropy Widgets** – bar chart of brand/category entropy per surface (RT-4 work).
+4. **Entropy Widgets** – bar chart of brand/category entropy per surface.
 5. **Correlated Metrics** – multi-axis chart overlaying personalised share with CTR to confirm causal lift.
 
 ## Data Pipeline
@@ -33,5 +33,5 @@ This dashboard closes RT-3D by surfacing trends that prove the blend automation 
 ## Action Playbook
 
 1. Personalisation drop but CTR steady: inspect blend overrides – roll back via `BLEND_WEIGHTS_OVERRIDES` flag.
-2. Overlap spike accompanies CTR drop: deploy diversity reranker adjustments (RT-4 knobs) or reduce popularity weight.
+2. Overlap spike accompanies CTR drop: deploy diversity reranker adjustments or reduce popularity weight.
 3. Coverage alert: check shop telemetry ingestion, rerun `make codegen` if contracts changed.

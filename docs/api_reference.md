@@ -6,17 +6,15 @@ This reference groups every public REST endpoint by domain. For payload schemas 
 
 ## Ingestion & Data Management
 
-| Endpoint            | Method | Purpose                                         | Notes                                                                                                                  |
-|---------------------|--------|-------------------------------------------------|------------------------------------------------------------------------------------------------------------------------|
-| `/v1/items:upsert`  | POST   | Bulk insert/update catalog items.               | Accepts `items` array (50 per request). Include `tags`, `props`, `available`. Writes to Postgres and refreshes caches. |
-| `/v1/users:upsert`  | POST   | Bulk insert/update user profiles.               | Provide `traits` JSON with segments, locale, etc. Up to 100 per request.                                               |
-| `/v1/events:batch`  | POST   | Record behavioral events (view/click/purchase). | Up to 500 per batch. `type` codes: 0=view…3=purchase. Drives personalization & bandits.                                |
-| `/v1/items:delete`  | POST   | Delete items by namespace / ID filter.          | Pass `delete_request.namespace` plus optional `item_id`.                                                               |
-| `/v1/users:delete`  | POST   | Delete users by namespace / filter.             | Use when resetting a tenant namespace.                                                                                 |
-| `/v1/events:delete` | POST   | Delete historical events in a namespace.        | Supports filters such as `user_id`, `event_type`, time ranges.                                                         |
-| `/v1/items`         | GET    | Paginated list of items.                        | Supports filters (`item_id`, created_after/before). Useful for QA and audits.                                          |
-| `/v1/users`         | GET    | Paginated list of users.                        | Filter by `user_id` or creation timestamps.                                                                            |
-| `/v1/events`        | GET    | Paginated list of events.                       | Filter by `user_id`, `item_id`, `event_type`, time window.                                                             |
+- **`POST /v1/items:upsert`** — Bulk insert/update catalog items (50 per request). Include `tags`, `props`, `available`; writes to Postgres and refreshes caches.
+- **`POST /v1/users:upsert`** — Bulk insert/update user profiles (≤100 per request). Provide `traits` JSON with segments, locale, etc.
+- **`POST /v1/events:batch`** — Record behavioral events (view/click/purchase). Up to 500 events per batch; `type` codes 0=view…3=purchase.
+- **`POST /v1/items:delete`** — Delete items by namespace/ID filter. Supply `delete_request.namespace` plus optional `item_id`.
+- **`POST /v1/users:delete`** — Delete users by namespace/filter. Handy when resetting a tenant namespace.
+- **`POST /v1/events:delete`** — Delete historical events for a namespace. Supports filters (`user_id`, `event_type`, time ranges).
+- **`GET /v1/items`** — Paginated list of items with filters (ID, created_after/before). Useful for QA/audits.
+- **`GET /v1/users`** — Paginated list of users, filterable by ID or creation timestamps.
+- **`GET /v1/events`** — Paginated events feed with filters (`user_id`, `item_id`, `event_type`, time window).
 
 **Common request fields**
 
@@ -48,12 +46,10 @@ curl -X POST https://api.example.com/v1/items:upsert \
 
 ## Ranking & Explainability
 
-| Endpoint                      | Method | Purpose                                                 | Notes                                                                                                                                                                                                                                                                                                                                              |
-|-------------------------------|--------|---------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `/v1/recommendations`         | POST   | Core ranking endpoint returning top-K items for a user. | Requires `namespace`, `k`, optional `user_id`. Supports `overrides` (blend / Maximal Marginal Relevance (MMR; see `docs/concepts_and_metrics.md`) / profile knobs) and `include_reasons`. Returns trace extras (policy summary, starter profile) and feeds audit/coverage guardrails (terminology also covered in `docs/concepts_and_metrics.md`). |
-| `/v1/rerank`                  | POST   | Re-score a caller-supplied candidate list.              | Send up to ~200 `items[]` (optional prior scores) plus user/context. Engine reuses blend/MMR/policy/personalization but never injects new IDs, so search/cart services can control retrieval while inheriting telemetry.                                                                                                                           |
-| `/v1/items/{item_id}/similar` | GET    | Fetch similar items by collaborative/content signals.   | Needs `namespace` and `item_id`. Used for “related products.”                                                                                                                                                                                                                                                                                      |
-| `/v1/explain/llm`             | POST   | Ask the LLM explainer for narrative summaries.          | Provide target type (`recommendation`, `order`), time window, question. Requires LLM env vars.                                                                                                                                                                                                                                                     |
+- **`POST /v1/recommendations`** — Core ranking endpoint returning top-K items. Requires `namespace`, `k`, optional `user_id`. Supports `overrides` (blend/MMR/profile knobs) and `include_reasons`; returns detailed traces for guardrails.
+- **`POST /v1/rerank`** — Re-score a caller-supplied candidate list (≤200 items). Reuses the same personalization and telemetry but never injects new IDs, so search/cart services keep control over retrieval.
+- **`GET /v1/items/{item_id}/similar`** — Fetch similar items via collaborative/content signals. Supply `namespace` + `item_id`; powers “related products.”
+- **`POST /v1/explain/llm`** — Ask the explainer LLM for narrative summaries (`recommendation`, `order`). Provide question + time window; requires LLM env vars.
 
 **Key request fields (`/v1/recommendations`)**
 
@@ -106,13 +102,11 @@ curl -X POST https://api.example.com/v1/rerank \
 
 > Need a refresher on what “multi-armed bandit” means? See the plain-language definition in `docs/concepts_and_metrics.md`.
 
-| Endpoint                     | Method | Purpose                                             | Notes                                                                                     |
-|------------------------------|--------|-----------------------------------------------------|-------------------------------------------------------------------------------------------|
-| `/v1/bandit/decide`          | POST   | Allocate a user/session into an experiment arm.     | Use before rendering a surface; response includes `arm_id`, `policy_version`.             |
-| `/v1/bandit/recommendations` | POST   | Retrieve recommendations with exploration baked in. | Same payload as `/v1/recommendations`; response also includes bandit metadata.            |
-| `/v1/bandit/reward`          | POST   | Send reward signals (click/purchase) for an arm.    | Provide `decision_id`, `reward` (0‑1), optional metadata.                                 |
-| `/v1/bandit/policies`        | GET    | List policies for an org/namespace.                 | Returns active + historical policies with arm config.                                     |
-| `/v1/bandit/policies:upsert` | POST   | Create/update a policy definition.                  | Supply arms, traffic splits, eligibility rules. Used by ops tooling when launching tests. |
+- **`POST /v1/bandit/decide`** — Allocate a user/session into an experiment arm. Call before rendering; response includes `arm_id` and `policy_version`.
+- **`POST /v1/bandit/recommendations`** — Retrieve recommendations with exploration baked in. Same payload as `/v1/recommendations`, plus bandit metadata in the response.
+- **`POST /v1/bandit/reward`** — Send reward signals (click/purchase) for an arm. Provide `decision_id`, `reward` (0–1), optional metadata.
+- **`GET /v1/bandit/policies`** — List policies for an org/namespace, including active + historical arm configs.
+- **`POST /v1/bandit/policies:upsert`** — Create or update policy definitions (arms, traffic splits, eligibility rules). Used when launching new tests.
 
 **Typical sequence**
 
@@ -124,19 +118,17 @@ Policies are defined via `/v1/bandit/policies:upsert`. Each policy lists arms, t
 
 ## Configuration (Event Types, Segments, Presets)
 
-| Endpoint                           | Method   | Purpose                                         | Notes                                                                                                         |
-|------------------------------------|----------|-------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
-| `/v1/event-types`                  | GET      | List effective event-type weights & half-lives. | Shows what the ranking engine currently uses.                                                                 |
-| `/v1/event-types:upsert`           | POST     | Configure event-type weights/half-lives.        | E.g., change purchase weight or deactivate custom events.                                                     |
-| `/v1/segments`                     | GET      | List behavioral segments.                       | Segments drive cohort-specific tuning.                                                                        |
-| `/v1/segments:upsert`              | POST     | Create/update segments.                         | Provide `segment_id`, description, eligibility rules.                                                         |
-| `/v1/segments:delete`              | POST     | Remove segments.                                | Use when retiring cohorts.                                                                                    |
-| `/v1/segment-profiles`             | GET      | Preset starter profiles per segment.            | Useful for cold-start curation.                                                                               |
-| `/v1/segment-profiles:upsert`      | POST     | Create/update starter profile weights.          | Map categories/tags to weights.                                                                               |
-| `/v1/segment-profiles:delete`      | POST     | Remove starter profiles.                        |                                                                                                               |
-| `/v1/segments:dry-run`             | POST     | Test segment definitions without saving.        |                                                                                                               |
-| `/v1/admin/recommendation/presets` | GET      | Fetch recommended MMR presets per surface.      | UI tooling can show validated values.                                                                         |
-| `/v1/admin/recommendation/config`  | GET/POST | Fetch/apply the active recommendation config.   | Use `analysis/scripts/recommendation_config.py export/apply` to keep git-backed JSON templates per namespace. |
+- **`GET /v1/event-types`** — List current event-type weights and half-lives.
+- **`POST /v1/event-types:upsert`** — Configure event-type weights/half-lives (e.g., change purchase weight, disable custom events).
+- **`GET /v1/segments`** — List behavioral segments driving cohort-specific tuning.
+- **`POST /v1/segments:upsert`** — Create/update segments (`segment_id`, description, eligibility rules).
+- **`POST /v1/segments:delete`** — Remove segments when retiring cohorts.
+- **`GET /v1/segment-profiles`** — Fetch preset starter profiles per segment for cold-start curation.
+- **`POST /v1/segment-profiles:upsert`** — Create/update starter profile weights (map categories/tags to weights).
+- **`POST /v1/segment-profiles:delete`** — Delete starter profiles.
+- **`POST /v1/segments:dry-run`** — Test segment definitions without saving.
+- **`GET /v1/admin/recommendation/presets`** — Fetch recommended MMR presets per surface for UI tooling.
+- **`GET/POST /v1/admin/recommendation/config`** — Fetch/apply the active recommendation config. Use `analysis/scripts/recommendation_config.py` to manage git-backed JSON templates.
 
 **Usage tips**
 
@@ -147,13 +139,11 @@ Policies are defined via `/v1/bandit/policies:upsert`. Each policy lists arms, t
 
 ## Rules & Manual Overrides
 
-| Endpoint                     | Method         | Purpose                                            | Notes                                                                |
-|------------------------------|----------------|----------------------------------------------------|----------------------------------------------------------------------|
-| `/v1/admin/rules`            | GET/POST       | List/create merchandising rules (boost/block/pin). | POST body defines targets, actions, priority, namespace/surface.     |
-| `/v1/admin/rules/{rule_id}`  | GET/PUT/DELETE | Inspect or update a specific rule.                 | Use PUT to adjust windows/priority. DELETE removes the rule.         |
-| `/v1/admin/rules/dry-run`    | POST           | Test a rule against synthetic input.               | Returns what would happen without saving.                            |
-| `/v1/admin/manual_overrides` | GET/POST       | Manage ad-hoc overrides (short-lived boosts/pins). | Great for campaigns; overrides translate to rules behind the scenes. |
-| `/v1/admin/manual_overrides/{override_id}/cancel` | POST | Cancel an active manual override. |
+- **`GET/POST /v1/admin/rules`** — List or create merchandising rules (boost/block/pin). POST body defines targets, actions, priority, namespace/surface.
+- **`GET/PUT/DELETE /v1/admin/rules/{rule_id}`** — Inspect, update, or delete a specific rule. Use PUT to adjust windows/priority.
+- **`POST /v1/admin/rules/dry-run`** — Test a rule against synthetic input; returns what would happen without saving.
+- **`GET/POST /v1/admin/manual_overrides`** — Manage ad-hoc overrides (short-lived boosts/pins). Overrides compile to rules behind the scenes.
+- **`POST /v1/admin/manual_overrides/{override_id}/cancel`** — Cancel an active manual override.
 
 Rules are long-lived merchandising controls. Manual overrides map to temporary rules behind the scenes. Both obey namespace/surface scoping and appear in decision traces (`trace.extras.policy`). Always dry-run complex rules before enabling them in production.
 
@@ -167,22 +157,18 @@ Include the JSON artifacts when filing guardrail evidence or peer reviews.
 
 ## Audit & Coverage
 
-| Endpoint                            | Method   | Purpose                                 | Notes                                                                                       |
-|-------------------------------------|----------|-----------------------------------------|---------------------------------------------------------------------------------------------|
-| `/v1/audit/decisions`               | GET/POST | List audit records or enqueue new ones. | GET supports filters (namespace, time window). POST used internally when tracing decisions. |
-| `/v1/audit/decisions/{decision_id}` | GET      | Fetch a specific audit record.          | Contains request, config, response, policy summary.                                         |
-| `/v1/audit/search`                  | POST     | Query audits with richer filters.       | Filter by rule IDs, leakage flags, user IDs, time windows, surfaces, etc.                   |
+- **`GET/POST /v1/audit/decisions`** — List audit records or enqueue new ones. GET supports namespace/time filters; POST is used internally during tracing.
+- **`GET /v1/audit/decisions/{decision_id}`** — Fetch a specific audit record, including request, config, response, policy summary.
+- **`POST /v1/audit/search`** — Query audits with richer filters (rule IDs, leakage flags, user IDs, time windows, surfaces).
 
 Traces include the full request, resolved algorithm config, policy summaries, and coverage telemetry. Use them to debug guardrail failures or zero-effect overrides.
 
 ## Data Governance / Maintenance
 
-| Endpoint   | Method | Purpose                                               | Notes                                                                                         |
-|------------|--------|-------------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| `/version` | GET    | Emit git commit, build timestamp, and model version.  | Relies on `RECSYS_GIT_COMMIT` / `RECSYS_BUILD_TIME` env vars; falls back to runtime defaults. |
-| `/health`  | GET    | Liveness/readiness probe.                             | Returns `{ "status": "ok" }`. Used by Docker/CI.                                              |
-| `/docs`    | GET    | Swagger UI / API docs.                                | Serves `swagger.json` / `swagger.yaml`.                                                       |
-| `/metrics` | GET    | Prometheus metrics (if enabled via observability env) | Scrape `policy_*`, HTTP latency, DB stats, etc.                                               |
+- **`GET /version`** — Emit git commit, build timestamp, and model version (from `RECSYS_GIT_COMMIT` / `RECSYS_BUILD_TIME`; falls back to runtime defaults).
+- **`GET /health`** — Liveness/readiness probe returning `{ "status": "ok" }`; used by Docker/CI.
+- **`GET /docs`** — Swagger UI / API docs (serves `swagger.json` / `swagger.yaml`).
+- **`GET /metrics`** — Prometheus metrics (when observability env vars enabled) covering `policy_*`, HTTP latency, DB stats, etc.
 
 Pair `/version` with determinism artifacts (see `analysis/results/determinism_ci.json` or `make determinism`) when capturing evidence for evaluations or incident reviews.
 
@@ -197,16 +183,14 @@ Pair `/version` with determinism artifacts (see `analysis/results/determinism_ci
 
 ## Error handling & status codes
 
-| Code                        | When you’ll see it                                                                                                | What to check                                                 |
-|-----------------------------|-------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------|
-| `200 OK`                    | Successful write/read. Responses often include `trace_id` for audits.                                             | —                                                             |
-| `400 Bad Request`           | Missing `namespace`, malformed payloads, missing `X-Org-ID`. Error body includes `code` (e.g., `missing_org_id`). | Validate headers, JSON shape, enum names.                     |
-| `401/403 Unauthorized`      | API key missing/invalid when auth is enabled.                                                                     | Add `X-API-Key` or `Authorization` header.                    |
-| `404 Not Found`             | Namespace doesn’t exist, item/user not seeded, or endpoint typo.                                                  | Confirm namespace spelling and data ingestion.                |
-| `409 Conflict`              | Duplicate IDs during manual override/rule creation when dedupe keys clash.                                        | Fetch existing resource, resolve conflict, retry.             |
-| `422 Unprocessable Entity`  | Invalid override values (`overrides.blend` sums to zero, unknown event type, etc.).                               | Refer to `docs/env_reference.md` for valid ranges.            |
-| `429 Too Many Requests`     | Rate limit exceeded (`API_RATE_LIMIT_RPM`).                                                                       | Back off or request higher limits.                            |
-| `500 Internal Server Error` | Unexpected bug or downstream outage.                                                                              | Retry with jitter; capture `trace_id` and escalate with logs. |
+- **`200 OK`** — Successful write/read (responses include `trace_id`). Nothing to fix.
+- **`400 Bad Request`** — Missing `namespace`, malformed payload, missing `X-Org-ID`. Fix headers and JSON shape.
+- **`401/403 Unauthorized`** — API key missing/invalid when auth enabled. Add `X-API-Key` or `Authorization`.
+- **`404 Not Found`** — Namespace absent, item/user not seeded, or endpoint typo. Confirm namespace spelling and ingestion.
+- **`409 Conflict`** — Duplicate IDs (manual override/rule creation). Fetch existing resource, resolve conflict, retry.
+- **`422 Unprocessable Entity`** — Invalid override values (`overrides.blend` sums to zero, unknown event type, etc.). Refer to `docs/env_reference.md` for valid ranges.
+- **`429 Too Many Requests`** — Rate limit exceeded (`API_RATE_LIMIT_RPM`). Back off or request higher limits.
+- **`500 Internal Server Error`** — Unexpected bug or downstream outage. Retry with jitter; capture `trace_id` and escalate.
 
 All errors return JSON with `code`, `message`, and sometimes `details`. Include the `trace_id` when reporting incidents.
 

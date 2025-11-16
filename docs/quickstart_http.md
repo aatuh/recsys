@@ -133,13 +133,11 @@ Useful for PDP “you may also like” modules. This endpoint relies heavily on 
 
 ## 4. Common mistakes
 
-| Symptom                   | Likely cause                               | Fix                                                                                   |
-|---------------------------|--------------------------------------------|---------------------------------------------------------------------------------------|
-| `400 missing_org_id`      | `X-Org-ID` header absent or not a UUID     | Send the header on every request, even for GETs.                                      |
-| `404 namespace_not_found` | Namespace typo or never seeded             | Double-check the namespace string, seed data, or create it via admin APIs.            |
-| `422 invalid blend`       | `overrides.blend` weights missing/negative | Normalize weights to positive floats; omit `overrides` to use defaults.               |
-| Empty recommendation list | Catalog empty or items `available=false`   | Upsert items with `available=true`, check `/v1/items`.                                |
-| Slow responses (>1s)      | Too large `k`/`fanout`, network to region  | Reduce `k`, avoid unnecessary `include_reasons`, ensure calls hit the closest region. |
+- **`400 missing_org_id`** — `X-Org-ID` header absent or not a UUID. Fix: send the header on every request, even GETs.
+- **`404 namespace_not_found`** — Namespace typo or never seeded. Fix: double-check the namespace string, seed data, or create it via admin APIs.
+- **`422 invalid blend`** — `overrides.blend` weights missing or negative. Fix: normalize weights to positive floats; omit `overrides` to use defaults.
+- **Empty recommendation list** — Catalog empty or items `available=false`. Fix: upsert items with `available=true` and check `/v1/items`.
+- **Slow responses (>1s)** — `k`/fanout too large or wrong region. Fix: reduce `k`, skip unnecessary `include_reasons`, ensure calls hit the nearest region.
 
 ---
 

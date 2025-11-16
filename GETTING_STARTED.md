@@ -108,12 +108,10 @@ Feel free to modify `overrides` (e.g., blend weights) or `k` to experiment—no 
 
 Common issues:
 
-| Symptom | Likely cause | Fix |
-|---------|--------------|-----|
-| Connection refused | Containers not running or still starting | `make dev`, then re-run after logs show API ready |
-| 400 `missing_org_id` | `X-Org-ID` header omitted | Include the UUID header on every request |
-| 401/403 | API auth enabled but key missing | Ask your admin for API key/headers |
-| Empty list returned | Namespace not seeded or `available=false` items | Rerun the seed script and inspect `/v1/items` / `analysis/evidence/seed_segments.json` |
+- **Connection refused** — Containers not running or still starting. Fix: `make dev`, then retry once API logs show readiness.
+- **400 `missing_org_id`** — `X-Org-ID` header omitted. Fix: include the UUID header on every request.
+- **401/403** — API auth enabled but key missing. Fix: request API credentials/headers from the admin.
+- **Empty list returned** — Namespace not seeded or items marked `available=false`. Fix: rerun the seed script and inspect `/v1/items` or `analysis/evidence/seed_segments.json`.
 
 Where to go next:
 

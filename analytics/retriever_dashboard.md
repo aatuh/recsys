@@ -1,4 +1,4 @@
-# Retriever Coverage & Latency Dashboard (RT-1F)
+# Retriever Coverage & Latency Dashboard
 
 This dashboard validates that every retriever contributes healthy candidate sets and makes it easy to spot regressions after deploys.
 

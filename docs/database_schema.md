@@ -17,38 +17,32 @@ catalog/users/events, troubleshooting audits, or exporting evidence.
 
 ### `items`
 
-| Column                               | Type          | Description                                                                   |
-|--------------------------------------|---------------|-------------------------------------------------------------------------------|
-| `org_id`                             | uuid          | Tenant identifier. Every row is scoped to an org + namespace.                 |
-| `namespace`                          | text          | Logical namespace (e.g., `default`, `retail_us`).                             |
-| `item_id`                            | text          | Unique item key. Primary key with org/namespace.                              |
-| `title`, `description`               | text          | Optional metadata shown in downstream UIs.                                    |
-| `brand`, `category`, `category_path` | text / text[] | Used for caps and overrides. `category_path` stores hierarchical breadcrumbs. |
-| `price`                              | numeric       | Used in ranking features (e.g., margin).                                      |
-| `available`                          | bool          | Drives eligibility filters.                                                   |
-| `tags`                               | text[]        | Tags used by the rules engine and personalization.                            |
-| `props`                              | jsonb         | Schemaless attributes (margin, novelty hints, etc.).                          |
-| `updated_at`                         | timestamptz   | Auto-updated timestamp.                                                       |
+- **`org_id` (uuid)** — Tenant identifier; rows scoped to org + namespace.
+- **`namespace` (text)** — Logical namespace (e.g., `default`, `retail_us`).
+- **`item_id` (text)** — Unique item key; primary key with org/namespace.
+- **`title`, `description` (text)** — Optional metadata shown downstream.
+- **`brand`, `category`, `category_path` (text/text[])** — Used for caps/overrides; `category_path` holds hierarchical breadcrumbs.
+- **`price` (numeric)** — Powers ranking features (margin, etc.).
+- **`available` (bool)** — Drives eligibility filters.
+- **`tags` (text[])** — Consumed by rules engine and personalization.
+- **`props` (jsonb)** — Schemaless attributes (margin, novelty hints).
+- **`updated_at` (timestamptz)** — Auto-updated timestamp.
 
 ### `users`
 
-| Column                           | Type        | Description                                   |
-|----------------------------------|-------------|-----------------------------------------------|
-| `org_id`, `namespace`, `user_id` | uuid/text   | Composite primary key.                        |
-| `traits`                         | jsonb       | Segments, locale, device, and other metadata. |
-| `recent_activity_at`             | timestamptz | Optional timestamp for auditing.              |
-| `created_at`, `updated_at`       | timestamptz | Lifecycle tracking.                           |
+- **`org_id`, `namespace`, `user_id` (uuid/text)** — Composite primary key.
+- **`traits` (jsonb)** — Segments, locale, device, and other metadata.
+- **`recent_activity_at` (timestamptz)** — Optional auditing timestamp.
+- **`created_at`, `updated_at` (timestamptz)** — Lifecycle tracking.
 
 ### `events`
 
-| Column                            | Type             | Description                                                              |
-|-----------------------------------|------------------|--------------------------------------------------------------------------|
-| `org_id`, `namespace`, `event_id` | uuid/text        | Primary key (event_id is often generated client-side).                   |
-| `user_id`, `item_id`              | text             | Foreign-key to users/items (not enforced). Required for personalization. |
-| `type`                            | smallint         | 0=view, 1=click, 2=add-to-cart, 3=purchase, 4=custom.                    |
-| `ts`                              | timestamptz      | Event timestamp.                                                         |
-| `value`                           | double precision | Optional scalar (e.g., quantity).                                        |
-| `meta`                            | jsonb            | Surface, session_id, campaign info, etc.                                 |
+- **`org_id`, `namespace`, `event_id` (uuid/text)** — Primary key (`event_id` often generated client-side).
+- **`user_id`, `item_id` (text)** — References to users/items (not enforced) required for personalization.
+- **`type` (smallint)** — 0=view, 1=click, 2=add-to-cart, 3=purchase, 4=custom.
+- **`ts` (timestamptz)** — Event timestamp.
+- **`value` (double precision)** — Optional scalar (quantity, revenue).
+- **`meta` (jsonb)** — Surface, session_id, campaign info, etc.
 
 ### `event_type_config`
 
@@ -58,61 +52,51 @@ Stores the weight/half-life for each event type per namespace. Used when buildin
 
 ### `rules`
 
-| Column                           | Type                           | Description                              |
-|----------------------------------|--------------------------------|------------------------------------------|
-| `rule_id`                        | uuid                           | Primary key.                             |
-| `org_id`, `namespace`, `surface` | uuid/text                      | Scope of the rule.                       |
-| `action`                         | enum (`BOOST`, `PIN`, `BLOCK`) | What the rule does.                      |
-| `target_type`, `target_key`      | enums/text                     | Target item/tag/brand/category.          |
-| `priority`                       | int                            | Higher number wins when conflicts arise. |
-| `start_at`, `end_at`             | timestamptz                    | Optional schedule window.                |
-| `boost_value`                    | float                          | Multiplier for boost actions.            |
-| `metadata`                       | jsonb                          | Free-form payload for auditing/UI.       |
+- **`rule_id` (uuid)** — Primary key.
+- **`org_id`, `namespace`, `surface` (uuid/text)** — Scope of the rule.
+- **`action` (BOOST/PIN/BLOCK)** — What the rule does.
+- **`target_type`, `target_key` (enums/text)** — Target item/tag/brand/category.
+- **`priority` (int)** — Higher number wins on conflict.
+- **`start_at`, `end_at` (timestamptz)** — Optional schedule window.
+- **`boost_value` (float)** — Multiplier for boost actions.
+- **`metadata` (jsonb)** — Free-form payload for auditing/UI.
 
 ### `manual_overrides`
 
 Short-lived boosts/suppressions that compile to rules internally.
 
-| Column        | Type                      | Description                                  |
-|---------------|---------------------------|----------------------------------------------|
-| `override_id` | uuid                      | Primary key.                                 |
-| `action`      | text (`boost`/`suppress`) | Determines rule type.                        |
-| `item_id`     | text                      | Target item.                                 |
-| `boost_value` | float                     | Optional numeric value.                      |
-| `expires_at`  | timestamptz               | TTL for the override.                        |
-| `rule_id`     | uuid                      | ID of the generated rule (for traceability). |
+- **`override_id` (uuid)** — Primary key.
+- **`action` (text: boost/suppress)** — Determines rule type.
+- **`item_id` (text)** — Target item.
+- **`boost_value` (float)** — Optional numeric value.
+- **`expires_at` (timestamptz)** — TTL for the override.
+- **`rule_id` (uuid)** — ID of the generated rule (traceability).
 
 ## Segments & Starter Profiles
 
 ### `segment_profiles`
 
-| Column                   | Type   | Description                               |
-|--------------------------|--------|-------------------------------------------|
-| `profile_id`             | text   | Identifier referenced in the API.         |
-| `blend_alpha/beta/gamma` | floats | Starter blend weights for pop/co-vis/emb. |
-| `mmr_lambda`             | float  | Starter MMR value.                        |
-| `profile`                | jsonb  | Map of categories/tags to weights.        |
+- **`profile_id` (text)** — Identifier referenced in the API.
+- **`blend_alpha/beta/gamma` (floats)** — Starter blend weights for pop/co-vis/emb.
+- **`mmr_lambda` (float)** — Starter MMR setting.
+- **`profile` (jsonb)** — Map of categories/tags to weights.
 
 ### `segments`
 
-Defines rules-based cohorts (used for S7 guardrails and overrides).
+Defines rules-based cohorts (used for starter-profile guardrails and overrides).
 
-| Column        | Type  | Description                         |
-|---------------|-------|-------------------------------------|
-| `segment_id`  | text  | Identifier used in configs.         |
-| `description` | text  | Human-readable explanation.         |
-| `criteria`    | jsonb | Rule set evaluated at request time. |
+- **`segment_id` (text)** — Identifier used in configs.
+- **`description` (text)** — Human-readable explanation.
+- **`criteria` (jsonb)** — Rule set evaluated at request time.
 
 ## Bandit Tables
 
 ### `bandit_policies`
 
-| Column                     | Type        | Description                         |
-|----------------------------|-------------|-------------------------------------|
-| `policy_id`, `name`        | text        | Unique policy identifiers.          |
-| `config`                   | jsonb       | Arm definitions, weights, surfaces. |
-| `is_active`                | bool        | Toggle for rollouts.                |
-| `created_at`, `updated_at` | timestamptz | Audit columns.                      |
+- **`policy_id`, `name` (text)** — Unique policy identifiers.
+- **`config` (jsonb)** — Arm definitions, weights, surfaces.
+- **`is_active` (bool)** — Rollout toggle.
+- **`created_at`, `updated_at` (timestamptz)** — Audit columns.
 
 ### `bandit_decisions` / `bandit_rewards`
 
@@ -124,27 +108,23 @@ Depending on the migration version, decisions and rewards may be stored directly
 
 Audit table capturing the full recommendation context.
 
-| Column                           | Type      | Description                                           |
-|----------------------------------|-----------|-------------------------------------------------------|
-| `decision_id`                    | uuid      | Primary key; referenced by audit APIs.                |
-| `org_id`, `namespace`, `surface` | uuid/text | Scope of the request.                                 |
-| `request_id`, `user_hash`        | text      | Client identifiers (hashed).                          |
-| `k`, `constraints`               | int/jsonb | Request parameters.                                   |
-| `effective_config`               | jsonb     | Algorithm config (after overrides).                   |
-| `bandit`                         | jsonb     | Bandit decision info (optional).                      |
-| `candidates_pre`                 | jsonb     | Candidate lists before rules/MMR.                     |
-| `final_items`                    | jsonb     | Final ranked items.                                   |
-| `metrics`                        | jsonb     | Coverage stats, leakage flags, guardrail checkpoints. |
+- **`decision_id` (uuid)** — Primary key referenced by audit APIs.
+- **`org_id`, `namespace`, `surface` (uuid/text)** — Scope of the request.
+- **`request_id`, `user_hash` (text)** — Client identifiers (hashed).
+- **`k`, `constraints` (int/jsonb)** — Request parameters.
+- **`effective_config` (jsonb)** — Algorithm config resolved after overrides.
+- **`bandit` (jsonb)** — Optional bandit decision info.
+- **`candidates_pre` (jsonb)** — Candidate lists before rules/MMR.
+- **`final_items` (jsonb)** — Final ranked items.
+- **`metrics` (jsonb)** — Coverage stats, leakage flags, guardrail checkpoints.
 
 ## Embedding Factors
 
 ### `recsys_item_factors`, `recsys_user_factors`
 
-| Column                | Type        | Description                           |
-|-----------------------|-------------|---------------------------------------|
-| `item_id` / `user_id` | text        | Identifiers matching the main tables. |
-| `factors`             | vector(384) | ALS embeddings used by the retriever. |
-| `updated_at`          | timestamptz | Timestamp of last factor refresh.     |
+- **`item_id` / `user_id` (text)** — Identifiers matching the main tables.
+- **`factors` (vector(384))** — ALS embeddings used by the retriever.
+- **`updated_at` (timestamptz)** — Timestamp of last factor refresh.
 
 ## Usage Tips
 

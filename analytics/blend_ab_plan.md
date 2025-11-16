@@ -1,7 +1,7 @@
-# Blend Weights Online Experiment Plan (RT-3B)
+# Blend Weights Online Experiment Plan
 
 ## Objective
-Validate that updated blend weights (alpha/beta/gamma) improve engagement and monetisation metrics without hurting guardrails. The experiment compares the current “baseline” blend from RT-3A against one or more challenger configurations derived from the offline harness.
+Validate that updated blend weights (alpha/beta/gamma) improve engagement and monetisation metrics without hurting guardrails. The experiment compares the current “baseline” blend from the offline harness against one or more challenger configurations.
 
 ## Scope
 - **Surfaces**: Shop home widget, PDP recommendations, cart cross-sell (all namespace `default` initially).
@@ -22,14 +22,13 @@ Validate that updated blend weights (alpha/beta/gamma) improve engagement and mo
    - Guard with kill switch to fall back to baseline instantly.
 
 ## Metrics
-| Category | Metric | Description | Target |
-|----------|--------|-------------|--------|
-| Primary | CTR | Clicks / impressions per surface | +3% relative |
-| Primary | Add-to-cart rate | Adds / impressions | ≥ baseline |
-| Secondary | Revenue per mille | GMV per 1000 impressions | +2% relative |
-| Personalisation | Personalised share | % of recs with personalised reasons | ≥ baseline |
-| Guardrail | Out-of-stock rate | % recs for unavailable items | ≤ baseline |
-| Guardrail | Candidate coverage | Average unique items per 1k impressions (from `candidate_sources`) | ≥ baseline |
+
+- **Primary – CTR** — Clicks per impression per surface; target +3% relative.
+- **Primary – Add-to-cart rate** — Adds per impression; target ≥ baseline.
+- **Secondary – Revenue per mille** — GMV per 1000 impressions; target +2% relative.
+- **Personalisation – Personalised share** — % of recs with personalized reasons; target ≥ baseline.
+- **Guardrail – Out-of-stock rate** — % of recs for unavailable items; target ≤ baseline.
+- **Guardrail – Candidate coverage** — Average unique items per 1k impressions (`candidate_sources`); target ≥ baseline.
 
 ## Instrumentation
 - **Decision trace**: already includes `candidate_sources`, `segment_id`, etc. Add `experiment_variant` field to `Trace.Extras`.
@@ -40,7 +39,7 @@ Validate that updated blend weights (alpha/beta/gamma) improve engagement and mo
   - Alert when CTR delta < -5% for 2 consecutive hours.
 - **Data warehouse**: land nightly aggregates into `experiments.blend_weights_daily` for deeper analysis (use existing ETL job pattern).
 - **Config management**: leverage `BLEND_WEIGHTS_OVERRIDES` in the API env to seed the challenger weights, with feature-flag service toggling namespace assignments at runtime.
-- **Personalisation dashboard**: wire the new `personalization_dashboard` view (RT-3D) into Grafana so experiment analysis is co-located with live guardrails.
+- **Personalisation dashboard**: wire the new `personalization_dashboard` view into Grafana so experiment analysis is co-located with live guardrails.
 
 ## Analysis
 1. Check power assumptions (baseline CTR ~5%, desired lift 3%, α=0.05 → ~600k impressions/arm).  
@@ -56,7 +55,7 @@ Validate that updated blend weights (alpha/beta/gamma) improve engagement and mo
 5. **Day 14**: Analyse results; if positive, plan staged rollout to 100% and archive experiment.
 
 ## Risks & Mitigations
-- **Cold-start regressions**: monitor cold-start dashboards (RT-6/RT-8 work) for traffic drops; revert to baseline if hit.  
+- **Cold-start regressions**: monitor cold-start dashboards for traffic drops; revert to baseline if hit.  
  - **Segment bias**: ensure assignment hash includes namespace to avoid cross-surface contamination.  
 - **Operational**: document rollback steps (flip flag to `baseline` + redeploy).
 

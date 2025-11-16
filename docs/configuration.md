@@ -37,11 +37,9 @@ Every tuning change should state which stage it affects and how to validate the 
 
 ## 2. Configuration layers
 
-| Layer                           | Scope                       | When to use                                                            | Tooling                                                                              |
-|---------------------------------|-----------------------------|------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
-| **Environment defaults**        | Service-wide per deployment | Set sensible baselines for blend weights, windows, and guardrails      | `.env` files + `make env`; canonical documentation lives in `docs/env_reference.md`. |
-| **Env profiles / admin config** | Namespace or segment        | Capture curated bundles per surface/segment, promote via Git snapshots | `analysis/scripts/env_profile_manager.py`, `/v1/admin/recommendation/config`.        |
-| **Per-request overrides**       | Single API call             | Experiment or tailor behavior for a surface without redeploying        | `overrides` field inside `/v1/recommendations` (see `docs/api_reference.md`).        |
+- **Environment defaults** — Service-wide per deployment. Set baseline blend weights, windows, guardrails using `.env` files + `make env` (see `docs/env_reference.md`).
+- **Env profiles / admin config** — Namespace or segment scope. Capture curated bundles per surface/segment, promote via Git snapshots. Tooling: `analysis/scripts/env_profile_manager.py`, `/v1/admin/recommendation/config`.
+- **Per-request overrides** — Single API call scope. Experiment or tailor behavior without redeploying. Use the `overrides` object in `/v1/recommendations` (documented in `docs/api_reference.md`).
 
 Tips:
 
@@ -85,7 +83,7 @@ Every config change (env var, profile, or override bundle) should be validated t
 1. **Reset namespace + seed** – deterministic dataset ensures comparable metrics.
 2. **Run tuning harness** – `analysis/scripts/tuning_harness.py` explores candidate knobs and records evidence under `analysis/results/...`.
 3. **Check guardrails** – `analysis/scripts/check_guardrails.py` enforces YAML policies (starter profile MRR, coverage floors, diversity counts). Review `docs/simulations_and_guardrails.md` for details.
-4. **Scenario suite** – `make scenario-suite` replays S1–S10 flows (cold start, existing users, rule heavy cases) and produces CSV/JSON you can share with PMs.
+4. **Scenario suite** – `make scenario-suite` replays the full set of guardrail flows (cold start, existing users, rule-heavy cases) and produces CSV/JSON you can share with PMs.
 5. **Dry-run rules** – For manual overrides, call `/v1/admin/rules/dry-run` or the helper script before rollout (`docs/rules_runbook.md`).
 
 If a guardrail fails, bias toward tightening the problematic knob rather than widening guardrail tolerances unless you have data to justify the change.

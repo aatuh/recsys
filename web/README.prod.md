@@ -62,12 +62,10 @@ pnpm preview:prod
 
 ## Environment Variables
 
-| Variable               | Default                       | Description                   |
-|------------------------|-------------------------------|-------------------------------|
-| `VITE_ALLOWED_HOSTS`   | `localhost,0.0.0.0,127.0.0.1` | Allowed hosts for Vite        |
-| `VITE_API_HOST`        | `http://localhost:8081`       | API server URL                |
-| `API_HEALTH_CHECK_URL` | -                             | Optional API health check URL |
-| `NODE_ENV`             | `production`                  | Node environment              |
+- **`VITE_ALLOWED_HOSTS`** — Default `localhost,0.0.0.0,127.0.0.1`; allowed hosts for Vite.
+- **`VITE_API_HOST`** — Default `http://localhost:8081`; API server URL.
+- **`API_HEALTH_CHECK_URL`** — Optional API health check URL (no default).
+- **`NODE_ENV`** — Default `production`; Node environment flag.
 
 ## CSP Configuration
 
@@ -121,17 +119,15 @@ Production containers have resource limits:
 
 ## Development vs Production
 
-| Aspect            | Development  | Production           |
-|-------------------|--------------|----------------------|
-| **Build**         | Single stage | Multi-stage          |
-| **Dependencies**  | All deps     | Production only      |
-| **Source Maps**   | Full         | Optimized            |
-| **Minification**  | None         | Terser               |
-| **CSP**           | None         | Strict               |
-| **Caching**       | None         | Aggressive           |
-| **Security**      | Basic        | Hardened             |
-| **User**          | Root         | Non-root (1001:1001) |
-| **Health Checks** | None         | Built-in             |
+- **Build** — Development uses a single-stage build; production uses multi-stage.
+- **Dependencies** — Development installs all deps; production installs only runtime deps.
+- **Source Maps** — Development ships full maps; production uses optimized maps.
+- **Minification** — Development disables minification; production uses Terser.
+- **CSP** — Development has no CSP; production enforces a strict policy.
+- **Caching** — Development disables caching; production enables aggressive caching.
+- **Security** — Development is basic; production hardens the container.
+- **User** — Development runs as root; production runs as non-root (1001:1001).
+- **Health Checks** — Development has none; production includes built-in checks.
 
 ## Troubleshooting
 

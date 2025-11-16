@@ -27,12 +27,10 @@ Think of it as a recommender **control plane**: ingestion, ranking, and guardrai
 
 ## 3. Rollout story
 
-| Phase                                 | What happens                                                                                                                                                                                       |
-|---------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Week 1 – Foundations**              | Spin up the stack (`GETTING_STARTED.md`), mirror a sample catalog, and wire ingestion (items/users/events). Verify the `/v1/recommendations` response matches expectations for a few sample users. |
-| **Week 2–4 – Tuning & guardrails**    | Adjust environment knobs (blend weights, MMR, caps) per surface, run the tuning harness on representative segments, and lock down guardrails via simulations before onboarding more traffic.       |
-| **Week 5–8 – Operationalization**     | Enable bandits or multi-surface namespaces, expose the rule engine to merchandising teams, integrate dashboards/alerts, and document rollout plans per region.                                     |
-| **8+ weeks – Continuous improvement** | Experiment with custom signals, expand guardrails (fairness, supply balancing), and plug the auditing endpoints into governance/compliance tooling.                                                |
+- **Week 1 – Foundations** — Spin up the stack (`GETTING_STARTED.md`), mirror a sample catalog, wire ingestion (items/users/events), and verify `/v1/recommendations` output for sample users.
+- **Week 2–4 – Tuning & guardrails** — Adjust blend/MMR/cap knobs per surface, run the tuning harness on representative segments, and enforce guardrails via simulations before onboarding traffic.
+- **Week 5–8 – Operationalization** — Enable bandits or multi-surface namespaces, expose the rule engine to merchandising, integrate dashboards/alerts, and document rollout plans per region.
+- **8+ weeks – Continuous improvement** — Experiment with custom signals, expand guardrails (fairness, supply balancing), and plug auditing endpoints into governance/compliance tooling.
 
 This cadence gives business stakeholders confidence that quality and safety checks accompany every change, not just the initial launch.
 

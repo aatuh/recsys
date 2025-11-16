@@ -1,4 +1,4 @@
-# Diversity Validation Playbook (RT-4D)
+# Diversity Validation Playbook
 
 This document covers the analysis and simulation workflow to prove that the diversity constraints (MMR, caps) keep variety high without hurting engagement.
 
@@ -40,24 +40,20 @@ GROUP BY 1,2;
 
 ## 3. Experiment Evaluation
 
-- When running blend experiments (RT-3B), include diversity metrics in the results table:
+When running blend experiments, log diversity metrics alongside engagement:
 
-| Variant | Brand Entropy | Category Entropy | Caps Hit Rate | CTR | Notes |
-|---------|----------------|------------------|---------------|-----|-------|
-| Baseline | 1.68 | 1.42 | 0.32 | 5.1% | Reference |
-| Challenger | 1.82 | 1.56 | 0.28 | 5.4% | +0.3pp CTR |
+- **Baseline** — Brand entropy 1.68, category entropy 1.42, caps hit rate 0.32, CTR 5.1%. Notes: reference.
+- **Challenger** — Brand entropy 1.82, category entropy 1.56, caps hit rate 0.28, CTR 5.4%. Notes: +0.3pp CTR.
 
 ## 4. Remediation Steps
 
-| Issue | Action |
-|-------|--------|
-| Entropy dips while caps hit rate spikes | Relax caps (increase brand/category cap) or tweak MMR lambda upwards.
-| Entropy stable but CTR drops | Investigate retrieval mix (RT-1 sources) vs. reranker impact; adjust sampling weights.
-| High overlap + low entropy | Increase cold-start weight or session retriever diversity.
+- **Entropy dips while caps hit rate spikes** — Relax caps (increase brand/category cap) or raise `MMR_LAMBDA`.
+- **Entropy stable but CTR drops** — Examine retrieval mix vs. reranker impact; adjust sampling weights.
+- **High overlap + low entropy** — Increase cold-start weight or diversify the session retriever.
 
 ## 5. Implementation Checklist
 
 - [ ] Add daily batch job to compute entropy + overlap aggregates (dbt/notebook) and push metrics.
 - [ ] Publish Grafana dashboard under `analytics/dashboards/diversity.json`.
 - [ ] Hook alerts to `#ranking` Slack channel.
-- [ ] Update runbooks (RT-3B plan) to reference diversity checks before rolling out new blends.
+- [ ] Update runbooks to reference diversity checks before rolling out new blends.

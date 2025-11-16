@@ -1,4 +1,4 @@
-# Bandit Reward Feedback (RT-7C)
+# Bandit Reward Feedback
 
 This doc captures the mechanics for wiring user telemetry back into the bandit service so Thompson/UCB posteriors stay fresh.
 

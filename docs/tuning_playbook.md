@@ -145,7 +145,7 @@ These thresholds map to `guardrails.yml`. CI also runs this command; keep it fas
 
 Key checks:
 
-- Starter profile (scenario S7) meets minimum categories and MRR.
+- Starter-profile guardrail meets minimum categories and MRR.
 - `catalog_coverage` and `long_tail_share` stay within expected ranges.
 - `policy_rule_blocked_items_total` counters behave (no unexpected spikes).
 

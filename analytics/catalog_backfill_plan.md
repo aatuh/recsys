@@ -1,4 +1,4 @@
-# Catalog Backfill & Freshness Plan (RT-5D)
+# Catalog Backfill & Freshness Plan
 
 Purpose: ensure all existing items receive the newly required metadata + embeddings and stay fresh going forward.
 

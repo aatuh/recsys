@@ -1,18 +1,16 @@
-# Product Embedding Pipeline Plan (RT-5B)
+# Product Embedding Pipeline Plan
 
 Goal: generate textual and (optionally) visual embeddings for catalog items, store them in a feature service, and expose them to the content-based retriever.
 
 ## 1. Source Data
 
-- **Required fields** (from RT-5A inventory): `item_id`, `description`, `brand`, `category`, `image_url`.
+- **Required fields** (from the catalog inventory plan): `item_id`, `description`, `brand`, `category`, `image_url`.
 - Pull from product feed / ingestion service into a staging table (`analytics.catalog_features_raw`).
 
 ## 2. Embedding Generation
 
-| Modality | Model | Batch Schedule | Output |
-|----------|-------|----------------|--------|
-| Text | OpenAI text-embedding-3-large (or local alternative) | Nightly batch (dbt+Python) | 3072-d vector |
-| Image (optional) | CLIP / ViT | Weekly | 512-d vector |
+- **Text** — Model: OpenAI `text-embedding-3-large` (or local alternative). Schedule: nightly batch (dbt + Python). Output: 3072-d vector.
+- **Image (optional)** — Model: CLIP / ViT. Schedule: weekly. Output: 512-d vector.
 
 **Process**
 1. Extract items needing refresh (new or `metadata_version` changed).

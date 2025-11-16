@@ -61,7 +61,7 @@ What happens:
 
 1. Loads the requested env profile and guardrail config.
 2. Resets the namespace, seeds the fixture, and executes `run_quality_eval.py`.
-3. Runs `run_scenarios.py` (S1–S10) plus optional determinism/load tests.
+3. Runs `run_scenarios.py` (the full policy/regression scenario suite) plus optional determinism/load tests.
 4. Stores everything under `analysis/reports/customer-a/<timestamp>/` (metrics, traces, Markdown summary).
 
 ### 3.2 Batch simulations
@@ -100,7 +100,7 @@ customers:
 ```
 
 - **Quality thresholds** map to metrics emitted by `run_quality_eval.py` (`segment_ndcg_lift`, `catalog_coverage`, etc.).
-- **Scenario thresholds** align with S7 (starter profile guardrail; see `docs/concepts_and_metrics.md`), S8/S9 (boost exposure), and other scenario files under `analysis/scripts/run_scenarios.py`.
+- **Scenario thresholds** align with the starter-profile guardrail, the boost exposure checks, and other scenarios defined under `analysis/scripts/run_scenarios.py`.
 - `analysis/scripts/check_guardrails.py` reads this YAML and fails fast when any threshold is violated. CI runs the same script.
 - Additional namespaces can be added under `customers:`. Use descriptive keys so reports remain readable.
 
@@ -111,10 +111,10 @@ customers:
 ## 5. Interpreting results
 
 - **`quality_metrics.json`** – segment lifts, coverage, long-tail share, determinism stats. Compare against the guardrail thresholds above.
-- **`scenario_summary.json` / CSV** – pass/fail per scenario (S1–S10). Pay special attention to:
-  - **S7**: cold-start starter profile; requires ≥ MRR & category diversity.
-  - **S8/S9**: boost exposure counters and diversity caps.
-  - **S10**: rule-heavy flows (pin/boost/block correctness).
+- **`scenario_summary.json` / CSV** – pass/fail per scenario. Pay special attention to:
+  - **Starter-profile guardrail**: cold-start experience requires ≥ MRR & category diversity.
+  - **Boost exposure checks**: validate promotion knobs and diversity caps.
+  - **Rule-heavy flows**: ensure pin/boost/block behavior remains correct.
 - **`seed_manifest.json` / `seed_segments.json`** – prove the seeded dataset matches expectations when diagnosing coverage issues.
 - **Markdown report** – shareable overview linking to every artifact in the bundle.
 
@@ -132,7 +132,7 @@ customers:
 
 ## 7. Related commands & docs
 
-- `make scenario-suite SCENARIO_BASE_URL=...` – seeds + runs S1–S10 quickly.
+- `make scenario-suite SCENARIO_BASE_URL=...` – seeds + runs the full scenario suite quickly.
 - `make determinism`, `make load-test` – specialty guardrails for reproducibility and scale.
 - `docs/rules_runbook.md` – operational steps when guardrails trip or rules misbehave.
 - `docs/concepts_and_metrics.md` – definitions for metrics mentioned here.
