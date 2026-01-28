@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"recsys/internal/config"
+	appmw "recsys/internal/http/middleware"
 	"recsys/migrations"
 
 	"github.com/aatuh/api-toolkit-contrib/adapters/logzap"
@@ -33,6 +34,9 @@ var (
 // @version 1.0.0
 // @description Recommendation service API
 // @BasePath /
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func loggerFromEnv(env, level string) ports.Logger {
 	env = strings.ToLower(strings.TrimSpace(env))
 	switch env {
@@ -68,6 +72,19 @@ func main() {
 
 	docsHandler := setupDocsHandler(cfg, log)
 	healthManager := setupHealthManager(pool, cfg)
+
+	securityStack, err := appmw.NewSecurityStack(ctx, cfg, log)
+	if err != nil {
+		log.Error("failed to initialize security stack", "err", err)
+		os.Exit(1)
+	}
+	if len(securityStack.Middlewares) > 0 {
+		r.Use(securityStack.Middlewares...)
+	}
+	if len(securityStack.HealthChecks) > 0 {
+		healthManager.RegisterCheckers(securityStack.HealthChecks...)
+	}
+	defer securityStack.Close()
 
 	bootstrap.MountSystemEndpoints(r, bootstrap.SystemEndpoints{
 		Health: health.NewHandler(healthManager),

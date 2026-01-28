@@ -7,11 +7,13 @@ import (
 	"strings"
 
 	"recsys/internal/http/mapper"
+	"recsys/internal/http/problem"
 	"recsys/internal/services/recsysvc"
 	"recsys/internal/validation"
 	endpointspec "recsys/src/specs/endpoints"
 	"recsys/src/specs/types"
 
+	"github.com/aatuh/api-toolkit/authorization"
 	jsonmw "github.com/aatuh/api-toolkit/middleware/json"
 	"github.com/aatuh/api-toolkit/ports"
 	"github.com/aatuh/api-toolkit/response_writer"
@@ -44,6 +46,7 @@ func (h *RecsysHandler) RegisterRoutes(r ports.HTTPRouter) {
 // @Tags Recsys
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param payload body types.RecommendRequest true "Recommend payload"
 // @Success 200 {object} types.RecommendResponse
 // @Failure 400 {object} types.Problem
@@ -78,7 +81,7 @@ func (h *RecsysHandler) recommend(w http.ResponseWriter, r *http.Request) {
 		Meta:     buildMeta(norm, r, len(items)),
 		Warnings: mapper.WarningsDTO(allWarnings),
 	}
-	setRequestIDHeader(w, r)
+	problem.SetRequestIDHeader(w, r)
 	w.Header().Set("Cache-Control", "no-store")
 	response_writer.WriteJSON(w, http.StatusOK, resp)
 }
@@ -89,6 +92,7 @@ func (h *RecsysHandler) recommend(w http.ResponseWriter, r *http.Request) {
 // @Tags Recsys
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param payload body types.SimilarRequest true "Similar payload"
 // @Success 200 {object} types.RecommendResponse
 // @Failure 400 {object} types.Problem
@@ -123,7 +127,7 @@ func (h *RecsysHandler) similar(w http.ResponseWriter, r *http.Request) {
 		Meta:     buildMetaFromSimilar(norm, r, len(items)),
 		Warnings: mapper.WarningsDTO(allWarnings),
 	}
-	setRequestIDHeader(w, r)
+	problem.SetRequestIDHeader(w, r)
 	w.Header().Set("Cache-Control", "no-store")
 	response_writer.WriteJSON(w, http.StatusOK, resp)
 }
@@ -134,6 +138,7 @@ func (h *RecsysHandler) similar(w http.ResponseWriter, r *http.Request) {
 // @Tags Recsys
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param payload body types.RecommendRequest true "Recommend payload"
 // @Success 200 {object} types.ValidateResponse
 // @Failure 400 {object} types.Problem
@@ -161,7 +166,7 @@ func (h *RecsysHandler) validate(w http.ResponseWriter, r *http.Request) {
 		Warnings:          mapper.WarningsDTO(warnings),
 		Meta:              buildMeta(norm, r, 0),
 	}
-	setRequestIDHeader(w, r)
+	problem.SetRequestIDHeader(w, r)
 	response_writer.WriteJSON(w, http.StatusOK, resp)
 }
 
@@ -188,7 +193,7 @@ func buildMeta(req recsysvc.RecommendRequest, r *http.Request, returned int) typ
 		Surface:     req.Surface,
 		Segment:     req.Segment,
 		AlgoVersion: algoVersionStub,
-		RequestID:   requestIDFromRequest(r),
+		RequestID:   problem.RequestID(r),
 	}
 	if returned > 0 {
 		meta.Counts = map[string]int{"returned": returned}
@@ -202,7 +207,7 @@ func buildMetaFromSimilar(req recsysvc.SimilarRequest, r *http.Request, returned
 		Surface:     req.Surface,
 		Segment:     req.Segment,
 		AlgoVersion: algoVersionStub,
-		RequestID:   requestIDFromRequest(r),
+		RequestID:   problem.RequestID(r),
 	}
 	if returned > 0 {
 		meta.Counts = map[string]int{"returned": returned}
@@ -213,6 +218,9 @@ func buildMetaFromSimilar(req recsysvc.SimilarRequest, r *http.Request, returned
 func tenantIDFromRequest(r *http.Request) string {
 	if r == nil {
 		return ""
+	}
+	if tenant, ok := authorization.TenantIDFromContext(r.Context()); ok {
+		return tenant
 	}
 	return strings.TrimSpace(r.Header.Get("X-Org-Id"))
 }

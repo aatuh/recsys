@@ -139,12 +139,12 @@ gRPC) that:
 they map directly to OWASP API Security Top 10 themes like authorization,
 authentication, and resource consumption controls.) ([OWASP Foundation][1])
 
-### [ ] SVC-20 Authn: OIDC/JWT and/or API keys (configurable) (no api keys)
+### [x] SVC-20 Authn: OIDC/JWT and/or API keys (configurable) (no api keys)
 
 * Support JWT validation (issuer/audience/jwks caching) or HMAC API keys (no api keys).
 * **Acceptance:** integration test suite validates token flows + key rotation.
 
-### [ ] SVC-21 Authz: tenant scoping + object-level checks (BOLA prevention)
+### [x] SVC-21 Authz: tenant scoping + object-level checks (BOLA prevention)
 
 * Every request must resolve a `tenant/org_id` and enforce it on:
 
@@ -153,30 +153,30 @@ authentication, and resource consumption controls.) ([OWASP Foundation][1])
   * store queries
 * **Acceptance:** tests confirm cross-tenant access is impossible (OWASP BOLA). ([OWASP Foundation][1])
 
-### [ ] SVC-22 Function-level authorization
+### [x] SVC-22 Function-level authorization
 
 * Admin endpoints (if any) require separate roles/scopes.
 * **Acceptance:** unauthorized admin calls reliably 403 (OWASP BFLA). ([OWASP Foundation][1])
 
-### [ ] SVC-23 Rate limiting + quotas + payload caps
+### [x] SVC-23 Rate limiting + quotas + payload caps
 
 * Per-tenant and per-client rate limits; per-request resource limits to prevent
   “unrestricted resource consumption.” ([OWASP Foundation][5])
 * **Acceptance:** load tests show backpressure; abuse tests do not OOM/DoS.
 
-### [ ] SVC-24 Input safety + SSRF hardening + outbound policy
+### [x] SVC-24 Input safety + SSRF hardening + outbound policy
 
 * If service calls external stores/URLs, enforce allowlists and block SSRF
   classes.
 * **Acceptance:** security tests for SSRF patterns.
 
-### [ ] SVC-25 Secrets management
+### [x] SVC-25 Secrets management
 
 * No secrets in env when possible; support file-mounted secrets / KMS integration
   option; strict logging redaction.
 * **Acceptance:** secret values never appear in logs/traces.
 
-### [ ] SVC-26 Audit logging for admin actions
+### [x] SVC-26 Audit logging for admin actions
 
 * Audit who changed tenant config/rules, when, and what changed.
 * **Acceptance:** tamper-evident append-only sink (or write-once storage).

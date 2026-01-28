@@ -379,6 +379,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/types.Problem'
+      security:
+      - BearerAuth: []
       summary: List foos
       tags:
       - Foo
@@ -408,6 +410,8 @@ paths:
           description: Conflict
           schema:
             $ref: '#/definitions/types.Problem'
+      security:
+      - BearerAuth: []
       summary: Create foo
       tags:
       - Foo
@@ -427,6 +431,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/types.Problem'
+      security:
+      - BearerAuth: []
       summary: Delete foo
       tags:
       - Foo
@@ -449,6 +455,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/types.Problem'
+      security:
+      - BearerAuth: []
       summary: Get foo
       tags:
       - Foo
@@ -483,6 +491,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/types.Problem'
+      security:
+      - BearerAuth: []
       summary: Update foo
       tags:
       - Foo
@@ -513,6 +523,8 @@ paths:
           description: Unprocessable Entity
           schema:
             $ref: '#/definitions/types.Problem'
+      security:
+      - BearerAuth: []
       summary: Recommend items
       tags:
       - Recsys
@@ -543,6 +555,8 @@ paths:
           description: Unprocessable Entity
           schema:
             $ref: '#/definitions/types.Problem'
+      security:
+      - BearerAuth: []
       summary: Validate recommend request
       tags:
       - Recsys
@@ -573,7 +587,14 @@ paths:
           description: Unprocessable Entity
           schema:
             $ref: '#/definitions/types.Problem'
+      security:
+      - BearerAuth: []
       summary: Similar items
       tags:
       - Recsys
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

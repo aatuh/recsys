@@ -17,6 +17,11 @@ const docTemplate = `{
     "paths": {
         "/api/v1/foo": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "List foos filtered by org and namespace",
                 "produces": [
                     "application/json"
@@ -75,6 +80,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Create a new foo resource",
                 "consumes": [
                     "application/json"
@@ -121,6 +131,11 @@ const docTemplate = `{
         },
         "/api/v1/foo/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Fetch a foo by ID",
                 "produces": [
                     "application/json"
@@ -154,6 +169,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Update a foo by ID",
                 "consumes": [
                     "application/json"
@@ -205,6 +225,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Delete a foo by ID",
                 "tags": [
                     "Foo"
@@ -234,6 +259,11 @@ const docTemplate = `{
         },
         "/v1/recommend": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Return ranked recommendations",
                 "consumes": [
                     "application/json"
@@ -280,6 +310,11 @@ const docTemplate = `{
         },
         "/v1/recommend/validate": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Validate and normalize a recommend request",
                 "consumes": [
                     "application/json"
@@ -326,6 +361,11 @@ const docTemplate = `{
         },
         "/v1/similar": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Return similar items for an item_id",
                 "consumes": [
                     "application/json"
@@ -883,6 +923,13 @@ const docTemplate = `{
                     "type": "number"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

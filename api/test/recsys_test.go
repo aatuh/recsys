@@ -32,6 +32,7 @@ func TestRecommendValidate(t *testing.T) {
 		t.Fatalf("failed to build request: %v", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
+	applyAuthHeaders(req, cfg)
 	reqID := randID("req")
 	req.Header.Set("X-Request-Id", reqID)
 
@@ -73,6 +74,7 @@ func TestRecommendBadRequest(t *testing.T) {
 		t.Fatalf("failed to build request: %v", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
+	applyAuthHeaders(req, cfg)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -104,6 +106,7 @@ func TestSimilarEndpoint(t *testing.T) {
 		t.Fatalf("failed to build request: %v", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
+	applyAuthHeaders(req, cfg)
 
 	resp, err := client.Do(req)
 	if err != nil {

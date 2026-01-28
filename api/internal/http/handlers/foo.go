@@ -49,6 +49,7 @@ func (h *FooHandler) Routes() ports.HTTPRouter {
 // @Tags Foo
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param payload body types.CreateFooDTO true "Foo payload"
 // @Success 201 {object} types.FooDTO
 // @Failure 400 {object} types.Problem
@@ -85,6 +86,7 @@ func (h *FooHandler) create(w http.ResponseWriter, r *http.Request) {
 // @Description Fetch a foo by ID
 // @Tags Foo
 // @Produce json
+// @Security BearerAuth
 // @Param id path string true "Foo ID"
 // @Success 200 {object} types.FooDTO
 // @Failure 404 {object} types.Problem
@@ -105,6 +107,7 @@ func (h *FooHandler) get(w http.ResponseWriter, r *http.Request) {
 // @Tags Foo
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id path string true "Foo ID"
 // @Param payload body types.UpdateFooDTO true "Foo update payload"
 // @Success 200 {object} types.FooDTO
@@ -141,6 +144,7 @@ func (h *FooHandler) update(w http.ResponseWriter, r *http.Request) {
 // @Description Delete a foo by ID
 // @Tags Foo
 // @Param id path string true "Foo ID"
+// @Security BearerAuth
 // @Success 204 "No Content"
 // @Failure 404 {object} types.Problem
 // @Router /api/v1/foo/{id} [delete]
@@ -158,6 +162,7 @@ func (h *FooHandler) delete(w http.ResponseWriter, r *http.Request) {
 // @Description List foos filtered by org and namespace
 // @Tags Foo
 // @Produce json
+// @Security BearerAuth
 // @Param org_id query string true "Organization ID"
 // @Param namespace query string true "Namespace"
 // @Param limit query int false "Page size"
