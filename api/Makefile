@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-BIN ?= bin/api
+BIN ?= bin/recsys-service
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 COMMIT ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo none)
 DATE ?= $(shell date -u +%Y-%m-%dT%H:%M:%SZ)
@@ -41,7 +41,7 @@ logs: ## View the logs of the service
 	@$(DOCKER_COMPOSE) logs -f api
 
 codegen: ## Generate code
-	@$(DOCKER_COMPOSE) exec api swag init -g cmd/api/main.go -o ./swagger
+	@$(DOCKER_COMPOSE) exec api swag init -g cmd/recsys-service/main.go -o ./swagger
 
 migrate-up: ## Apply migrations
 	@$(DOCKER_COMPOSE) exec api sh -c "go run ./cmd/migrate -dir \$$MIGRATIONS_DIR up"
@@ -58,7 +58,7 @@ tidy: ## Tidy go modules
 build-bin: ## Build local API binary with version metadata
 	@echo "🏗️ Building API binary '$(BIN)'"
 	@mkdir -p $(dir $(BIN))
-	@go build -ldflags "$(LDFLAGS)" -o $(BIN) ./cmd/api
+	@go build -ldflags "$(LDFLAGS)" -o $(BIN) ./cmd/recsys-service
 	@echo "✅ Build complete"
 
 TEST_PATTERN ?=
@@ -108,7 +108,7 @@ fmt: ## Format Go code
 
 lint: ## Lint Go code
 	@echo "🔍 Linting Go code..."
-	$(DOCKER_COMPOSE) run --no-deps --rm api sh -c "go vet ./... && golangci-lint run"
+	$(DOCKER_COMPOSE) run --no-deps --rm api sh -c "GOLANGCI_LINT_CACHE=/tmp/golangci-lint go vet ./... && GOLANGCI_LINT_CACHE=/tmp/golangci-lint golangci-lint run"
 	@echo "✅ Code linted successfully"
 
 health: ## Check service healthiness (logs + curl)

@@ -1,5 +1,49 @@
-basePath: /api/v1
+basePath: /
 definitions:
+  types.Anchors:
+    properties:
+      item_ids:
+        items:
+          type: string
+        type: array
+      max_anchors:
+        type: integer
+    type: object
+  types.AnchorsNormalized:
+    properties:
+      item_ids:
+        items:
+          type: string
+        type: array
+      max_anchors:
+        type: integer
+    type: object
+  types.Candidates:
+    properties:
+      exclude_ids:
+        items:
+          type: string
+        type: array
+      include_ids:
+        items:
+          type: string
+        type: array
+    type: object
+  types.Constraints:
+    properties:
+      forbidden_tags:
+        items:
+          type: string
+        type: array
+      max_per_tag:
+        additionalProperties:
+          type: integer
+        type: object
+      required_tags:
+        items:
+          type: string
+        type: array
+    type: object
   types.CreateFooDTO:
     properties:
       name:
@@ -12,6 +56,13 @@ definitions:
     - name
     - namespace
     - org_id
+    type: object
+  types.Experiment:
+    properties:
+      id:
+        type: string
+      variant:
+        type: string
     type: object
   types.FooDTO:
     properties:
@@ -62,17 +113,184 @@ definitions:
       total:
         type: integer
     type: object
+  types.NormalizedRecommendRequest:
+    properties:
+      anchors:
+        $ref: '#/definitions/types.AnchorsNormalized'
+      candidates:
+        $ref: '#/definitions/types.Candidates'
+      constraints:
+        $ref: '#/definitions/types.Constraints'
+      context:
+        $ref: '#/definitions/types.RequestContext'
+      experiment:
+        $ref: '#/definitions/types.Experiment'
+      k:
+        type: integer
+      options:
+        $ref: '#/definitions/types.OptionsNormalized'
+      segment:
+        type: string
+      surface:
+        type: string
+      user:
+        $ref: '#/definitions/types.UserRef'
+      weights:
+        $ref: '#/definitions/types.Weights'
+    type: object
+  types.Options:
+    properties:
+      explain:
+        type: string
+      include_reasons:
+        type: boolean
+      include_trace:
+        type: boolean
+      seed:
+        type: integer
+    type: object
+  types.OptionsNormalized:
+    properties:
+      explain:
+        type: string
+      include_reasons:
+        type: boolean
+      include_trace:
+        type: boolean
+      seed:
+        type: integer
+    type: object
   types.Problem:
     properties:
+      code:
+        type: string
       detail:
         type: string
       instance:
+        type: string
+      request_id:
         type: string
       status:
         type: integer
       title:
         type: string
       type:
+        type: string
+    type: object
+  types.RecommendItem:
+    properties:
+      explain:
+        $ref: '#/definitions/types.RecommendItemExplain'
+      item_id:
+        type: string
+      rank:
+        type: integer
+      reasons:
+        items:
+          type: string
+        type: array
+      score:
+        type: number
+    type: object
+  types.RecommendItemExplain:
+    properties:
+      rules:
+        items:
+          type: string
+        type: array
+      signals:
+        additionalProperties:
+          format: float64
+          type: number
+        type: object
+    type: object
+  types.RecommendRequest:
+    properties:
+      anchors:
+        $ref: '#/definitions/types.Anchors'
+      candidates:
+        $ref: '#/definitions/types.Candidates'
+      constraints:
+        $ref: '#/definitions/types.Constraints'
+      context:
+        $ref: '#/definitions/types.RequestContext'
+      experiment:
+        $ref: '#/definitions/types.Experiment'
+      k:
+        type: integer
+      options:
+        $ref: '#/definitions/types.Options'
+      segment:
+        type: string
+      surface:
+        type: string
+      user:
+        $ref: '#/definitions/types.UserRef'
+      weights:
+        $ref: '#/definitions/types.Weights'
+    type: object
+  types.RecommendResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/types.RecommendItem'
+        type: array
+      meta:
+        $ref: '#/definitions/types.ResponseMeta'
+      warnings:
+        items:
+          $ref: '#/definitions/types.Warning'
+        type: array
+    type: object
+  types.RequestContext:
+    properties:
+      country:
+        type: string
+      device:
+        type: string
+      locale:
+        type: string
+      now:
+        type: string
+    type: object
+  types.ResponseMeta:
+    properties:
+      algo_version:
+        type: string
+      config_version:
+        type: string
+      counts:
+        additionalProperties:
+          type: integer
+        type: object
+      request_id:
+        type: string
+      rules_version:
+        type: string
+      segment:
+        type: string
+      surface:
+        type: string
+      tenant_id:
+        type: string
+      timings_ms:
+        additionalProperties:
+          type: integer
+        type: object
+    type: object
+  types.SimilarRequest:
+    properties:
+      constraints:
+        $ref: '#/definitions/types.Constraints'
+      item_id:
+        type: string
+      k:
+        type: integer
+      options:
+        $ref: '#/definitions/types.Options'
+      segment:
+        type: string
+      surface:
         type: string
     type: object
   types.UpdateFooDTO:
@@ -82,10 +300,46 @@ definitions:
     required:
     - name
     type: object
+  types.UserRef:
+    properties:
+      anonymous_id:
+        type: string
+      session_id:
+        type: string
+      user_id:
+        type: string
+    type: object
+  types.ValidateResponse:
+    properties:
+      meta:
+        $ref: '#/definitions/types.ResponseMeta'
+      normalized_request:
+        $ref: '#/definitions/types.NormalizedRecommendRequest'
+      warnings:
+        items:
+          $ref: '#/definitions/types.Warning'
+        type: array
+    type: object
+  types.Warning:
+    properties:
+      code:
+        type: string
+      detail:
+        type: string
+    type: object
+  types.Weights:
+    properties:
+      cooc:
+        type: number
+      emb:
+        type: number
+      pop:
+        type: number
+    type: object
 info:
   contact: {}
-  description: REST API Boilerplate Documentation
-  title: API Boilerplate API
+  description: Recommendation service API
+  title: Recsys Service API
   version: 1.0.0
 paths:
   /api/v1/foo:
@@ -232,4 +486,94 @@ paths:
       summary: Update foo
       tags:
       - Foo
+  /v1/recommend:
+    post:
+      consumes:
+      - application/json
+      description: Return ranked recommendations
+      parameters:
+      - description: Recommend payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.RecommendRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.RecommendResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/types.Problem'
+      summary: Recommend items
+      tags:
+      - Recsys
+  /v1/recommend/validate:
+    post:
+      consumes:
+      - application/json
+      description: Validate and normalize a recommend request
+      parameters:
+      - description: Recommend payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.RecommendRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ValidateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/types.Problem'
+      summary: Validate recommend request
+      tags:
+      - Recsys
+  /v1/similar:
+    post:
+      consumes:
+      - application/json
+      description: Return similar items for an item_id
+      parameters:
+      - description: Similar payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.SimilarRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.RecommendResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/types.Problem'
+      summary: Similar items
+      tags:
+      - Recsys
 swagger: "2.0"

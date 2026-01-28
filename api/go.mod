@@ -8,8 +8,6 @@ require (
 	github.com/swaggo/swag v1.16.6
 )
 
-replace github.com/aatuh/api-toolkit-contrib => ../api-toolkit/contrib
-
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect

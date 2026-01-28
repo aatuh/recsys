@@ -21,21 +21,27 @@ ENV CGO_ENABLED=0
 RUN GOOS=$TARGETOS GOARCH=${TARGETARCH:-$(go env GOARCH)} \
 	go build -trimpath \
 	-ldflags "-s -w -X main.version=${VERSION} -X main.commit=${COMMIT} -X main.date=${DATE}" \
-	-o /out/api \
-	./cmd/api
+	-o /out/recsys-service \
+	./cmd/recsys-service
 
 FROM alpine:3.21
 
 RUN apk add --no-cache ca-certificates tzdata \
 	&& addgroup -S app \
-	&& adduser -S app -G app
+	&& adduser -S app -G app \
+	&& mkdir -p /tmp \
+	&& chown app:app /tmp
 
 WORKDIR /app
 
-COPY --from=builder /out/api /app/api
+COPY --from=builder /out/recsys-service /app/recsys-service
 
 EXPOSE 8000
 
 USER app
 
-ENTRYPOINT ["/app/api"]
+ENV TMPDIR=/tmp
+
+HEALTHCHECK --interval=30s --timeout=3s --retries=3 CMD wget -qO- http://127.0.0.1:8000/healthz >/dev/null 2>&1 || exit 1
+
+ENTRYPOINT ["/app/recsys-service"]

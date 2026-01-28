@@ -1,7 +1,8 @@
 // Package cmd contains the main application entry points and command-line tools.
 //
 // This package includes:
-// - api: Main API server
+// - recsys-service: Main recsys service API server
+// - api: Legacy boilerplate API server (kept for reference)
 // - migrate: Database migration tool
 // - audit: Audit/logging tool
 // - auditor: Audit analysis tool

@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"strings"
+	"syscall"
 	"time"
 
 	"recsys/internal/config"
@@ -28,10 +29,10 @@ var (
 	date    = "unknown"
 )
 
-// @title API Boilerplate API
+// @title Recsys Service API
 // @version 1.0.0
-// @description REST API Boilerplate Documentation
-// @BasePath /api/v1
+// @description Recommendation service API
+// @BasePath /
 func loggerFromEnv(env, level string) ports.Logger {
 	env = strings.ToLower(strings.TrimSpace(env))
 	switch env {
@@ -85,7 +86,7 @@ func main() {
 	deps := buildAppDeps(log, pool)
 	mountAppRoutes(r, log, deps)
 
-	srvCtx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	srvCtx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	bootstrap.StartServerOrExit(srvCtx, cfg.Addr, r, log)
 }

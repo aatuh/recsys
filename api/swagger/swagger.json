@@ -1,12 +1,12 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "REST API Boilerplate Documentation",
-        "title": "API Boilerplate API",
+        "description": "Recommendation service API",
+        "title": "Recsys Service API",
         "contact": {},
         "version": "1.0.0"
     },
-    "basePath": "/api/v1",
+    "basePath": "/",
     "paths": {
         "/api/v1/foo": {
             "get": {
@@ -224,9 +224,215 @@
                     }
                 }
             }
+        },
+        "/v1/recommend": {
+            "post": {
+                "description": "Return ranked recommendations",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Recsys"
+                ],
+                "summary": "Recommend items",
+                "parameters": [
+                    {
+                        "description": "Recommend payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.RecommendRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.RecommendResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/recommend/validate": {
+            "post": {
+                "description": "Validate and normalize a recommend request",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Recsys"
+                ],
+                "summary": "Validate recommend request",
+                "parameters": [
+                    {
+                        "description": "Recommend payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.RecommendRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.ValidateResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/similar": {
+            "post": {
+                "description": "Return similar items for an item_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Recsys"
+                ],
+                "summary": "Similar items",
+                "parameters": [
+                    {
+                        "description": "Similar payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.SimilarRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.RecommendResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "types.Anchors": {
+            "type": "object",
+            "properties": {
+                "item_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "max_anchors": {
+                    "type": "integer"
+                }
+            }
+        },
+        "types.AnchorsNormalized": {
+            "type": "object",
+            "properties": {
+                "item_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "max_anchors": {
+                    "type": "integer"
+                }
+            }
+        },
+        "types.Candidates": {
+            "type": "object",
+            "properties": {
+                "exclude_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "include_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "types.Constraints": {
+            "type": "object",
+            "properties": {
+                "forbidden_tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "max_per_tag": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "integer"
+                    }
+                },
+                "required_tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "types.CreateFooDTO": {
             "type": "object",
             "required": [
@@ -242,6 +448,17 @@
                     "type": "string"
                 },
                 "org_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.Experiment": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "variant": {
                     "type": "string"
                 }
             }
@@ -318,13 +535,91 @@
                 }
             }
         },
+        "types.NormalizedRecommendRequest": {
+            "type": "object",
+            "properties": {
+                "anchors": {
+                    "$ref": "#/definitions/types.AnchorsNormalized"
+                },
+                "candidates": {
+                    "$ref": "#/definitions/types.Candidates"
+                },
+                "constraints": {
+                    "$ref": "#/definitions/types.Constraints"
+                },
+                "context": {
+                    "$ref": "#/definitions/types.RequestContext"
+                },
+                "experiment": {
+                    "$ref": "#/definitions/types.Experiment"
+                },
+                "k": {
+                    "type": "integer"
+                },
+                "options": {
+                    "$ref": "#/definitions/types.OptionsNormalized"
+                },
+                "segment": {
+                    "type": "string"
+                },
+                "surface": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/types.UserRef"
+                },
+                "weights": {
+                    "$ref": "#/definitions/types.Weights"
+                }
+            }
+        },
+        "types.Options": {
+            "type": "object",
+            "properties": {
+                "explain": {
+                    "type": "string"
+                },
+                "include_reasons": {
+                    "type": "boolean"
+                },
+                "include_trace": {
+                    "type": "boolean"
+                },
+                "seed": {
+                    "type": "integer"
+                }
+            }
+        },
+        "types.OptionsNormalized": {
+            "type": "object",
+            "properties": {
+                "explain": {
+                    "type": "string"
+                },
+                "include_reasons": {
+                    "type": "boolean"
+                },
+                "include_trace": {
+                    "type": "boolean"
+                },
+                "seed": {
+                    "type": "integer"
+                }
+            }
+        },
         "types.Problem": {
             "type": "object",
             "properties": {
+                "code": {
+                    "type": "string"
+                },
                 "detail": {
                     "type": "string"
                 },
                 "instance": {
+                    "type": "string"
+                },
+                "request_id": {
                     "type": "string"
                 },
                 "status": {
@@ -338,6 +633,183 @@
                 }
             }
         },
+        "types.RecommendItem": {
+            "type": "object",
+            "properties": {
+                "explain": {
+                    "$ref": "#/definitions/types.RecommendItemExplain"
+                },
+                "item_id": {
+                    "type": "string"
+                },
+                "rank": {
+                    "type": "integer"
+                },
+                "reasons": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "score": {
+                    "type": "number"
+                }
+            }
+        },
+        "types.RecommendItemExplain": {
+            "type": "object",
+            "properties": {
+                "rules": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "signals": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number",
+                        "format": "float64"
+                    }
+                }
+            }
+        },
+        "types.RecommendRequest": {
+            "type": "object",
+            "properties": {
+                "anchors": {
+                    "$ref": "#/definitions/types.Anchors"
+                },
+                "candidates": {
+                    "$ref": "#/definitions/types.Candidates"
+                },
+                "constraints": {
+                    "$ref": "#/definitions/types.Constraints"
+                },
+                "context": {
+                    "$ref": "#/definitions/types.RequestContext"
+                },
+                "experiment": {
+                    "$ref": "#/definitions/types.Experiment"
+                },
+                "k": {
+                    "type": "integer"
+                },
+                "options": {
+                    "$ref": "#/definitions/types.Options"
+                },
+                "segment": {
+                    "type": "string"
+                },
+                "surface": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/types.UserRef"
+                },
+                "weights": {
+                    "$ref": "#/definitions/types.Weights"
+                }
+            }
+        },
+        "types.RecommendResponse": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.RecommendItem"
+                    }
+                },
+                "meta": {
+                    "$ref": "#/definitions/types.ResponseMeta"
+                },
+                "warnings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.Warning"
+                    }
+                }
+            }
+        },
+        "types.RequestContext": {
+            "type": "object",
+            "properties": {
+                "country": {
+                    "type": "string"
+                },
+                "device": {
+                    "type": "string"
+                },
+                "locale": {
+                    "type": "string"
+                },
+                "now": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.ResponseMeta": {
+            "type": "object",
+            "properties": {
+                "algo_version": {
+                    "type": "string"
+                },
+                "config_version": {
+                    "type": "string"
+                },
+                "counts": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "integer"
+                    }
+                },
+                "request_id": {
+                    "type": "string"
+                },
+                "rules_version": {
+                    "type": "string"
+                },
+                "segment": {
+                    "type": "string"
+                },
+                "surface": {
+                    "type": "string"
+                },
+                "tenant_id": {
+                    "type": "string"
+                },
+                "timings_ms": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "types.SimilarRequest": {
+            "type": "object",
+            "properties": {
+                "constraints": {
+                    "$ref": "#/definitions/types.Constraints"
+                },
+                "item_id": {
+                    "type": "string"
+                },
+                "k": {
+                    "type": "integer"
+                },
+                "options": {
+                    "$ref": "#/definitions/types.Options"
+                },
+                "segment": {
+                    "type": "string"
+                },
+                "surface": {
+                    "type": "string"
+                }
+            }
+        },
         "types.UpdateFooDTO": {
             "type": "object",
             "required": [
@@ -346,6 +818,62 @@
             "properties": {
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "types.UserRef": {
+            "type": "object",
+            "properties": {
+                "anonymous_id": {
+                    "type": "string"
+                },
+                "session_id": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.ValidateResponse": {
+            "type": "object",
+            "properties": {
+                "meta": {
+                    "$ref": "#/definitions/types.ResponseMeta"
+                },
+                "normalized_request": {
+                    "$ref": "#/definitions/types.NormalizedRecommendRequest"
+                },
+                "warnings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.Warning"
+                    }
+                }
+            }
+        },
+        "types.Warning": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "detail": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.Weights": {
+            "type": "object",
+            "properties": {
+                "cooc": {
+                    "type": "number"
+                },
+                "emb": {
+                    "type": "number"
+                },
+                "pop": {
+                    "type": "number"
                 }
             }
         }

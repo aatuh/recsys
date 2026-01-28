@@ -64,23 +64,23 @@ gRPC) that:
 
 ---
 
-# [ ] EPIC SVC-0: Repository skeleton and packaging (P0)
+# [x] EPIC SVC-0: Repository skeleton and packaging (P0)
 
-### [ ] SVC-1 Service bootstrap and layout
+### [x] SVC-1 Service bootstrap and layout
 
 * Create `cmd/recsys-service`, `internal/` packages, config loading, graceful
   shutdown, structured logging.
 * **Acceptance:** `go test ./...` + `go run ./cmd/recsys-service` works with
   sample config.
 
-### [ ] SVC-2 Containerization + minimal runtime hardening
+### [x] SVC-2 Containerization + minimal runtime hardening
 
 * Minimal base image, non-root user, read-only rootfs, drop Linux caps,
   health endpoints.
 * **Acceptance:** container passes a basic security baseline (non-root,
   no write to root, configurable ports).
 
-### [ ] SVC-3 CI pipeline
+### [x] SVC-3 CI pipeline
 
 * `go test`, `-race`, `golangci-lint`, `govulncheck` (and optional `gosec`),
   build container, push artifact.
@@ -88,9 +88,9 @@ gRPC) that:
 
 ---
 
-# [ ] EPIC SVC-1: Public API design and contracts (P0)
+# [x] EPIC SVC-1: Public API design and contracts (P0)
 
-### [ ] SVC-10 Define API resources + versioning
+### [x] SVC-10 Define API resources + versioning
 
 * Endpoints (v1):
 
@@ -100,7 +100,7 @@ gRPC) that:
 * Versioning strategy (path-based or header-based), deprecation policy.
 * **Acceptance:** OpenAPI spec generated and validated in CI.
 
-### [ ] SVC-11 Request validation + normalization
+### [x] SVC-11 Request validation + normalization
 
 * Strict schema validation, limits (max K, max anchors, max exclude IDs,
   payload size), defaulting.
@@ -108,25 +108,25 @@ gRPC) that:
 * **Acceptance:** fuzz tests show no panics; invalid inputs yield structured
   4xx errors.
 
-### [ ] SVC-12 Deterministic response rules
+### [x] SVC-12 Deterministic response rules
 
 * Stable sorting and tie-break policies defined at API layer (so client
   expectations are clear).
 * **Acceptance:** golden tests for stable ordering.
 
-### [ ] SVC-13 Error model and problem+json
+### [x] SVC-13 Error model and problem+json
 
 * Standard error envelope, machine code, human message, correlation IDs.
 * **Acceptance:** errors are consistent across handlers.
 
-### [ ] SVC-14 Implement `POST /v1/recommend/validate`**
+### [x] SVC-14 Implement `POST /v1/recommend/validate`**
 
 * **Scope:** parse + validate + normalize request, return normalized payload +
   warnings; must not call stores or run ranking.
 * **Acceptance:** deterministic output; same validation limits as recommend;
   returns Problem Details on failures.
 
-### [ ] SVC-15 Implement `GET /version`**
+### [x] SVC-15 Implement `GET /version`**
 
 * **Scope:** return build metadata (service name, semver, git sha, built_at).
 * **Acceptance:** always 200; no auth by default (configurable); safe to expose.

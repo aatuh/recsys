@@ -30,6 +30,15 @@ services:
       - ./api/.env
     ports:
       - "${API_PORT:-8000}:8000"
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    cap_add:
+      - DAC_OVERRIDE
+    security_opt:
+      - no-new-privileges:true
     volumes:
       - ./api:/app
       - api_tmp:/app/tmp
@@ -43,14 +52,14 @@ services:
     stop_grace_period: 1s
     healthcheck:
       test:
-        ["CMD-SHELL", "curl -f http://localhost:${API_PORT}/health || exit 1"]
+        ["CMD-SHELL", "curl -f http://localhost:${API_PORT}/healthz || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3
       start_period: 30s
     command: >-
       sh -c '
-        reflex -r "\\.go$" -s -- sh -c "make build-bin && ./bin/api"
+        reflex -r "\\.go$" -s -- sh -c "make build-bin && ./bin/recsys-service"
       '
 
   web:
@@ -96,6 +105,10 @@ services:
       - test_test_cache:/app/.test-cache
       - test_pkg:/go/pkg/mod
       - test_gocache:/root/.cache/go-build
+    cap_drop:
+      - ALL
+    cap_add:
+      - DAC_OVERRIDE
     command: ["sh", "-c", "/app/scripts/test.sh"]
     profiles: ["test"]
 
