@@ -1,22 +1,13 @@
-# Dotfiles
+# All dotfiles
 **/.*
 !.gitignore
-!.env.example
-!.github/
-!.github/workflows/
-!.github/workflows/*.yml
+!.env*.example
 
-**/__pycache__/
-**/*.pyc
+**/go.work
+**/go.work.sum
 
-# Analysis artifacts (keep scripts/fixtures and required baselines)
-analysis/env_history/
-analysis/evidence/
-analysis/reports/
-analysis/quality_metrics.json
-analysis/scenarios.csv
-analysis/results/**
-!analysis/results/determinism_baseline.json
-!analysis/results/tuning_runs/
-analysis/env_profiles/
-!analysis/env_profiles/example/
+**/tmp/
+**/bin/
+
+recsys-eval/
+recsys-pipelines/

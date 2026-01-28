@@ -1,14 +1,1 @@
-tmp/
-bin/
-dist/
-*.log
-
-api
-.env
-!.dockerignore
-!.env.example
-!.env.test.example
-
-recsys-eval
-recsys-pipelines
-recsys-svc
+recsys-algo/
