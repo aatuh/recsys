@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"recsys/internal/algorithm"
+	"github.com/aatuh/recsys-algo/algorithm"
 )
 
 // RecommendationConfig captures the base algorithm tunables used for ranking.
@@ -12,6 +12,10 @@ type RecommendationConfig struct {
 	HalfLifeDays                  float64
 	CoVisWindowDays               float64
 	PopularityFanout              int
+	MaxK                          int
+	MaxFanout                     int
+	MaxExcludeIDs                 int
+	MaxAnchorsInjected            int
 	MMRLambda                     float64
 	BrandCap                      int
 	CategoryCap                   int
@@ -169,6 +173,10 @@ func (c RecommendationConfig) BaseConfig() algorithm.Config {
 		PurchasedWindowDays:        int(c.PurchasedWindowDays),
 		RuleExcludeEvents:          c.RuleExcludeEvents,
 		PopularityFanout:           c.PopularityFanout,
+		MaxK:                       c.MaxK,
+		MaxFanout:                  c.MaxFanout,
+		MaxExcludeIDs:              c.MaxExcludeIDs,
+		MaxAnchorsInjected:         c.MaxAnchorsInjected,
 		RulesEnabled:               c.RulesEnabled,
 	}
 

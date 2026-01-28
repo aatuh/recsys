@@ -3,12 +3,13 @@ package store
 import (
 	"context"
 	"fmt"
-	"recsys/internal/types"
 	"strconv"
 	"strings"
 	"time"
 
 	_ "embed"
+
+	recmodel "github.com/aatuh/recsys-algo/model"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -370,12 +371,12 @@ func (s *Store) PopularityTopK(
 	ns string,
 	halfLifeDays float64,
 	k int,
-	c *types.PopConstraints,
-) ([]types.ScoredItem, error) {
+	c *recmodel.PopConstraints,
+) ([]recmodel.ScoredItem, error) {
 	if k <= 0 {
 		k = 20
 	}
-	var out []types.ScoredItem
+	var out []recmodel.ScoredItem
 	err := s.withRetry(ctx, func(ctx context.Context) error {
 		rows, err := s.Pool.Query(ctx, popularitySQL,
 			orgID, ns, halfLifeDays, k,
@@ -419,9 +420,9 @@ func (s *Store) PopularityTopK(
 		}
 		defer rows.Close()
 
-		items := make([]types.ScoredItem, 0, k)
+		items := make([]recmodel.ScoredItem, 0, k)
 		for rows.Next() {
-			var it types.ScoredItem
+			var it recmodel.ScoredItem
 			if err := rows.Scan(&it.ItemID, &it.Score); err != nil {
 				return err
 			}
@@ -447,11 +448,11 @@ func (s *Store) CooccurrenceTopKWithin(
 	itemID string,
 	k int,
 	since time.Time,
-) ([]types.ScoredItem, error) {
+) ([]recmodel.ScoredItem, error) {
 	if k <= 0 {
 		k = 20
 	}
-	var out []types.ScoredItem
+	var out []recmodel.ScoredItem
 	err := s.withRetry(ctx, func(ctx context.Context) error {
 		rows, err := s.Pool.Query(ctx, cooccurrenceTopKSQL, orgID, ns, itemID, k, since)
 		if err != nil {
@@ -459,9 +460,9 @@ func (s *Store) CooccurrenceTopKWithin(
 		}
 		defer rows.Close()
 
-		items := make([]types.ScoredItem, 0, k)
+		items := make([]recmodel.ScoredItem, 0, k)
 		for rows.Next() {
-			var it types.ScoredItem
+			var it recmodel.ScoredItem
 			if err := rows.Scan(&it.ItemID, &it.Score); err != nil {
 				return err
 			}
@@ -545,11 +546,11 @@ func (s *Store) ListItemsTags(
 	orgID uuid.UUID,
 	ns string,
 	itemIDs []string,
-) (map[string]types.ItemTags, error) {
+) (map[string]recmodel.ItemTags, error) {
 	if len(itemIDs) == 0 {
-		return map[string]types.ItemTags{}, nil
+		return map[string]recmodel.ItemTags{}, nil
 	}
-	var out map[string]types.ItemTags
+	var out map[string]recmodel.ItemTags
 	err := s.withRetry(ctx, func(ctx context.Context) error {
 		rows, err := s.Pool.Query(ctx, itemsTagsSQL, orgID, ns, itemIDs)
 		if err != nil {
@@ -557,7 +558,7 @@ func (s *Store) ListItemsTags(
 		}
 		defer rows.Close()
 
-		res := make(map[string]types.ItemTags, len(itemIDs))
+		res := make(map[string]recmodel.ItemTags, len(itemIDs))
 		for rows.Next() {
 			var (
 				id        string
@@ -568,7 +569,7 @@ func (s *Store) ListItemsTags(
 			if err := rows.Scan(&id, &tags, &price, &createdAt); err != nil {
 				return err
 			}
-			res[id] = types.ItemTags{
+			res[id] = recmodel.ItemTags{
 				ItemID:    id,
 				Tags:      tags,
 				Price:     price,

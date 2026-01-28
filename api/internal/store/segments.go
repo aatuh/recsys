@@ -387,7 +387,9 @@ func (s *Store) UpsertSegmentWithRules(
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback(ctx)
+	defer func() {
+		_ = tx.Rollback(ctx)
+	}()
 
 	if _, err := tx.Exec(ctx, segmentsUpsertSQL,
 		orgID, ns, segment.SegmentID, segment.Name, segment.Priority,

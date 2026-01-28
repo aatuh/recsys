@@ -5,9 +5,10 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 
-	"recsys/internal/algorithm"
-	"recsys/internal/rules"
+	"github.com/aatuh/recsys-algo/rules"
 	"recsys/internal/types"
+
+	"github.com/aatuh/recsys-algo/algorithm"
 )
 
 // Metrics exposes counters for policy enforcement health.

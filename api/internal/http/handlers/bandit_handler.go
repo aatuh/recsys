@@ -8,13 +8,14 @@ import (
 	"strings"
 	"time"
 
-	"recsys/internal/algorithm"
 	"recsys/internal/bandit"
 	"recsys/internal/http/common"
 	"recsys/internal/services/recommendation"
 	"recsys/internal/store"
 	internaltypes "recsys/internal/types"
 	handlerstypes "recsys/specs/types"
+
+	"github.com/aatuh/recsys-algo/algorithm"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"

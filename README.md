@@ -76,6 +76,7 @@ New teammate? Follow [`docs/onboarding_checklist.md`](docs/onboarding_checklist.
 - [`docs/tuning_playbook.md`](docs/tuning_playbook.md) – reset → seed → tune → promote workflow plus AI-assisted sweeps.
 - [`docs/simulations_and_guardrails.md`](docs/simulations_and_guardrails.md) – how bespoke fixtures and guardrails cooperate in CI/CD.
 - [`docs/env_reference.md`](docs/env_reference.md) – canonical environment/config knob list with override guidance.
+- [`docs/commands.md`](docs/commands.md) – offline Go command guide for catalog backfills, collaborative factors, and blend evaluations.
 - [`docs/api_reference.md`](docs/api_reference.md) – endpoint catalog with payload notes, error codes, and common patterns.
 - [`docs/rules_runbook.md`](docs/rules_runbook.md) – operational runbook for overrides, telemetry, and incident response.
 - [`docs/configuration.md`](docs/configuration.md) – conceptual explanation of how ingestion, signals, blending, personalization, and rules fit together.

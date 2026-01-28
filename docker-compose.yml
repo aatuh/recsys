@@ -80,7 +80,7 @@ services:
   web:
     container_name: recsys-web
     build:
-      context: ./web
+      context: ./ui/web
       dockerfile: Dockerfile
     depends_on:
       api:
@@ -99,7 +99,7 @@ services:
   demo:
     container_name: recsys-demo
     build:
-      context: ./demo
+      context: ./ui/demo
       dockerfile: Dockerfile
     depends_on:
       api:
@@ -118,7 +118,7 @@ services:
   shop:
     container_name: recsys-shop
     build:
-      context: ./shop
+      context: ./ui/shop
       dockerfile: Dockerfile
     depends_on:
       api:
@@ -142,7 +142,7 @@ services:
   swagger:
     container_name: recsys-swagger
     build:
-      context: ./swagger-service
+      context: ./ui/swagger-service
       dockerfile: Dockerfile
     volumes:
       - ./swagger-service/public:/usr/share/nginx/html:ro

@@ -11,11 +11,13 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 
+	"github.com/aatuh/recsys-algo/rules"
 	"recsys/internal/http/common"
-	"recsys/internal/rules"
 	"recsys/internal/store"
 	"recsys/internal/types"
 	specstypes "recsys/specs/types"
+
+	recmodel "github.com/aatuh/recsys-algo/model"
 )
 
 // RulesHandler exposes merchandising rule management endpoints.
@@ -89,7 +91,7 @@ func (h *RulesHandler) RulesCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.invalidateRuleCache(rule.Namespace, rule.Surface)
+	h.invalidateRuleCache(rule.OrgID, rule.Namespace, rule.Surface)
 
 	resp := toRuleResponse(*created)
 	w.Header().Set("Content-Type", "application/json")
@@ -170,8 +172,8 @@ func (h *RulesHandler) RulesUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.invalidateRuleCache(existing.Namespace, existing.Surface)
-	h.invalidateRuleCache(updated.Namespace, updated.Surface)
+	h.invalidateRuleCache(existing.OrgID, existing.Namespace, existing.Surface)
+	h.invalidateRuleCache(updated.OrgID, updated.Namespace, updated.Surface)
 
 	resp := toRuleResponse(*updated)
 	w.Header().Set("Content-Type", "application/json")
@@ -292,14 +294,14 @@ func (h *RulesHandler) RulesDryRun(w http.ResponseWriter, r *http.Request) {
 	}
 
 	orgID := orgIDFromHeader(r, h.defaultOrg)
-	candidates := make([]types.ScoredItem, 0, len(payload.Items))
+	candidates := make([]recmodel.ScoredItem, 0, len(payload.Items))
 	queryIDs := make([]string, 0, len(payload.Items))
 	for _, id := range payload.Items {
 		trimmed := strings.TrimSpace(id)
 		if trimmed == "" {
 			continue
 		}
-		candidates = append(candidates, types.ScoredItem{ItemID: trimmed, Score: 0})
+		candidates = append(candidates, recmodel.ScoredItem{ItemID: trimmed, Score: 0})
 		queryIDs = append(queryIDs, trimmed)
 	}
 
@@ -381,7 +383,7 @@ func (h *RulesHandler) RulesDryRun(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(resp)
 }
 
-func (h *RulesHandler) invalidateRuleCache(namespace, surface string) {
+func (h *RulesHandler) invalidateRuleCache(orgID uuid.UUID, namespace, surface string) {
 	if h.manager == nil {
 		return
 	}
@@ -389,7 +391,7 @@ func (h *RulesHandler) invalidateRuleCache(namespace, surface string) {
 	if namespace == "" {
 		namespace = "default"
 	}
-	h.manager.Invalidate(namespace, strings.TrimSpace(surface))
+	h.manager.Invalidate(orgID, namespace, strings.TrimSpace(surface))
 }
 
 func writeAPIError(w http.ResponseWriter, r *http.Request, status int, code, message string) {

@@ -3,9 +3,10 @@ package handlers
 import (
 	"time"
 
-	"recsys/internal/algorithm"
 	"recsys/internal/segments"
 	"recsys/internal/types"
+
+	"github.com/aatuh/recsys-algo/algorithm"
 )
 
 func buildSegmentContextData(req algorithm.Request, ctxValues map[string]any, traits map[string]any) map[string]any {
@@ -30,9 +31,9 @@ func buildSegmentContextData(req algorithm.Request, ctxValues map[string]any, tr
 	}
 	if req.Blend != nil {
 		requestData["blend"] = map[string]any{
-			"pop":  req.Blend.Pop,
-			"cooc": req.Blend.Cooc,
-			"als":  req.Blend.ALS,
+			"pop":        req.Blend.Pop,
+			"cooc":       req.Blend.Cooc,
+			"similarity": req.Blend.Similarity,
 		}
 	}
 

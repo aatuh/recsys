@@ -33,24 +33,24 @@ type BanditDecideRequest struct {
 }
 
 type BanditDecideResponse struct {
-	PolicyID  string            `json:"policy_id"`
-	Algorithm string            `json:"algorithm"`
-	Surface   string            `json:"surface"`
-	BucketKey string            `json:"bucket_key"`
-	Explore   bool              `json:"explore"`
-	Explain   map[string]string `json:"explain"`
-	Experiment string           `json:"experiment,omitempty"`
-	Variant    string           `json:"variant,omitempty"`
+	PolicyID   string            `json:"policy_id"`
+	Algorithm  string            `json:"algorithm"`
+	Surface    string            `json:"surface"`
+	BucketKey  string            `json:"bucket_key"`
+	Explore    bool              `json:"explore"`
+	Explain    map[string]string `json:"explain"`
+	Experiment string            `json:"experiment,omitempty"`
+	Variant    string            `json:"variant,omitempty"`
 }
 
 type BanditRewardRequest struct {
-	Namespace string `json:"namespace"`
-	Surface   string `json:"surface"`
-	BucketKey string `json:"bucket_key"`
-	PolicyID  string `json:"policy_id"`
-	Reward    bool   `json:"reward"`
-	Algorithm string `json:"algorithm,omitempty"`
-	RequestID string `json:"request_id,omitempty"`
+	Namespace  string `json:"namespace"`
+	Surface    string `json:"surface"`
+	BucketKey  string `json:"bucket_key"`
+	PolicyID   string `json:"policy_id"`
+	Reward     bool   `json:"reward"`
+	Algorithm  string `json:"algorithm,omitempty"`
+	RequestID  string `json:"request_id,omitempty"`
 	Experiment string `json:"experiment,omitempty"`
 	Variant    string `json:"variant,omitempty"`
 }
@@ -67,12 +67,12 @@ type RecommendWithBanditRequest struct {
 
 type RecommendWithBanditResponse struct {
 	RecommendResponse
-	ChosenPolicyID string            `json:"chosen_policy_id"`
-	Algorithm      string            `json:"algorithm"`
-	BanditBucket   string            `json:"bandit_bucket"`
-	Explore        bool              `json:"explore"`
-	BanditExplain  map[string]string `json:"bandit_explain"`
-	RequestID      string            `json:"request_id,omitempty"`
-	BanditExperiment string          `json:"bandit_experiment,omitempty"`
-	BanditVariant    string          `json:"bandit_variant,omitempty"`
+	ChosenPolicyID   string            `json:"chosen_policy_id"`
+	Algorithm        string            `json:"algorithm"`
+	BanditBucket     string            `json:"bandit_bucket"`
+	Explore          bool              `json:"explore"`
+	BanditExplain    map[string]string `json:"bandit_explain"`
+	RequestID        string            `json:"request_id,omitempty"`
+	BanditExperiment string            `json:"bandit_experiment,omitempty"`
+	BanditVariant    string            `json:"bandit_variant,omitempty"`
 }

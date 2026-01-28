@@ -6,8 +6,9 @@ import (
 	"fmt"
 	"time"
 
-	"recsys/internal/algorithm"
 	"recsys/internal/store"
+
+	"github.com/aatuh/recsys-algo/algorithm"
 
 	"github.com/google/uuid"
 )
@@ -186,9 +187,9 @@ func evaluateCandidate(
 	var totalListLength float64
 
 	weights := &algorithm.BlendWeights{
-		Pop:  cand.Alpha,
-		Cooc: cand.Beta,
-		ALS:  cand.Gamma,
+		Pop:        cand.Alpha,
+		Cooc:       cand.Beta,
+		Similarity: cand.Gamma,
 	}
 
 	for _, sample := range samples {

@@ -154,13 +154,11 @@ func renderUserPrompt(req Request, factsJSON string) string {
 }
 
 func fallbackMarkdown(facts FactsPack, evidence []Evidence) string {
-	status := "unknown"
+	status := "working_as_configured"
 	if facts.Metrics.Impressions == 0 {
 		status = "not_working"
 	} else if facts.Metrics.Clicks == 0 {
 		status = "degraded"
-	} else {
-		status = "working_as_configured"
 	}
 
 	summary := fmt.Sprintf("Observed %d impressions and %d clicks for %s on %s/%s during %s–%s.", facts.Metrics.Impressions, facts.Metrics.Clicks, facts.Target.ID, facts.Context.Namespace, facts.Context.Surface, facts.Window.From, facts.Window.To)

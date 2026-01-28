@@ -9,10 +9,12 @@ import (
 	"sync"
 	"time"
 
-	"recsys/internal/algorithm"
 	"recsys/internal/audit"
-	"recsys/internal/types"
 	handlerstypes "recsys/specs/types"
+
+	"github.com/aatuh/recsys-algo/algorithm"
+
+	recmodel "github.com/aatuh/recsys-algo/model"
 
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/google/uuid"
@@ -280,7 +282,7 @@ func (dt *decisionTracer) Record(in decisionTraceInput) {
 	dt.recorder.Record(&trace)
 }
 
-func buildTraceConstraints(c *types.PopConstraints) *audit.TraceConstraints {
+func buildTraceConstraints(c *recmodel.PopConstraints) *audit.TraceConstraints {
 	if c == nil {
 		return nil
 	}
@@ -304,7 +306,7 @@ func buildTraceConstraints(c *types.PopConstraints) *audit.TraceConstraints {
 	return out
 }
 
-func buildTraceCandidates(candidates []types.ScoredItem) []audit.TraceCandidate {
+func buildTraceCandidates(candidates []recmodel.ScoredItem) []audit.TraceCandidate {
 	if len(candidates) == 0 {
 		return nil
 	}

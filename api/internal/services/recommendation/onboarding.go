@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"recsys/internal/algorithm"
+	"github.com/aatuh/recsys-algo/algorithm"
 )
 
 func defaultStarterPresets() map[string]map[string]float64 {

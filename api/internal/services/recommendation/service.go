@@ -7,10 +7,13 @@ import (
 	"strings"
 	"time"
 
-	"recsys/internal/algorithm"
-	"recsys/internal/rules"
+	"github.com/aatuh/recsys-algo/rules"
 	"recsys/internal/types"
 	spectypes "recsys/specs/types"
+
+	"github.com/aatuh/recsys-algo/algorithm"
+
+	recmodel "github.com/aatuh/recsys-algo/model"
 
 	"github.com/google/uuid"
 )
@@ -31,7 +34,9 @@ func (e ValidationError) Error() string {
 
 // Store defines the persistence contract needed by the service.
 type Store interface {
-	types.RecAlgoStore
+	recmodel.EngineStore
+	recmodel.AvailabilityStore
+	recmodel.HistoryStore
 }
 
 // SegmentSelection describes the resolved segment context.
@@ -63,6 +68,8 @@ type Service struct {
 	rules                 *rules.Manager
 	blendResolver         BlendConfigResolver
 	segmentBlendOverrides map[string]ResolvedBlendConfig
+	clock                 algorithm.Clock
+	signalObserver        algorithm.SignalObserver
 	newUserBlendAlpha     *float64
 	newUserBlendBeta      *float64
 	newUserBlendGamma     *float64
@@ -80,6 +87,18 @@ func New(store Store, rulesManager *rules.Manager) *Service {
 // WithBlendResolver configures a resolver for runtime blend overrides.
 func (s *Service) WithBlendResolver(resolver BlendConfigResolver) *Service {
 	s.blendResolver = resolver
+	return s
+}
+
+// WithClock injects a clock used for deterministic algorithm behavior.
+func (s *Service) WithClock(clock algorithm.Clock) *Service {
+	s.clock = clock
+	return s
+}
+
+// WithSignalObserver registers an observer for signal telemetry.
+func (s *Service) WithSignalObserver(observer algorithm.SignalObserver) *Service {
+	s.signalObserver = observer
 	return s
 }
 
@@ -155,7 +174,13 @@ func (s *Service) Recommend(
 		return nil, err
 	}
 
-	engine := algorithm.NewEngine(cfg, s.store, s.rules)
+	engine := algorithm.NewEngine(
+		cfg,
+		s.store,
+		s.rules,
+		algorithm.WithClock(s.clock),
+		algorithm.WithSignalObserver(s.signalObserver),
+	)
 	algoResp, traceData, err := engine.Recommend(ctx, algoReq)
 	if err != nil {
 		return nil, err
@@ -217,7 +242,13 @@ func (s *Service) Rerank(
 		algoReq.K = len(candidates)
 	}
 
-	engine := algorithm.NewEngine(cfg, s.store, s.rules)
+	engine := algorithm.NewEngine(
+		cfg,
+		s.store,
+		s.rules,
+		algorithm.WithClock(s.clock),
+		algorithm.WithSignalObserver(s.signalObserver),
+	)
 	algoResp, traceData, err := engine.Recommend(ctx, algoReq)
 	if err != nil {
 		return nil, err
@@ -396,6 +427,10 @@ func (s *Service) prepareRecommendInputs(
 		}
 	}
 
+	if err := validateAlgorithmInputs(cfg, algoReq); err != nil {
+		return algorithm.Request{}, algorithm.Config{}, SegmentSelection{}, err
+	}
+
 	return algoReq, cfg, selection, nil
 }
 
@@ -413,11 +448,11 @@ func rerankAsRecommend(req spectypes.RerankRequest) spectypes.RecommendRequest {
 	}
 }
 
-func buildPrefetchedCandidates(items []spectypes.RerankCandidate) ([]types.ScoredItem, error) {
+func buildPrefetchedCandidates(items []spectypes.RerankCandidate) ([]recmodel.ScoredItem, error) {
 	if len(items) == 0 {
 		return nil, nil
 	}
-	out := make([]types.ScoredItem, 0, len(items))
+	out := make([]recmodel.ScoredItem, 0, len(items))
 	seen := make(map[string]struct{}, len(items))
 	for _, item := range items {
 		id := strings.TrimSpace(item.ItemID)
@@ -432,9 +467,57 @@ func buildPrefetchedCandidates(items []spectypes.RerankCandidate) ([]types.Score
 		if item.Score != nil {
 			score = *item.Score
 		}
-		out = append(out, types.ScoredItem{ItemID: id, Score: score})
+		out = append(out, recmodel.ScoredItem{ItemID: id, Score: score})
 	}
 	return out, nil
+}
+
+func validateAlgorithmInputs(cfg algorithm.Config, req algorithm.Request) error {
+	var cfgErrs algorithm.ValidationErrors
+	if err := cfg.Validate(); err != nil {
+		if v, ok := err.(algorithm.ValidationErrors); ok {
+			cfgErrs = v
+		} else {
+			return err
+		}
+	}
+
+	var reqErrs algorithm.ValidationErrors
+	if err := req.Validate(); err != nil {
+		if v, ok := err.(algorithm.ValidationErrors); ok {
+			reqErrs = v
+		} else {
+			return err
+		}
+	}
+
+	if len(cfgErrs) == 0 && len(reqErrs) == 0 {
+		return nil
+	}
+
+	details := make(map[string]any)
+	if len(cfgErrs) > 0 {
+		details["config"] = cfgErrs.Fields()
+	}
+	if len(reqErrs) > 0 {
+		details["request"] = reqErrs.Fields()
+	}
+
+	code := "invalid_request"
+	message := "invalid recommendation request"
+	switch {
+	case len(cfgErrs) > 0 && len(reqErrs) > 0:
+		code = "invalid_input"
+		message = "invalid recommendation input"
+	case len(cfgErrs) > 0:
+		code = "invalid_config"
+		message = "invalid recommendation config"
+	}
+	return ValidationError{
+		Code:    code,
+		Message: message,
+		Details: details,
+	}
 }
 
 func buildAlgorithmRequest(orgID uuid.UUID, req spectypes.RecommendRequest) (algorithm.Request, error) {
@@ -544,7 +627,7 @@ func (s *Service) starterAnchors(
 	seen := make(map[string]struct{}, limit*2)
 	buckets := make([]tagBucket, 0, len(weights))
 	for _, entry := range weights {
-		constraints := &types.PopConstraints{IncludeTagsAny: []string{entry.tag}}
+		constraints := &recmodel.PopConstraints{IncludeTagsAny: []string{entry.tag}}
 		items, err := s.store.PopularityTopK(ctx, req.OrgID, req.Namespace, cfg.HalfLifeDays, perTagLimit, constraints)
 		if err != nil {
 			continue
@@ -593,11 +676,11 @@ func (s *Service) starterAnchors(
 	return anchors
 }
 
-func parseConstraints(src *spectypes.RecommendConstraints) (*types.PopConstraints, error) {
+func parseConstraints(src *spectypes.RecommendConstraints) (*recmodel.PopConstraints, error) {
 	if src == nil {
 		return nil, nil
 	}
-	constraints := &types.PopConstraints{
+	constraints := &recmodel.PopConstraints{
 		IncludeTagsAny: src.IncludeTagsAny,
 		ExcludeItemIDs: src.ExcludeItemIDs,
 	}
@@ -624,9 +707,9 @@ func parseBlend(src *spectypes.RecommendBlend) *algorithm.BlendWeights {
 		return nil
 	}
 	return &algorithm.BlendWeights{
-		Pop:  src.Pop,
-		Cooc: src.Cooc,
-		ALS:  src.ALS,
+		Pop:        src.Pop,
+		Cooc:       src.Cooc,
+		Similarity: src.Similarity,
 	}
 }
 
@@ -778,23 +861,23 @@ func mapExplainBlock(src *algorithm.ExplainBlock) *spectypes.ExplainBlock {
 
 	if src.Blend != nil {
 		dst.Blend = &spectypes.ExplainBlend{
-			Alpha:    src.Blend.Alpha,
-			Beta:     src.Blend.Beta,
-			Gamma:    src.Blend.Gamma,
-			PopNorm:  src.Blend.PopNorm,
-			CoocNorm: src.Blend.CoocNorm,
-			EmbNorm:  src.Blend.EmbNorm,
+			Alpha:          src.Blend.Alpha,
+			Beta:           src.Blend.Beta,
+			Gamma:          src.Blend.Gamma,
+			PopNorm:        src.Blend.PopNorm,
+			CoocNorm:       src.Blend.CoocNorm,
+			SimilarityNorm: src.Blend.SimilarityNorm,
 			Contributions: spectypes.ExplainBlendContribution{
-				Pop:  src.Blend.Contributions.Pop,
-				Cooc: src.Blend.Contributions.Cooc,
-				Emb:  src.Blend.Contributions.Emb,
+				Pop:        src.Blend.Contributions.Pop,
+				Cooc:       src.Blend.Contributions.Cooc,
+				Similarity: src.Blend.Contributions.Similarity,
 			},
 		}
 		if src.Blend.Raw != nil {
 			dst.Blend.Raw = &spectypes.ExplainBlendRaw{
-				Pop:  src.Blend.Raw.Pop,
-				Cooc: src.Blend.Raw.Cooc,
-				Emb:  src.Blend.Raw.Emb,
+				Pop:        src.Blend.Raw.Pop,
+				Cooc:       src.Blend.Raw.Cooc,
+				Similarity: src.Blend.Raw.Similarity,
 			}
 		}
 	}

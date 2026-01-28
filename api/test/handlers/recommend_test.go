@@ -118,7 +118,7 @@ func TestRecommend_TenantOverrideAffectsRanking(t *testing.T) {
 	}, http.StatusAccepted)
 	body1 := client.DoRequestWithStatus(t, http.MethodPost, endpoints.Recommendations, map[string]any{
 		"user_id": "u1", "namespace": ns, "k": 2,
-		"blend": map[string]any{"pop": 1.0, "cooc": 0.0, "als": 0.0},
+		"blend": map[string]any{"pop": 1.0, "cooc": 0.0, "similarity": 0.0},
 		"overrides": map[string]any{
 			"rule_exclude_events": false,
 			"mmr_lambda":          1.0,
@@ -150,7 +150,7 @@ func TestRecommend_TenantOverrideAffectsRanking(t *testing.T) {
 	// Recs after override: A should now top B
 	body2 := client.DoRequestWithStatus(t, http.MethodPost, endpoints.Recommendations, map[string]any{
 		"user_id": "u1", "namespace": ns, "k": 2,
-		"blend": map[string]any{"pop": 1.0, "cooc": 0.0, "als": 0.0},
+		"blend": map[string]any{"pop": 1.0, "cooc": 0.0, "similarity": 0.0},
 		"overrides": map[string]any{
 			"rule_exclude_events": false,
 			"mmr_lambda":          1.0,
@@ -221,16 +221,16 @@ func TestRecommend_ExplainLevels(t *testing.T) {
 			Score   float64 `json:"score"`
 			Explain struct {
 				Blend struct {
-					Alpha         float64 `json:"alpha"`
-					Beta          float64 `json:"beta"`
-					Gamma         float64 `json:"gamma"`
-					PopNorm       float64 `json:"pop_norm"`
-					CoocNorm      float64 `json:"cooc_norm"`
-					EmbNorm       float64 `json:"emb_norm"`
-					Contributions struct {
-						Pop  float64 `json:"pop"`
-						Cooc float64 `json:"cooc"`
-						Emb  float64 `json:"emb"`
+					Alpha          float64 `json:"alpha"`
+					Beta           float64 `json:"beta"`
+					Gamma          float64 `json:"gamma"`
+					PopNorm        float64 `json:"pop_norm"`
+					CoocNorm       float64 `json:"cooc_norm"`
+					SimilarityNorm float64 `json:"similarity_norm"`
+					Contributions  struct {
+						Pop        float64 `json:"pop"`
+						Cooc       float64 `json:"cooc"`
+						Similarity float64 `json:"similarity"`
 					} `json:"contrib"`
 				} `json:"blend"`
 				Anchors []string `json:"anchors"`
@@ -244,12 +244,12 @@ func TestRecommend_ExplainLevels(t *testing.T) {
 	require.NotEmpty(t, numericExplain.Anchors)
 	expected := numericExplain.Blend.Alpha*numericExplain.Blend.PopNorm +
 		numericExplain.Blend.Beta*numericExplain.Blend.CoocNorm +
-		numericExplain.Blend.Gamma*numericExplain.Blend.EmbNorm
+		numericExplain.Blend.Gamma*numericExplain.Blend.SimilarityNorm
 	require.InDelta(t,
 		expected,
 		numericExplain.Blend.Contributions.Pop+
 			numericExplain.Blend.Contributions.Cooc+
-			numericExplain.Blend.Contributions.Emb,
+			numericExplain.Blend.Contributions.Similarity,
 		1e-6,
 	)
 
@@ -558,7 +558,7 @@ func TestRecommend_RuleBlockTagRemovesItems(t *testing.T) {
 			"namespace": ns,
 			"k":         5,
 			"context":   map[string]any{"surface": "home"},
-			"blend":     map[string]any{"pop": 1.0, "cooc": 0.0, "als": 0.0},
+			"blend":     map[string]any{"pop": 1.0, "cooc": 0.0, "similarity": 0.0},
 			"constraints": map[string]any{
 				"include_tags_any": []string{"high_margin"},
 			},

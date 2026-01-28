@@ -4,8 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"recsys/internal/algorithm"
 	spectypes "recsys/specs/types"
+
+	"github.com/aatuh/recsys-algo/algorithm"
 
 	"github.com/stretchr/testify/require"
 )

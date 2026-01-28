@@ -75,9 +75,9 @@ type RecommendConstraints struct {
 }
 
 type RecommendBlend struct {
-	Pop  float64 `json:"pop" example:"0.3"`
-	Cooc float64 `json:"cooc" example:"0.7"`
-	ALS  float64 `json:"als,omitempty" example:"0.0"`
+	Pop        float64 `json:"pop" example:"0.3"`
+	Cooc       float64 `json:"cooc" example:"0.7"`
+	Similarity float64 `json:"similarity,omitempty" example:"0.0"`
 }
 
 type Overrides struct {
@@ -167,26 +167,26 @@ type ExplainLLMResponse struct {
 // Explanation types
 
 type ExplainBlendContribution struct {
-	Pop  float64 `json:"pop,omitempty"`
-	Cooc float64 `json:"cooc,omitempty"`
-	Emb  float64 `json:"emb,omitempty"`
+	Pop        float64 `json:"pop,omitempty"`
+	Cooc       float64 `json:"cooc,omitempty"`
+	Similarity float64 `json:"similarity,omitempty"`
 }
 
 type ExplainBlendRaw struct {
-	Pop  float64 `json:"pop,omitempty"`
-	Cooc float64 `json:"cooc,omitempty"`
-	Emb  float64 `json:"emb,omitempty"`
+	Pop        float64 `json:"pop,omitempty"`
+	Cooc       float64 `json:"cooc,omitempty"`
+	Similarity float64 `json:"similarity,omitempty"`
 }
 
 type ExplainBlend struct {
-	Alpha         float64                  `json:"alpha,omitempty"`
-	Beta          float64                  `json:"beta,omitempty"`
-	Gamma         float64                  `json:"gamma,omitempty"`
-	PopNorm       float64                  `json:"pop_norm,omitempty"`
-	CoocNorm      float64                  `json:"cooc_norm,omitempty"`
-	EmbNorm       float64                  `json:"emb_norm,omitempty"`
-	Contributions ExplainBlendContribution `json:"contrib"`
-	Raw           *ExplainBlendRaw         `json:"raw,omitempty"`
+	Alpha          float64                  `json:"alpha,omitempty"`
+	Beta           float64                  `json:"beta,omitempty"`
+	Gamma          float64                  `json:"gamma,omitempty"`
+	PopNorm        float64                  `json:"pop_norm,omitempty"`
+	CoocNorm       float64                  `json:"cooc_norm,omitempty"`
+	SimilarityNorm float64                  `json:"similarity_norm,omitempty"`
+	Contributions  ExplainBlendContribution `json:"contrib"`
+	Raw            *ExplainBlendRaw         `json:"raw,omitempty"`
 }
 
 type ExplainPersonalizationRaw struct {
@@ -409,6 +409,10 @@ type RecommendationConfigPayload struct {
 	HalfLifeDays                  float64                                `json:"half_life_days"`
 	CoVisWindowDays               float64                                `json:"co_vis_window_days"`
 	PopularityFanout              int                                    `json:"popularity_fanout"`
+	MaxK                          int                                    `json:"max_k"`
+	MaxFanout                     int                                    `json:"max_fanout"`
+	MaxExcludeIDs                 int                                    `json:"max_exclude_ids"`
+	MaxAnchorsInjected            int                                    `json:"max_anchors_injected"`
 	MMRLambda                     float64                                `json:"mmr_lambda"`
 	BrandCap                      int                                    `json:"brand_cap"`
 	CategoryCap                   int                                    `json:"category_cap"`

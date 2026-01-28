@@ -86,6 +86,10 @@ type RecommendationConfig struct {
 	HalfLifeDays                  float64
 	CoVisWindowDays               float64
 	PopularityFanout              int
+	MaxK                          int
+	MaxFanout                     int
+	MaxExcludeIDs                 int
+	MaxAnchorsInjected            int
 	MMRLambda                     float64
 	BrandCap                      int
 	CategoryCap                   int
@@ -467,6 +471,10 @@ func Load(ctx context.Context, src Source) (Config, error) {
 	cfg.Recommendation.HalfLifeDays = l.positiveFloat("POPULARITY_HALFLIFE_DAYS")
 	cfg.Recommendation.CoVisWindowDays = l.positiveFloat("COVIS_WINDOW_DAYS")
 	cfg.Recommendation.PopularityFanout = l.intGreaterThan("POPULARITY_FANOUT", 0)
+	cfg.Recommendation.MaxK = l.optionalIntGreaterThan("RECOMMENDATION_MAX_K", -1, 0)
+	cfg.Recommendation.MaxFanout = l.optionalIntGreaterThan("RECOMMENDATION_MAX_FANOUT", -1, 0)
+	cfg.Recommendation.MaxExcludeIDs = l.optionalIntGreaterThan("RECOMMENDATION_MAX_EXCLUDE_IDS", -1, 0)
+	cfg.Recommendation.MaxAnchorsInjected = l.optionalIntGreaterThan("RECOMMENDATION_MAX_ANCHORS_INJECTED", -1, 0)
 	cfg.Recommendation.MMRLambda = l.floatBetween("MMR_LAMBDA", 0, 1)
 	cfg.Recommendation.BrandCap = l.intNonNegative("BRAND_CAP")
 	cfg.Recommendation.CategoryCap = l.intNonNegative("CATEGORY_CAP")

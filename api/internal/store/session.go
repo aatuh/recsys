@@ -5,7 +5,8 @@ import (
 	"errors"
 
 	_ "embed"
-	"recsys/internal/types"
+
+	recmodel "github.com/aatuh/recsys-algo/model"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -24,24 +25,24 @@ func (s *Store) SessionSequenceTopK(
 	horizonMinutes float64,
 	excludeIDs []string,
 	k int,
-) ([]types.ScoredItem, error) {
+) ([]recmodel.ScoredItem, error) {
 	if userID == "" || k <= 0 || lookback <= 0 {
-		return []types.ScoredItem{}, nil
+		return []recmodel.ScoredItem{}, nil
 	}
 
 	rows, err := s.Pool.Query(ctx, sessionSequenceTopKSQL, orgID, ns, userID, lookback, horizonMinutes, excludeIDs, k)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "42P01" {
-			return []types.ScoredItem{}, nil
+			return nil, recmodel.ErrFeatureUnavailable
 		}
 		return nil, err
 	}
 	defer rows.Close()
 
-	items := make([]types.ScoredItem, 0, k)
+	items := make([]recmodel.ScoredItem, 0, k)
 	for rows.Next() {
-		var it types.ScoredItem
+		var it recmodel.ScoredItem
 		if err := rows.Scan(&it.ItemID, &it.Score); err != nil {
 			return nil, err
 		}

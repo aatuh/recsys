@@ -1,0 +1,204 @@
+package model
+
+import (
+	"context"
+	"errors"
+	"time"
+
+	"github.com/google/uuid"
+)
+
+// ErrFeatureUnavailable signals a missing optional capability in the store backend.
+var ErrFeatureUnavailable = errors.New("feature unavailable")
+
+type PopConstraints struct {
+	IncludeTagsAny []string
+	MinPrice       *float64
+	MaxPrice       *float64
+	CreatedAfter   *time.Time
+	ExcludeItemIDs []string
+}
+
+type ScoredItem struct {
+	ItemID string
+	Score  float64
+}
+
+// ItemTags holds tags required for diversity and caps.
+type ItemTags struct {
+	ItemID    string
+	Tags      []string
+	Price     *float64
+	CreatedAt time.Time
+}
+
+// PopularityStore returns candidates ranked by recency-weighted popularity.
+type PopularityStore interface {
+	// PopularityTopK returns up to k items with highest time-decayed
+	// popularity in the org/namespace. Optional constraints filter items.
+	// Results are ordered by score descending.
+	PopularityTopK(
+		ctx context.Context,
+		orgID uuid.UUID,
+		ns string,
+		halfLifeDays float64,
+		k int,
+		c *PopConstraints,
+	) ([]ScoredItem, error)
+}
+
+// TagStore provides lightweight item tag metadata.
+type TagStore interface {
+	// ListItemsTags returns minimal tags (e.g., tags) for item IDs as
+	// a map item_id -> ItemTags. Missing items may be absent.
+	ListItemsTags(
+		ctx context.Context,
+		orgID uuid.UUID,
+		ns string,
+		itemIDs []string,
+	) (map[string]ItemTags, error)
+}
+
+// AvailabilityStore provides availability flags for items.
+type AvailabilityStore interface {
+	// ListItemsAvailability returns item availability flags for IDs.
+	ListItemsAvailability(
+		ctx context.Context,
+		orgID uuid.UUID,
+		ns string,
+		itemIDs []string,
+	) (map[string]bool, error)
+}
+
+// EventStore exposes event history for exclusions.
+type EventStore interface {
+	// ListUserEventsSince returns distinct item IDs for the user's events
+	// on/after the timestamp filtered by event types. Order is not guaranteed.
+	ListUserEventsSince(
+		ctx context.Context,
+		orgID uuid.UUID,
+		ns string,
+		userID string,
+		since time.Time,
+		eventTypes []int16,
+	) ([]string, error)
+}
+
+// HistoryStore exposes recent user interaction history.
+type HistoryStore interface {
+	// ListUserRecentItemIDs returns distinct recent item IDs for the user
+	// since the cutoff, ordered by most recent interaction, limited by
+	// the given limit.
+	ListUserRecentItemIDs(
+		ctx context.Context,
+		orgID uuid.UUID,
+		ns string,
+		userID string,
+		since time.Time,
+		limit int,
+	) ([]string, error)
+}
+
+// CooccurrenceStore provides co-visitation similarity signals.
+type CooccurrenceStore interface {
+	// CooccurrenceTopKWithin returns up to k items that co-occurred most
+	// with the anchor item since the cutoff. Anchor is excluded. Ordered
+	// by co-occurrence score desc.
+	CooccurrenceTopKWithin(
+		ctx context.Context,
+		orgID uuid.UUID,
+		ns string,
+		anchor string,
+		k int,
+		since time.Time,
+	) ([]ScoredItem, error)
+}
+
+// EmbeddingStore exposes embedding-based similarity signals.
+type EmbeddingStore interface {
+	// SimilarByEmbeddingTopK returns up to k nearest neighbors by item
+	// embedding to the anchor. Requires embeddings. Ordered by similarity;
+	// score is typically 1 - distance in [0,1].
+	SimilarByEmbeddingTopK(
+		ctx context.Context,
+		orgID uuid.UUID,
+		ns string,
+		anchor string,
+		k int,
+	) ([]ScoredItem, error)
+}
+
+// CollaborativeStore provides user-based similarity (e.g., ALS) signals.
+type CollaborativeStore interface {
+	// CollaborativeTopK returns top-N ALS factor neighbors for a user.
+	CollaborativeTopK(
+		ctx context.Context,
+		orgID uuid.UUID,
+		ns string,
+		userID string,
+		k int,
+		excludeIDs []string,
+	) ([]ScoredItem, error)
+}
+
+// ContentStore provides tag-overlap similarity candidates.
+type ContentStore interface {
+	// ContentSimilarityTopK returns items matching the provided tags ordered by overlap.
+	ContentSimilarityTopK(
+		ctx context.Context,
+		orgID uuid.UUID,
+		ns string,
+		tags []string,
+		k int,
+		excludeIDs []string,
+	) ([]ScoredItem, error)
+}
+
+// SessionStore provides sequential-session candidate signals.
+type SessionStore interface {
+	SessionSequenceTopK(
+		ctx context.Context,
+		orgID uuid.UUID,
+		ns string,
+		userID string,
+		lookback int,
+		horizonMinutes float64,
+		excludeIDs []string,
+		k int,
+	) ([]ScoredItem, error)
+}
+
+// ProfileStore provides user tag profile signals.
+type ProfileStore interface {
+	// BuildUserTagProfile computes a decayed, weighted tag-preference map
+	// from the user's events, optionally limited by a time window. Returns
+	// topN tags normalized to sum to 1.
+	BuildUserTagProfile(
+		ctx context.Context,
+		orgID uuid.UUID,
+		ns string,
+		userID string,
+		windowDays float64,
+		topN int,
+	) (map[string]float64, error)
+}
+
+// EngineStore is the minimal interface required by the recommendation engine.
+type EngineStore interface {
+	PopularityStore
+	TagStore
+}
+
+// RecAlgoStore represents a full-featured store implementation.
+type RecAlgoStore interface {
+	EngineStore
+	AvailabilityStore
+	EventStore
+	HistoryStore
+	CooccurrenceStore
+	EmbeddingStore
+	CollaborativeStore
+	ContentStore
+	SessionStore
+	ProfileStore
+}

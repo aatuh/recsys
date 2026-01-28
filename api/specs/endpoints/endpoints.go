@@ -59,11 +59,11 @@ const (
 
 // Admin rule engine endpoints
 const (
-	Rules                = V1 + "/admin/rules"
-	RuleByID             = V1 + "/admin/rules/{rule_id}"
-	RulesDryRun          = V1 + "/admin/rules/dry-run"
-	ManualOverrides      = V1 + "/admin/manual_overrides"
-	ManualOverrideCancel = V1 + "/admin/manual_overrides/{override_id}/cancel"
+	Rules                     = V1 + "/admin/rules"
+	RuleByID                  = V1 + "/admin/rules/{rule_id}"
+	RulesDryRun               = V1 + "/admin/rules/dry-run"
+	ManualOverrides           = V1 + "/admin/manual_overrides"
+	ManualOverrideCancel      = V1 + "/admin/manual_overrides/{override_id}/cancel"
 	AdminRecommendationConfig = V1 + "/admin/recommendation/config"
 )
 

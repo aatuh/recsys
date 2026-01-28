@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -95,7 +96,7 @@ func TestAPIKeyAuthorizer(t *testing.T) {
 }
 
 func TestAPIKeyFromContext(t *testing.T) {
-	ctx := ContextWithAPIKey(nil, "test-key")
+	ctx := ContextWithAPIKey(context.Background(), "test-key")
 	if key, ok := APIKeyFromContext(ctx); !ok || key != "test-key" {
 		t.Fatalf("expected to retrieve api key, got ok=%v key=%q", ok, key)
 	}

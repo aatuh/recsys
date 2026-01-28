@@ -68,7 +68,7 @@ func TestRecommend_Blend_EmbeddingTiltsRanking(t *testing.T) {
 			},
 		}, http.StatusAccepted)
 
-	// Ask for blended recs with ALS=1 only.
+	// Ask for blended recs with similarity=1 only.
 	body := client.DoRequestWithStatus(t, http.MethodPost,
 		endpoints.Recommendations,
 		map[string]any{
@@ -77,9 +77,9 @@ func TestRecommend_Blend_EmbeddingTiltsRanking(t *testing.T) {
 			"k":               2,
 			"include_reasons": true,
 			"blend": map[string]any{
-				"pop":  0.0,
-				"cooc": 0.0,
-				"als":  1.0,
+				"pop":        0.0,
+				"cooc":       0.0,
+				"similarity": 1.0,
 			},
 		}, http.StatusOK)
 
@@ -167,9 +167,9 @@ func TestRecommend_Blend_CoVisTiltsRanking(t *testing.T) {
 			"k":               2,
 			"include_reasons": true,
 			"blend": map[string]any{
-				"pop":  0.0,
-				"cooc": 1.0,
-				"als":  0.0,
+				"pop":        0.0,
+				"cooc":       1.0,
+				"similarity": 0.0,
 			},
 		}, http.StatusOK)
 

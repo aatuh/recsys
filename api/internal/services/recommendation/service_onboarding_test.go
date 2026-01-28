@@ -6,8 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"recsys/internal/algorithm"
-	"recsys/internal/types"
+	"github.com/aatuh/recsys-algo/algorithm"
+
+	recmodel "github.com/aatuh/recsys-algo/model"
 
 	"github.com/google/uuid"
 )
@@ -16,12 +17,12 @@ type onboardingStoreStub struct {
 	recent []string
 }
 
-func (s onboardingStoreStub) PopularityTopK(ctx context.Context, orgID uuid.UUID, ns string, halfLifeDays float64, k int, c *types.PopConstraints) ([]types.ScoredItem, error) {
+func (s onboardingStoreStub) PopularityTopK(ctx context.Context, orgID uuid.UUID, ns string, halfLifeDays float64, k int, c *recmodel.PopConstraints) ([]recmodel.ScoredItem, error) {
 	return nil, nil
 }
 
-func (s onboardingStoreStub) ListItemsTags(ctx context.Context, orgID uuid.UUID, ns string, itemIDs []string) (map[string]types.ItemTags, error) {
-	return map[string]types.ItemTags{}, nil
+func (s onboardingStoreStub) ListItemsTags(ctx context.Context, orgID uuid.UUID, ns string, itemIDs []string) (map[string]recmodel.ItemTags, error) {
+	return map[string]recmodel.ItemTags{}, nil
 }
 
 func (s onboardingStoreStub) ListItemsAvailability(ctx context.Context, orgID uuid.UUID, ns string, itemIDs []string) (map[string]bool, error) {
@@ -45,23 +46,23 @@ func (s onboardingStoreStub) ListUserRecentItemIDs(ctx context.Context, orgID uu
 	return out, nil
 }
 
-func (s onboardingStoreStub) CooccurrenceTopKWithin(ctx context.Context, orgID uuid.UUID, ns string, anchor string, k int, since time.Time) ([]types.ScoredItem, error) {
+func (s onboardingStoreStub) CooccurrenceTopKWithin(ctx context.Context, orgID uuid.UUID, ns string, anchor string, k int, since time.Time) ([]recmodel.ScoredItem, error) {
 	return nil, nil
 }
 
-func (s onboardingStoreStub) SimilarByEmbeddingTopK(ctx context.Context, orgID uuid.UUID, ns string, anchor string, k int) ([]types.ScoredItem, error) {
+func (s onboardingStoreStub) SimilarByEmbeddingTopK(ctx context.Context, orgID uuid.UUID, ns string, anchor string, k int) ([]recmodel.ScoredItem, error) {
 	return nil, nil
 }
 
-func (s onboardingStoreStub) CollaborativeTopK(ctx context.Context, orgID uuid.UUID, ns string, userID string, k int, excludeIDs []string) ([]types.ScoredItem, error) {
+func (s onboardingStoreStub) CollaborativeTopK(ctx context.Context, orgID uuid.UUID, ns string, userID string, k int, excludeIDs []string) ([]recmodel.ScoredItem, error) {
 	return nil, nil
 }
 
-func (s onboardingStoreStub) ContentSimilarityTopK(ctx context.Context, orgID uuid.UUID, ns string, tags []string, k int, excludeIDs []string) ([]types.ScoredItem, error) {
+func (s onboardingStoreStub) ContentSimilarityTopK(ctx context.Context, orgID uuid.UUID, ns string, tags []string, k int, excludeIDs []string) ([]recmodel.ScoredItem, error) {
 	return nil, nil
 }
 
-func (s onboardingStoreStub) SessionSequenceTopK(ctx context.Context, orgID uuid.UUID, ns string, userID string, lookback int, horizonMinutes float64, excludeIDs []string, k int) ([]types.ScoredItem, error) {
+func (s onboardingStoreStub) SessionSequenceTopK(ctx context.Context, orgID uuid.UUID, ns string, userID string, lookback int, horizonMinutes float64, excludeIDs []string, k int) ([]recmodel.ScoredItem, error) {
 	return nil, nil
 }
 
@@ -150,8 +151,8 @@ func TestStarterProfileFallbackToDefaultSegment(t *testing.T) {
 
 func TestBuildStarterProfileForNewUserEvenWithHistory(t *testing.T) {
 	svc := &Service{
-		store:             onboardingStoreStub{recent: []string{"item_a", "item_b", "item_c", "item_d", "item_e"}},
-		starterPresets:    defaultStarterPresets(),
+		store:              onboardingStoreStub{recent: []string{"item_a", "item_b", "item_c", "item_d", "item_e"}},
+		starterPresets:     defaultStarterPresets(),
 		starterDecayEvents: 5,
 	}
 	cfg := algorithm.Config{

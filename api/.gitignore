@@ -8,3 +8,7 @@ api
 !.dockerignore
 !.env.example
 !.env.test.example
+
+recsys-eval
+recsys-pipelines
+recsys-svc

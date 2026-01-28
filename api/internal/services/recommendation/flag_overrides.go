@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"recsys/internal/algorithm"
+	"github.com/aatuh/recsys-algo/algorithm"
 )
 
 // BlendConfigResolver returns per-namespace override weights.

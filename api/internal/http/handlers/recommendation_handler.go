@@ -10,14 +10,17 @@ import (
 	"strings"
 	"time"
 
-	"recsys/internal/algorithm"
+	"github.com/aatuh/recsys-algo/rules"
 	"recsys/internal/http/common"
 	policymetrics "recsys/internal/observability/policy"
-	"recsys/internal/rules"
 	"recsys/internal/services/recommendation"
 	"recsys/internal/store"
 	"recsys/internal/types"
 	handlerstypes "recsys/specs/types"
+
+	"github.com/aatuh/recsys-algo/algorithm"
+
+	recmodel "github.com/aatuh/recsys-algo/model"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -446,6 +449,9 @@ func buildTraceDebugPayload(traceData *algorithm.TraceData) *traceDebugPayload {
 		}
 		extras["candidate_sources"] = sources
 	}
+	if len(traceData.SignalStatus) > 0 {
+		extras["signal_status"] = traceData.SignalStatus
+	}
 
 	if len(extras) == 0 {
 		return nil
@@ -614,7 +620,7 @@ func (h *RecommendationHandler) logStarterDiversity(ctx context.Context, orgID u
 	)
 }
 
-func deriveCategoryFromTags(info types.ItemTags, prefixes []string) string {
+func deriveCategoryFromTags(info recmodel.ItemTags, prefixes []string) string {
 	if len(info.Tags) == 0 {
 		return ""
 	}

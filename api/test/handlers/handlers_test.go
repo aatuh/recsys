@@ -9,6 +9,8 @@ import (
 	"recsys/specs/types"
 	"recsys/test/shared"
 
+	recmodel "github.com/aatuh/recsys-algo/model"
+
 	"github.com/stretchr/testify/require"
 )
 
@@ -57,7 +59,7 @@ func TestHandlers_IngestSmoke(t *testing.T) {
 
 	// co-vis for i2 should include i1, given u1 touched both
 	simBody := client.DoRequestWithStatus(t, http.MethodGet, endpoints.ItemsSimilarPath("i2")+"?namespace=default&k=5", nil, http.StatusOK)
-	var sim []types.ScoredItem
+	var sim []recmodel.ScoredItem
 	require.NoError(t, json.Unmarshal(simBody, &sim))
 	require.NotEmpty(t, sim)
 	found := false
@@ -75,8 +77,8 @@ func TestVersionEndpoint(t *testing.T) {
 
 	body := client.DoRequestWithStatus(t, http.MethodGet, endpoints.Version, nil, http.StatusOK)
 	var resp struct {
-		GitCommit   string `json:"git_commit"`
-		BuildTime   string `json:"build_time"`
+		GitCommit    string `json:"git_commit"`
+		BuildTime    string `json:"build_time"`
 		ModelVersion string `json:"model_version"`
 	}
 	require.NoError(t, json.Unmarshal(body, &resp))

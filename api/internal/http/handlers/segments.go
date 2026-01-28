@@ -5,11 +5,12 @@ import (
 	"net/http"
 	"time"
 
-	"recsys/internal/algorithm"
 	"recsys/internal/http/common"
 	"recsys/internal/store"
 	"recsys/internal/types"
 	handlerstypes "recsys/specs/types"
+
+	"github.com/aatuh/recsys-algo/algorithm"
 
 	"github.com/google/uuid"
 )

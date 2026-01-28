@@ -1,67 +1,31 @@
 package types
 
-import (
-	"time"
-
-	"github.com/google/uuid"
-)
+import "github.com/aatuh/recsys-algo/rules"
 
 // RuleAction enumerates supported rule actions.
-type RuleAction string
+type RuleAction = rules.RuleAction
 
 const (
-	RuleActionBlock RuleAction = "BLOCK"
-	RuleActionPin   RuleAction = "PIN"
-	RuleActionBoost RuleAction = "BOOST"
+	RuleActionBlock = rules.RuleActionBlock
+	RuleActionPin   = rules.RuleActionPin
+	RuleActionBoost = rules.RuleActionBoost
 )
 
 // RuleTarget enumerates the supported rule target dimensions.
-type RuleTarget string
+type RuleTarget = rules.RuleTarget
 
 const (
-	RuleTargetItem     RuleTarget = "ITEM"
-	RuleTargetTag      RuleTarget = "TAG"
-	RuleTargetBrand    RuleTarget = "BRAND"
-	RuleTargetCategory RuleTarget = "CATEGORY"
+	RuleTargetItem     = rules.RuleTargetItem
+	RuleTargetTag      = rules.RuleTargetTag
+	RuleTargetBrand    = rules.RuleTargetBrand
+	RuleTargetCategory = rules.RuleTargetCategory
 )
 
 // Rule represents a deterministic merchandising rule.
-type Rule struct {
-	RuleID           uuid.UUID
-	ManualOverrideID *uuid.UUID
-	OrgID            uuid.UUID
-	Namespace        string
-	Surface          string
-	Name             string
-	Description      string
-	Action           RuleAction
-	TargetType       RuleTarget
-	TargetKey        string
-	ItemIDs          []string
-	BoostValue       *float64
-	MaxPins          *int
-	SegmentID        string
-	Priority         int
-	Enabled          bool
-	ValidFrom        *time.Time
-	ValidUntil       *time.Time
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
-}
+type Rule = rules.Rule
 
 // RuleListFilters captures optional filters for listing rules.
-type RuleListFilters struct {
-	Surface    string
-	SegmentID  string
-	Enabled    *bool
-	ActiveAt   *time.Time
-	Action     *RuleAction
-	TargetType *RuleTarget
-}
+type RuleListFilters = rules.RuleListFilters
 
 // RuleScope represents namespace/surface (+ optional segment) lookup key.
-type RuleScope struct {
-	Namespace string
-	Surface   string
-	SegmentID string
-}
+type RuleScope = rules.RuleScope

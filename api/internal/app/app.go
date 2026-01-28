@@ -17,7 +17,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 
-	"recsys/internal/algorithm"
+	"github.com/aatuh/recsys-algo/rules"
 	"recsys/internal/audit"
 	"recsys/internal/config"
 	"recsys/internal/explain"
@@ -28,7 +28,7 @@ import (
 	"recsys/internal/migrator"
 	"recsys/internal/observability"
 	policymetrics "recsys/internal/observability/policy"
-	"recsys/internal/rules"
+	signalmetrics "recsys/internal/observability/signals"
 	"recsys/internal/services/datamanagement"
 	"recsys/internal/services/ingestion"
 	manualsvc "recsys/internal/services/manual"
@@ -36,6 +36,8 @@ import (
 	"recsys/internal/store"
 	"recsys/internal/version"
 	"recsys/specs/endpoints"
+
+	"github.com/aatuh/recsys-algo/algorithm"
 )
 
 // Options configures the application composition root.
@@ -113,6 +115,10 @@ func New(ctx context.Context, opts Options) (*App, error) {
 		HalfLifeDays:                  cfg.Recommendation.HalfLifeDays,
 		CoVisWindowDays:               cfg.Recommendation.CoVisWindowDays,
 		PopularityFanout:              cfg.Recommendation.PopularityFanout,
+		MaxK:                          cfg.Recommendation.MaxK,
+		MaxFanout:                     cfg.Recommendation.MaxFanout,
+		MaxExcludeIDs:                 cfg.Recommendation.MaxExcludeIDs,
+		MaxAnchorsInjected:            cfg.Recommendation.MaxAnchorsInjected,
 		MMRLambda:                     cfg.Recommendation.MMRLambda,
 		BrandCap:                      cfg.Recommendation.BrandCap,
 		CategoryCap:                   cfg.Recommendation.CategoryCap,
@@ -263,8 +269,14 @@ func New(ctx context.Context, opts Options) (*App, error) {
 	}
 
 	var policyMetrics *policymetrics.Metrics
+	var signalMetrics *signalmetrics.Metrics
 	if obs != nil {
 		policyMetrics = obs.PolicyMetrics
+		signalMetrics = obs.SignalMetrics
+	}
+
+	if signalMetrics != nil {
+		recommendationSvc = recommendationSvc.WithSignalObserver(signalMetrics)
 	}
 
 	recoHandler := handlers.NewRecommendationHandler(recommendationSvc, st, configManager, tracer, cfg.Recommendation.DefaultOrgID, logger, policyMetrics)
@@ -274,9 +286,9 @@ func New(ctx context.Context, opts Options) (*App, error) {
 	})
 
 	baseWeights := algorithm.BlendWeights{
-		Pop:  cfg.Recommendation.Blend.Alpha,
-		Cooc: cfg.Recommendation.Blend.Beta,
-		ALS:  cfg.Recommendation.Blend.Gamma,
+		Pop:        cfg.Recommendation.Blend.Alpha,
+		Cooc:       cfg.Recommendation.Blend.Beta,
+		Similarity: cfg.Recommendation.Blend.Gamma,
 	}
 	versionInfo := version.Snapshot(algorithm.ModelVersionForWeights(baseWeights))
 	versionHandler := handlers.NewVersionHandler(versionInfo)

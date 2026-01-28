@@ -3,9 +3,11 @@ package store
 import (
 	"context"
 	"errors"
-	"recsys/internal/types"
 
 	_ "embed"
+
+	recmodel "github.com/aatuh/recsys-algo/model"
+
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgconn"
 )
@@ -21,12 +23,12 @@ func (s *Store) ContentSimilarityTopK(
 	tags []string,
 	k int,
 	excludeIDs []string,
-) ([]types.ScoredItem, error) {
+) ([]recmodel.ScoredItem, error) {
 	if len(tags) == 0 || k <= 0 {
-		return []types.ScoredItem{}, nil
+		return []recmodel.ScoredItem{}, nil
 	}
 
-	var out []types.ScoredItem
+	var out []recmodel.ScoredItem
 	err := s.withRetry(ctx, func(ctx context.Context) error {
 		rows, err := s.Pool.Query(ctx, contentSimilarityTopKSQL, orgID, ns, k, tags, excludeIDs)
 		if err != nil {
@@ -34,9 +36,9 @@ func (s *Store) ContentSimilarityTopK(
 		}
 		defer rows.Close()
 
-		items := make([]types.ScoredItem, 0, k)
+		items := make([]recmodel.ScoredItem, 0, k)
 		for rows.Next() {
-			var it types.ScoredItem
+			var it recmodel.ScoredItem
 			if err := rows.Scan(&it.ItemID, &it.Score); err != nil {
 				return err
 			}
@@ -51,7 +53,7 @@ func (s *Store) ContentSimilarityTopK(
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "42P01" {
-			return []types.ScoredItem{}, nil
+			return nil, recmodel.ErrFeatureUnavailable
 		}
 		return nil, err
 	}

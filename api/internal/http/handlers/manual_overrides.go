@@ -10,8 +10,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 
+	"github.com/aatuh/recsys-algo/rules"
 	"recsys/internal/http/common"
-	"recsys/internal/rules"
 	"recsys/internal/services/manual"
 	"recsys/internal/types"
 	specstypes "recsys/specs/types"
@@ -102,7 +102,7 @@ func (h *ManualOverridesHandler) ManualOverrideCreate(w http.ResponseWriter, r *
 	}
 
 	if h.rulesManager != nil {
-		h.rulesManager.Invalidate(record.Namespace, record.Surface)
+		h.rulesManager.Invalidate(record.OrgID, record.Namespace, record.Surface)
 	}
 
 	resp := toManualOverrideResponse(*record)
@@ -236,7 +236,7 @@ func (h *ManualOverridesHandler) ManualOverrideCancel(w http.ResponseWriter, r *
 	}
 
 	if h.rulesManager != nil {
-		h.rulesManager.Invalidate(record.Namespace, record.Surface)
+		h.rulesManager.Invalidate(record.OrgID, record.Namespace, record.Surface)
 	}
 
 	w.Header().Set("Content-Type", "application/json")

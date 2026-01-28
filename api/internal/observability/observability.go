@@ -11,12 +11,13 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.24.0"
-	"go.opentelemetry.io/otel/trace"
+	"go.opentelemetry.io/otel/trace/noop"
 	"go.uber.org/zap"
 
 	"recsys/internal/config"
 	httpmetrics "recsys/internal/http/middleware"
 	policymetrics "recsys/internal/observability/policy"
+	signalmetrics "recsys/internal/observability/signals"
 )
 
 const serviceName = "recsys-api"
@@ -28,6 +29,7 @@ type Provider struct {
 	TraceMiddleware   func(http.Handler) http.Handler
 	Shutdown          func(context.Context) error
 	PolicyMetrics     *policymetrics.Metrics
+	SignalMetrics     *signalmetrics.Metrics
 }
 
 // Setup initializes observability components based on configuration.
@@ -41,6 +43,7 @@ func Setup(ctx context.Context, cfg config.ObservabilityConfig, logger *zap.Logg
 		prov.MetricsMiddleware = metrics.Middleware
 		prov.MetricsHandler = metrics.Handler()
 		prov.PolicyMetrics = policymetrics.NewMetrics(metrics.Registerer())
+		prov.SignalMetrics = signalmetrics.NewMetrics(metrics.Registerer())
 	}
 
 	if cfg.TracingEnabled {
@@ -66,7 +69,7 @@ func Setup(ctx context.Context, cfg config.ObservabilityConfig, logger *zap.Logg
 		if logger != nil {
 			logger.Debug("tracing disabled")
 		}
-		tp := trace.NewNoopTracerProvider()
+		tp := noop.NewTracerProvider()
 		otel.SetTracerProvider(tp)
 		otel.SetTextMapPropagator(propagation.TraceContext{})
 		prov.TraceMiddleware = otelhttp.NewMiddleware(serviceName, otelhttp.WithTracerProvider(tp))
