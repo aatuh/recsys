@@ -1,0 +1,143 @@
+services:
+  db:
+    container_name: recsys-db
+    image: postgres:16
+    ports: ["${POSTGRES_PORT:-5432}:5432"]
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-recsys-db}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-recsys}
+      POSTGRES_DB: ${POSTGRES_DB:-recsys-db}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  api:
+    container_name: recsys-svc
+    build:
+      context: ./api
+      dockerfile: ./Dockerfile.dev
+    depends_on:
+      db: { condition: service_healthy }
+    environment:
+      - VERSION=${VERSION:-dev}
+      - COMMIT=${COMMIT:-none}
+      - DATE=${DATE:-unknown}
+    env_file:
+      - ./api/.env
+    ports:
+      - "${API_PORT:-8000}:8000"
+    volumes:
+      - ./api:/app
+      - api_tmp:/app/tmp
+      - api_bin:/app/bin
+      - api_coverage:/app/.coverage
+      - api_test_cache:/app/.test-cache
+      - api_pkg:/go/pkg/mod
+      - api_gocache:/root/.cache/go-build
+    init: true
+    stop_signal: SIGINT
+    stop_grace_period: 1s
+    healthcheck:
+      test:
+        ["CMD-SHELL", "curl -f http://localhost:${API_PORT}/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    command: >-
+      sh -c '
+        reflex -r "\\.go$" -s -- sh -c "make build-bin && ./bin/api"
+      '
+
+  web:
+    container_name: recsys-web
+    build:
+      context: ./web
+      dockerfile: ./Dockerfile.dev
+    environment:
+      NODE_ENV: development
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    volumes:
+      - ./web:/app
+      - web_node_modules:/app/node_modules
+      - web_pnpm_store:/home/node/.local/share/pnpm/store
+    depends_on:
+      - api
+    init: true
+    user: "0:0"
+    command: >-
+      sh -c '
+        mkdir -p /app/node_modules /app/.next /home/node/.local/share/pnpm/store /home/node/.cache/node/corepack &&
+        chown -R node:node /app/node_modules /app/.next /home/node/.local/share/pnpm/store /home/node/.cache &&
+        export HOME=/home/node XDG_CACHE_HOME=/home/node/.cache COREPACK_HOME=/home/node/.cache/node/corepack &&
+        exec su -p node -c "pnpm install --no-lockfile && pnpm dev --hostname 0.0.0.0"
+      '
+
+  test:
+    container_name: recsys-test
+    build:
+      context: ./api
+      dockerfile: ./Dockerfile.dev
+    environment:
+      - GOCACHE=/root/.cache/go-build
+      - GOMODCACHE=/go/pkg/mod
+    env_file:
+      - api/.env.test
+    volumes:
+      - ./api:/app
+      - test_tmp:/app/tmp
+      - test_bin:/app/bin
+      - test_coverage:/app/.coverage
+      - test_test_cache:/app/.test-cache
+      - test_pkg:/go/pkg/mod
+      - test_gocache:/root/.cache/go-build
+    command: ["sh", "-c", "/app/scripts/test.sh"]
+    profiles: ["test"]
+
+  adminer:
+    container_name: recsys-adminer
+    image: adminer:latest
+    ports:
+      - "${ADMINER_PORT:-8080}:8080"
+    depends_on:
+      - db
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+
+  proxy:
+    container_name: recsys-proxy
+    build: ./proxy
+    env_file: .env
+    volumes:
+      - mkcert_ca:/root/.local/share/mkcert
+      - caddy_certs:/certs
+      - ./proxy/entrypoint.sh:/entrypoint.sh:ro
+    ports:
+      - "443:443"
+      - "80:80"
+    depends_on:
+      - api
+
+volumes:
+  db_data:
+  api_tmp:
+  api_bin:
+  api_coverage:
+  api_test_cache:
+  api_pkg:
+  api_gocache:
+  test_tmp:
+  test_bin:
+  test_coverage:
+  test_test_cache:
+  test_pkg:
+  test_gocache:
+  mkcert_ca:
+  caddy_certs:
+  web_node_modules:
+  web_pnpm_store:

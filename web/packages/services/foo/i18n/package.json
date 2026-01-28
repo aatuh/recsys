@@ -1,0 +1,20 @@
+{
+  "name": "@foo/i18n",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@api-boilerplate-core/i18n-shared": "github:aatuh/api-boilerplate-core#path:/packages/i18n-shared"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./config": "./src/config.ts",
+    "./locale-context": "./src/locale-context.tsx",
+    "./locale.server": "./src/locale.server.ts",
+    "./dictionaries": "./src/dictionaries/index.ts"
+  }
+}

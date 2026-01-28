@@ -1,0 +1,16 @@
+{
+  "name": "@foo/domain",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./models/foo": "./src/models/foo.ts",
+    "./ports/foo-repository": "./src/ports/foo-repository.ts",
+    "./services/foo-service": "./src/services/foo-service.ts"
+  }
+}

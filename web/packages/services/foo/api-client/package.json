@@ -1,0 +1,19 @@
+{
+  "name": "@foo/api-client",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@foo/config": "workspace:*",
+    "@api-boilerplate-core/http": "github:aatuh/api-boilerplate-core#path:/packages/http"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./foo": "./src/api/foo.ts",
+    "./types": "./src/api/types.ts"
+  }
+}

@@ -1,0 +1,19 @@
+FROM golang:1.25-alpine AS dev
+WORKDIR /app
+
+RUN apk add --no-cache bash curl git ca-certificates tzdata build-base
+
+ENV CGO_ENABLED=1 \
+    GO111MODULE=on \
+    GOPROXY=https://proxy.golang.org,direct \
+    GOSUMDB=sum.golang.org
+
+RUN go install github.com/cespare/reflex@latest \
+    && go install github.com/swaggo/swag/cmd/swag@latest \
+    && go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+COPY go.mod go.sum* ./
+RUN go mod download || true
+
+# Copy scripts for test service
+COPY scripts/ ./scripts/

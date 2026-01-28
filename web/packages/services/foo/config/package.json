@@ -1,0 +1,20 @@
+{
+  "name": "@foo/config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@api-boilerplate-core/env": "github:aatuh/api-boilerplate-core#path:/packages/env",
+    "zod": "^4.1.12"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./api": "./src/api.ts",
+    "./app": "./src/app.ts",
+    "./public-env": "./src/public-env.ts"
+  }
+}

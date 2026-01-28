@@ -1,0 +1,235 @@
+basePath: /api/v1
+definitions:
+  types.CreateFooDTO:
+    properties:
+      name:
+        type: string
+      namespace:
+        type: string
+      org_id:
+        type: string
+    required:
+    - name
+    - namespace
+    - org_id
+    type: object
+  types.FooDTO:
+    properties:
+      created_at:
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      id:
+        example: 01HZJ8K9M2N3P4Q5R6S7T8U9V
+        type: string
+      name:
+        example: my-foo
+        type: string
+      namespace:
+        example: default
+        type: string
+      org_id:
+        example: org-123
+        type: string
+      updated_at:
+        example: "2023-01-01T00:00:00Z"
+        type: string
+    type: object
+  types.FooListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/types.FooDTO'
+        type: array
+      meta:
+        $ref: '#/definitions/types.ListMeta'
+    type: object
+  types.ListMeta:
+    properties:
+      count:
+        type: integer
+      filters:
+        additionalProperties:
+          items:
+            type: string
+          type: array
+        type: object
+      limit:
+        type: integer
+      offset:
+        type: integer
+      search:
+        type: string
+      total:
+        type: integer
+    type: object
+  types.Problem:
+    properties:
+      detail:
+        type: string
+      instance:
+        type: string
+      status:
+        type: integer
+      title:
+        type: string
+      type:
+        type: string
+    type: object
+  types.UpdateFooDTO:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+info:
+  contact: {}
+  description: REST API Boilerplate Documentation
+  title: API Boilerplate API
+  version: 1.0.0
+paths:
+  /api/v1/foo:
+    get:
+      description: List foos filtered by org and namespace
+      parameters:
+      - description: Organization ID
+        in: query
+        name: org_id
+        required: true
+        type: string
+      - description: Namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - description: Page size
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      - description: Search term
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.FooListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.Problem'
+      summary: List foos
+      tags:
+      - Foo
+    post:
+      consumes:
+      - application/json
+      description: Create a new foo resource
+      parameters:
+      - description: Foo payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.CreateFooDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/types.FooDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/types.Problem'
+      summary: Create foo
+      tags:
+      - Foo
+  /api/v1/foo/{id}:
+    delete:
+      description: Delete a foo by ID
+      parameters:
+      - description: Foo ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/types.Problem'
+      summary: Delete foo
+      tags:
+      - Foo
+    get:
+      description: Fetch a foo by ID
+      parameters:
+      - description: Foo ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.FooDTO'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/types.Problem'
+      summary: Get foo
+      tags:
+      - Foo
+    put:
+      consumes:
+      - application/json
+      description: Update a foo by ID
+      parameters:
+      - description: Foo ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Foo update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.UpdateFooDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.FooDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/types.Problem'
+      summary: Update foo
+      tags:
+      - Foo
+swagger: "2.0"
