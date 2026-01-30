@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -21,6 +22,11 @@ type Config struct {
 	Auth        AuthConfig
 	RateLimit   RateLimitConfig
 	Audit       AuditConfig
+	Performance PerformanceConfig
+	Exposure    ExposureConfig
+	Experiment  ExperimentConfig
+	Explain     ExplainConfig
+	Algo        AlgoConfig
 }
 
 // AppConfig holds app-wide public-facing configuration.
@@ -59,6 +65,85 @@ type AuditConfig struct {
 	Enabled bool
 	Path    string
 	Fsync   bool
+}
+
+// ExposureConfig configures exposure logging.
+type ExposureConfig struct {
+	Enabled       bool
+	Path          string
+	Format        string
+	Fsync         bool
+	RetentionDays int
+	HashSalt      string
+}
+
+// ExperimentConfig configures experiment assignment.
+type ExperimentConfig struct {
+	Enabled         bool
+	DefaultVariants []string
+	Salt            string
+}
+
+// ExplainConfig controls explain/trace safeguards.
+type ExplainConfig struct {
+	MaxItems     int
+	RequireAdmin bool
+}
+
+// AlgoConfig configures recsys-algo defaults.
+type AlgoConfig struct {
+	Version                    string
+	DefaultNamespace           string
+	BlendAlpha                 float64
+	BlendBeta                  float64
+	BlendGamma                 float64
+	ProfileBoost               float64
+	ProfileWindowDays          float64
+	ProfileTopNTags            int
+	ProfileMinEventsForBoost   int
+	ProfileColdStartMultiplier float64
+	ProfileStarterBlendWeight  float64
+	MMRLambda                  float64
+	BrandCap                   int
+	CategoryCap                int
+	HalfLifeDays               float64
+	CoVisWindowDays            int
+	PurchasedWindowDays        int
+	RuleExcludeEvents          bool
+	ExcludeEventTypes          []int16
+	BrandTagPrefixes           []string
+	CategoryTagPrefixes        []string
+	RulesEnabled               bool
+	RulesRefreshInterval       time.Duration
+	RulesMaxPins               int
+	PopularityFanout           int
+	MaxK                       int
+	MaxFanout                  int
+	MaxExcludeIDs              int
+	MaxAnchorsInjected         int
+	SessionLookbackEvents      int
+	SessionLookaheadMinutes    float64
+}
+
+// PerformanceConfig groups performance-related toggles.
+type PerformanceConfig struct {
+	Backpressure BackpressureConfig
+	Cache        CacheConfig
+	PprofEnabled bool
+}
+
+// BackpressureConfig controls bounded queue behavior.
+type BackpressureConfig struct {
+	MaxInFlight int
+	MaxQueue    int
+	WaitTimeout time.Duration
+	RetryAfter  time.Duration
+}
+
+// CacheConfig configures TTL caches.
+type CacheConfig struct {
+	ConfigTTL time.Duration
+	RulesTTL  time.Duration
 }
 
 // Load loads env vars into Config structure.
@@ -115,6 +200,75 @@ func Load() Config {
 		Path:    auditPath,
 		Fsync:   loader.Bool("AUDIT_LOG_FSYNC", false),
 	}
+	perfCfg := PerformanceConfig{
+		Backpressure: BackpressureConfig{
+			MaxInFlight: loader.Int("RECSYS_BACKPRESSURE_MAX_INFLIGHT", 0),
+			MaxQueue:    loader.Int("RECSYS_BACKPRESSURE_MAX_QUEUE", 0),
+			WaitTimeout: loader.Duration("RECSYS_BACKPRESSURE_WAIT_TIMEOUT", 200*time.Millisecond),
+			RetryAfter:  loader.Duration("RECSYS_BACKPRESSURE_RETRY_AFTER", time.Second),
+		},
+		Cache: CacheConfig{
+			ConfigTTL: loader.Duration("RECSYS_CONFIG_CACHE_TTL", 5*time.Minute),
+			RulesTTL:  loader.Duration("RECSYS_RULES_CACHE_TTL", 5*time.Minute),
+		},
+		PprofEnabled: loader.Bool("PPROF_ENABLED", false),
+	}
+	exposurePath := loader.String("EXPOSURE_LOG_PATH", "")
+	exposureEnabled := loader.Bool("EXPOSURE_LOG_ENABLED", exposurePath != "")
+	exposureCfg := ExposureConfig{
+		Enabled:       exposureEnabled,
+		Path:          exposurePath,
+		Format:        loader.String("EXPOSURE_LOG_FORMAT", "service_v1"),
+		Fsync:         loader.Bool("EXPOSURE_LOG_FSYNC", false),
+		RetentionDays: loader.Int("EXPOSURE_LOG_RETENTION_DAYS", 30),
+		HashSalt:      loader.String("EXPOSURE_HASH_SALT", ""),
+	}
+	expVariants := loader.CSV("EXPERIMENT_DEFAULT_VARIANTS")
+	if len(expVariants) == 0 {
+		expVariants = []string{"A", "B"}
+	}
+	expCfg := ExperimentConfig{
+		Enabled:         loader.Bool("EXPERIMENT_ASSIGNMENT_ENABLED", true),
+		DefaultVariants: expVariants,
+		Salt:            loader.String("EXPERIMENT_ASSIGNMENT_SALT", exposureCfg.HashSalt),
+	}
+	explainCfg := ExplainConfig{
+		MaxItems:     loader.Int("RECSYS_EXPLAIN_MAX_ITEMS", 50),
+		RequireAdmin: loader.Bool("RECSYS_EXPLAIN_REQUIRE_ADMIN", true),
+	}
+	algoCfg := AlgoConfig{
+		Version:                    loader.String("RECSYS_ALGO_VERSION", "recsys-algo@local"),
+		DefaultNamespace:           loader.String("RECSYS_ALGO_DEFAULT_NAMESPACE", "default"),
+		BlendAlpha:                 floatEnv(loader, "RECSYS_ALGO_BLEND_ALPHA", 1),
+		BlendBeta:                  floatEnv(loader, "RECSYS_ALGO_BLEND_BETA", 0),
+		BlendGamma:                 floatEnv(loader, "RECSYS_ALGO_BLEND_GAMMA", 0),
+		ProfileBoost:               floatEnv(loader, "RECSYS_ALGO_PROFILE_BOOST", 0.6),
+		ProfileWindowDays:          floatEnv(loader, "RECSYS_ALGO_PROFILE_WINDOW_DAYS", 30),
+		ProfileTopNTags:            loader.Int("RECSYS_ALGO_PROFILE_TOP_N", 5),
+		ProfileMinEventsForBoost:   loader.Int("RECSYS_ALGO_PROFILE_MIN_EVENTS", 10),
+		ProfileColdStartMultiplier: floatEnv(loader, "RECSYS_ALGO_PROFILE_COLD_START_MULT", 0.5),
+		ProfileStarterBlendWeight:  floatEnv(loader, "RECSYS_ALGO_PROFILE_STARTER_BLEND_WEIGHT", 0.5),
+		MMRLambda:                  floatEnv(loader, "RECSYS_ALGO_MMR_LAMBDA", 0),
+		BrandCap:                   loader.Int("RECSYS_ALGO_BRAND_CAP", 0),
+		CategoryCap:                loader.Int("RECSYS_ALGO_CATEGORY_CAP", 0),
+		HalfLifeDays:               floatEnv(loader, "RECSYS_ALGO_HALF_LIFE_DAYS", 30),
+		CoVisWindowDays:            loader.Int("RECSYS_ALGO_COVIS_WINDOW_DAYS", 30),
+		PurchasedWindowDays:        loader.Int("RECSYS_ALGO_PURCHASED_WINDOW_DAYS", 30),
+		RuleExcludeEvents:          loader.Bool("RECSYS_ALGO_RULE_EXCLUDE_EVENTS", false),
+		ExcludeEventTypes:          int16CSV(loader, "RECSYS_ALGO_EXCLUDE_EVENT_TYPES"),
+		BrandTagPrefixes:           loader.CSV("RECSYS_ALGO_BRAND_TAG_PREFIXES"),
+		CategoryTagPrefixes:        loader.CSV("RECSYS_ALGO_CATEGORY_TAG_PREFIXES"),
+		RulesEnabled:               loader.Bool("RECSYS_ALGO_RULES_ENABLED", false),
+		RulesRefreshInterval:       loader.Duration("RECSYS_ALGO_RULES_REFRESH_INTERVAL", 2*time.Second),
+		RulesMaxPins:               loader.Int("RECSYS_ALGO_RULES_MAX_PINS", 3),
+		PopularityFanout:           loader.Int("RECSYS_ALGO_POPULARITY_FANOUT", 0),
+		MaxK:                       loader.Int("RECSYS_ALGO_MAX_K", 200),
+		MaxFanout:                  loader.Int("RECSYS_ALGO_MAX_FANOUT", 0),
+		MaxExcludeIDs:              loader.Int("RECSYS_ALGO_MAX_EXCLUDE_IDS", 200),
+		MaxAnchorsInjected:         loader.Int("RECSYS_ALGO_MAX_ANCHORS_INJECTED", 50),
+		SessionLookbackEvents:      loader.Int("RECSYS_ALGO_SESSION_LOOKBACK_EVENTS", 50),
+		SessionLookaheadMinutes:    floatEnv(loader, "RECSYS_ALGO_SESSION_LOOKAHEAD_MINUTES", 120),
+	}
 	cfg := Config{
 		Config:      base,
 		DocsEnabled: loader.Bool("DOCS_ENABLED", !config.IsProduction(base.Env)),
@@ -123,9 +277,14 @@ func Load() Config {
 			BaseURL:    loader.String("FRONTEND_BASE_URL", "http://localhost:3000"),
 			ProjectTag: loader.String("PROJECT_TAG", ""),
 		},
-		Auth:      authCfg,
-		RateLimit: rateCfg,
-		Audit:     auditCfg,
+		Auth:        authCfg,
+		RateLimit:   rateCfg,
+		Audit:       auditCfg,
+		Performance: perfCfg,
+		Exposure:    exposureCfg,
+		Experiment:  expCfg,
+		Explain:     explainCfg,
+		Algo:        algoCfg,
 	}
 	if err := loader.Err(); err != nil {
 		panic(err)
@@ -147,4 +306,45 @@ func applySecretFile(envKey string) error {
 		return fmt.Errorf("%s_FILE is empty", envKey)
 	}
 	return os.Setenv(envKey, value)
+}
+
+func floatEnv(loader *config.Loader, key string, def float64) float64 {
+	if loader == nil {
+		return def
+	}
+	raw := strings.TrimSpace(loader.String(key, ""))
+	if raw == "" {
+		return def
+	}
+	val, err := strconv.ParseFloat(raw, 64)
+	if err != nil {
+		return def
+	}
+	return val
+}
+
+func int16CSV(loader *config.Loader, key string) []int16 {
+	if loader == nil {
+		return nil
+	}
+	values := loader.CSV(key)
+	if len(values) == 0 {
+		return nil
+	}
+	out := make([]int16, 0, len(values))
+	for _, raw := range values {
+		raw = strings.TrimSpace(raw)
+		if raw == "" {
+			continue
+		}
+		val, err := strconv.ParseInt(raw, 10, 16)
+		if err != nil {
+			continue
+		}
+		out = append(out, int16(val))
+	}
+	if len(out) == 0 {
+		return nil
+	}
+	return out
 }

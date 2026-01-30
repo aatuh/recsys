@@ -177,6 +177,10 @@ Notes:
 * `user_id` may be omitted for anonymous use; `anonymous_id` or `session_id`
   is then required.
 * `options.seed` makes stochastic steps reproducible.
+* `candidates.include_ids` is a hard allow-list: if provided, only those IDs
+  can appear in the response (after ranking/constraints).
+* `candidates.exclude_ids` always removes those items from the response.
+* Pin rules can inject items even if they are not in the base candidate pool.
 
 ### Response headers
 

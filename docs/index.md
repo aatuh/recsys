@@ -1,0 +1,55 @@
+# recsys suite documentation (lean)
+
+Welcome. This documentation is intended to start running the suite, integrate it
+into an application, and operate it safely.
+
+## What is the suite?
+
+The suite is four modules that form an end-to-end recommendation system loop:
+
+- **recsys-service**: low-latency recommendation API (auth, tenancy, limits,
+  caching, observability, exposure logging).
+- **recsys-algo**: deterministic ranking logic (candidate merge, scoring,
+  constraints, rules, diversity).
+- **recsys-pipelines**: offline/stream processing that turns events into
+  versioned artifacts the service consumes.
+- **recsys-eval**: offline regression + online experiment analysis that decides
+  what to ship.
+
+## Where to start
+
+1. Tutorial: `tutorials/local-end-to-end.md`
+2. Integrate: `how-to/integrate-recsys-service.md`
+3. Operate: `how-to/operate-pipelines.md`
+4. Evaluate: `how-to/run-eval-and-ship.md`
+
+## Reference
+
+- REST API: `reference/api/openapi.yaml`
+- Admin API: `reference/api/admin.md`
+- Contracts: `reference/data-contracts/`
+- Config: `reference/config/`
+- CLI: `reference/cli/`
+- Database: `reference/database/`
+
+Note:
+- Admin endpoints are documented in `reference/api/admin.md` and mirrored in
+  OpenAPI; ignore `api/swagger/swagger.yaml` (legacy).
+
+## Concepts
+
+- `explanation/suite-architecture.md`
+- `explanation/candidate-vs-ranking.md`
+- `explanation/exposure-logging-and-attribution.md`
+- `explanation/surface-namespaces.md`
+- `explanation/data-modes.md`
+
+## Operations
+
+- `operations/runbooks/service-not-ready.md`
+- `operations/runbooks/empty-recs.md`
+- `operations/runbooks/rollback-config-rules.md`
+
+## Contributing
+
+- `contributing/docs-style.md`

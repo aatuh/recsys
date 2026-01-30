@@ -46,20 +46,21 @@ services:
       - api_coverage:/app/.coverage
       - api_test_cache:/app/.test-cache
       - api_pkg:/go/pkg/mod
+      - api_sumdb:/go/pkg/sumdb
       - api_gocache:/root/.cache/go-build
     init: true
     stop_signal: SIGINT
     stop_grace_period: 1s
     healthcheck:
       test:
-        ["CMD-SHELL", "curl -f http://localhost:${API_PORT}/healthz || exit 1"]
+        ["CMD-SHELL", "curl -f http://localhost:${API_PORT:-8000}/healthz || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3
       start_period: 30s
     command: >-
       sh -c '
-        reflex -r "\\.go$" -s -- sh -c "make build-bin && ./bin/recsys-service"
+        reflex -r "\\.(go|sql)$" -s -- sh -c "make build-bin && ./bin/recsys-service"
       '
 
   web:
@@ -104,6 +105,7 @@ services:
       - test_coverage:/app/.coverage
       - test_test_cache:/app/.test-cache
       - test_pkg:/go/pkg/mod
+      - test_sumdb:/go/pkg/sumdb
       - test_gocache:/root/.cache/go-build
     cap_drop:
       - ALL
@@ -121,6 +123,33 @@ services:
       - db
     environment:
       ADMINER_DEFAULT_SERVER: db
+
+  minio:
+    container_name: recsys-minio
+    image: minio/minio:RELEASE.2024-10-13T13-34-11Z
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    command: server /data --console-address ":9001"
+    ports:
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - minio_data:/data
+
+  minio-init:
+    container_name: recsys-minio-init
+    image: minio/mc:RELEASE.2024-10-02T08-27-28Z
+    depends_on:
+      - minio
+    entrypoint: >-
+      /bin/sh -c "
+      until mc alias set local http://minio:9000 ${MINIO_ROOT_USER:-minioadmin} ${MINIO_ROOT_PASSWORD:-minioadmin}; do
+        sleep 1;
+      done;
+      mc mb -p local/${MINIO_BUCKET:-recsys-artifacts} || true;
+      mc anonymous set download local/${MINIO_BUCKET:-recsys-artifacts} || true;
+      "
 
   proxy:
     container_name: recsys-proxy
@@ -143,14 +172,17 @@ volumes:
   api_coverage:
   api_test_cache:
   api_pkg:
+  api_sumdb:
   api_gocache:
   test_tmp:
   test_bin:
   test_coverage:
   test_test_cache:
   test_pkg:
+  test_sumdb:
   test_gocache:
   mkcert_ca:
   caddy_certs:
   web_node_modules:
   web_pnpm_store:
+  minio_data:

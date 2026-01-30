@@ -15,77 +15,14 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/foo": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "List foos filtered by org and namespace",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Foo"
-                ],
-                "summary": "List foos",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Organization ID",
-                        "name": "org_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Namespace",
-                        "name": "namespace",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Page size",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Offset",
-                        "name": "offset",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Search term",
-                        "name": "search",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/types.FooListResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/types.Problem"
-                        }
-                    }
-                }
-            },
+        "/v1/admin/tenants/{tenant_id}/cache/invalidate": {
             "post": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Create a new foo resource",
+                "description": "Invalidate tenant cache targets",
                 "consumes": [
                     "application/json"
                 ],
@@ -93,25 +30,32 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Foo"
+                    "Admin"
                 ],
-                "summary": "Create foo",
+                "summary": "Invalidate caches",
                 "parameters": [
                     {
-                        "description": "Foo payload",
+                        "type": "string",
+                        "description": "Tenant ID",
+                        "name": "tenant_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Cache invalidation payload",
                         "name": "payload",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/types.CreateFooDTO"
+                            "$ref": "#/definitions/types.CacheInvalidateRequest"
                         }
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created",
+                    "200": {
+                        "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/types.FooDTO"
+                            "$ref": "#/definitions/types.CacheInvalidateResponse"
                         }
                     },
                     "400": {
@@ -120,8 +64,32 @@ const docTemplate = `{
                             "$ref": "#/definitions/types.Problem"
                         }
                     },
-                    "409": {
-                        "description": "Conflict",
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/types.Problem"
                         }
@@ -129,26 +97,26 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/foo/{id}": {
+        "/v1/admin/tenants/{tenant_id}/config": {
             "get": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Fetch a foo by ID",
+                "description": "Fetch current tenant config",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Foo"
+                    "Admin"
                 ],
-                "summary": "Get foo",
+                "summary": "Get tenant config",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Foo ID",
-                        "name": "id",
+                        "description": "Tenant ID",
+                        "name": "tenant_id",
                         "in": "path",
                         "required": true
                     }
@@ -157,11 +125,29 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/types.FooDTO"
+                            "$ref": "#/definitions/types.TenantConfigResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
                         }
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/types.Problem"
                         }
@@ -174,7 +160,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Update a foo by ID",
+                "description": "Update config with optimistic concurrency",
                 "consumes": [
                     "application/json"
                 ],
@@ -182,32 +168,38 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Foo"
+                    "Admin"
                 ],
-                "summary": "Update foo",
+                "summary": "Update tenant config",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Foo ID",
-                        "name": "id",
+                        "description": "Tenant ID",
+                        "name": "tenant_id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Foo update payload",
+                        "description": "Config payload",
                         "name": "payload",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/types.UpdateFooDTO"
+                            "type": "object"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Config version",
+                        "name": "If-Match",
+                        "in": "header"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/types.FooDTO"
+                            "$ref": "#/definitions/types.TenantConfigResponse"
                         }
                     },
                     "400": {
@@ -216,40 +208,188 @@ const docTemplate = `{
                             "$ref": "#/definitions/types.Problem"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/admin/tenants/{tenant_id}/rules": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Fetch current tenant rules",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Get tenant rules",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tenant ID",
+                        "name": "tenant_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.TenantRulesResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/types.Problem"
                         }
                     }
                 }
             },
-            "delete": {
+            "put": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Delete a foo by ID",
-                "tags": [
-                    "Foo"
+                "description": "Update rules with optimistic concurrency",
+                "consumes": [
+                    "application/json"
                 ],
-                "summary": "Delete foo",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Update tenant rules",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Foo ID",
-                        "name": "id",
+                        "description": "Tenant ID",
+                        "name": "tenant_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Rules payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Rules version",
+                        "name": "If-Match",
+                        "in": "header"
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "No Content"
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.TenantRulesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/types.Problem"
                         }
@@ -299,8 +439,38 @@ const docTemplate = `{
                             "$ref": "#/definitions/types.Problem"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
                     "422": {
                         "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
                         "schema": {
                             "$ref": "#/definitions/types.Problem"
                         }
@@ -350,8 +520,26 @@ const docTemplate = `{
                             "$ref": "#/definitions/types.Problem"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
                     "422": {
                         "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
                         "schema": {
                             "$ref": "#/definitions/types.Problem"
                         }
@@ -401,8 +589,38 @@ const docTemplate = `{
                             "$ref": "#/definitions/types.Problem"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
                     "422": {
                         "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/types.Problem"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
                         "schema": {
                             "$ref": "#/definitions/types.Problem"
                         }
@@ -437,6 +655,46 @@ const docTemplate = `{
                 },
                 "max_anchors": {
                     "type": "integer"
+                }
+            }
+        },
+        "types.CacheInvalidateRequest": {
+            "type": "object",
+            "properties": {
+                "surface": {
+                    "type": "string"
+                },
+                "targets": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "types.CacheInvalidateResponse": {
+            "type": "object",
+            "properties": {
+                "invalidated": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "integer"
+                    }
+                },
+                "status": {
+                    "type": "string"
+                },
+                "surface": {
+                    "type": "string"
+                },
+                "targets": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "tenant_id": {
+                    "type": "string"
                 }
             }
         },
@@ -480,25 +738,6 @@ const docTemplate = `{
                 }
             }
         },
-        "types.CreateFooDTO": {
-            "type": "object",
-            "required": [
-                "name",
-                "namespace",
-                "org_id"
-            ],
-            "properties": {
-                "name": {
-                    "type": "string"
-                },
-                "namespace": {
-                    "type": "string"
-                },
-                "org_id": {
-                    "type": "string"
-                }
-            }
-        },
         "types.Experiment": {
             "type": "object",
             "properties": {
@@ -507,78 +746,6 @@ const docTemplate = `{
                 },
                 "variant": {
                     "type": "string"
-                }
-            }
-        },
-        "types.FooDTO": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string",
-                    "example": "2023-01-01T00:00:00Z"
-                },
-                "id": {
-                    "type": "string",
-                    "example": "01HZJ8K9M2N3P4Q5R6S7T8U9V"
-                },
-                "name": {
-                    "type": "string",
-                    "example": "my-foo"
-                },
-                "namespace": {
-                    "type": "string",
-                    "example": "default"
-                },
-                "org_id": {
-                    "type": "string",
-                    "example": "org-123"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2023-01-01T00:00:00Z"
-                }
-            }
-        },
-        "types.FooListResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/types.FooDTO"
-                    }
-                },
-                "meta": {
-                    "$ref": "#/definitions/types.ListMeta"
-                }
-            }
-        },
-        "types.ListMeta": {
-            "type": "object",
-            "properties": {
-                "count": {
-                    "type": "integer"
-                },
-                "filters": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "limit": {
-                    "type": "integer"
-                },
-                "offset": {
-                    "type": "integer"
-                },
-                "search": {
-                    "type": "string"
-                },
-                "total": {
-                    "type": "integer"
                 }
             }
         },
@@ -857,13 +1024,26 @@ const docTemplate = `{
                 }
             }
         },
-        "types.UpdateFooDTO": {
+        "types.TenantConfigResponse": {
             "type": "object",
-            "required": [
-                "name"
-            ],
             "properties": {
-                "name": {
+                "config": {},
+                "config_version": {
+                    "type": "string"
+                },
+                "tenant_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.TenantRulesResponse": {
+            "type": "object",
+            "properties": {
+                "rules": {},
+                "rules_version": {
+                    "type": "string"
+                },
+                "tenant_id": {
                     "type": "string"
                 }
             }

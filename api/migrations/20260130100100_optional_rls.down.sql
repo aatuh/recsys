@@ -1,0 +1,2 @@
+-- 080_optional_rls.sql (down)
+-- no-op

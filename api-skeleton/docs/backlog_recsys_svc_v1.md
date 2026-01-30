@@ -133,7 +133,7 @@ gRPC) that:
 
 ---
 
-# [ ] EPIC SVC-2: Security, tenancy, and abuse resistance (P0)
+# [x] EPIC SVC-2: Security, tenancy, and abuse resistance (P0)
 
 (These are the things that make or break “a real company would use this”, and
 they map directly to OWASP API Security Top 10 themes like authorization,
@@ -242,53 +242,53 @@ velocity.) ([sre.google][3])
 
 ---
 
-# [ ] EPIC SVC-5: Performance and scaling (P1)
+# [x] EPIC SVC-5: Performance and scaling (P1)
 
-### [ ] SVC-50 Hot-path profiling and allocation budget
+### [x] SVC-50 Hot-path profiling and allocation budget
 
 * Identify allocation hotspots (tags, reasons, trace building).
 * **Acceptance:** p95 latency under target at expected QPS.
 
-### [ ] SVC-51 Caching strategy
+### [x] SVC-51 Caching strategy
 
 * Cache tenant config/rules with TTL + invalidation.
 * Cache stable signals (e.g., popularity lists) if your store calls are expensive.
 * **Acceptance:** cache hit rate tracked; cache never violates tenancy isolation.
 
-### [ ] SVC-52 Concurrency and backpressure
+### [x] SVC-52 Concurrency and backpressure
 
 * Worker pools and bounded queues for expensive stages; reject fast on overload.
 * **Acceptance:** overload yields 429/503 quickly without cascading failures.
 
 ---
 
-# [ ] EPIC SVC-6: Exposure logging and experimentation hooks (P1)
+# [x] EPIC SVC-6: Exposure logging and experimentation hooks (P1)
 
 (Exposure logging is what lets teams run controlled experiments and attribute
 outcomes. Netflix treats experimentation as core platform capability.) ([techblog.netflix.com][4])
 
-### [ ] SVC-60 Standard exposure event schema
+### [x] SVC-60 Standard exposure event schema
 
 * Log: tenant/org, user/session, request context, returned item IDs, ranks,
   algorithm version, config version, rule version, experiment assignment.
 * **Acceptance:** schema is versioned and validated.
 
-### [ ] SVC-61 Experiment assignment hook
+### [x] SVC-61 Experiment assignment hook
 
 * Provide deterministic bucketing hook (or integrate with an external exp
   platform).
 * **Acceptance:** same user consistently maps to same variant for a test.
 
-### [ ] SVC-62 Privacy-aware logging
+### [x] SVC-62 Privacy-aware logging
 
 * Hash/pseudonymize user identifiers; configurable retention; PII minimization.
 * **Acceptance:** exposure events contain no raw PII by default.
 
 ---
 
-# [ ] EPIC SVC-7: Admin and control plane (optional, but realistic) (P2)
+# [x] EPIC SVC-7: Admin and control plane (optional, but realistic) (P2)
 
-### [ ] SVC-70 Tenant config management
+### [x] SVC-70 Tenant config management
 
 * Admin endpoints or internal tooling to manage:
 
@@ -297,44 +297,52 @@ outcomes. Netflix treats experimentation as core platform capability.) ([techblo
   * feature availability flags
 * **Acceptance:** config changes are validated, audited, and rollbackable.
 
-### [ ] SVC-71 Rules publishing / cache invalidation
+### [x] SVC-71 Rules publishing / cache invalidation
 
 * Endpoint or pub/sub to invalidate rules cache (must be tenant-aware).
 * **Acceptance:** rule change becomes effective within bounded time.
 
-### [ ] SVC-72 “Explain mode” controls
+### [x] SVC-72 “Explain mode” controls
 
 * Enforce max explain payload size; require elevated permissions for deep trace.
 * **Acceptance:** explain cannot be abused to create massive responses.
 
-### [ ] SVC-73 Implement `GET /v1/admin/tenants/{tenant_id}/config`**
+### [x] SVC-73 Implement `GET /v1/admin/tenants/{tenant_id}/config`**
 
 * **Scope:** fetch current tenant config with `config_version`.
 * **Acceptance:** requires admin scope; enforces tenant authorization; 404 if
   tenant missing.
 
-### [ ] SVC-X-74 Implement `PUT /v1/admin/tenants/{tenant_id}/config` with optimistic concurrency**
+### [x] SVC-X-74 Implement `PUT /v1/admin/tenants/{tenant_id}/config` with optimistic concurrency**
 
 * **Scope:** update config, validate constraints (e.g., weights non-negative),
   support `If-Match` and return `409` on mismatch.
 * **Acceptance:** writes audit log (who/what/when); invalidates config cache.
 
-### [ ] SVC-X-75 Implement `GET /v1/admin/tenants/{tenant_id}/rules`**
+### [x] SVC-X-75 Implement `GET /v1/admin/tenants/{tenant_id}/rules`**
 
 * **Scope:** fetch rules + `rules_version`.
 * **Acceptance:** admin scope + tenant scoping; 404 if missing.
 
-### [ ] SVC-X-76 Implement `PUT /v1/admin/tenants/{tenant_id}/rules` with optimistic concurrency**
+### [x] SVC-X-76 Implement `PUT /v1/admin/tenants/{tenant_id}/rules` with optimistic concurrency**
 
 * **Scope:** update rules, support `If-Match`, return `409` on mismatch.
 * **Acceptance:** audit log; invalidates rules cache; validates rule schema.
 
-### [ ] SVC-X-77 Implement `POST /v1/admin/tenants/{tenant_id}/cache/invalidate`**
+### [x] SVC-X-77 Implement `POST /v1/admin/tenants/{tenant_id}/cache/invalidate`**
 
 * **Scope:** invalidate cache targets (`rules`, `config`, `popularity`) with
   optional surface scoping.
 * **Acceptance:** admin scope + tenant scoping; observable; returns `200` or
   `202` depending on sync/async mode.
+
+### [ ] SVC-78 Admin API idempotency + stability
+
+* Ensure PUT config/rules are idempotent on repeated payloads (no 500s).
+* Cache invalidation must never 500 due to missing persistence tables; return
+  200/202 with best-effort status and log the error.
+* **Acceptance:** repeated PUT returns same `ETag`; cache invalidation returns
+  200/202 in all dev modes; tests cover duplicate writes and missing tables.
 
 ---
 
@@ -375,6 +383,18 @@ outcomes. Netflix treats experimentation as core platform capability.) ([techblo
 * “How to debug a bad recommendation” using trace IDs, explain mode, and
   exposure logs.
 * **Acceptance:** runbook used successfully in a simulated incident.
+
+### [ ] SVC-92 Surface namespace strategy and defaults
+
+* Document how `surface` maps to namespace, when defaults apply, and how to
+  seed data for multi-surface tenants.
+* **Acceptance:** docs include examples and a recommended strategy.
+
+### [ ] SVC-93 Data/artifact mode guidance (DB-only vs object store)
+
+* Document whether DB-only mode is supported, how it behaves, and when
+  artifacts/manifests are required.
+* **Acceptance:** README + integration docs provide clear mode guidance.
 
 ---
 

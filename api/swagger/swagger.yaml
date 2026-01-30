@@ -18,6 +18,32 @@ definitions:
       max_anchors:
         type: integer
     type: object
+  types.CacheInvalidateRequest:
+    properties:
+      surface:
+        type: string
+      targets:
+        items:
+          type: string
+        type: array
+    type: object
+  types.CacheInvalidateResponse:
+    properties:
+      invalidated:
+        additionalProperties:
+          type: integer
+        type: object
+      status:
+        type: string
+      surface:
+        type: string
+      targets:
+        items:
+          type: string
+        type: array
+      tenant_id:
+        type: string
+    type: object
   types.Candidates:
     properties:
       exclude_ids:
@@ -44,74 +70,12 @@ definitions:
           type: string
         type: array
     type: object
-  types.CreateFooDTO:
-    properties:
-      name:
-        type: string
-      namespace:
-        type: string
-      org_id:
-        type: string
-    required:
-    - name
-    - namespace
-    - org_id
-    type: object
   types.Experiment:
     properties:
       id:
         type: string
       variant:
         type: string
-    type: object
-  types.FooDTO:
-    properties:
-      created_at:
-        example: "2023-01-01T00:00:00Z"
-        type: string
-      id:
-        example: 01HZJ8K9M2N3P4Q5R6S7T8U9V
-        type: string
-      name:
-        example: my-foo
-        type: string
-      namespace:
-        example: default
-        type: string
-      org_id:
-        example: org-123
-        type: string
-      updated_at:
-        example: "2023-01-01T00:00:00Z"
-        type: string
-    type: object
-  types.FooListResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/types.FooDTO'
-        type: array
-      meta:
-        $ref: '#/definitions/types.ListMeta'
-    type: object
-  types.ListMeta:
-    properties:
-      count:
-        type: integer
-      filters:
-        additionalProperties:
-          items:
-            type: string
-          type: array
-        type: object
-      limit:
-        type: integer
-      offset:
-        type: integer
-      search:
-        type: string
-      total:
-        type: integer
     type: object
   types.NormalizedRecommendRequest:
     properties:
@@ -293,12 +257,21 @@ definitions:
       surface:
         type: string
     type: object
-  types.UpdateFooDTO:
+  types.TenantConfigResponse:
     properties:
-      name:
+      config: {}
+      config_version:
         type: string
-    required:
-    - name
+      tenant_id:
+        type: string
+    type: object
+  types.TenantRulesResponse:
+    properties:
+      rules: {}
+      rules_version:
+        type: string
+      tenant_id:
+        type: string
     type: object
   types.UserRef:
     properties:
@@ -342,31 +315,67 @@ info:
   title: Recsys Service API
   version: 1.0.0
 paths:
-  /api/v1/foo:
-    get:
-      description: List foos filtered by org and namespace
+  /v1/admin/tenants/{tenant_id}/cache/invalidate:
+    post:
+      consumes:
+      - application/json
+      description: Invalidate tenant cache targets
       parameters:
-      - description: Organization ID
-        in: query
-        name: org_id
+      - description: Tenant ID
+        in: path
+        name: tenant_id
         required: true
         type: string
-      - description: Namespace
-        in: query
-        name: namespace
+      - description: Cache invalidation payload
+        in: body
+        name: payload
         required: true
-        type: string
-      - description: Page size
-        in: query
-        name: limit
-        type: integer
-      - description: Offset
-        in: query
-        name: offset
-        type: integer
-      - description: Search term
-        in: query
-        name: search
+        schema:
+          $ref: '#/definitions/types.CacheInvalidateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.CacheInvalidateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.Problem'
+      security:
+      - BearerAuth: []
+      summary: Invalidate caches
+      tags:
+      - Admin
+  /v1/admin/tenants/{tenant_id}/config:
+    get:
+      description: Fetch current tenant config
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: tenant_id
+        required: true
         type: string
       produces:
       - application/json
@@ -374,74 +383,95 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.FooListResponse'
-        "400":
-          description: Bad Request
+            $ref: '#/definitions/types.TenantConfigResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/types.Problem'
       security:
       - BearerAuth: []
-      summary: List foos
+      summary: Get tenant config
       tags:
-      - Foo
-    post:
+      - Admin
+    put:
       consumes:
       - application/json
-      description: Create a new foo resource
+      description: Update config with optimistic concurrency
       parameters:
-      - description: Foo payload
+      - description: Tenant ID
+        in: path
+        name: tenant_id
+        required: true
+        type: string
+      - description: Config payload
         in: body
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/types.CreateFooDTO'
+          type: object
+      - description: Config version
+        in: header
+        name: If-Match
+        type: string
       produces:
       - application/json
       responses:
-        "201":
-          description: Created
+        "200":
+          description: OK
           schema:
-            $ref: '#/definitions/types.FooDTO'
+            $ref: '#/definitions/types.TenantConfigResponse'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/types.Problem'
         "409":
           description: Conflict
           schema:
             $ref: '#/definitions/types.Problem'
-      security:
-      - BearerAuth: []
-      summary: Create foo
-      tags:
-      - Foo
-  /api/v1/foo/{id}:
-    delete:
-      description: Delete a foo by ID
-      parameters:
-      - description: Foo ID
-        in: path
-        name: id
-        required: true
-        type: string
-      responses:
-        "204":
-          description: No Content
-        "404":
-          description: Not Found
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/types.Problem'
       security:
       - BearerAuth: []
-      summary: Delete foo
+      summary: Update tenant config
       tags:
-      - Foo
+      - Admin
+  /v1/admin/tenants/{tenant_id}/rules:
     get:
-      description: Fetch a foo by ID
+      description: Fetch current tenant rules
       parameters:
-      - description: Foo ID
+      - description: Tenant ID
         in: path
-        name: id
+        name: tenant_id
         required: true
         type: string
       produces:
@@ -450,52 +480,88 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.FooDTO'
+            $ref: '#/definitions/types.TenantRulesResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/types.Problem'
         "404":
           description: Not Found
           schema:
             $ref: '#/definitions/types.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.Problem'
       security:
       - BearerAuth: []
-      summary: Get foo
+      summary: Get tenant rules
       tags:
-      - Foo
+      - Admin
     put:
       consumes:
       - application/json
-      description: Update a foo by ID
+      description: Update rules with optimistic concurrency
       parameters:
-      - description: Foo ID
+      - description: Tenant ID
         in: path
-        name: id
+        name: tenant_id
         required: true
         type: string
-      - description: Foo update payload
+      - description: Rules payload
         in: body
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/types.UpdateFooDTO'
+          type: object
+      - description: Rules version
+        in: header
+        name: If-Match
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.FooDTO'
+            $ref: '#/definitions/types.TenantRulesResponse'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/types.Problem'
         "404":
           description: Not Found
           schema:
             $ref: '#/definitions/types.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.Problem'
       security:
       - BearerAuth: []
-      summary: Update foo
+      summary: Update tenant rules
       tags:
-      - Foo
+      - Admin
   /v1/recommend:
     post:
       consumes:
@@ -519,8 +585,28 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/types.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/types.Problem'
         "422":
           description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "429":
+          description: Too Many Requests
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "503":
+          description: Service Unavailable
           schema:
             $ref: '#/definitions/types.Problem'
       security:
@@ -551,8 +637,20 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/types.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/types.Problem'
         "422":
           description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "429":
+          description: Too Many Requests
           schema:
             $ref: '#/definitions/types.Problem'
       security:
@@ -583,8 +681,28 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/types.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/types.Problem'
         "422":
           description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "429":
+          description: Too Many Requests
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.Problem'
+        "503":
+          description: Service Unavailable
           schema:
             $ref: '#/definitions/types.Problem'
       security:

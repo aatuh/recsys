@@ -1,0 +1,46 @@
+### Example admin requests
+# Update these URLs and tokens for your environment.
+
+### Get config (admin)
+GET https://example.com/v1/admin/tenants/demo/config
+Authorization: Bearer {{admin_token}}
+
+### Update config (admin)
+PUT https://example.com/v1/admin/tenants/demo/config
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+If-Match: {{etag}}
+
+{ "weights": { "pop": 0.5, "cooc": 0.2, "emb": 0.3 } }
+
+### Get rules (admin)
+GET https://example.com/v1/admin/tenants/demo/rules
+Authorization: Bearer {{admin_token}}
+
+### Update rules (admin)
+PUT https://example.com/v1/admin/tenants/demo/rules
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+If-Match: {{etag}}
+
+[
+  {
+    "action": "pin",
+    "target_type": "item",
+    "item_ids": ["item_1", "item_2"],
+    "surface": "home",
+    "priority": 10
+  },
+  {
+    "action": "block",
+    "target_type": "tag",
+    "target_key": "brand:nike"
+  }
+]
+
+### Invalidate caches (admin)
+POST https://example.com/v1/admin/tenants/demo/cache/invalidate
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{ "targets": ["config", "rules"], "surface": "home" }

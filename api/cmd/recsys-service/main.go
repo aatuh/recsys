@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"io/fs"
+	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"strings"
@@ -86,6 +88,10 @@ func main() {
 	}
 	defer securityStack.Close()
 
+	var pprofHandler http.Handler
+	if cfg.Performance.PprofEnabled {
+		pprofHandler = http.DefaultServeMux
+	}
 	bootstrap.MountSystemEndpoints(r, bootstrap.SystemEndpoints{
 		Health: health.NewHandler(healthManager),
 		Docs:   docsHandler,
@@ -97,10 +103,18 @@ func main() {
 				Date:    date,
 			},
 		}),
+		Pprof:   pprofHandler,
 		Metrics: metrics.PrometheusHandler(),
 	})
 
-	deps := buildAppDeps(log, pool)
+	deps, err := buildAppDeps(log, pool, cfg)
+	if err != nil {
+		log.Error("failed to initialize app dependencies", "err", err)
+		os.Exit(1)
+	}
+	if deps.Close != nil {
+		defer deps.Close()
+	}
 	mountAppRoutes(r, log, deps)
 
 	srvCtx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)

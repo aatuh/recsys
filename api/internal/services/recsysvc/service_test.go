@@ -17,6 +17,10 @@ func (s stubEngine) Similar(ctx context.Context, req SimilarRequest) ([]Item, []
 	return append([]Item(nil), s.items...), nil, nil
 }
 
+func (s stubEngine) Version() string {
+	return "stub-engine"
+}
+
 func TestRecommendDeterministicOrdering(t *testing.T) {
 	engine := stubEngine{items: []Item{
 		{ItemID: "b", Score: 0.9},
@@ -24,9 +28,12 @@ func TestRecommendDeterministicOrdering(t *testing.T) {
 		{ItemID: "c", Score: 0.95},
 	}}
 	svc := New(engine)
-	items, _, err := svc.Recommend(context.Background(), RecommendRequest{Surface: "home", Segment: "default", K: 3})
+	items, _, meta, err := svc.Recommend(context.Background(), RecommendRequest{Surface: "home", Segment: "default", K: 3})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
+	}
+	if meta.AlgoVersion != "stub-engine" {
+		t.Fatalf("expected algo version stub-engine, got %q", meta.AlgoVersion)
 	}
 	if len(items) != 3 {
 		t.Fatalf("expected 3 items, got %d", len(items))
