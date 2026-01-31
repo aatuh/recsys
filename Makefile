@@ -58,17 +58,23 @@ build: ## Build all Docker Compose services
 test: ## Run tests
 	@echo "🧪 Running tests..."
 	cd api && make test
-	cd web && make test
+	cd recsys-eval && make test
+	cd recsys-pipelines && make test
+	cd api/recsys-algo && make test
 
 fmt: ## Format code
 	@echo "🎨 Formatting code..."
 	cd api && make fmt
-	cd web && make fmt
+	cd recsys-eval && make fmt
+	cd recsys-pipelines && make fmt
+	cd api/recsys-algo && make fmt
 
 lint: ## Lint code
 	@echo "🔍 Linting code..."
 	cd api && make lint
-	cd web && make lint
+	cd recsys-eval && make lint
+	cd recsys-pipelines && make lint
+	cd api/recsys-algo && make lint
 
 health: ## Check service healthiness
 	@echo "🏥 Checking service healthiness..."

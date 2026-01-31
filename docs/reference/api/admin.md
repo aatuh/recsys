@@ -58,6 +58,10 @@ Why two tenant headers?
 - `X-Dev-Org-Id` is used to **derive tenant context** in local/dev mode.
 - `X-Org-Id` is the tenant header enforced by the tenant middleware.
 
+Tip (single header in local dev):
+- Set `DEV_AUTH_TENANT_HEADER=X-Org-Id` to use **one** header for both dev auth
+  and tenant scope.
+
 If you prefer JWT:
 - Provide a bearer token with a tenant claim (see `AUTH_TENANT_CLAIMS`).
 - Include an admin role (default `admin`) under a role claim (see
@@ -157,7 +161,7 @@ Valid targets: `config`, `rules`, `popularity`.
 
 Notes:
 - `surface` is optional. If provided, invalidation is scoped to that surface.
-- `popularity` is accepted but a no‑op in DB‑only mode (queries are live).
+- `popularity` invalidates artifact/manifest caches (no‑op in DB‑only mode).
 
 ## 4) Call the API
 

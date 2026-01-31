@@ -21,6 +21,9 @@ importers:
       '@api-boilerplate-core/http':
         specifier: github:aatuh/api-boilerplate-core#path:/packages/http
         version: https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/0cb7118c4a96ff76dc38222df89423d7383789ae#path:/packages/http
+      '@api-boilerplate-core/i18n-shared':
+        specifier: github:aatuh/api-boilerplate-core#path:/packages/i18n-shared
+        version: https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/i18n-shared(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@api-boilerplate-core/layouts':
         specifier: github:aatuh/api-boilerplate-core#path:/packages/layouts
         version: https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/0cb7118c4a96ff76dc38222df89423d7383789ae#path:/packages/layouts(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -232,8 +235,24 @@ packages:
       react: '>=18'
       react-dom: '>=18'
 
+  '@api-boilerplate-core/i18n-shared@https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/i18n-shared':
+    resolution: {path: /packages/i18n-shared, tarball: https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c}
+    version: 0.1.0
+    peerDependencies:
+      next: '>=13'
+      react: '>=18'
+      react-dom: '>=18'
+
   '@api-boilerplate-core/layouts@https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/0cb7118c4a96ff76dc38222df89423d7383789ae#path:/packages/layouts':
     resolution: {path: /packages/layouts, tarball: https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/0cb7118c4a96ff76dc38222df89423d7383789ae}
+    version: 0.1.0
+    peerDependencies:
+      next: '>=13'
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@api-boilerplate-core/layouts@https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/layouts':
+    resolution: {path: /packages/layouts, tarball: https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c}
     version: 0.1.0
     peerDependencies:
       next: '>=13'
@@ -248,14 +267,36 @@ packages:
       react: '>=18'
       react-dom: '>=18'
 
+  '@api-boilerplate-core/legal@https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/legal':
+    resolution: {path: /packages/legal, tarball: https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c}
+    version: 0.1.0
+    peerDependencies:
+      next: '>=13'
+      react: '>=18'
+      react-dom: '>=18'
+
   '@api-boilerplate-core/theme@https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/0cb7118c4a96ff76dc38222df89423d7383789ae#path:/packages/theme':
     resolution: {path: /packages/theme, tarball: https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/0cb7118c4a96ff76dc38222df89423d7383789ae}
     version: 0.1.0
     peerDependencies:
       react: '>=18'
 
+  '@api-boilerplate-core/theme@https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/theme':
+    resolution: {path: /packages/theme, tarball: https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c}
+    version: 0.1.0
+    peerDependencies:
+      react: '>=18'
+
   '@api-boilerplate-core/ui@https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/0cb7118c4a96ff76dc38222df89423d7383789ae#path:/packages/ui':
     resolution: {path: /packages/ui, tarball: https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/0cb7118c4a96ff76dc38222df89423d7383789ae}
+    version: 0.1.0
+    peerDependencies:
+      next: '>=13'
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@api-boilerplate-core/ui@https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/ui':
+    resolution: {path: /packages/ui, tarball: https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c}
     version: 0.1.0
     peerDependencies:
       next: '>=13'
@@ -3391,9 +3432,9 @@ snapshots:
 
   '@api-boilerplate-core/content@https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/0cb7118c4a96ff76dc38222df89423d7383789ae#path:/packages/content(@types/react@19.2.7)(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
-      '@api-boilerplate-core/i18n-shared': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/0cb7118c4a96ff76dc38222df89423d7383789ae#path:/packages/i18n-shared(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      '@api-boilerplate-core/layouts': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/0cb7118c4a96ff76dc38222df89423d7383789ae#path:/packages/layouts(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      '@api-boilerplate-core/ui': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/0cb7118c4a96ff76dc38222df89423d7383789ae#path:/packages/ui(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@api-boilerplate-core/i18n-shared': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/i18n-shared(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@api-boilerplate-core/layouts': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/layouts(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@api-boilerplate-core/ui': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/ui(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       gray-matter: 4.0.3
       next: 16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
@@ -3417,23 +3458,49 @@ snapshots:
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
 
+  '@api-boilerplate-core/i18n-shared@https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/i18n-shared(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+    dependencies:
+      next: 16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react: 19.2.3
+      react-dom: 19.2.3(react@19.2.3)
+
   '@api-boilerplate-core/layouts@https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/0cb7118c4a96ff76dc38222df89423d7383789ae#path:/packages/layouts(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
-      '@api-boilerplate-core/i18n-shared': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/0cb7118c4a96ff76dc38222df89423d7383789ae#path:/packages/i18n-shared(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      '@api-boilerplate-core/ui': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/0cb7118c4a96ff76dc38222df89423d7383789ae#path:/packages/ui(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@api-boilerplate-core/i18n-shared': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/i18n-shared(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@api-boilerplate-core/ui': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/ui(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      next: 16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react: 19.2.3
+      react-dom: 19.2.3(react@19.2.3)
+
+  '@api-boilerplate-core/layouts@https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/layouts(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+    dependencies:
+      '@api-boilerplate-core/i18n-shared': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/i18n-shared(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@api-boilerplate-core/ui': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/ui(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       next: 16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
 
   '@api-boilerplate-core/legal@https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/0cb7118c4a96ff76dc38222df89423d7383789ae#path:/packages/legal(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
-      '@api-boilerplate-core/layouts': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/0cb7118c4a96ff76dc38222df89423d7383789ae#path:/packages/layouts(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      '@api-boilerplate-core/ui': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/0cb7118c4a96ff76dc38222df89423d7383789ae#path:/packages/ui(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@api-boilerplate-core/layouts': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/layouts(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@api-boilerplate-core/ui': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/ui(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      next: 16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react: 19.2.3
+      react-dom: 19.2.3(react@19.2.3)
+
+  '@api-boilerplate-core/legal@https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/legal(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+    dependencies:
+      '@api-boilerplate-core/layouts': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/layouts(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@api-boilerplate-core/ui': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/ui(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       next: 16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
 
   '@api-boilerplate-core/theme@https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/0cb7118c4a96ff76dc38222df89423d7383789ae#path:/packages/theme(react@19.2.3)':
+    dependencies:
+      react: 19.2.3
+
+  '@api-boilerplate-core/theme@https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/theme(react@19.2.3)':
     dependencies:
       react: 19.2.3
 
@@ -3444,12 +3511,19 @@ snapshots:
       react-dom: 19.2.3(react@19.2.3)
       zod: 3.25.76
 
+  '@api-boilerplate-core/ui@https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/ui(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+    dependencies:
+      next: 16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react: 19.2.3
+      react-dom: 19.2.3(react@19.2.3)
+      zod: 3.25.76
+
   '@api-boilerplate-core/widgets@https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/0cb7118c4a96ff76dc38222df89423d7383789ae#path:/packages/widgets(lucide-react@0.562.0(react@19.2.3))(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
-      '@api-boilerplate-core/i18n-shared': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/0cb7118c4a96ff76dc38222df89423d7383789ae#path:/packages/i18n-shared(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      '@api-boilerplate-core/legal': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/0cb7118c4a96ff76dc38222df89423d7383789ae#path:/packages/legal(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      '@api-boilerplate-core/theme': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/0cb7118c4a96ff76dc38222df89423d7383789ae#path:/packages/theme(react@19.2.3)
-      '@api-boilerplate-core/ui': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/0cb7118c4a96ff76dc38222df89423d7383789ae#path:/packages/ui(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@api-boilerplate-core/i18n-shared': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/i18n-shared(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@api-boilerplate-core/legal': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/legal(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@api-boilerplate-core/theme': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/theme(react@19.2.3)
+      '@api-boilerplate-core/ui': https://codeload.github.com/aatuh/api-boilerplate-core/tar.gz/39a240f6a4523b32aefcc9849c3cfcbafd90b27c#path:/packages/ui(next@16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       lucide-react: 0.562.0(react@19.2.3)
       next: 16.1.0(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3

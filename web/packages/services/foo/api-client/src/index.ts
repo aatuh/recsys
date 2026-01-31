@@ -1,9 +1,9 @@
-export { createFooApi } from "./api/foo";
+export { createFooApi } from "../../../../../../.trash/foo";
 export type {
   FooDTO,
   CreateFooDTO,
   UpdateFooDTO,
   FooListResponse,
   FooListParams,
-} from "./api/foo";
+} from "../../../../../../.trash/foo";
 export type { components, paths } from "./api/types";

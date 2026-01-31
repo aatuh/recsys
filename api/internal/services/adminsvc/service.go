@@ -29,6 +29,11 @@ type RulesCache interface {
 	Invalidate(tenantID, surface string) int
 }
 
+// ArtifactCache supports cache invalidation for artifact-backed stores.
+type ArtifactCache interface {
+	Invalidate(tenantID, surface string) int
+}
+
 // RulesManager invalidates rule manager caches.
 type RulesManager interface {
 	Invalidate(orgID uuid.UUID, namespace, surface string)
@@ -39,6 +44,7 @@ type Service struct {
 	store            Store
 	configCache      ConfigCache
 	rulesCache       RulesCache
+	artifactCache    ArtifactCache
 	rulesManager     RulesManager
 	defaultNamespace string
 }
@@ -57,6 +63,13 @@ func WithConfigCache(cache ConfigCache) ServiceOption {
 func WithRulesCache(cache RulesCache) ServiceOption {
 	return func(s *Service) {
 		s.rulesCache = cache
+	}
+}
+
+// WithArtifactCache wires an artifact cache for invalidations.
+func WithArtifactCache(cache ArtifactCache) ServiceOption {
+	return func(s *Service) {
+		s.artifactCache = cache
 	}
 }
 
@@ -162,7 +175,9 @@ func (s *Service) InvalidateCache(ctx context.Context, tenantID string, req Cach
 				s.rulesManager.Invalidate(orgID, ns, surface)
 			}
 		case "popularity":
-			invalidated[target] = 0
+			if s.artifactCache != nil {
+				invalidated[target] = s.artifactCache.Invalidate(tenantID, surface)
+			}
 		}
 	}
 

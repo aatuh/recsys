@@ -9,13 +9,14 @@ import {
 } from "@api-boilerplate-core/i18n-shared/config";
 import { DICTIONARY_LOCALES } from "./dictionaries/registry";
 
-const dictionaryLocales = [...DICTIONARY_LOCALES] as string[];
+const dictionaryLocales = [...DICTIONARY_LOCALES] as Locale[];
 const envSupported = parseSupportedLocales(
   process.env["NEXT_PUBLIC_SUPPORTED_LOCALES"]
-);
+) as Locale[];
 const filtered = envSupported.filter((loc) => dictionaryLocales.includes(loc));
 
-let supportedLocales = filtered.length > 0 ? filtered : dictionaryLocales;
+let supportedLocales: Locale[] =
+  filtered.length > 0 ? filtered : dictionaryLocales;
 
 if (
   process.env["NODE_ENV"] !== "production" &&
@@ -48,7 +49,7 @@ if (!supportedLocales.includes(DEFAULT_LOCALE)) {
   supportedLocales = [...supportedLocales, DEFAULT_LOCALE];
 }
 
-export const SUPPORTED_LOCALES = supportedLocales;
+export const SUPPORTED_LOCALES: Locale[] = supportedLocales;
 
 export function resolveLocale(
   input?: string | null,

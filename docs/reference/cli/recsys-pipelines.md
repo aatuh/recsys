@@ -7,3 +7,6 @@ Suggested commands:
 - publish
 - validate
 - backfill
+
+Note:
+- The CLI currently expects **JSON** config files.

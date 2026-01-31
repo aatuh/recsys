@@ -26,6 +26,7 @@ type Config struct {
 	Exposure    ExposureConfig
 	Experiment  ExperimentConfig
 	Explain     ExplainConfig
+	Artifacts   ArtifactConfig
 	Algo        AlgoConfig
 }
 
@@ -88,6 +89,25 @@ type ExperimentConfig struct {
 type ExplainConfig struct {
 	MaxItems     int
 	RequireAdmin bool
+}
+
+// ArtifactConfig controls artifact/manifest reading.
+type ArtifactConfig struct {
+	Enabled          bool
+	ManifestTemplate string
+	ManifestTTL      time.Duration
+	ArtifactTTL      time.Duration
+	MaxBytes         int
+	S3               ArtifactS3Config
+}
+
+// ArtifactS3Config configures S3-compatible access for artifacts.
+type ArtifactS3Config struct {
+	Endpoint  string
+	AccessKey string
+	SecretKey string
+	Region    string
+	UseSSL    bool
 }
 
 // AlgoConfig configures recsys-algo defaults.
@@ -223,6 +243,20 @@ func Load() Config {
 		RetentionDays: loader.Int("EXPOSURE_LOG_RETENTION_DAYS", 30),
 		HashSalt:      loader.String("EXPOSURE_HASH_SALT", ""),
 	}
+	artifactCfg := ArtifactConfig{
+		Enabled:          loader.Bool("RECSYS_ARTIFACT_MODE_ENABLED", false),
+		ManifestTemplate: loader.String("RECSYS_ARTIFACT_MANIFEST_TEMPLATE", ""),
+		ManifestTTL:      loader.Duration("RECSYS_ARTIFACT_MANIFEST_TTL", time.Minute),
+		ArtifactTTL:      loader.Duration("RECSYS_ARTIFACT_CACHE_TTL", time.Minute),
+		MaxBytes:         loader.Int("RECSYS_ARTIFACT_MAX_BYTES", 10_000_000),
+		S3: ArtifactS3Config{
+			Endpoint:  loader.String("RECSYS_ARTIFACT_S3_ENDPOINT", ""),
+			AccessKey: loader.String("RECSYS_ARTIFACT_S3_ACCESS_KEY", ""),
+			SecretKey: loader.String("RECSYS_ARTIFACT_S3_SECRET_KEY", ""),
+			Region:    loader.String("RECSYS_ARTIFACT_S3_REGION", ""),
+			UseSSL:    loader.Bool("RECSYS_ARTIFACT_S3_USE_SSL", false),
+		},
+	}
 	expVariants := loader.CSV("EXPERIMENT_DEFAULT_VARIANTS")
 	if len(expVariants) == 0 {
 		expVariants = []string{"A", "B"}
@@ -284,6 +318,7 @@ func Load() Config {
 		Exposure:    exposureCfg,
 		Experiment:  expCfg,
 		Explain:     explainCfg,
+		Artifacts:   artifactCfg,
 		Algo:        algoCfg,
 	}
 	if err := loader.Err(); err != nil {

@@ -12,3 +12,10 @@ Notes:
 - For local MVPs, a `default` namespace fallback is available (see `explanation/surface-namespaces.md`).
 - Admin bootstrap (tenant + config + rules) is required before first use:
   see `reference/api/admin.md`.
+
+Tenant headers (local dev):
+- When `DEV_AUTH_ENABLED=true`, send **both**:
+  - `X-Dev-Org-Id` (dev auth tenant context)
+  - `X-Org-Id` (tenant scope enforced by middleware)
+- In JWT mode, a bearer token with a tenant claim is sufficient (see `AUTH_TENANT_CLAIMS`).
+- To use a single header locally, set `DEV_AUTH_TENANT_HEADER=X-Org-Id`.

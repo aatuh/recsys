@@ -4,36 +4,35 @@
  */
 
 export interface paths {
-    "/api/v1/foo": {
+    "/v1/admin/tenants/{tenant_id}/cache/invalidate": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
+        get?: never;
+        put?: never;
         /**
-         * List foos
-         * @description List foos filtered by org and namespace
+         * Invalidate caches
+         * @description Invalidate tenant cache targets
          */
-        get: {
+        post: {
             parameters: {
-                query: {
-                    /** @description Organization ID */
-                    org_id: string;
-                    /** @description Namespace */
-                    namespace: string;
-                    /** @description Page size */
-                    limit?: number;
-                    /** @description Offset */
-                    offset?: number;
-                    /** @description Search term */
-                    search?: string;
-                };
+                query?: never;
                 header?: never;
-                path?: never;
+                path: {
+                    /** @description Tenant ID */
+                    tenant_id: string;
+                };
                 cookie?: never;
             };
-            requestBody?: never;
+            /** @description Cache invalidation payload */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["types.CacheInvalidateRequest"];
+                };
+            };
             responses: {
                 /** @description OK */
                 200: {
@@ -41,7 +40,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["types.FooListResponse"];
+                        "application/json": components["schemas"]["types.CacheInvalidateResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -53,38 +52,191 @@ export interface paths {
                         "application/json": components["schemas"]["types.Problem"];
                     };
                 };
-            };
-        };
-        put?: never;
-        /**
-         * Create foo
-         * @description Create a new foo resource
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            /** @description Foo payload */
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["types.CreateFooDTO"];
-                };
-            };
-            responses: {
-                /** @description Created */
-                201: {
+                /** @description Unauthorized */
+                401: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["types.FooDTO"];
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/tenants/{tenant_id}/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get tenant config
+         * @description Fetch current tenant config
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Tenant ID */
+                    tenant_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.TenantConfigResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+            };
+        };
+        /**
+         * Update tenant config
+         * @description Update config with optimistic concurrency
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Config version */
+                    "If-Match"?: string;
+                };
+                path: {
+                    /** @description Tenant ID */
+                    tenant_id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Config payload */
+            requestBody: {
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.TenantConfigResponse"];
                     };
                 };
                 /** @description Bad Request */
                 400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -101,15 +253,34 @@ export interface paths {
                         "application/json": components["schemas"]["types.Problem"];
                     };
                 };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
             };
         };
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/foo/{id}": {
+    "/v1/admin/tenants/{tenant_id}/rules": {
         parameters: {
             query?: never;
             header?: never;
@@ -117,16 +288,16 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get foo
-         * @description Fetch a foo by ID
+         * Get tenant rules
+         * @description Fetch current tenant rules
          */
         get: {
             parameters: {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description Foo ID */
-                    id: string;
+                    /** @description Tenant ID */
+                    tenant_id: string;
                 };
                 cookie?: never;
             };
@@ -138,7 +309,25 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["types.FooDTO"];
+                        "application/json": components["schemas"]["types.TenantRulesResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
                     };
                 };
                 /** @description Not Found */
@@ -150,26 +339,38 @@ export interface paths {
                         "application/json": components["schemas"]["types.Problem"];
                     };
                 };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
             };
         };
         /**
-         * Update foo
-         * @description Update a foo by ID
+         * Update tenant rules
+         * @description Update rules with optimistic concurrency
          */
         put: {
             parameters: {
                 query?: never;
-                header?: never;
+                header?: {
+                    /** @description Rules version */
+                    "If-Match"?: string;
+                };
                 path: {
-                    /** @description Foo ID */
-                    id: string;
+                    /** @description Tenant ID */
+                    tenant_id: string;
                 };
                 cookie?: never;
             };
-            /** @description Foo update payload */
+            /** @description Rules payload */
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["types.UpdateFooDTO"];
+                    "application/json": Record<string, never>;
                 };
             };
             responses: {
@@ -179,7 +380,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["types.FooDTO"];
+                        "application/json": components["schemas"]["types.TenantRulesResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -191,8 +392,53 @@ export interface paths {
                         "application/json": components["schemas"]["types.Problem"];
                     };
                 };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
                 /** @description Not Found */
                 404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -203,40 +449,300 @@ export interface paths {
             };
         };
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/recommend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
         /**
-         * Delete foo
-         * @description Delete a foo by ID
+         * Recommend items
+         * @description Return ranked recommendations
          */
-        delete: {
+        post: {
             parameters: {
                 query?: never;
                 header?: never;
-                path: {
-                    /** @description Foo ID */
-                    id: string;
-                };
+                path?: never;
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody: components["requestBodies"]["types.RecommendRequest"];
             responses: {
-                /** @description No Content */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Not Found */
-                404: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["types.Problem"];
+                        "application/json": components["schemas"]["types.RecommendResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
                     };
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/recommend/validate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Validate recommend request
+         * @description Validate and normalize a recommend request
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: components["requestBodies"]["types.RecommendRequest"];
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.ValidateResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/similar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Similar items
+         * @description Return similar items for an item_id
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Similar payload */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["types.SimilarRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.RecommendResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["types.Problem"];
+                    };
+                };
+            };
+        };
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -246,53 +752,176 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        "types.CreateFooDTO": {
-            name: string;
-            namespace: string;
-            org_id: string;
+        "types.Anchors": {
+            item_ids?: string[];
+            max_anchors?: number;
         };
-        "types.FooDTO": {
-            /** @example 2023-01-01T00:00:00Z */
-            created_at?: string;
-            /** @example 01HZJ8K9M2N3P4Q5R6S7T8U9V */
-            id?: string;
-            /** @example my-foo */
-            name?: string;
-            /** @example default */
-            namespace?: string;
-            /** @example org-123 */
-            org_id?: string;
-            /** @example 2023-01-01T00:00:00Z */
-            updated_at?: string;
+        "types.AnchorsNormalized": {
+            item_ids?: string[];
+            max_anchors?: number;
         };
-        "types.FooListResponse": {
-            data?: components["schemas"]["types.FooDTO"][];
-            meta?: components["schemas"]["types.ListMeta"];
+        "types.CacheInvalidateRequest": {
+            surface?: string;
+            targets?: string[];
         };
-        "types.ListMeta": {
-            count?: number;
-            filters?: {
-                [key: string]: string[];
+        "types.CacheInvalidateResponse": {
+            invalidated?: {
+                [key: string]: number;
             };
-            limit?: number;
-            offset?: number;
-            search?: string;
-            total?: number;
+            status?: string;
+            surface?: string;
+            targets?: string[];
+            tenant_id?: string;
+        };
+        "types.Candidates": {
+            exclude_ids?: string[];
+            include_ids?: string[];
+        };
+        "types.Constraints": {
+            forbidden_tags?: string[];
+            max_per_tag?: {
+                [key: string]: number;
+            };
+            required_tags?: string[];
+        };
+        "types.Experiment": {
+            id?: string;
+            variant?: string;
+        };
+        "types.NormalizedRecommendRequest": {
+            anchors?: components["schemas"]["types.AnchorsNormalized"];
+            candidates?: components["schemas"]["types.Candidates"];
+            constraints?: components["schemas"]["types.Constraints"];
+            context?: components["schemas"]["types.RequestContext"];
+            experiment?: components["schemas"]["types.Experiment"];
+            k?: number;
+            options?: components["schemas"]["types.OptionsNormalized"];
+            segment?: string;
+            surface?: string;
+            user?: components["schemas"]["types.UserRef"];
+            weights?: components["schemas"]["types.Weights"];
+        };
+        "types.Options": {
+            explain?: string;
+            include_reasons?: boolean;
+            include_trace?: boolean;
+            seed?: number;
+        };
+        "types.OptionsNormalized": {
+            explain?: string;
+            include_reasons?: boolean;
+            include_trace?: boolean;
+            seed?: number;
         };
         "types.Problem": {
+            code?: string;
             detail?: string;
             instance?: string;
+            request_id?: string;
             status?: number;
             title?: string;
             type?: string;
         };
-        "types.UpdateFooDTO": {
-            name: string;
+        "types.RecommendItem": {
+            explain?: components["schemas"]["types.RecommendItemExplain"];
+            item_id?: string;
+            rank?: number;
+            reasons?: string[];
+            score?: number;
+        };
+        "types.RecommendItemExplain": {
+            rules?: string[];
+            signals?: {
+                [key: string]: number;
+            };
+        };
+        "types.RecommendRequest": {
+            anchors?: components["schemas"]["types.Anchors"];
+            candidates?: components["schemas"]["types.Candidates"];
+            constraints?: components["schemas"]["types.Constraints"];
+            context?: components["schemas"]["types.RequestContext"];
+            experiment?: components["schemas"]["types.Experiment"];
+            k?: number;
+            options?: components["schemas"]["types.Options"];
+            segment?: string;
+            surface?: string;
+            user?: components["schemas"]["types.UserRef"];
+            weights?: components["schemas"]["types.Weights"];
+        };
+        "types.RecommendResponse": {
+            items?: components["schemas"]["types.RecommendItem"][];
+            meta?: components["schemas"]["types.ResponseMeta"];
+            warnings?: components["schemas"]["types.Warning"][];
+        };
+        "types.RequestContext": {
+            country?: string;
+            device?: string;
+            locale?: string;
+            now?: string;
+        };
+        "types.ResponseMeta": {
+            algo_version?: string;
+            config_version?: string;
+            counts?: {
+                [key: string]: number;
+            };
+            request_id?: string;
+            rules_version?: string;
+            segment?: string;
+            surface?: string;
+            tenant_id?: string;
+            timings_ms?: {
+                [key: string]: number;
+            };
+        };
+        "types.SimilarRequest": {
+            constraints?: components["schemas"]["types.Constraints"];
+            item_id?: string;
+            k?: number;
+            options?: components["schemas"]["types.Options"];
+            segment?: string;
+            surface?: string;
+        };
+        "types.TenantConfigResponse": {
+            config?: unknown;
+            config_version?: string;
+            tenant_id?: string;
+        };
+        "types.TenantRulesResponse": {
+            rules?: unknown;
+            rules_version?: string;
+            tenant_id?: string;
+        };
+        "types.UserRef": {
+            anonymous_id?: string;
+            session_id?: string;
+            user_id?: string;
+        };
+        "types.ValidateResponse": {
+            meta?: components["schemas"]["types.ResponseMeta"];
+            normalized_request?: components["schemas"]["types.NormalizedRecommendRequest"];
+            warnings?: components["schemas"]["types.Warning"][];
+        };
+        "types.Warning": {
+            code?: string;
+            detail?: string;
+        };
+        "types.Weights": {
+            cooc?: number;
+            emb?: number;
+            pop?: number;
         };
     };
     responses: never;
     parameters: never;
-    requestBodies: never;
+    requestBodies: {
+        /** @description Recommend payload */
+        "types.RecommendRequest": {
+            content: {
+                "application/json": components["schemas"]["types.RecommendRequest"];
+            };
+        };
+    };
     headers: never;
     pathItems: never;
 }

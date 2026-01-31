@@ -23,6 +23,7 @@
     "@api-boilerplate-core/content": "github:aatuh/api-boilerplate-core#path:/packages/content",
     "@api-boilerplate-core/env": "github:aatuh/api-boilerplate-core#path:/packages/env",
     "@api-boilerplate-core/http": "github:aatuh/api-boilerplate-core#path:/packages/http",
+    "@api-boilerplate-core/i18n-shared": "github:aatuh/api-boilerplate-core#path:/packages/i18n-shared",
     "@api-boilerplate-core/layouts": "github:aatuh/api-boilerplate-core#path:/packages/layouts",
     "@api-boilerplate-core/legal": "github:aatuh/api-boilerplate-core#path:/packages/legal",
     "@api-boilerplate-core/theme": "github:aatuh/api-boilerplate-core#path:/packages/theme",
