@@ -53,7 +53,10 @@ services:
     stop_grace_period: 1s
     healthcheck:
       test:
-        ["CMD-SHELL", "curl -f http://localhost:${API_PORT:-8000}/healthz || exit 1"]
+        [
+          "CMD-SHELL",
+          "curl -f http://localhost:${API_PORT:-8000}/healthz || exit 1",
+        ]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -112,7 +115,11 @@ services:
     volumes:
       - minio_data:/data
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9000/minio/health/ready || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "curl -f http://localhost:9000/minio/health/ready || exit 1",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -132,20 +139,6 @@ services:
       mc anonymous set download local/${MINIO_BUCKET:-recsys-artifacts} || true;
       "
 
-  proxy:
-    container_name: recsys-proxy
-    build: ./proxy
-    env_file: .env
-    volumes:
-      - mkcert_ca:/root/.local/share/mkcert
-      - caddy_certs:/certs
-      - ./proxy/entrypoint.sh:/entrypoint.sh:ro
-    ports:
-      - "443:443"
-      - "80:80"
-    depends_on:
-      - api
-
 volumes:
   db_data:
   api_tmp:
@@ -162,6 +155,4 @@ volumes:
   test_pkg:
   test_sumdb:
   test_gocache:
-  mkcert_ca:
-  caddy_certs:
   minio_data:
