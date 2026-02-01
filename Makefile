@@ -48,7 +48,6 @@ logs: ## View the logs of the service
 codegen: ## Generate code
 	@echo "🔄 Generating code..."
 	cd api && make codegen
-	cd web && make codegen
 
 build: ## Build all Docker Compose services
 	@echo "🔨 Building all services..."

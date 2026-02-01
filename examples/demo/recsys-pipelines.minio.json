@@ -1,0 +1,20 @@
+{
+  "out_dir": "../tmp/demo-pipelines",
+  "raw_events_dir": "../examples/data/tiny",
+  "canonical_dir": "../tmp/demo-pipelines/canonical",
+  "artifacts_dir": "../tmp/demo-pipelines/artifacts",
+  "object_store_dir": "../tmp/demo-pipelines/objectstore",
+  "registry_dir": "s3://recsys-artifacts/registry",
+  "object_store": {
+    "type": "minio",
+    "dir": "../tmp/demo-pipelines/objectstore",
+    "s3": {
+      "endpoint": "localhost:9000",
+      "bucket": "recsys-artifacts",
+      "access_key": "minioadmin",
+      "secret_key": "minioadmin",
+      "prefix": "",
+      "use_ssl": false
+    }
+  }
+}
