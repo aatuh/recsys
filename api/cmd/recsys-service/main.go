@@ -12,6 +12,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/aatuh/recsys-suite/api/docs"
 	"github.com/aatuh/recsys-suite/api/internal/config"
 	appmw "github.com/aatuh/recsys-suite/api/internal/http/middleware"
 	"github.com/aatuh/recsys-suite/api/migrations"
@@ -19,6 +20,7 @@ import (
 	"github.com/aatuh/api-toolkit-contrib/adapters/logzap"
 	"github.com/aatuh/api-toolkit-contrib/bootstrap"
 	"github.com/aatuh/api-toolkit-contrib/middleware/metrics"
+	"github.com/aatuh/api-toolkit-contrib/telemetry"
 	"github.com/aatuh/api-toolkit/endpoints/health"
 	versionep "github.com/aatuh/api-toolkit/endpoints/version"
 	"github.com/aatuh/api-toolkit/ports"
@@ -32,13 +34,6 @@ var (
 	date    = "unknown"
 )
 
-// @title Recsys Service API
-// @version 1.0.0
-// @description Recommendation service API
-// @BasePath /
-// @securityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization
 func loggerFromEnv(env, level string) ports.Logger {
 	env = strings.ToLower(strings.TrimSpace(env))
 	switch env {
@@ -57,6 +52,15 @@ func main() {
 	log := loggerFromEnv(cfg.Env, cfg.LogLevel)
 
 	ctx := context.Background()
+	traceShutdown, tracingEnabled, traceErr := telemetry.InitTracing(ctx, cfg.Telemetry.Tracing)
+	if traceErr != nil {
+		log.Warn("tracing init failed", "err", traceErr.Error())
+	} else if tracingEnabled {
+		defer func() {
+			_ = traceShutdown(context.Background())
+		}()
+	}
+
 	pool := bootstrap.OpenPoolOrExit(ctx, cfg.DatabaseURL, 3*time.Second, log)
 	defer pool.Close()
 
@@ -75,7 +79,7 @@ func main() {
 	docsHandler := setupDocsHandler(cfg, log)
 	healthManager := setupHealthManager(pool, cfg)
 
-	securityStack, err := appmw.NewSecurityStack(ctx, cfg, log)
+	securityStack, err := appmw.NewSecurityStack(ctx, cfg, log, pool)
 	if err != nil {
 		log.Error("failed to initialize security stack", "err", err)
 		os.Exit(1)
@@ -94,7 +98,6 @@ func main() {
 	}
 	bootstrap.MountSystemEndpoints(r, bootstrap.SystemEndpoints{
 		Health: health.NewHandler(healthManager),
-		Docs:   docsHandler,
 		Version: versionep.NewHandler(versionep.Config{
 			Path: specs.Version,
 			Info: ports.VersionInfo{
@@ -106,6 +109,9 @@ func main() {
 		Pprof:   pprofHandler,
 		Metrics: metrics.PrometheusHandler(),
 	})
+	if docsHandler != nil {
+		mountDocsRoutes(r, docsHandler, docs.OpenAPIJSON, docs.OpenAPIYAML)
+	}
 
 	deps, err := buildAppDeps(log, pool, cfg)
 	if err != nil {

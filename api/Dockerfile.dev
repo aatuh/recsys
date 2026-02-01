@@ -9,7 +9,6 @@ ENV CGO_ENABLED=1 \
     GOSUMDB=sum.golang.org
 
 RUN go install github.com/cespare/reflex@latest \
-    && go install github.com/swaggo/swag/cmd/swag@latest \
     && go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
 COPY go.mod go.sum* ./

@@ -2,10 +2,12 @@ package middleware
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/aatuh/recsys-suite/api/internal/audit"
 	"github.com/aatuh/recsys-suite/api/internal/config"
+	"github.com/aatuh/recsys-suite/api/internal/store"
 
 	"github.com/aatuh/api-toolkit/ports"
 )
@@ -18,7 +20,7 @@ type SecurityStack struct {
 }
 
 // NewSecurityStack builds the security middleware stack for the service.
-func NewSecurityStack(ctx context.Context, cfg config.Config, log ports.Logger) (SecurityStack, error) {
+func NewSecurityStack(ctx context.Context, cfg config.Config, log ports.Logger, pool ports.DatabasePool) (SecurityStack, error) {
 	middlewares := []func(http.Handler) http.Handler{}
 	healthChecks := []ports.HealthChecker{}
 	closers := []func(){}
@@ -44,6 +46,18 @@ func NewSecurityStack(ctx context.Context, cfg config.Config, log ports.Logger) 
 	}
 
 	appendMw(NewClaimsMiddleware(cfg.Auth, log).Handler)
+
+	if cfg.Auth.APIKeys.Enabled && pool == nil {
+		return SecurityStack{}, fmt.Errorf("api key auth enabled but database is not configured")
+	}
+	apiKeyStore := store.NewAPIKeyStore(pool)
+	apiKeyMw, err := NewAPIKeyMiddleware(cfg.Auth, apiKeyStore, log)
+	if err != nil {
+		return SecurityStack{}, err
+	}
+	appendMw(apiKeyMw.Handler)
+
+	appendMw(NewRequireAuth(cfg.Auth).Handler)
 	appendMw(NewRequireTenantClaim(cfg.Auth).Handler)
 
 	tenantMw, err := NewTenantMiddleware(cfg.Auth)

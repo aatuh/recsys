@@ -45,18 +45,6 @@ func (h *AdminHandler) Routes() ports.HTTPRouter {
 }
 
 // getConfig handles GET /v1/admin/tenants/{tenant_id}/config.
-// @Summary Get tenant config
-// @Description Fetch current tenant config
-// @Tags Admin
-// @Produce json
-// @Security BearerAuth
-// @Param tenant_id path string true "Tenant ID"
-// @Success 200 {object} types.TenantConfigResponse
-// @Failure 401 {object} types.Problem
-// @Failure 403 {object} types.Problem
-// @Failure 404 {object} types.Problem
-// @Failure 500 {object} types.Problem
-// @Router /v1/admin/tenants/{tenant_id}/config [get]
 func (h *AdminHandler) getConfig(w http.ResponseWriter, r *http.Request) {
 	tenantID := strings.TrimSpace(chi.URLParam(r, "tenant_id"))
 	if tenantID == "" {
@@ -73,24 +61,6 @@ func (h *AdminHandler) getConfig(w http.ResponseWriter, r *http.Request) {
 }
 
 // putConfig handles PUT /v1/admin/tenants/{tenant_id}/config.
-// @Summary Update tenant config
-// @Description Update config with optimistic concurrency
-// @Tags Admin
-// @Accept json
-// @Produce json
-// @Security BearerAuth
-// @Param tenant_id path string true "Tenant ID"
-// @Param payload body object true "Config payload"
-// @Param If-Match header string false "Config version"
-// @Success 200 {object} types.TenantConfigResponse
-// @Failure 400 {object} types.Problem
-// @Failure 401 {object} types.Problem
-// @Failure 403 {object} types.Problem
-// @Failure 404 {object} types.Problem
-// @Failure 409 {object} types.Problem
-// @Failure 422 {object} types.Problem
-// @Failure 500 {object} types.Problem
-// @Router /v1/admin/tenants/{tenant_id}/config [put]
 func (h *AdminHandler) putConfig(w http.ResponseWriter, r *http.Request) {
 	tenantID := strings.TrimSpace(chi.URLParam(r, "tenant_id"))
 	if tenantID == "" {
@@ -119,18 +89,6 @@ func (h *AdminHandler) putConfig(w http.ResponseWriter, r *http.Request) {
 }
 
 // getRules handles GET /v1/admin/tenants/{tenant_id}/rules.
-// @Summary Get tenant rules
-// @Description Fetch current tenant rules
-// @Tags Admin
-// @Produce json
-// @Security BearerAuth
-// @Param tenant_id path string true "Tenant ID"
-// @Success 200 {object} types.TenantRulesResponse
-// @Failure 401 {object} types.Problem
-// @Failure 403 {object} types.Problem
-// @Failure 404 {object} types.Problem
-// @Failure 500 {object} types.Problem
-// @Router /v1/admin/tenants/{tenant_id}/rules [get]
 func (h *AdminHandler) getRules(w http.ResponseWriter, r *http.Request) {
 	tenantID := strings.TrimSpace(chi.URLParam(r, "tenant_id"))
 	if tenantID == "" {
@@ -147,24 +105,6 @@ func (h *AdminHandler) getRules(w http.ResponseWriter, r *http.Request) {
 }
 
 // putRules handles PUT /v1/admin/tenants/{tenant_id}/rules.
-// @Summary Update tenant rules
-// @Description Update rules with optimistic concurrency
-// @Tags Admin
-// @Accept json
-// @Produce json
-// @Security BearerAuth
-// @Param tenant_id path string true "Tenant ID"
-// @Param payload body object true "Rules payload"
-// @Param If-Match header string false "Rules version"
-// @Success 200 {object} types.TenantRulesResponse
-// @Failure 400 {object} types.Problem
-// @Failure 401 {object} types.Problem
-// @Failure 403 {object} types.Problem
-// @Failure 404 {object} types.Problem
-// @Failure 409 {object} types.Problem
-// @Failure 422 {object} types.Problem
-// @Failure 500 {object} types.Problem
-// @Router /v1/admin/tenants/{tenant_id}/rules [put]
 func (h *AdminHandler) putRules(w http.ResponseWriter, r *http.Request) {
 	tenantID := strings.TrimSpace(chi.URLParam(r, "tenant_id"))
 	if tenantID == "" {
@@ -193,22 +133,6 @@ func (h *AdminHandler) putRules(w http.ResponseWriter, r *http.Request) {
 }
 
 // invalidateCache handles POST /v1/admin/tenants/{tenant_id}/cache/invalidate.
-// @Summary Invalidate caches
-// @Description Invalidate tenant cache targets
-// @Tags Admin
-// @Accept json
-// @Produce json
-// @Security BearerAuth
-// @Param tenant_id path string true "Tenant ID"
-// @Param payload body types.CacheInvalidateRequest true "Cache invalidation payload"
-// @Success 200 {object} types.CacheInvalidateResponse
-// @Failure 400 {object} types.Problem
-// @Failure 401 {object} types.Problem
-// @Failure 403 {object} types.Problem
-// @Failure 404 {object} types.Problem
-// @Failure 422 {object} types.Problem
-// @Failure 500 {object} types.Problem
-// @Router /v1/admin/tenants/{tenant_id}/cache/invalidate [post]
 func (h *AdminHandler) invalidateCache(w http.ResponseWriter, r *http.Request) {
 	tenantID := strings.TrimSpace(chi.URLParam(r, "tenant_id"))
 	if tenantID == "" {

@@ -40,8 +40,11 @@ cycle: ## Cycle the containers down and up
 logs: ## View the logs of the service
 	@$(DOCKER_COMPOSE) logs -f api
 
-codegen: ## Generate code
-	@$(DOCKER_COMPOSE) exec api swag init -g cmd/recsys-service/main.go -o ./swagger
+OPENAPI_SOURCE ?= ../docs/reference/api/openapi.yaml
+OPENAPI_OUT ?= ./docs
+
+codegen: ## Generate OpenAPI artifacts from the canonical spec
+	@go run ./cmd/openapi-sync -input $(OPENAPI_SOURCE) -out-dir $(OPENAPI_OUT)
 
 migrate-up: ## Apply migrations
 	@$(DOCKER_COMPOSE) exec api sh -c "go run ./cmd/migrate -dir \$$MIGRATIONS_DIR up"

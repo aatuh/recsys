@@ -94,22 +94,6 @@ func (h *RecsysHandler) RegisterRoutes(r ports.HTTPRouter) {
 }
 
 // recommend handles POST /v1/recommend.
-// @Summary Recommend items
-// @Description Return ranked recommendations
-// @Tags Recsys
-// @Accept json
-// @Produce json
-// @Security BearerAuth
-// @Param payload body types.RecommendRequest true "Recommend payload"
-// @Success 200 {object} types.RecommendResponse
-// @Failure 400 {object} types.Problem
-// @Failure 401 {object} types.Problem
-// @Failure 403 {object} types.Problem
-// @Failure 422 {object} types.Problem
-// @Failure 429 {object} types.Problem
-// @Failure 500 {object} types.Problem
-// @Failure 503 {object} types.Problem
-// @Router /v1/recommend [post]
 func (h *RecsysHandler) recommend(w http.ResponseWriter, r *http.Request) {
 	var dto types.RecommendRequest
 	if err := decodeStrictJSON(r, &dto); err != nil {
@@ -160,22 +144,6 @@ func (h *RecsysHandler) recommend(w http.ResponseWriter, r *http.Request) {
 }
 
 // similar handles POST /v1/similar.
-// @Summary Similar items
-// @Description Return similar items for an item_id
-// @Tags Recsys
-// @Accept json
-// @Produce json
-// @Security BearerAuth
-// @Param payload body types.SimilarRequest true "Similar payload"
-// @Success 200 {object} types.RecommendResponse
-// @Failure 400 {object} types.Problem
-// @Failure 401 {object} types.Problem
-// @Failure 403 {object} types.Problem
-// @Failure 422 {object} types.Problem
-// @Failure 429 {object} types.Problem
-// @Failure 500 {object} types.Problem
-// @Failure 503 {object} types.Problem
-// @Router /v1/similar [post]
 func (h *RecsysHandler) similar(w http.ResponseWriter, r *http.Request) {
 	var dto types.SimilarRequest
 	if err := decodeStrictJSON(r, &dto); err != nil {
@@ -266,20 +234,6 @@ func (h *RecsysHandler) hasAdminRole(r *http.Request) bool {
 }
 
 // validate handles POST /v1/recommend/validate.
-// @Summary Validate recommend request
-// @Description Validate and normalize a recommend request
-// @Tags Recsys
-// @Accept json
-// @Produce json
-// @Security BearerAuth
-// @Param payload body types.RecommendRequest true "Recommend payload"
-// @Success 200 {object} types.ValidateResponse
-// @Failure 400 {object} types.Problem
-// @Failure 401 {object} types.Problem
-// @Failure 403 {object} types.Problem
-// @Failure 422 {object} types.Problem
-// @Failure 429 {object} types.Problem
-// @Router /v1/recommend/validate [post]
 func (h *RecsysHandler) validate(w http.ResponseWriter, r *http.Request) {
 	var dto types.RecommendRequest
 	if err := decodeStrictJSON(r, &dto); err != nil {

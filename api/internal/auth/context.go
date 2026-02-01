@@ -8,8 +8,9 @@ type ctxKey struct{}
 type TenantSource string
 
 const (
-	TenantSourceClaim TenantSource = "claim"
-	TenantSourceDev   TenantSource = "dev"
+	TenantSourceClaim  TenantSource = "claim"
+	TenantSourceDev    TenantSource = "dev"
+	TenantSourceAPIKey TenantSource = "api_key"
 )
 
 // Info captures authentication context derived from the request.
@@ -18,6 +19,8 @@ type Info struct {
 	TenantID     string
 	TenantSource TenantSource
 	Roles        []string
+	APIKeyID     string
+	APIKeyName   string
 }
 
 // WithInfo stores auth info in context.

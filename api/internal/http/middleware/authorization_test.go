@@ -42,6 +42,25 @@ func TestRequireTenantClaimAllowsClaim(t *testing.T) {
 	}
 }
 
+func TestRequireTenantClaimAllowsAPIKey(t *testing.T) {
+	mw := NewRequireTenantClaim(config.AuthConfig{RequireTenantClaim: true})
+	req := httptest.NewRequest(http.MethodPost, "/v1/recommend", nil)
+	ctx := auth.WithInfo(req.Context(), auth.Info{
+		TenantID:     "tenant-a",
+		TenantSource: auth.TenantSourceAPIKey,
+	})
+	req = req.WithContext(ctx)
+	rec := httptest.NewRecorder()
+
+	mw.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})).ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rec.Code)
+	}
+}
+
 func TestTenantMiddlewareMismatch(t *testing.T) {
 	mw, err := NewTenantMiddleware(config.AuthConfig{TenantHeader: "X-Org-Id"})
 	if err != nil {

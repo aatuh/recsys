@@ -10,6 +10,7 @@ import (
 	"github.com/aatuh/api-toolkit-contrib/config"
 	jwtint "github.com/aatuh/api-toolkit-contrib/integrations/auth/jwt"
 	"github.com/aatuh/api-toolkit-contrib/middleware/auth/devheaders"
+	"github.com/aatuh/api-toolkit-contrib/telemetry"
 	"github.com/aatuh/api-toolkit/endpoints/health"
 )
 
@@ -23,6 +24,7 @@ type Config struct {
 	RateLimit   RateLimitConfig
 	Audit       AuditConfig
 	Performance PerformanceConfig
+	Telemetry   TelemetryConfig
 	Exposure    ExposureConfig
 	Experiment  ExperimentConfig
 	Explain     ExplainConfig
@@ -50,6 +52,14 @@ type AuthConfig struct {
 	JWT             jwtint.Config
 	DevHeaders      devheaders.Config
 	DevTenantHeader string
+	APIKeys         APIKeyConfig
+}
+
+// APIKeyConfig controls API key authentication.
+type APIKeyConfig struct {
+	Enabled    bool
+	Header     string
+	HashSecret string
 }
 
 // RateLimitConfig configures per-tenant rate limiting.
@@ -152,6 +162,11 @@ type PerformanceConfig struct {
 	PprofEnabled bool
 }
 
+// TelemetryConfig bundles observability toggles.
+type TelemetryConfig struct {
+	Tracing telemetry.TraceConfig
+}
+
 // BackpressureConfig controls bounded queue behavior.
 type BackpressureConfig struct {
 	MaxInFlight int
@@ -206,6 +221,11 @@ func Load() Config {
 		JWT:                jwtCfg,
 		DevHeaders:         devCfg,
 		DevTenantHeader:    loader.String("DEV_AUTH_TENANT_HEADER", "X-Dev-Org-Id"),
+		APIKeys: APIKeyConfig{
+			Enabled:    loader.Bool("API_KEY_ENABLED", false),
+			Header:     loader.String("API_KEY_HEADER", "X-API-Key"),
+			HashSecret: loader.String("API_KEY_HASH_SECRET", ""),
+		},
 	}
 	rateCfg := RateLimitConfig{
 		TenantEnabled:    loader.Bool("TENANT_RATE_LIMIT_ENABLED", true),
@@ -232,6 +252,10 @@ func Load() Config {
 			RulesTTL:  loader.Duration("RECSYS_RULES_CACHE_TTL", 5*time.Minute),
 		},
 		PprofEnabled: loader.Bool("PPROF_ENABLED", false),
+	}
+	traceCfg := telemetry.LoadTraceConfig(loader)
+	if strings.TrimSpace(traceCfg.ServiceName) == "" || traceCfg.ServiceName == "api" {
+		traceCfg.ServiceName = "recsys-service"
 	}
 	exposurePath := loader.String("EXPOSURE_LOG_PATH", "")
 	exposureEnabled := loader.Bool("EXPOSURE_LOG_ENABLED", exposurePath != "")
@@ -315,11 +339,14 @@ func Load() Config {
 		RateLimit:   rateCfg,
 		Audit:       auditCfg,
 		Performance: perfCfg,
-		Exposure:    exposureCfg,
-		Experiment:  expCfg,
-		Explain:     explainCfg,
-		Artifacts:   artifactCfg,
-		Algo:        algoCfg,
+		Telemetry: TelemetryConfig{
+			Tracing: traceCfg,
+		},
+		Exposure:   exposureCfg,
+		Experiment: expCfg,
+		Explain:    explainCfg,
+		Artifacts:  artifactCfg,
+		Algo:       algoCfg,
 	}
 	if err := loader.Err(); err != nil {
 		panic(err)

@@ -40,15 +40,19 @@ func (m *ClaimsMiddleware) Handler(next http.Handler) http.Handler {
 			return
 		}
 
-		info := auth.Info{}
+		info, _ := auth.FromContext(r.Context())
 		if subj, ok := jwtint.SubjectFromContext(r.Context()); ok {
-			info.UserID = subj.UserID
+			if info.UserID == "" {
+				info.UserID = subj.UserID
+			}
 			if len(subj.Claims) > 0 {
-				if tenant := auth.ExtractTenant(subj.Claims, m.cfg.TenantClaimKeys); tenant != "" {
-					info.TenantID = tenant
-					info.TenantSource = auth.TenantSourceClaim
+				if info.TenantID == "" {
+					if tenant := auth.ExtractTenant(subj.Claims, m.cfg.TenantClaimKeys); tenant != "" {
+						info.TenantID = tenant
+						info.TenantSource = auth.TenantSourceClaim
+					}
 				}
-				info.Roles = auth.ExtractRoles(subj.Claims, m.cfg.RoleClaimKeys)
+				info.Roles = mergeRoles(info.Roles, auth.ExtractRoles(subj.Claims, m.cfg.RoleClaimKeys))
 			}
 		}
 
@@ -69,4 +73,40 @@ func (m *ClaimsMiddleware) Handler(next http.Handler) http.Handler {
 		}
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func mergeRoles(base, extra []string) []string {
+	if len(extra) == 0 {
+		return base
+	}
+	if len(base) == 0 {
+		out := make([]string, len(extra))
+		copy(out, extra)
+		return out
+	}
+	seen := make(map[string]struct{}, len(base)+len(extra))
+	out := make([]string, 0, len(base)+len(extra))
+	for _, role := range base {
+		role = strings.TrimSpace(role)
+		if role == "" {
+			continue
+		}
+		if _, ok := seen[role]; ok {
+			continue
+		}
+		seen[role] = struct{}{}
+		out = append(out, role)
+	}
+	for _, role := range extra {
+		role = strings.TrimSpace(role)
+		if role == "" {
+			continue
+		}
+		if _, ok := seen[role]; ok {
+			continue
+		}
+		seen[role] = struct{}{}
+		out = append(out, role)
+	}
+	return out
 }

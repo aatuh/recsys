@@ -63,7 +63,7 @@ jobs:
         run: make codegen
 
       - name: Verify OpenAPI is up to date
-        run: git diff --exit-code swagger
+        run: git diff --exit-code docs
 
       - name: Build container image
         run: docker build -t recsys-service:ci -f Dockerfile .

@@ -1,0 +1,1010 @@
+{
+  "components": {
+    "parameters": {
+      "TenantHeader": {
+        "description": "Tenant external ID when not provided by JWT/API key.",
+        "in": "header",
+        "name": "X-Org-Id",
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "responses": {
+      "Problem": {
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        },
+        "description": "Problem Details"
+      }
+    },
+    "schemas": {
+      "AdminConfigPayload": {
+        "additionalProperties": true,
+        "description": "Tenant config payload (free-form). See reference/api/admin.md.",
+        "type": "object"
+      },
+      "AdminRulesPayload": {
+        "description": "Tenant rules payload. Accepts array or object envelope.",
+        "oneOf": [
+          {
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          {
+            "type": "object"
+          }
+        ]
+      },
+      "Anchors": {
+        "properties": {
+          "item_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "max_anchors": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "AnchorsNormalized": {
+        "properties": {
+          "item_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "max_anchors": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "CacheInvalidateRequest": {
+        "properties": {
+          "surface": {
+            "type": "string"
+          },
+          "targets": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "CacheInvalidateResponse": {
+        "properties": {
+          "invalidated": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object"
+          },
+          "status": {
+            "type": "string"
+          },
+          "surface": {
+            "type": "string"
+          },
+          "targets": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "tenant_id": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "Candidates": {
+        "properties": {
+          "exclude_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "include_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "Constraints": {
+        "properties": {
+          "forbidden_tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "max_per_tag": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object"
+          },
+          "required_tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "Experiment": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "variant": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "NormalizedRecommendRequest": {
+        "properties": {
+          "anchors": {
+            "$ref": "#/components/schemas/AnchorsNormalized"
+          },
+          "candidates": {
+            "$ref": "#/components/schemas/Candidates"
+          },
+          "constraints": {
+            "$ref": "#/components/schemas/Constraints"
+          },
+          "context": {
+            "$ref": "#/components/schemas/RequestContext"
+          },
+          "experiment": {
+            "$ref": "#/components/schemas/Experiment"
+          },
+          "k": {
+            "type": "integer"
+          },
+          "options": {
+            "$ref": "#/components/schemas/OptionsNormalized"
+          },
+          "segment": {
+            "type": "string"
+          },
+          "surface": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserRef"
+          },
+          "weights": {
+            "$ref": "#/components/schemas/Weights"
+          }
+        },
+        "type": "object"
+      },
+      "Options": {
+        "properties": {
+          "explain": {
+            "type": "string"
+          },
+          "include_reasons": {
+            "type": "boolean"
+          },
+          "include_trace": {
+            "type": "boolean"
+          },
+          "seed": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "OptionsNormalized": {
+        "properties": {
+          "explain": {
+            "type": "string"
+          },
+          "include_reasons": {
+            "type": "boolean"
+          },
+          "include_trace": {
+            "type": "boolean"
+          },
+          "seed": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "Problem": {
+        "additionalProperties": true,
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status"
+        ],
+        "type": "object"
+      },
+      "RecommendItem": {
+        "properties": {
+          "explain": {
+            "$ref": "#/components/schemas/RecommendItemExplain"
+          },
+          "item_id": {
+            "type": "string"
+          },
+          "rank": {
+            "type": "integer"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "score": {
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "RecommendItemExplain": {
+        "properties": {
+          "rules": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "signals": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "RecommendRequest": {
+        "properties": {
+          "anchors": {
+            "$ref": "#/components/schemas/Anchors"
+          },
+          "candidates": {
+            "$ref": "#/components/schemas/Candidates"
+          },
+          "constraints": {
+            "$ref": "#/components/schemas/Constraints"
+          },
+          "context": {
+            "$ref": "#/components/schemas/RequestContext"
+          },
+          "experiment": {
+            "$ref": "#/components/schemas/Experiment"
+          },
+          "k": {
+            "type": "integer"
+          },
+          "options": {
+            "$ref": "#/components/schemas/Options"
+          },
+          "segment": {
+            "type": "string"
+          },
+          "surface": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserRef"
+          },
+          "weights": {
+            "$ref": "#/components/schemas/Weights"
+          }
+        },
+        "type": "object"
+      },
+      "RecommendResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RecommendItem"
+            },
+            "type": "array"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/Warning"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "RequestContext": {
+        "properties": {
+          "country": {
+            "type": "string"
+          },
+          "device": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "now": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ResponseMeta": {
+        "properties": {
+          "algo_version": {
+            "type": "string"
+          },
+          "config_version": {
+            "type": "string"
+          },
+          "counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "rules_version": {
+            "type": "string"
+          },
+          "segment": {
+            "type": "string"
+          },
+          "surface": {
+            "type": "string"
+          },
+          "tenant_id": {
+            "type": "string"
+          },
+          "timings_ms": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "SimilarRequest": {
+        "properties": {
+          "constraints": {
+            "$ref": "#/components/schemas/Constraints"
+          },
+          "item_id": {
+            "type": "string"
+          },
+          "k": {
+            "type": "integer"
+          },
+          "options": {
+            "$ref": "#/components/schemas/Options"
+          },
+          "segment": {
+            "type": "string"
+          },
+          "surface": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "TenantConfigResponse": {
+        "properties": {
+          "config": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "config_version": {
+            "type": "string"
+          },
+          "tenant_id": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "TenantRulesResponse": {
+        "properties": {
+          "rules": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "rules_version": {
+            "type": "string"
+          },
+          "tenant_id": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "UserRef": {
+        "properties": {
+          "anonymous_id": {
+            "type": "string"
+          },
+          "session_id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ValidateResponse": {
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          },
+          "normalized_request": {
+            "$ref": "#/components/schemas/NormalizedRecommendRequest"
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/Warning"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "Warning": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "Weights": {
+        "properties": {
+          "cooc": {
+            "type": "number"
+          },
+          "emb": {
+            "type": "number"
+          },
+          "pop": {
+            "type": "number"
+          }
+        },
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "apiKeyAuth": {
+        "in": "header",
+        "name": "X-API-Key",
+        "type": "apiKey"
+      },
+      "bearerAuth": {
+        "bearerFormat": "JWT",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Recommendation service API",
+    "title": "Recsys Service API",
+    "version": "1.0.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/healthz": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [],
+        "summary": "Liveness probe"
+      }
+    },
+    "/readyz": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "503": {
+            "description": "Not ready"
+          }
+        },
+        "security": [],
+        "summary": "Readiness probe"
+      }
+    },
+    "/v1/admin/tenants/{tenant_id}/cache/invalidate": {
+      "post": {
+        "operationId": "adminInvalidateCache",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tenant_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CacheInvalidateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CacheInvalidateResponse"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "401": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "403": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "404": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "422": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "500": {
+            "$ref": "#/components/responses/Problem"
+          }
+        },
+        "summary": "Invalidate caches"
+      }
+    },
+    "/v1/admin/tenants/{tenant_id}/config": {
+      "get": {
+        "operationId": "adminGetConfig",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tenant_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantConfigResponse"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "401": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "403": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "404": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "500": {
+            "$ref": "#/components/responses/Problem"
+          }
+        },
+        "summary": "Get tenant config"
+      },
+      "put": {
+        "operationId": "adminPutConfig",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tenant_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-Match",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminConfigPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantConfigResponse"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "401": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "403": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "404": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "409": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "422": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "500": {
+            "$ref": "#/components/responses/Problem"
+          }
+        },
+        "summary": "Update tenant config"
+      }
+    },
+    "/v1/admin/tenants/{tenant_id}/rules": {
+      "get": {
+        "operationId": "adminGetRules",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tenant_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantRulesResponse"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "401": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "403": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "404": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "500": {
+            "$ref": "#/components/responses/Problem"
+          }
+        },
+        "summary": "Get tenant rules"
+      },
+      "put": {
+        "operationId": "adminPutRules",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tenant_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-Match",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminRulesPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantRulesResponse"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "401": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "403": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "404": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "409": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "422": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "500": {
+            "$ref": "#/components/responses/Problem"
+          }
+        },
+        "summary": "Update tenant rules"
+      }
+    },
+    "/v1/recommend": {
+      "post": {
+        "operationId": "recommend",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TenantHeader"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecommendRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecommendResponse"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "401": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "403": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "422": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "429": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "500": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "503": {
+            "$ref": "#/components/responses/Problem"
+          }
+        },
+        "summary": "Get ranked recommendations"
+      }
+    },
+    "/v1/recommend/validate": {
+      "post": {
+        "operationId": "recommendValidate",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TenantHeader"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecommendRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidateResponse"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "401": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "403": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "422": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "429": {
+            "$ref": "#/components/responses/Problem"
+          }
+        },
+        "summary": "Validate and normalize a recommend request"
+      }
+    },
+    "/v1/similar": {
+      "post": {
+        "operationId": "similar",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TenantHeader"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimilarRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecommendResponse"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "401": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "403": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "422": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "429": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "500": {
+            "$ref": "#/components/responses/Problem"
+          },
+          "503": {
+            "$ref": "#/components/responses/Problem"
+          }
+        },
+        "summary": "Get similar items"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    },
+    {
+      "apiKeyAuth": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://example.com"
+    }
+  ]
+}

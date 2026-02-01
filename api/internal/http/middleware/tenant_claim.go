@@ -32,7 +32,7 @@ func (m *RequireTenantClaim) Handler(next http.Handler) http.Handler {
 			return
 		}
 		info, ok := auth.FromContext(r.Context())
-		if !ok || info.TenantID == "" || info.TenantSource != auth.TenantSourceClaim {
+		if !ok || info.TenantID == "" || (info.TenantSource != auth.TenantSourceClaim && info.TenantSource != auth.TenantSourceAPIKey) {
 			problem.Write(w, r, http.StatusForbidden, "RECSYS_TENANT_SCOPE_REQUIRED", "tenant scope required")
 			return
 		}

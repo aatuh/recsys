@@ -41,6 +41,7 @@ services:
       - no-new-privileges:true
     volumes:
       - ./api:/app
+      - ./recsys-algo:/recsys-algo
       - api_tmp:/app/tmp
       - api_bin:/app/bin
       - api_coverage:/app/.coverage
@@ -78,6 +79,7 @@ services:
       - api/.env.test
     volumes:
       - ./api:/app
+      - ./recsys-algo:/recsys-algo
       - test_tmp:/app/tmp
       - test_bin:/app/bin
       - test_coverage:/app/.coverage

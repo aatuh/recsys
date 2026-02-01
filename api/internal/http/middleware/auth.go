@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/aatuh/recsys-suite/api/internal/config"
-	"github.com/aatuh/recsys-suite/api/internal/http/problem"
 
 	jwtint "github.com/aatuh/api-toolkit-contrib/integrations/auth/jwt"
 	"github.com/aatuh/api-toolkit-contrib/middleware/auth/devheaders"
@@ -29,6 +28,9 @@ func NewAuthSetup(ctx context.Context, cfg config.AuthConfig, log ports.Logger) 
 	}
 	if cfg.JWT.Enabled && cfg.DevHeaders.Enabled {
 		return AuthSetup{}, fmt.Errorf("auth config invalid: dev headers cannot be enabled with JWT")
+	}
+	if cfg.Required && !cfg.JWT.Enabled && !cfg.DevHeaders.Enabled && !cfg.APIKeys.Enabled {
+		return AuthSetup{}, fmt.Errorf("auth required but no auth provider configured")
 	}
 	if cfg.JWT.Enabled {
 		if err := validateJWKSConfig(cfg); err != nil {
@@ -51,9 +53,6 @@ func NewAuthSetup(ctx context.Context, cfg config.AuthConfig, log ports.Logger) 
 		optional := mw.OptionalHandler
 		return buildAuthSetup(cfg, required, optional, nil, nil), nil
 	}
-	if cfg.Required {
-		return AuthSetup{}, fmt.Errorf("auth required but no auth provider configured")
-	}
 	return buildAuthSetup(cfg, nil, nil, nil, nil), nil
 }
 
@@ -68,32 +67,24 @@ func buildAuthSetup(
 		if next == nil {
 			return http.HandlerFunc(func(http.ResponseWriter, *http.Request) {})
 		}
-		requiredHandler := next
-		optionalHandler := next
-		if required != nil {
-			requiredHandler = required(next)
+		handler := optional
+		if handler == nil {
+			handler = required
 		}
-		if optional != nil {
-			optionalHandler = optional(next)
+		wrapped := next
+		if handler != nil {
+			wrapped = handler(next)
 		}
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if !isProtectedPath(r) {
 				next.ServeHTTP(w, r)
 				return
 			}
-			if cfg.Required {
-				if required == nil {
-					problem.Write(w, r, http.StatusInternalServerError, "RECSYS_AUTH_MISCONFIGURED", "authentication is not configured")
-					return
-				}
-				requiredHandler.ServeHTTP(w, r)
+			if handler == nil {
+				next.ServeHTTP(w, r)
 				return
 			}
-			if optional != nil {
-				optionalHandler.ServeHTTP(w, r)
-				return
-			}
-			next.ServeHTTP(w, r)
+			wrapped.ServeHTTP(w, r)
 		})
 	}
 	if closeFn == nil {
