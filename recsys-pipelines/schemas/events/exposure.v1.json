@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ExposureEventV1",
+  "type": "object",
+  "required": [
+    "v",
+    "ts",
+    "tenant",
+    "surface",
+    "session_id",
+    "item_id"
+  ],
+  "properties": {
+    "v": {
+      "type": "integer",
+      "const": 1
+    },
+    "ts": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "tenant": {
+      "type": "string",
+      "minLength": 1
+    },
+    "surface": {
+      "type": "string",
+      "minLength": 1
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "session_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "request_id": {
+      "type": "string"
+    },
+    "item_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "rank": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false
+}

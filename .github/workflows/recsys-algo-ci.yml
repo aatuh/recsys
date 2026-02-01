@@ -1,0 +1,41 @@
+name: recsys-algo-ci
+
+on:
+  pull_request:
+    paths:
+      - "recsys-algo/**"
+      - ".github/workflows/recsys-algo-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "recsys-algo/**"
+      - ".github/workflows/recsys-algo-ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  algo:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: recsys-algo
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+
+      - name: Setup Go
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff
+        with:
+          go-version-file: recsys-algo/go.mod
+          cache: true
+
+      - name: Format check
+        run: test -z "$(gofmt -l .)"
+
+      - name: Go vet
+        run: go vet ./...
+
+      - name: Go test
+        run: go test ./...

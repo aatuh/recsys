@@ -1,0 +1,10 @@
+{
+  "v": 1,
+  "tenant": "demo",
+  "surface": "home",
+  "current": {
+    "cooc": "s3://recsys-artifacts/demo/home/cooc/3f74ab91a86d8d7ccd7e1bd3fda7b934f5c4db65d6ae61753af964df9afb5449.json",
+    "popularity": "s3://recsys-artifacts/demo/home/popularity/b335ef7d3437bc1b861d6e4b7eb34eab8b3c0e261e17e27b35d08b7ac2504c91.json"
+  },
+  "updated_at": "2026-02-01T07:11:49Z"
+}

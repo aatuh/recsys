@@ -1,0 +1,3 @@
+{"request_id":"r1","user_id":"u1","item_id":"i1","event_type":"click","value":1,"ts":"2025-01-01T00:00:10Z"}
+{"request_id":"r1","user_id":"u1","item_id":"i3","event_type":"click","value":1,"ts":"2025-01-01T00:00:12Z"}
+{"request_id":"r2","user_id":"u2","item_id":"i4","event_type":"click","value":1,"ts":"2025-01-01T00:01:20Z"}

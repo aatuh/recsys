@@ -1,0 +1,49 @@
+name: recsys-pipelines-release
+
+on:
+  push:
+    tags:
+      - "recsys-pipelines/v*"
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: recsys-pipelines
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+
+      - name: Setup Go
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff
+        with:
+          go-version-file: recsys-pipelines/go.mod
+          cache: true
+
+      - name: Release with GoReleaser
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          go install github.com/goreleaser/goreleaser@latest
+          goreleaser release --clean
+
+      - name: Generate SBOM
+        run: |
+          go install github.com/anchore/syft/cmd/syft@latest
+          syft dir:. -o spdx-json=sbom.spdx.json
+
+      - name: Upload SBOM to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "$GITHUB_REF_NAME" sbom.spdx.json --clobber
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@92c65d2898f1f53cfdc910b962cecff86e7f8fcc
+        with:
+          subject-path: recsys-pipelines/dist/**

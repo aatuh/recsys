@@ -1,0 +1,13 @@
+interleaving:
+  ranker_a:
+    type: postgres
+    dsn: "postgres://user:pass@localhost:5432/dbname"
+    query: "select data from ranker_a_lists where ts >= now() - interval '7 days'"
+  ranker_b:
+    type: postgres
+    dsn: "postgres://user:pass@localhost:5432/dbname"
+    query: "select data from ranker_b_lists where ts >= now() - interval '7 days'"
+  outcomes:
+    type: postgres
+    dsn: "postgres://user:pass@localhost:5432/dbname"
+    query: "select data from recsys_outcomes where ts >= now() - interval '7 days'"

@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "exposure.v1.json",
+  "type": "object",
+  "required": ["request_id", "user_id", "ts", "items"],
+  "properties": {
+    "request_id": {"type": "string", "minLength": 1},
+    "user_id": {"type": "string", "minLength": 1},
+    "ts": {"type": "string", "format": "date-time"},
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["item_id", "rank"],
+        "properties": {
+          "item_id": {"type": "string", "minLength": 1},
+          "rank": {"type": "integer", "minimum": 1},
+          "propensity": {"type": "number", "minimum": 0},
+          "logging_propensity": {"type": "number", "minimum": 0},
+          "target_propensity": {"type": "number", "minimum": 0}
+        }
+      }
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": {"type": "string"}
+    },
+    "latency_ms": {"type": "number", "minimum": 0},
+    "error": {"type": "boolean"}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,12 @@
+exposures:
+  type: postgres
+  dsn: "postgres://user:pass@localhost:5432/dbname"
+  query: "select data from recsys_exposures where ts >= now() - interval '7 days'"
+outcomes:
+  type: postgres
+  dsn: "postgres://user:pass@localhost:5432/dbname"
+  query: "select data from recsys_outcomes where ts >= now() - interval '7 days'"
+assignments:
+  type: postgres
+  dsn: "postgres://user:pass@localhost:5432/dbname"
+  query: "select data from experiment_assignments where ts >= now() - interval '7 days'"

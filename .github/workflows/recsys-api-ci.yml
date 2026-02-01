@@ -1,0 +1,80 @@
+name: recsys-api-ci
+
+on:
+  pull_request:
+    paths:
+      - "api/**"
+      - "docker-compose.yml"
+      - "docker-compose.toolkit.yml"
+      - ".github/workflows/recsys-api-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "api/**"
+      - "docker-compose.yml"
+      - "docker-compose.toolkit.yml"
+      - ".github/workflows/recsys-api-ci.yml"
+
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+
+      - name: Setup Go
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff
+        with:
+          go-version-file: api/go.mod
+          cache: true
+
+      - name: Format check
+        run: test -z "$(gofmt -l .)"
+
+      - name: Prepare env files
+        run: |
+          cp .env.example .env
+          cp .env.test.example .env.test
+
+      - name: Go vet
+        run: go vet ./...
+
+      - name: Golangci-lint
+        run: |
+          go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
+          golangci-lint run ./...
+
+      - name: Govulncheck
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./...
+
+      - name: Go test
+        run: make test
+
+      - name: Go test (race)
+        run: make test FLAGS='-race -count=1' FAST=true
+
+      - name: Generate OpenAPI
+        run: make codegen
+
+      - name: Verify OpenAPI is up to date
+        run: git diff --exit-code swagger
+
+      - name: Build container image
+        run: docker build -t recsys-service:ci -f Dockerfile .
+
+      - name: Login to registry
+        if: ${{ secrets.REGISTRY_HOST != '' && secrets.REGISTRY_USERNAME != '' && secrets.REGISTRY_PASSWORD != '' }}
+        run: echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login "${{ secrets.REGISTRY_HOST }}" -u "${{ secrets.REGISTRY_USERNAME }}" --password-stdin
+
+      - name: Push container image
+        if: ${{ secrets.REGISTRY_HOST != '' && secrets.REGISTRY_REPO != '' && secrets.REGISTRY_USERNAME != '' && secrets.REGISTRY_PASSWORD != '' }}
+        run: |
+          IMAGE="${{ secrets.REGISTRY_HOST }}/${{ secrets.REGISTRY_REPO }}/recsys-service:${{ github.sha }}"
+          docker tag recsys-service:ci "$IMAGE"
+          docker push "$IMAGE"

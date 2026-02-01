@@ -1,0 +1,10 @@
+interleaving:
+  ranker_a:
+    type: jsonl
+    path: testdata/datasets/tiny/ranker_a.jsonl
+  ranker_b:
+    type: jsonl
+    path: testdata/datasets/tiny/ranker_b.jsonl
+  outcomes:
+    type: jsonl
+    path: testdata/datasets/tiny/outcomes_interleaving.jsonl

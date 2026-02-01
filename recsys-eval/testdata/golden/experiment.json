@@ -1,0 +1,151 @@
+{
+  "binary_version": "test",
+  "created_at": "2025-01-01T00:00:00Z",
+  "data_quality": {
+    "assignment_completeness": {
+      "missing": 0,
+      "missing_rate": 0,
+      "total": 3
+    },
+    "exposure_completeness": {
+      "missing": 1,
+      "missing_rate": 0.3333333333333333,
+      "total": 3
+    },
+    "join_integrity": {
+      "assignment_join_rate": 1,
+      "assignments_count": 3,
+      "exposure_count": 3,
+      "exposure_join_rate": 0.6666666666666666,
+      "outcome_count": 2,
+      "outcome_join_rate": 1
+    },
+    "outcome_completeness": {
+      "missing": 0,
+      "missing_rate": 0,
+      "total": 2
+    }
+  },
+  "effective_config": {
+    "test": true
+  },
+  "experiment": {
+    "by_segment": {
+      "tenant=t1": [
+        {
+          "clicks": 1,
+          "conversion_rate": 0,
+          "conversions": 0,
+          "ctr": 0.5,
+          "exposures": 2,
+          "revenue": 0,
+          "revenue_per_request": 0,
+          "variant": "A"
+        },
+        {
+          "clicks": 0,
+          "conversion_rate": 1,
+          "conversions": 1,
+          "ctr": 0,
+          "exposures": 1,
+          "revenue": 10,
+          "revenue_per_request": 10,
+          "variant": "B"
+        }
+      ]
+    },
+    "experiment_id": "exp_123",
+    "guardrails": {
+      "per_variant": [
+        {
+          "empty_rate": 0.5,
+          "error_rate": 0,
+          "latency_p95_ms": 80,
+          "pass_empty_rate": true,
+          "pass_error_rate": true,
+          "pass_latency": true,
+          "variant": "A"
+        },
+        {
+          "empty_rate": 0,
+          "error_rate": 0,
+          "latency_p95_ms": 220,
+          "pass_empty_rate": true,
+          "pass_error_rate": true,
+          "pass_latency": false,
+          "variant": "B"
+        }
+      ]
+    },
+    "significance": [
+      {
+        "adjusted_p_value": 0.38647623077123283,
+        "correction": "fdr_bh",
+        "metric": "ctr",
+        "p_value": 0.38647623077123283,
+        "primary": true,
+        "significant": false,
+        "variant": "B"
+      },
+      {
+        "adjusted_p_value": 0.16652903332710078,
+        "correction": "fdr_bh",
+        "metric": "conversion_rate",
+        "p_value": 0.08326451666355039,
+        "primary": false,
+        "significant": false,
+        "variant": "B"
+      },
+      {
+        "adjusted_p_value": 0.38647623077123283,
+        "correction": "fdr_bh",
+        "metric": "ctr",
+        "p_value": 0.38647623077123283,
+        "primary": true,
+        "segment": "tenant=t1",
+        "significant": false,
+        "variant": "B"
+      },
+      {
+        "adjusted_p_value": 0.16652903332710078,
+        "correction": "fdr_bh",
+        "metric": "conversion_rate",
+        "p_value": 0.08326451666355039,
+        "primary": false,
+        "segment": "tenant=t1",
+        "significant": false,
+        "variant": "B"
+      }
+    ],
+    "variants": [
+      {
+        "clicks": 1,
+        "conversion_rate": 0,
+        "conversions": 0,
+        "ctr": 0.5,
+        "exposures": 2,
+        "revenue": 0,
+        "revenue_per_request": 0,
+        "variant": "A"
+      },
+      {
+        "clicks": 0,
+        "conversion_rate": 1,
+        "conversions": 1,
+        "ctr": 0,
+        "exposures": 1,
+        "revenue": 10,
+        "revenue_per_request": 10,
+        "variant": "B"
+      }
+    ]
+  },
+  "git_commit": "deadbeef",
+  "input_dataset_fingerprint": "fingerprint",
+  "mode": "experiment",
+  "run_id": "experiment-20250101T000000Z",
+  "summary": {
+    "cases_evaluated": 3
+  },
+  "version": "0.1.0"
+}

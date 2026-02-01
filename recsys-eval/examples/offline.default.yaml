@@ -1,0 +1,29 @@
+mode: offline
+offline:
+  metrics:
+    - name: precision
+      k: 10
+    - name: recall
+      k: 10
+    - name: map
+      k: 10
+    - name: ndcg
+      k: 10
+    - name: hitrate
+      k: 10
+  slice_keys: ["tenant", "surface", "locale", "device", "user_type"]
+  gates:
+    - metric: ndcg@10
+      max_drop: 0.01
+  time_split:
+    train:
+      start: "2024-12-01T00:00:00Z"
+      end: "2024-12-31T23:59:59Z"
+    test:
+      start: "2025-01-01T00:00:00Z"
+      end: "2025-01-31T23:59:59Z"
+  bootstrap:
+    enabled: true
+    iterations: 200
+    seed: 42
+    ci_level: 0.95

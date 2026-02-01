@@ -1,0 +1,54 @@
+site_name: recsys-pipelines
+site_description: Filesystem-first pipelines for building versioned recommendation artifacts
+repo_name: aatuh/recsys-suite
+repo_url: https://github.com/aatuh/recsys-suite
+
+nav:
+  - Home: docs/index.md
+  - Start here: docs/start-here.md
+  - Learning paths:
+      - Engineer: docs/learning-paths/engineer.md
+      - Data engineer: docs/learning-paths/data-engineer.md
+      - SRE / on-call: docs/learning-paths/sre-oncall.md
+      - Product / stakeholders: docs/learning-paths/product.md
+  - Tutorials:
+      - Local quickstart: docs/tutorials/local-quickstart.md
+      - Job-per-container mode: docs/tutorials/job-mode.md
+  - How-to:
+      - Run a backfill: docs/how-to/run-backfill.md
+      - Debug failures: docs/how-to/debug-failures.md
+      - Roll back the manifest: docs/how-to/rollback-manifest.md
+      - Add artifact type: docs/how-to/add-artifact-type.md
+      - Add event field: docs/how-to/add-event-field.md
+  - Explanation:
+      - Architecture: docs/explanation/architecture.md
+      - Data lifecycle: docs/explanation/data-lifecycle.md
+      - Windows and backfills: docs/explanation/windows-and-backfills.md
+      - Artifacts and versioning: docs/explanation/artifacts-and-versioning.md
+      - Validation and guardrails: docs/explanation/validation-and-guardrails.md
+      - Documentation approach: docs/explanation/documentation-approach.md
+  - Reference:
+      - CLI: docs/reference/cli.md
+      - Config: docs/reference/config.md
+      - Output layout: docs/reference/output-layout.md
+      - Exit codes: docs/reference/exit-codes.md
+      - Event schema: docs/reference/schemas-events.md
+      - Artifact schema: docs/reference/schemas-artifacts.md
+  - Operations:
+      - SLOs and freshness: docs/operations/slos-and-freshness.md
+      - Runbooks:
+          - Pipeline failed: docs/operations/runbooks/pipeline-failed.md
+          - Validation failed: docs/operations/runbooks/validation-failed.md
+          - Limit exceeded: docs/operations/runbooks/limit-exceeded.md
+          - Stale artifacts: docs/operations/runbooks/stale-artifacts.md
+  - Contributing:
+      - Dev workflow: docs/contributing/dev-workflow.md
+      - Style guide: docs/contributing/style.md
+      - Releasing: docs/contributing/releasing.md
+  - ADRs:
+      - ADR index: docs/adr/README.md
+      - Template: docs/adr/template.md
+
+markdown_extensions:
+  - toc:
+      permalink: true

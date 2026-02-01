@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "report.v1.json",
+  "type": "object",
+  "required": ["run_id", "mode", "created_at", "version", "summary"],
+  "properties": {
+    "run_id": {"type": "string"},
+    "mode": {"type": "string", "enum": ["offline", "experiment", "ope", "interleaving", "aa-check"]},
+    "created_at": {"type": "string", "format": "date-time"},
+    "version": {"type": "string"},
+    "binary_version": {"type": "string"},
+    "git_commit": {"type": "string"},
+    "effective_config": {"type": ["object", "array"]},
+    "input_dataset_fingerprint": {"type": "string"},
+    "summary": {"type": "object"},
+    "offline": {"type": "object"},
+    "experiment": {"type": "object"},
+    "ope": {"type": "object"},
+    "interleaving": {"type": "object"},
+    "aa_check": {"type": "object"},
+    "data_quality": {"type": "object"},
+    "gates": {"type": "array"},
+    "warnings": {"type": "array"}
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,64 @@
+{
+  "binary_version": "test",
+  "created_at": "2025-01-01T00:00:00Z",
+  "data_quality": {
+    "exposure_completeness": {
+      "missing": 1,
+      "missing_rate": 0.3333333333333333,
+      "total": 3
+    },
+    "join_integrity": {
+      "assignment_join_rate": 0,
+      "assignments_count": 0,
+      "exposure_count": 3,
+      "exposure_join_rate": 0.6666666666666666,
+      "outcome_count": 2,
+      "outcome_join_rate": 1
+    },
+    "outcome_completeness": {
+      "missing": 0,
+      "missing_rate": 0,
+      "total": 2
+    }
+  },
+  "effective_config": {
+    "test": true
+  },
+  "git_commit": "deadbeef",
+  "input_dataset_fingerprint": "fingerprint",
+  "mode": "ope",
+  "ope": {
+    "diagnostics": {
+      "missing_target_propensity": 0,
+      "near_zero_propensity": 0,
+      "total_items": 2
+    },
+    "estimators": [
+      {
+        "name": "ips",
+        "value": 5.5555555555555545,
+        "variance": 61.72839506172837
+      },
+      {
+        "name": "snips",
+        "value": 5.376344086021505,
+        "variance": 61.792628563353475
+      }
+    ],
+    "reward_aggregation": "sum",
+    "unit": "request",
+    "weight_stats": {
+      "clipped_fraction": 0,
+      "count": 2,
+      "effective_sample_size": 1.9887330420786387,
+      "max": 1.111111111111111,
+      "mean": 1.0333333333333332,
+      "p95": 1.111111111111111
+    }
+  },
+  "run_id": "ope-20250101T000000Z",
+  "summary": {
+    "cases_evaluated": 2
+  },
+  "version": "0.1.0"
+}

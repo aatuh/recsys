@@ -1,0 +1,23 @@
+mode: experiment
+experiment:
+  experiment_id: "exp_123"
+  control_variant: "A"
+  primary_metrics: ["ctr", "conversion_rate"]
+  slice_keys: ["tenant", "surface", "locale", "device", "user_type"]
+  guardrails:
+    max_latency_p95_ms: 300
+    max_error_rate: 0.01
+    max_empty_rate: 0.02
+  cuped:
+    enabled: false
+    covariate_key: "pre_period_ctr"
+  power:
+    metric: "ctr"
+    baseline_rate: 0.10
+    mde: 0.01
+    alpha: 0.05
+    power: 0.8
+    daily_samples: 10000
+  multiple_comparisons:
+    method: "fdr_bh"
+    alpha: 0.05

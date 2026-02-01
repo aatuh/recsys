@@ -1,0 +1,5 @@
+mode: interleaving
+interleaving:
+  algorithm: "team_draft"
+  seed: 42
+  max_results: 10

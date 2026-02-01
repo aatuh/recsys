@@ -1,0 +1,55 @@
+
+# Config reference
+
+Config is JSON. Example: `configs/env/local.json`.
+
+Top-level fields:
+
+- `out_dir`: base output directory (local runs)
+- `raw_events_dir`: input events directory
+- `canonical_dir`: canonical output directory
+- `artifacts_dir`: staging directory (job mode and pipeline staging)
+- `object_store_dir`: where published blobs are written (local fs mode)
+- `object_store`: object store configuration (fs or s3/minio)
+- `registry_dir`: where manifests and records are written
+- `db`: optional Postgres connection for DB-backed signals
+
+## object_store
+
+```
+{
+  "type": "fs | s3 | minio",
+  "dir": ".out/objectstore",
+  "s3": {
+    "endpoint": "localhost:9000",
+    "bucket": "recsys-artifacts",
+    "access_key": "minioadmin",
+    "secret_key": "minioadmin",
+    "prefix": "recsys",
+    "use_ssl": false
+  }
+}
+```
+
+## db
+
+```
+{
+  "dsn": "postgres://user:pass@localhost:5432/db?sslmode=disable",
+  "auto_create_tenant": true,
+  "statement_timeout_s": 5
+}
+```
+
+## limits
+
+- `max_days_backfill`
+- `max_events_per_run`
+- `max_sessions_per_run`
+- `max_items_per_session`
+- `max_distinct_items_per_run`
+- `max_neighbors_per_item`
+- `max_items_per_artifact`
+- `min_cooc_support`
+
+See `explanation/validation-and-guardrails.md`.

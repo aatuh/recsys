@@ -1,0 +1,27 @@
+{
+  "binary_version": "test",
+  "created_at": "2025-01-01T00:00:00Z",
+  "effective_config": {
+    "test": true
+  },
+  "git_commit": "deadbeef",
+  "input_dataset_fingerprint": "fingerprint",
+  "interleaving": {
+    "algorithm": "team_draft",
+    "p_value": 0.31731050786291415,
+    "ranker_a": "A",
+    "ranker_b": "B",
+    "requests": 2,
+    "ties": 1,
+    "win_rate_a": 0,
+    "win_rate_b": 1,
+    "wins_a": 0,
+    "wins_b": 1
+  },
+  "mode": "interleaving",
+  "run_id": "interleave-20250101T000000Z",
+  "summary": {
+    "cases_evaluated": 2
+  },
+  "version": "0.1.0"
+}

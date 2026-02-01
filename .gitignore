@@ -1,14 +1,10 @@
-# All dotfiles
+# All dotfiles (explicit allowlist below)
 **/.*
 !.gitignore
 !.env*.example
-
-**/go.work
-**/go.work.sum
+!**/.github/
+!**/.goreleaser.yaml
+!**/.golangci.yml
 
 **/tmp/
 **/bin/
-
-recsys-algo/
-recsys-eval/
-recsys-pipelines/

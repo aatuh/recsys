@@ -1,0 +1,35 @@
+{
+  "out_dir": ".out",
+  "raw_events_dir": "testdata/events/tiny",
+  "canonical_dir": ".out/canonical",
+  "artifacts_dir": ".out/artifacts",
+  "object_store_dir": ".out/objectstore",
+  "object_store": {
+    "type": "s3",
+    "s3": {
+      "endpoint": "localhost:9000",
+      "bucket": "recsys-artifacts",
+      "access_key": "minioadmin",
+      "secret_key": "minioadmin",
+      "region": "",
+      "prefix": "recsys",
+      "use_ssl": false
+    }
+  },
+  "registry_dir": ".out/registry",
+  "db": {
+    "dsn": "postgres://recsys-db:recsys@localhost:5432/recsys-db?sslmode=disable",
+    "auto_create_tenant": true,
+    "statement_timeout_s": 5
+  },
+  "limits": {
+    "max_days_backfill": 365,
+    "max_events_per_run": 1000000,
+    "max_sessions_per_run": 1000000,
+    "max_items_per_session": 200,
+    "max_distinct_items_per_run": 2000000,
+    "max_neighbors_per_item": 50,
+    "max_items_per_artifact": 1000,
+    "min_cooc_support": 1
+  }
+}

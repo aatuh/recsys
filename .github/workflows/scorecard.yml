@@ -1,0 +1,27 @@
+name: scorecard
+
+on:
+  branch_protection_rule:
+  schedule:
+    - cron: "0 3 * * 1"
+  push:
+    branches: [main]
+
+permissions:
+  security-events: write
+  id-token: write
+  contents: read
+
+jobs:
+  analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+
+      - name: Scorecard analysis
+        uses: ossf/scorecard-action@4eaacf0543bb3f2c246792bd56e8cdeffafb205a
+        with:
+          results_file: scorecard.sarif
+          results_format: sarif
+          publish_results: true

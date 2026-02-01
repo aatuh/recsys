@@ -1,0 +1,10 @@
+mode: ope
+ope:
+  reward_event: "click"
+  top_k: 10
+  clipping: 10
+  min_propensity: 0.000001
+  enable_snips: true
+  enable_dr: true
+  position_discount: "log2"
+  allow_missing_target_propensity: false

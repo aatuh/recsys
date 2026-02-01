@@ -1,0 +1,5 @@
+{"v": 1, "ts": "2026-01-01T08:00:00Z", "tenant": "demo", "surface": "home", "session_id": "s1", "item_id": "A", "rank": 1}
+{"v": 1, "ts": "2026-01-01T08:00:01Z", "tenant": "demo", "surface": "home", "session_id": "s1", "item_id": "B", "rank": 2}
+{"v": 1, "ts": "2026-01-01T09:00:00Z", "tenant": "demo", "surface": "home", "session_id": "s2", "item_id": "A", "rank": 1}
+{"v": 1, "ts": "2026-01-01T09:00:01Z", "tenant": "demo", "surface": "home", "session_id": "s2", "item_id": "C", "rank": 2}
+{"v": 1, "ts": "2026-01-01T10:00:00Z", "tenant": "demo", "surface": "home", "session_id": "s3", "item_id": "D", "rank": 1}

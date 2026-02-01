@@ -1,0 +1,9 @@
+exposures:
+  type: jsonl
+  path: testdata/datasets/tiny/exposures.jsonl
+outcomes:
+  type: jsonl
+  path: testdata/datasets/tiny/outcomes.jsonl
+assignments:
+  type: jsonl
+  path: testdata/datasets/tiny/assignments.jsonl

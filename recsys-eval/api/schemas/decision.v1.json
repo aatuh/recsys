@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "decision.v1.json",
+  "type": "object",
+  "required": ["decision", "reason", "control_variant", "candidate_variant"],
+  "properties": {
+    "decision": {"type": "string", "enum": ["ship", "hold", "fail"]},
+    "reason": {"type": "string"},
+    "control_variant": {"type": "string"},
+    "candidate_variant": {"type": "string"},
+    "primary_metrics": {"type": "array"},
+    "guardrails": {"type": "array"},
+    "thresholds": {"type": "object"},
+    "dataset_window": {"type": "object"},
+    "versions": {"type": "object"},
+    "srm": {"type": "object"}
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ManifestV1",
+  "type": "object",
+  "required": [
+    "v",
+    "tenant",
+    "surface",
+    "current",
+    "updated_at"
+  ],
+  "properties": {
+    "v": {
+      "type": "integer",
+      "const": 1
+    },
+    "tenant": {
+      "type": "string"
+    },
+    "surface": {
+      "type": "string"
+    },
+    "current": {
+      "type": "object"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}
