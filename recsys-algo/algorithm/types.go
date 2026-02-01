@@ -23,11 +23,26 @@ const (
 	SignalSession       Signal = "session"
 )
 
+// AlgorithmKind selects the baseline recommendation strategy.
+type AlgorithmKind string
+
+const (
+	AlgorithmBlend      AlgorithmKind = "blend"
+	AlgorithmPopularity AlgorithmKind = "popularity"
+	AlgorithmCooc       AlgorithmKind = "cooc"
+	AlgorithmImplicit   AlgorithmKind = "implicit"
+)
+
 // SourceSet tracks which signals contributed data for a candidate.
 type SourceSet map[Signal]struct{}
 
 // Config holds algorithm configuration parameters
 type Config struct {
+	// DefaultAlgorithm selects the default algorithm when a request does not specify one.
+	DefaultAlgorithm AlgorithmKind
+	// Version is an optional version label for the algorithm build.
+	Version string
+
 	// Blend weights
 	BlendAlpha float64 // Popularity weight
 	BlendBeta  float64 // Co-visitation weight
@@ -77,6 +92,7 @@ type Request struct {
 	Surface              string
 	SegmentID            string
 	K                    int
+	Algorithm            AlgorithmKind
 	Constraints          *recmodel.PopConstraints
 	Blend                *BlendWeights
 	IncludeReasons       bool
@@ -127,6 +143,32 @@ func NormalizeExplainLevel(raw string) ExplainLevel {
 		return ExplainLevelFull
 	default:
 		return ExplainLevelTags
+	}
+}
+
+// NormalizeAlgorithm converts a raw algorithm selection into a supported value.
+func NormalizeAlgorithm(raw AlgorithmKind) AlgorithmKind {
+	switch strings.ToLower(strings.TrimSpace(string(raw))) {
+	case string(AlgorithmPopularity):
+		return AlgorithmPopularity
+	case string(AlgorithmCooc):
+		return AlgorithmCooc
+	case string(AlgorithmImplicit):
+		return AlgorithmImplicit
+	case string(AlgorithmBlend):
+		fallthrough
+	default:
+		return AlgorithmBlend
+	}
+}
+
+// IsSupportedAlgorithm reports whether the value is a known algorithm kind.
+func IsSupportedAlgorithm(raw AlgorithmKind) bool {
+	switch strings.ToLower(strings.TrimSpace(string(raw))) {
+	case string(AlgorithmPopularity), string(AlgorithmCooc), string(AlgorithmImplicit), string(AlgorithmBlend):
+		return true
+	default:
+		return false
 	}
 }
 
@@ -245,6 +287,7 @@ type SimilarItemsRequest struct {
 	ItemID    string
 	Namespace string
 	K         int
+	Algorithm AlgorithmKind
 }
 
 // SimilarItemsResponse represents the response for similar items

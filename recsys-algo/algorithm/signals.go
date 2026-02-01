@@ -17,6 +17,15 @@ func (e *Engine) getBlendWeights(req Request) BlendWeights {
 		Similarity: math.Max(0, e.config.BlendGamma),
 	}
 
+	mode := resolveAlgorithm(req.Algorithm, e.config.DefaultAlgorithm)
+	if req.Blend == nil {
+		switch mode {
+		case AlgorithmPopularity, AlgorithmCooc, AlgorithmImplicit:
+			weights = BlendWeights{Pop: 1}
+		case AlgorithmBlend:
+		}
+	}
+
 	// Override with request weights if provided.
 	if req.Blend != nil {
 		weights.Pop = math.Max(0, req.Blend.Pop)

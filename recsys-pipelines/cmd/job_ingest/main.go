@@ -8,11 +8,10 @@ import (
 	"time"
 
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/clock/systemclock"
-	canon "github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/datasource/files"
-	rawjsonl "github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/datasource/files/jsonl"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/logger/stdlogger"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/metrics/noop"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/app/config"
+	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/app/factory"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/app/runtime"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/app/usecase"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/domain/windows"
@@ -50,8 +49,15 @@ func main() {
 		os.Exit(2)
 	}
 
-	raw := rawjsonl.New(env.RawEventsDir)
-	canonical := canon.NewFSCanonicalStore(env.CanonicalDir)
+	raw, rawClose, err := factory.BuildRawSource(env)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "raw source error:", err)
+		os.Exit(2)
+	}
+	if rawClose != nil {
+		defer rawClose()
+	}
+	canonical := factory.BuildCanonicalStore(env)
 	ingest := usecase.NewIngestEvents(rt, raw, canonical, env.Limits.MaxEventsPerRun)
 	bf := usecase.NewBackfill(env.Limits.MaxDaysBackfill)
 

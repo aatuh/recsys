@@ -42,6 +42,16 @@ func (e *Engine) sanitizeRequest(req Request) Request {
 	return req
 }
 
+func resolveAlgorithm(request AlgorithmKind, fallback AlgorithmKind) AlgorithmKind {
+	if request != "" {
+		return NormalizeAlgorithm(request)
+	}
+	if fallback != "" {
+		return NormalizeAlgorithm(fallback)
+	}
+	return AlgorithmBlend
+}
+
 func (e *Engine) fanoutFor(k int) int {
 	fanout := e.config.PopularityFanout
 	if fanout <= 0 || fanout < k {

@@ -156,6 +156,84 @@ func (s *ArtifactAlgoStore) ListItemsAvailability(ctx context.Context, orgID uui
 	return out, nil
 }
 
+// CollaborativeTopK returns top implicit-feedback items for a user from artifacts.
+func (s *ArtifactAlgoStore) CollaborativeTopK(
+	ctx context.Context,
+	orgID uuid.UUID,
+	ns string,
+	userID string,
+	k int,
+	excludeIDs []string,
+) ([]recmodel.ScoredItem, error) {
+	if k <= 0 {
+		return nil, nil
+	}
+	userID = strings.TrimSpace(userID)
+	if userID == "" {
+		return nil, nil
+	}
+	if s == nil || s.loader == nil {
+		return nil, recmodel.ErrFeatureUnavailable
+	}
+	tenant := tenantKey(ctx, orgID)
+	if tenant == "" {
+		return nil, recmodel.ErrFeatureUnavailable
+	}
+	ns = normalizeNamespace(ns)
+
+	implicit, ok, err := s.loadImplicit(ctx, tenant, ns)
+	if err != nil {
+		return nil, err
+	}
+	if !ok && ns != "default" {
+		ns = "default"
+		implicit, ok, err = s.loadImplicit(ctx, tenant, ns)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if !ok {
+		return nil, recmodel.ErrFeatureUnavailable
+	}
+
+	excludeSet := make(map[string]struct{}, len(excludeIDs))
+	for _, id := range excludeIDs {
+		id = strings.TrimSpace(id)
+		if id != "" {
+			excludeSet[id] = struct{}{}
+		}
+	}
+	var items []recmodel.ScoredItem
+	for _, user := range implicit.Users {
+		if strings.TrimSpace(user.UserID) != userID {
+			continue
+		}
+		for _, item := range user.Items {
+			if item.ItemID == "" || item.Score <= 0 {
+				continue
+			}
+			if _, excluded := excludeSet[item.ItemID]; excluded {
+				continue
+			}
+			items = append(items, recmodel.ScoredItem{ItemID: item.ItemID, Score: item.Score})
+		}
+		break
+	}
+	if len(items) == 0 {
+		return nil, nil
+	}
+	sort.SliceStable(items, func(i, j int) bool {
+		if items[i].Score == items[j].Score {
+			return items[i].ItemID < items[j].ItemID
+		}
+		return items[i].Score > items[j].Score
+	})
+	if k > 0 && len(items) > k {
+		items = items[:k]
+	}
+	return items, nil
+}
+
 func (s *ArtifactAlgoStore) loadPopularity(ctx context.Context, tenant, ns string) ([]artifacts.PopularityItem, bool, error) {
 	if s == nil || s.loader == nil {
 		return nil, false, nil
@@ -192,6 +270,25 @@ func (s *ArtifactAlgoStore) loadCooc(ctx context.Context, tenant, ns string) (ar
 		return artifacts.CoocArtifactV1{}, ok, err
 	}
 	return cooc, true, nil
+}
+
+func (s *ArtifactAlgoStore) loadImplicit(ctx context.Context, tenant, ns string) (artifacts.ImplicitArtifactV1, bool, error) {
+	if s == nil || s.loader == nil {
+		return artifacts.ImplicitArtifactV1{}, false, nil
+	}
+	manifest, ok, err := s.loader.LoadManifest(ctx, tenant, ns)
+	if err != nil || !ok {
+		return artifacts.ImplicitArtifactV1{}, ok, err
+	}
+	uri := strings.TrimSpace(manifest.Current[artifacts.TypeImplicit])
+	if uri == "" {
+		return artifacts.ImplicitArtifactV1{}, false, nil
+	}
+	implicit, ok, err := s.loader.LoadImplicit(ctx, uri)
+	if err != nil || !ok {
+		return artifacts.ImplicitArtifactV1{}, ok, err
+	}
+	return implicit, true, nil
 }
 
 func (s *ArtifactAlgoStore) filterPopularity(

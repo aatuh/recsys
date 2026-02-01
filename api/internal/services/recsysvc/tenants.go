@@ -9,6 +9,7 @@ type TenantConfig struct {
 	Version  string
 	Weights  *Weights
 	Flags    map[string]bool
+	Algo     string
 }
 
 // TenantRules captures cached tenant rules and versions.

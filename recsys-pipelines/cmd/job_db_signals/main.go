@@ -8,11 +8,11 @@ import (
 	"time"
 
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/clock/systemclock"
-	canon "github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/datasource/files"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/logger/stdlogger"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/metrics/noop"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/signalstore/postgres"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/app/config"
+	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/app/factory"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/app/runtime"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/app/usecase"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/domain/windows"
@@ -70,7 +70,7 @@ func main() {
 	}
 	defer store.Close()
 
-	canonical := canon.NewFSCanonicalStore(env.CanonicalDir)
+	canonical := factory.BuildCanonicalStore(env)
 	pop := usecase.NewComputePopularity(rt, canonical, env.Limits.MaxItemsPerArtifact, env.Limits.MaxDistinctItemsPerRun)
 	cooc := usecase.NewComputeCooc(
 		rt,

@@ -18,10 +18,12 @@ type AlgoEngineConfig struct {
 	Version          string
 	DefaultNamespace string
 	AlgorithmConfig  algorithm.Config
+	CustomAlgorithm  algorithm.Algorithm
 }
 
 // AlgoEngine adapts recsys-algo to the service Engine port.
 type AlgoEngine struct {
+	algo             algorithm.Algorithm
 	engine           *algorithm.Engine
 	similar          *algorithm.SimilarItemsEngine
 	store            recmodel.EngineStore
@@ -34,6 +36,10 @@ func NewAlgoEngine(cfg AlgoEngineConfig, store recmodel.EngineStore, rulesManage
 	if store == nil {
 		store = noopAlgoStore{}
 	}
+	algoImpl := cfg.CustomAlgorithm
+	if algoImpl == nil {
+		algoImpl = algorithm.NewDefaultAlgorithm(cfg.AlgorithmConfig, store, rulesManager)
+	}
 	algo := algorithm.NewEngine(cfg.AlgorithmConfig, store, rulesManager)
 	similar := algorithm.NewSimilarItemsEngine(store, cfg.AlgorithmConfig.CoVisWindowDays)
 	version := strings.TrimSpace(cfg.Version)
@@ -45,6 +51,7 @@ func NewAlgoEngine(cfg AlgoEngineConfig, store recmodel.EngineStore, rulesManage
 		ns = "default"
 	}
 	return &AlgoEngine{
+		algo:             algoImpl,
 		engine:           algo,
 		similar:          similar,
 		store:            store,
@@ -61,13 +68,32 @@ func (e *AlgoEngine) Version() string {
 	return e.version
 }
 
+// VersionForRecommend returns the algorithm version label for the request.
+func (e *AlgoEngine) VersionForRecommend(_ context.Context, req RecommendRequest) string {
+	return formatAlgoVersion(e.Version(), req.Algorithm)
+}
+
+// VersionForSimilar returns the algorithm version label for the request.
+func (e *AlgoEngine) VersionForSimilar(_ context.Context, req SimilarRequest) string {
+	return formatAlgoVersion(e.Version(), req.Algorithm)
+}
+
 // Recommend runs recsys-algo for the normalized request.
 func (e *AlgoEngine) Recommend(ctx context.Context, req RecommendRequest) ([]Item, []Warning, error) {
-	if e == nil || e.engine == nil {
+	if e == nil {
 		return nil, nil, nil
 	}
 	algoReq := e.mapRecommendRequest(ctx, req)
-	resp, trace, err := e.engine.Recommend(ctx, algoReq)
+	var resp *algorithm.Response
+	var trace *algorithm.TraceData
+	var err error
+	if e.algo != nil {
+		resp, trace, err = e.algo.Recommend(ctx, algoReq)
+	} else if e.engine != nil {
+		resp, trace, err = e.engine.Recommend(ctx, algoReq)
+	} else {
+		return nil, nil, nil
+	}
 	if err != nil {
 		return nil, nil, err
 	}
@@ -84,7 +110,7 @@ func (e *AlgoEngine) Recommend(ctx context.Context, req RecommendRequest) ([]Ite
 
 // Similar runs the similar-items engine.
 func (e *AlgoEngine) Similar(ctx context.Context, req SimilarRequest) ([]Item, []Warning, error) {
-	if e == nil || e.similar == nil {
+	if e == nil {
 		return nil, nil, nil
 	}
 	algoReq := algorithm.SimilarItemsRequest{
@@ -92,8 +118,18 @@ func (e *AlgoEngine) Similar(ctx context.Context, req SimilarRequest) ([]Item, [
 		ItemID:    strings.TrimSpace(req.ItemID),
 		Namespace: e.namespaceFor(req.Surface),
 		K:         req.K,
+		Algorithm: algorithm.NormalizeAlgorithm(algorithm.AlgorithmKind(req.Algorithm)),
 	}
-	resp, err := e.similar.FindSimilar(ctx, algoReq)
+	var resp *algorithm.SimilarItemsResponse
+	var err error
+	switch {
+	case e.algo != nil:
+		resp, err = e.algo.Similar(ctx, algoReq)
+	case e.similar != nil:
+		resp, err = e.similar.FindSimilar(ctx, algoReq)
+	default:
+		return nil, nil, nil
+	}
 	if err != nil {
 		if errors.Is(err, recmodel.ErrFeatureUnavailable) {
 			return nil, []Warning{{Code: "SIGNAL_UNAVAILABLE", Detail: "similarity signals unavailable"}}, nil
@@ -113,6 +149,7 @@ func (e *AlgoEngine) mapRecommendRequest(ctx context.Context, req RecommendReque
 		Surface:        req.Surface,
 		SegmentID:      req.Segment,
 		K:              req.K,
+		Algorithm:      algorithm.NormalizeAlgorithm(algorithm.AlgorithmKind(req.Algorithm)),
 		Constraints:    buildPopConstraints(req),
 		Blend:          mapWeights(req.Weights),
 		IncludeReasons: req.Options.IncludeReasons,
@@ -156,6 +193,19 @@ func mapExplainLevel(raw string) algorithm.ExplainLevel {
 	default:
 		return algorithm.ExplainLevelTags
 	}
+}
+
+func formatAlgoVersion(base, algo string) string {
+	base = strings.TrimSpace(base)
+	algo = strings.TrimSpace(algo)
+	if base == "" {
+		base = defaultAlgoVersion
+	}
+	if algo == "" {
+		return base
+	}
+	normalized := algorithm.NormalizeAlgorithm(algorithm.AlgorithmKind(algo))
+	return fmt.Sprintf("%s:%s", base, normalized)
 }
 
 func mapExplainBlock(block *algorithm.ExplainBlock, reasons []string) *ItemExplain {

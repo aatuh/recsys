@@ -13,6 +13,7 @@ type Type string
 const (
 	TypePopularity Type = "popularity"
 	TypeCooc       Type = "cooc"
+	TypeImplicit   Type = "implicit"
 )
 
 type Key struct {

@@ -8,9 +8,8 @@ import (
 	"time"
 
 	areg "github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/artifactregistry/fs"
+	checkpointfs "github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/checkpoint/fs"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/clock/systemclock"
-	canon "github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/datasource/files"
-	rawjsonl "github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/datasource/files/jsonl"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/logger/stdlogger"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/metrics/noop"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/validator/builtin"
@@ -48,6 +47,7 @@ func usage() {
 
 Usage:
   recsys-pipelines run --config <path> --tenant <t> --surface <s> --start YYYY-MM-DD --end YYYY-MM-DD
+  recsys-pipelines run --config <path> --tenant <t> --surface <s> --end YYYY-MM-DD --incremental
 
 Notes:
   The scaffold uses filesystem adapters for local development.
@@ -59,25 +59,33 @@ func run(args []string) int {
 	fs.SetOutput(os.Stderr)
 
 	var cfgPath, tenant, surface, segment, startStr, endStr string
+	var incremental bool
 	fs.StringVar(&cfgPath, "config", "configs/env/local.json", "env config (json)")
 	fs.StringVar(&tenant, "tenant", "", "tenant")
 	fs.StringVar(&surface, "surface", "", "surface")
 	fs.StringVar(&segment, "segment", "", "segment (optional)")
 	fs.StringVar(&startStr, "start", "", "start day YYYY-MM-DD")
 	fs.StringVar(&endStr, "end", "", "end day YYYY-MM-DD")
+	fs.BoolVar(&incremental, "incremental", false, "use checkpointed start day")
 
 	if err := fs.Parse(args); err != nil {
 		return 2
 	}
-	if tenant == "" || surface == "" || startStr == "" || endStr == "" {
+	if tenant == "" || surface == "" || endStr == "" || (!incremental && startStr == "") {
 		fmt.Fprintln(os.Stderr, "missing required flags")
 		return 2
 	}
 
-	startDay, err := time.ParseInLocation("2006-01-02", startStr, time.UTC)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "invalid start:", err)
-		return 2
+	var (
+		startDay time.Time
+		err      error
+	)
+	if startStr != "" {
+		startDay, err = time.ParseInLocation("2006-01-02", startStr, time.UTC)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "invalid start:", err)
+			return 2
+		}
 	}
 	endDay, err := time.ParseInLocation("2006-01-02", endStr, time.UTC)
 	if err != nil {
@@ -97,8 +105,15 @@ func run(args []string) int {
 		Metrics: noop.NoopMetrics{},
 	}
 
-	raw := rawjsonl.New(env.RawEventsDir)
-	canonical := canon.NewFSCanonicalStore(env.CanonicalDir)
+	raw, rawClose, err := factory.BuildRawSource(env)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "raw source error:", err)
+		return 2
+	}
+	if rawClose != nil {
+		defer rawClose()
+	}
+	canonical := factory.BuildCanonicalStore(env)
 	store, err := factory.BuildObjectStore(env)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "object store error:", err)
@@ -154,10 +169,28 @@ func run(args []string) int {
 	}
 
 	bf := usecase.NewBackfill(env.Limits.MaxDaysBackfill)
+	checkpoints := checkpointfs.New(env.CheckpointDir)
+	if incremental {
+		last, ok, err := checkpoints.GetLastIngested(context.Background(), tenant, surface)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "checkpoint error:", err)
+			return 2
+		}
+		if !ok && startStr == "" {
+			fmt.Fprintln(os.Stderr, "checkpoint missing; provide --start for first run")
+			return 2
+		}
+		if ok && startStr == "" {
+			startDay = last.Add(24 * time.Hour)
+		}
+	}
 
 	ctx := context.Background()
 	err = bf.Execute(ctx, startDay, endDay, func(ctx context.Context, w windows.Window) error {
-		return pipe.RunDay(ctx, tenant, surface, segment, w)
+		if err := pipe.RunDay(ctx, tenant, surface, segment, w); err != nil {
+			return err
+		}
+		return checkpoints.SetLastIngested(ctx, tenant, surface, w.Start)
 	})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "run failed:", err)

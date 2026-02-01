@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aatuh/recsys-suite/api/internal/algoplugin"
 	"github.com/aatuh/recsys-suite/api/internal/artifacts"
 	"github.com/aatuh/recsys-suite/api/internal/config"
 	"github.com/aatuh/recsys-suite/api/internal/experiments"
@@ -92,39 +93,54 @@ func buildAppDeps(log ports.Logger, pool ports.DatabasePool, cfg config.Config) 
 		RefreshInterval: algoCfg.RulesRefreshInterval,
 		MaxPinSlots:     algoCfg.RulesMaxPins,
 	})
+	algoParams := algorithm.Config{
+		BlendAlpha:                 algoCfg.BlendAlpha,
+		BlendBeta:                  algoCfg.BlendBeta,
+		BlendGamma:                 algoCfg.BlendGamma,
+		DefaultAlgorithm:           algorithm.NormalizeAlgorithm(algorithm.AlgorithmKind(algoCfg.Mode)),
+		Version:                    algoCfg.Version,
+		ProfileBoost:               algoCfg.ProfileBoost,
+		ProfileWindowDays:          algoCfg.ProfileWindowDays,
+		ProfileTopNTags:            algoCfg.ProfileTopNTags,
+		ProfileMinEventsForBoost:   algoCfg.ProfileMinEventsForBoost,
+		ProfileColdStartMultiplier: algoCfg.ProfileColdStartMultiplier,
+		ProfileStarterBlendWeight:  algoCfg.ProfileStarterBlendWeight,
+		MMRLambda:                  algoCfg.MMRLambda,
+		BrandCap:                   algoCfg.BrandCap,
+		CategoryCap:                algoCfg.CategoryCap,
+		HalfLifeDays:               algoCfg.HalfLifeDays,
+		CoVisWindowDays:            algoCfg.CoVisWindowDays,
+		PurchasedWindowDays:        algoCfg.PurchasedWindowDays,
+		RuleExcludeEvents:          algoCfg.RuleExcludeEvents,
+		ExcludeEventTypes:          algoCfg.ExcludeEventTypes,
+		BrandTagPrefixes:           algoCfg.BrandTagPrefixes,
+		CategoryTagPrefixes:        algoCfg.CategoryTagPrefixes,
+		RulesEnabled:               algoCfg.RulesEnabled,
+		PopularityFanout:           algoCfg.PopularityFanout,
+		MaxK:                       algoCfg.MaxK,
+		MaxFanout:                  algoCfg.MaxFanout,
+		MaxExcludeIDs:              algoCfg.MaxExcludeIDs,
+		MaxAnchorsInjected:         algoCfg.MaxAnchorsInjected,
+		SessionLookbackEvents:      algoCfg.SessionLookbackEvents,
+		SessionLookaheadMinutes:    algoCfg.SessionLookaheadMinutes,
+	}
+	var customAlgo algorithm.Algorithm
+	if algoCfg.PluginEnabled && strings.TrimSpace(algoCfg.PluginPath) != "" {
+		if strings.EqualFold(cfg.Config.Env, "production") {
+			return appDeps{}, fmt.Errorf("algo plugins are disabled in production")
+		}
+		pluginAlgo, err := algoplugin.Load(algoCfg.PluginPath, algoStore, rulesManager, algoParams)
+		if err != nil {
+			return appDeps{}, err
+		}
+		customAlgo = pluginAlgo
+	}
 	engine := recsysvc.NewAlgoEngine(
 		recsysvc.AlgoEngineConfig{
 			Version:          algoCfg.Version,
 			DefaultNamespace: algoCfg.DefaultNamespace,
-			AlgorithmConfig: algorithm.Config{
-				BlendAlpha:                 algoCfg.BlendAlpha,
-				BlendBeta:                  algoCfg.BlendBeta,
-				BlendGamma:                 algoCfg.BlendGamma,
-				ProfileBoost:               algoCfg.ProfileBoost,
-				ProfileWindowDays:          algoCfg.ProfileWindowDays,
-				ProfileTopNTags:            algoCfg.ProfileTopNTags,
-				ProfileMinEventsForBoost:   algoCfg.ProfileMinEventsForBoost,
-				ProfileColdStartMultiplier: algoCfg.ProfileColdStartMultiplier,
-				ProfileStarterBlendWeight:  algoCfg.ProfileStarterBlendWeight,
-				MMRLambda:                  algoCfg.MMRLambda,
-				BrandCap:                   algoCfg.BrandCap,
-				CategoryCap:                algoCfg.CategoryCap,
-				HalfLifeDays:               algoCfg.HalfLifeDays,
-				CoVisWindowDays:            algoCfg.CoVisWindowDays,
-				PurchasedWindowDays:        algoCfg.PurchasedWindowDays,
-				RuleExcludeEvents:          algoCfg.RuleExcludeEvents,
-				ExcludeEventTypes:          algoCfg.ExcludeEventTypes,
-				BrandTagPrefixes:           algoCfg.BrandTagPrefixes,
-				CategoryTagPrefixes:        algoCfg.CategoryTagPrefixes,
-				RulesEnabled:               algoCfg.RulesEnabled,
-				PopularityFanout:           algoCfg.PopularityFanout,
-				MaxK:                       algoCfg.MaxK,
-				MaxFanout:                  algoCfg.MaxFanout,
-				MaxExcludeIDs:              algoCfg.MaxExcludeIDs,
-				MaxAnchorsInjected:         algoCfg.MaxAnchorsInjected,
-				SessionLookbackEvents:      algoCfg.SessionLookbackEvents,
-				SessionLookaheadMinutes:    algoCfg.SessionLookaheadMinutes,
-			},
+			AlgorithmConfig:  algoParams,
+			CustomAlgorithm:  customAlgo,
 		},
 		algoStore,
 		rulesManager,

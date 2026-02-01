@@ -12,6 +12,8 @@ var (
 	ErrRulesNotFound = errors.New("tenant rules not found")
 	// ErrOverloaded indicates backpressure rejection.
 	ErrOverloaded = errors.New("recsys service overloaded")
+	// ErrArtifactIncompatible indicates invalid or incompatible artifacts.
+	ErrArtifactIncompatible = errors.New("artifact incompatible")
 )
 
 // ConfigStore retrieves tenant configuration.

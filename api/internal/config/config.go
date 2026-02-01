@@ -124,6 +124,9 @@ type ArtifactS3Config struct {
 type AlgoConfig struct {
 	Version                    string
 	DefaultNamespace           string
+	Mode                       string
+	PluginEnabled              bool
+	PluginPath                 string
 	BlendAlpha                 float64
 	BlendBeta                  float64
 	BlendGamma                 float64
@@ -297,6 +300,9 @@ func Load() Config {
 	algoCfg := AlgoConfig{
 		Version:                    loader.String("RECSYS_ALGO_VERSION", "recsys-algo@local"),
 		DefaultNamespace:           loader.String("RECSYS_ALGO_DEFAULT_NAMESPACE", "default"),
+		Mode:                       loader.String("RECSYS_ALGO_MODE", "blend"),
+		PluginEnabled:              loader.Bool("RECSYS_ALGO_PLUGIN_ENABLED", false),
+		PluginPath:                 loader.String("RECSYS_ALGO_PLUGIN_PATH", ""),
 		BlendAlpha:                 floatEnv(loader, "RECSYS_ALGO_BLEND_ALPHA", 1),
 		BlendBeta:                  floatEnv(loader, "RECSYS_ALGO_BLEND_BETA", 0),
 		BlendGamma:                 floatEnv(loader, "RECSYS_ALGO_BLEND_GAMMA", 0),

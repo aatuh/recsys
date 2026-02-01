@@ -8,6 +8,8 @@ Top-level fields:
 - `out_dir`: base output directory (local runs)
 - `raw_events_dir`: input events directory
 - `canonical_dir`: canonical output directory
+- `checkpoint_dir`: checkpoint storage for incremental runs
+- `raw_source`: raw ingestion source configuration
 - `artifacts_dir`: staging directory (job mode and pipeline staging)
 - `object_store_dir`: where published blobs are written (local fs mode)
 - `object_store`: object store configuration (fs or s3/minio)
@@ -53,3 +55,33 @@ Top-level fields:
 - `min_cooc_support`
 
 See `explanation/validation-and-guardrails.md`.
+
+## raw_source
+
+```
+{
+  "type": "fs | s3 | minio | postgres | kafka",
+  "dir": "testdata/events",
+  "s3": {
+    "endpoint": "localhost:9000",
+    "bucket": "recsys-raw",
+    "access_key": "minioadmin",
+    "secret_key": "minioadmin",
+    "prefix": "raw/events",
+    "use_ssl": false
+  },
+  "postgres": {
+    "dsn": "postgres://user:pass@localhost:5432/db?sslmode=disable",
+    "tenant_table": "tenants",
+    "exposure_table": "exposure_events"
+  },
+  "kafka": {
+    "brokers": ["localhost:9092"],
+    "topic": "recsys-exposures",
+    "group_id": "recsys-pipelines"
+  }
+}
+```
+
+Note: the Kafka connector is scaffolded and returns a clear error until it is
+implemented with a streaming consumer.

@@ -24,6 +24,7 @@ type Loader struct {
 	manifestCache    *cache.TTLCache[manifestKey, ManifestV1]
 	popCache         *cache.TTLCache[string, PopularityArtifactV1]
 	coocCache        *cache.TTLCache[string, CoocArtifactV1]
+	implicitCache    *cache.TTLCache[string, ImplicitArtifactV1]
 	manifestTTL      time.Duration
 	artifactTTL      time.Duration
 	maxBytes         int
@@ -41,6 +42,7 @@ func NewLoader(reader objectstore.Reader, cfg LoaderConfig) *Loader {
 		manifestCache:    cache.NewTTL[manifestKey, ManifestV1](nil),
 		popCache:         cache.NewTTL[string, PopularityArtifactV1](nil),
 		coocCache:        cache.NewTTL[string, CoocArtifactV1](nil),
+		implicitCache:    cache.NewTTL[string, ImplicitArtifactV1](nil),
 		manifestTTL:      cfg.ManifestTTL,
 		artifactTTL:      cfg.ArtifactTTL,
 		maxBytes:         cfg.MaxBytes,
@@ -68,6 +70,9 @@ func (l *Loader) Invalidate(tenant, surface string) int {
 	}
 	if l.coocCache != nil {
 		n += l.coocCache.Invalidate(func(key string, _ CoocArtifactV1) bool { return true })
+	}
+	if l.implicitCache != nil {
+		n += l.implicitCache.Invalidate(func(key string, _ ImplicitArtifactV1) bool { return true })
 	}
 	return n
 }
@@ -106,10 +111,13 @@ func (l *Loader) LoadManifest(ctx context.Context, tenant, surface string) (Mani
 	}
 	var manifest ManifestV1
 	if err := json.Unmarshal(data, &manifest); err != nil {
-		return ManifestV1{}, false, err
+		return ManifestV1{}, false, wrapManifestError(err)
 	}
 	if err := manifest.Validate(); err != nil {
-		return ManifestV1{}, false, err
+		return ManifestV1{}, false, wrapManifestError(err)
+	}
+	if manifest.Tenant != tenant || manifest.Surface != surface {
+		return ManifestV1{}, false, wrapManifestError(fmt.Errorf("manifest tenant/surface mismatch"))
 	}
 	if l.manifestTTL > 0 {
 		l.manifestCache.Set(key, manifest, l.manifestTTL)
@@ -137,10 +145,10 @@ func (l *Loader) LoadPopularity(ctx context.Context, uri string) (PopularityArti
 	}
 	var art PopularityArtifactV1
 	if err := json.Unmarshal(data, &art); err != nil {
-		return PopularityArtifactV1{}, false, err
+		return PopularityArtifactV1{}, false, wrapArtifactError(err)
 	}
-	if art.V != 1 || art.ArtifactType != TypePopularity {
-		return PopularityArtifactV1{}, false, fmt.Errorf("invalid popularity artifact")
+	if err := art.Validate(); err != nil {
+		return PopularityArtifactV1{}, false, wrapArtifactError(err)
 	}
 	if l.artifactTTL > 0 {
 		l.popCache.Set(uri, art, l.artifactTTL)
@@ -168,13 +176,44 @@ func (l *Loader) LoadCooc(ctx context.Context, uri string) (CoocArtifactV1, bool
 	}
 	var art CoocArtifactV1
 	if err := json.Unmarshal(data, &art); err != nil {
-		return CoocArtifactV1{}, false, err
+		return CoocArtifactV1{}, false, wrapArtifactError(err)
 	}
-	if art.V != 1 || art.ArtifactType != TypeCooc {
-		return CoocArtifactV1{}, false, fmt.Errorf("invalid cooc artifact")
+	if err := art.Validate(); err != nil {
+		return CoocArtifactV1{}, false, wrapArtifactError(err)
 	}
 	if l.artifactTTL > 0 {
 		l.coocCache.Set(uri, art, l.artifactTTL)
+	}
+	return art, true, nil
+}
+
+func (l *Loader) LoadImplicit(ctx context.Context, uri string) (ImplicitArtifactV1, bool, error) {
+	if l == nil {
+		return ImplicitArtifactV1{}, false, fmt.Errorf("loader is nil")
+	}
+	uri = strings.TrimSpace(uri)
+	if uri == "" {
+		return ImplicitArtifactV1{}, false, nil
+	}
+	if val, ok := l.implicitCache.Get(uri); ok {
+		return val, true, nil
+	}
+	data, err := l.reader.Get(ctx, uri)
+	if err != nil {
+		if _, ok := err.(objectstore.ErrNotFound); ok {
+			return ImplicitArtifactV1{}, false, nil
+		}
+		return ImplicitArtifactV1{}, false, err
+	}
+	var art ImplicitArtifactV1
+	if err := json.Unmarshal(data, &art); err != nil {
+		return ImplicitArtifactV1{}, false, wrapArtifactError(err)
+	}
+	if err := art.Validate(); err != nil {
+		return ImplicitArtifactV1{}, false, wrapArtifactError(err)
+	}
+	if l.artifactTTL > 0 {
+		l.implicitCache.Set(uri, art, l.artifactTTL)
 	}
 	return art, true, nil
 }

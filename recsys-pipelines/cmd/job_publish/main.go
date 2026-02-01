@@ -9,7 +9,6 @@ import (
 
 	areg "github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/artifactregistry/fs"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/clock/systemclock"
-	canon "github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/datasource/files"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/logger/stdlogger"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/metrics/noop"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/validator/builtin"
@@ -64,7 +63,7 @@ func main() {
 		Metrics: noop.NoopMetrics{},
 	}
 
-	canonical := canon.NewFSCanonicalStore(env.CanonicalDir)
+	canonical := factory.BuildCanonicalStore(env)
 	validator := builtin.New(canonical, builtin.Options{
 		MaxPopularityItems: env.Limits.MaxItemsPerArtifact,
 		MaxCoocRows:        env.Limits.MaxItemsPerArtifact,

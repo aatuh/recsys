@@ -10,6 +10,8 @@ type EnvConfig struct {
 	OutDir         string            `json:"out_dir"`
 	RawEventsDir   string            `json:"raw_events_dir"`
 	CanonicalDir   string            `json:"canonical_dir"`
+	CheckpointDir  string            `json:"checkpoint_dir"`
+	RawSource      RawSourceConfig   `json:"raw_source"`
 	ArtifactsDir   string            `json:"artifacts_dir"`
 	ObjectStoreDir string            `json:"object_store_dir"`
 	ObjectStore    ObjectStoreConfig `json:"object_store"`
@@ -43,6 +45,26 @@ type S3Config struct {
 	Region    string `json:"region,omitempty"`
 	Prefix    string `json:"prefix,omitempty"`
 	UseSSL    bool   `json:"use_ssl,omitempty"`
+}
+
+type RawSourceConfig struct {
+	Type     string               `json:"type"`
+	Dir      string               `json:"dir,omitempty"`
+	S3       S3Config             `json:"s3,omitempty"`
+	Postgres PostgresSourceConfig `json:"postgres,omitempty"`
+	Kafka    KafkaSourceConfig    `json:"kafka,omitempty"`
+}
+
+type PostgresSourceConfig struct {
+	DSN           string `json:"dsn,omitempty"`
+	TenantTable   string `json:"tenant_table,omitempty"`
+	ExposureTable string `json:"exposure_table,omitempty"`
+}
+
+type KafkaSourceConfig struct {
+	Brokers []string `json:"brokers,omitempty"`
+	Topic   string   `json:"topic,omitempty"`
+	GroupID string   `json:"group_id,omitempty"`
 }
 
 type DatabaseConfig struct {
@@ -81,6 +103,28 @@ func LoadEnvConfig(path string) (EnvConfig, error) {
 	}
 	if c.ObjectStoreDir == "" {
 		c.ObjectStoreDir = c.ObjectStore.Dir
+	}
+	if c.CheckpointDir == "" {
+		c.CheckpointDir = ".out/checkpoints"
+	}
+	if c.RawSource.Type == "" {
+		c.RawSource.Type = "fs"
+	}
+	if c.RawSource.Type == "fs" && c.RawSource.Dir == "" {
+		if c.RawEventsDir != "" {
+			c.RawSource.Dir = c.RawEventsDir
+		} else {
+			c.RawSource.Dir = ".out/raw"
+		}
+	}
+	if c.RawEventsDir == "" {
+		c.RawEventsDir = c.RawSource.Dir
+	}
+	if c.RawSource.Postgres.TenantTable == "" {
+		c.RawSource.Postgres.TenantTable = "tenants"
+	}
+	if c.RawSource.Postgres.ExposureTable == "" {
+		c.RawSource.Postgres.ExposureTable = "exposure_events"
 	}
 	if c.Limits.MaxDaysBackfill == 0 {
 		c.Limits.MaxDaysBackfill = 365

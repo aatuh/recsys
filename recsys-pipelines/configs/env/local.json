@@ -2,6 +2,11 @@
   "out_dir": ".out",
   "raw_events_dir": "testdata/events/tiny",
   "canonical_dir": ".out/canonical",
+  "checkpoint_dir": ".out/checkpoints",
+  "raw_source": {
+    "type": "fs",
+    "dir": "testdata/events/tiny"
+  },
   "artifacts_dir": ".out/artifacts",
   "object_store_dir": ".out/objectstore",
   "object_store": {

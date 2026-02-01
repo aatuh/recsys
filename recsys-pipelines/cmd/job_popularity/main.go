@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/clock/systemclock"
-	canon "github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/datasource/files"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/logger/stdlogger"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/metrics/noop"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/app/config"
+	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/app/factory"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/app/runtime"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/app/staging"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/app/usecase"
@@ -51,7 +51,7 @@ func main() {
 		os.Exit(2)
 	}
 
-	canonical := canon.NewFSCanonicalStore(env.CanonicalDir)
+	canonical := factory.BuildCanonicalStore(env)
 	pop := usecase.NewComputePopularity(rt, canonical, env.Limits.MaxItemsPerArtifact, env.Limits.MaxDistinctItemsPerRun)
 	stage := staging.New(env.ArtifactsDir)
 	bf := usecase.NewBackfill(env.Limits.MaxDaysBackfill)

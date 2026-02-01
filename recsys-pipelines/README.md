@@ -5,7 +5,7 @@ from raw exposure events.
 
 This repository is the **offline factory** of a recommender stack:
 
-- It ingests raw exposure events (JSONL).
+- It ingests raw exposure events (JSONL, Postgres, or S3 batch).
 - It canonicalizes them into a deterministic, replayable dataset.
 - It computes artifacts (v1: popularity and co-occurrence).
 - It validates outputs and enforces hard resource limits.

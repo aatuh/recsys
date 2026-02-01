@@ -3,6 +3,7 @@ package algorithm
 import (
 	"context"
 	"errors"
+	"sort"
 	"strings"
 	"time"
 
@@ -79,13 +80,50 @@ func (e *Engine) Recommend(
 	sourceMetrics := make(map[string]SourceMetric)
 	signalStatus := make(map[Signal]SignalStatus)
 
+	mode := resolveAlgorithm(req.Algorithm, e.config.DefaultAlgorithm)
 	usePrefetched := len(req.PrefetchedCandidates) > 0
 	var popCandidates []recmodel.ScoredItem
 	if usePrefetched {
 		popCandidates = copyScoredItems(req.PrefetchedCandidates)
 		sourceMetrics["prefetched"] = SourceMetric{Count: len(popCandidates)}
 		e.recordSignalStatus(signalStatus, SignalPop, SignalOutcomeSuccess, false, nil)
-	} else {
+	} else if mode == AlgorithmImplicit {
+		implicitStart := time.Now()
+		candidates, err := e.getImplicitCandidates(ctx, req, k)
+		if err != nil {
+			if errors.Is(err, recmodel.ErrFeatureUnavailable) {
+				e.recordSignalStatus(signalStatus, SignalCollaborative, SignalOutcomeUnavailable, false, err)
+			} else {
+				e.recordSignalStatus(signalStatus, SignalCollaborative, SignalOutcomeError, false, err)
+				return nil, nil, err
+			}
+		}
+		if len(candidates) > 0 {
+			popCandidates = candidates
+			usePrefetched = true
+			sourceMetrics["implicit"] = SourceMetric{Count: len(popCandidates), Duration: time.Since(implicitStart)}
+			e.recordSignalStatus(signalStatus, SignalCollaborative, SignalOutcomeSuccess, false, nil)
+		}
+	}
+	if !usePrefetched && mode == AlgorithmCooc {
+		coocStart := time.Now()
+		candidates, err := e.getCoocCandidates(ctx, req, k)
+		if err != nil {
+			if errors.Is(err, recmodel.ErrFeatureUnavailable) {
+				e.recordSignalStatus(signalStatus, SignalCooc, SignalOutcomeUnavailable, false, err)
+			} else {
+				e.recordSignalStatus(signalStatus, SignalCooc, SignalOutcomeError, false, err)
+				return nil, nil, err
+			}
+		}
+		if len(candidates) > 0 {
+			popCandidates = candidates
+			usePrefetched = true
+			sourceMetrics["cooc"] = SourceMetric{Count: len(popCandidates), Duration: time.Since(coocStart)}
+			e.recordSignalStatus(signalStatus, SignalCooc, SignalOutcomeSuccess, false, nil)
+		}
+	}
+	if !usePrefetched {
 		popStart := time.Now()
 		var err error
 		popCandidates, err = e.getPopularityCandidates(
@@ -128,7 +166,7 @@ func (e *Engine) Recommend(
 	collabScores := make(map[string]float64)
 	contentScores := make(map[string]float64)
 	sessionScores := make(map[string]float64)
-	if !usePrefetched && req.UserID != "" {
+	if !usePrefetched && req.UserID != "" && mode != AlgorithmPopularity && mode != AlgorithmCooc {
 		start := time.Now()
 		_, scores, err := e.getCollaborativeCandidates(ctx, req, existing, k)
 		switch {
@@ -398,4 +436,147 @@ func (e *Engine) Recommend(
 		}
 	}
 	return response, trace, nil
+}
+
+func (e *Engine) getImplicitCandidates(
+	ctx context.Context,
+	req Request,
+	k int,
+) ([]recmodel.ScoredItem, error) {
+	if req.UserID == "" {
+		return nil, nil
+	}
+	store, ok := e.store.(recmodel.CollaborativeStore)
+	if !ok {
+		return nil, recmodel.ErrFeatureUnavailable
+	}
+	fetchK := e.fanoutFor(k)
+	exclude := []string{}
+	if req.Constraints != nil && len(req.Constraints.ExcludeItemIDs) > 0 {
+		exclude = append(exclude, req.Constraints.ExcludeItemIDs...)
+	}
+	candidates, err := store.CollaborativeTopK(
+		ctx,
+		req.OrgID,
+		req.Namespace,
+		req.UserID,
+		fetchK,
+		exclude,
+	)
+	if err != nil {
+		return nil, err
+	}
+	filtered := make([]recmodel.ScoredItem, 0, len(candidates))
+	seen := make(map[string]struct{}, len(candidates))
+	for _, cand := range candidates {
+		if cand.ItemID == "" || cand.Score <= 0 {
+			continue
+		}
+		if _, ok := seen[cand.ItemID]; ok {
+			continue
+		}
+		seen[cand.ItemID] = struct{}{}
+		filtered = append(filtered, recmodel.ScoredItem{ItemID: cand.ItemID, Score: cand.Score})
+	}
+	sort.SliceStable(filtered, func(i, j int) bool {
+		if filtered[i].Score == filtered[j].Score {
+			return filtered[i].ItemID < filtered[j].ItemID
+		}
+		return filtered[i].Score > filtered[j].Score
+	})
+	if fetchK > 0 && len(filtered) > fetchK {
+		filtered = filtered[:fetchK]
+	}
+	return filtered, nil
+}
+
+func (e *Engine) getCoocCandidates(
+	ctx context.Context,
+	req Request,
+	k int,
+) ([]recmodel.ScoredItem, error) {
+	store, ok := e.store.(recmodel.CooccurrenceStore)
+	if !ok {
+		return nil, recmodel.ErrFeatureUnavailable
+	}
+	var anchors []string
+	if req.InjectAnchors && len(req.AnchorItemIDs) > 0 {
+		anchors = append([]string(nil), req.AnchorItemIDs...)
+	} else if req.UserID != "" {
+		var err error
+		anchors, err = e.getRecentAnchors(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if len(anchors) == 0 {
+		return nil, nil
+	}
+	seenAnchors := make(map[string]struct{}, len(anchors))
+	uniqAnchors := make([]string, 0, len(anchors))
+	for _, anchor := range anchors {
+		trimmed := strings.TrimSpace(anchor)
+		if trimmed == "" {
+			continue
+		}
+		if _, ok := seenAnchors[trimmed]; ok {
+			continue
+		}
+		seenAnchors[trimmed] = struct{}{}
+		uniqAnchors = append(uniqAnchors, trimmed)
+	}
+	if len(uniqAnchors) == 0 {
+		return nil, nil
+	}
+	days := e.config.CoVisWindowDays
+	if days <= 0 {
+		days = defaultCovisWindowDays
+	}
+	since := e.clock.Now().Add(-time.Duration(days*24.0) * time.Hour)
+	scoreMap := make(map[string]float64)
+	for _, anchor := range uniqAnchors {
+		neighbors, err := store.CooccurrenceTopKWithin(
+			ctx,
+			req.OrgID,
+			req.Namespace,
+			anchor,
+			maxCovisNeighbors,
+			since,
+		)
+		if err != nil {
+			if errors.Is(err, recmodel.ErrFeatureUnavailable) {
+				return nil, err
+			}
+			continue
+		}
+		for _, neighbor := range neighbors {
+			if neighbor.ItemID == "" || neighbor.Score <= 0 {
+				continue
+			}
+			if _, ok := seenAnchors[neighbor.ItemID]; ok {
+				continue
+			}
+			if prev, ok := scoreMap[neighbor.ItemID]; !ok || neighbor.Score > prev {
+				scoreMap[neighbor.ItemID] = neighbor.Score
+			}
+		}
+	}
+	if len(scoreMap) == 0 {
+		return nil, nil
+	}
+	filtered := make([]recmodel.ScoredItem, 0, len(scoreMap))
+	for id, score := range scoreMap {
+		filtered = append(filtered, recmodel.ScoredItem{ItemID: id, Score: score})
+	}
+	sort.SliceStable(filtered, func(i, j int) bool {
+		if filtered[i].Score == filtered[j].Score {
+			return filtered[i].ItemID < filtered[j].ItemID
+		}
+		return filtered[i].Score > filtered[j].Score
+	})
+	fetchK := e.fanoutFor(k)
+	if fetchK > 0 && len(filtered) > fetchK {
+		filtered = filtered[:fetchK]
+	}
+	return filtered, nil
 }

@@ -37,30 +37,33 @@ func (e *SimilarItemsEngine) FindSimilar(ctx context.Context, req SimilarItemsRe
 	if k <= 0 {
 		k = 20
 	}
+	mode := NormalizeAlgorithm(req.Algorithm)
 
 	// Try embedding similarity first
-	if embeddingStore, ok := e.store.(recmodel.EmbeddingStore); ok {
-		embeddingItems, err := embeddingStore.SimilarByEmbeddingTopK(
-			ctx,
-			req.OrgID,
-			req.Namespace,
-			req.ItemID,
-			k,
-		)
-		if err == nil && len(embeddingItems) > 0 {
-			embeddingItems = e.filterAvailable(ctx, req, embeddingItems)
-		}
-		if err == nil && len(embeddingItems) > 0 {
-			// Convert to response format
-			items := make([]ScoredItem, 0, len(embeddingItems))
-			for _, item := range embeddingItems {
-				items = append(items, ScoredItem{
-					ItemID:  item.ItemID,
-					Score:   item.Score,
-					Reasons: []string{"embedding_similarity"},
-				})
+	if mode != AlgorithmCooc {
+		if embeddingStore, ok := e.store.(recmodel.EmbeddingStore); ok {
+			embeddingItems, err := embeddingStore.SimilarByEmbeddingTopK(
+				ctx,
+				req.OrgID,
+				req.Namespace,
+				req.ItemID,
+				k,
+			)
+			if err == nil && len(embeddingItems) > 0 {
+				embeddingItems = e.filterAvailable(ctx, req, embeddingItems)
 			}
-			return &SimilarItemsResponse{Items: items}, nil
+			if err == nil && len(embeddingItems) > 0 {
+				// Convert to response format
+				items := make([]ScoredItem, 0, len(embeddingItems))
+				for _, item := range embeddingItems {
+					items = append(items, ScoredItem{
+						ItemID:  item.ItemID,
+						Score:   item.Score,
+						Reasons: []string{"embedding_similarity"},
+					})
+				}
+				return &SimilarItemsResponse{Items: items}, nil
+			}
 		}
 	}
 

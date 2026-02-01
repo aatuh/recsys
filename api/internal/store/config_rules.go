@@ -45,6 +45,7 @@ select v.config, v.etag
 	var payload struct {
 		Weights *recsysvc.Weights `json:"weights"`
 		Flags   map[string]bool   `json:"flags"`
+		Algo    string            `json:"algo"`
 	}
 	if len(raw) > 0 {
 		if err := json.Unmarshal(raw, &payload); err != nil {
@@ -57,6 +58,7 @@ select v.config, v.etag
 		Version:  etag,
 		Weights:  payload.Weights,
 		Flags:    payload.Flags,
+		Algo:     strings.TrimSpace(payload.Algo),
 	}, nil
 }
 

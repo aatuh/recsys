@@ -23,6 +23,17 @@ Notes:
 - end date is inclusive
 - windows are daily UTC
 
+Incremental (checkpointed) example:
+
+```bash
+recsys-pipelines run \
+  --config <path> \
+  --tenant <tenant> \
+  --surface <surface> \
+  --end YYYY-MM-DD \
+  --incremental
+```
+
 ## Job binaries
 
 All jobs take `--config --tenant --surface --start --end`.

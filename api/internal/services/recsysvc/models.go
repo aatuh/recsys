@@ -13,6 +13,7 @@ type RecommendRequest struct {
 	Weights     *Weights
 	Options     Options
 	Experiment  *Experiment
+	Algorithm   string
 }
 
 // SimilarRequest is the normalized domain request for similar items.
@@ -23,6 +24,7 @@ type SimilarRequest struct {
 	K           int
 	Constraints *Constraints
 	Options     Options
+	Algorithm   string
 }
 
 // UserRef carries user/session identifiers.

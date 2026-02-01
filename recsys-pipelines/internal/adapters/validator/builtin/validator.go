@@ -117,6 +117,8 @@ func (v *Builtin) ValidateArtifact(ctx context.Context, ref artifacts.Ref, artif
 		return v.validatePopularity(ref, artifactJSON)
 	case artifacts.TypeCooc:
 		return v.validateCooc(ref, artifactJSON)
+	case artifacts.TypeImplicit:
+		return apperr.New(apperr.KindInvalidArgument, "implicit artifacts are not supported by pipelines yet", nil)
 	default:
 		return apperr.New(apperr.KindInvalidArgument, "unknown artifact type", fmt.Errorf("type=%s", ref.Key.Type))
 	}

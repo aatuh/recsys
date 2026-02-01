@@ -2,10 +2,12 @@ package recsysvc
 
 import (
 	"context"
+	"errors"
 	"sort"
 	"strings"
 
 	"github.com/aatuh/api-toolkit/authorization"
+	"github.com/aatuh/recsys-suite/api/internal/artifacts"
 )
 
 // Engine defines the algorithm interface for recommendations.
@@ -20,6 +22,12 @@ type Service struct {
 	queue       *BoundedQueue
 	configStore ConfigStore
 	rulesStore  RulesStore
+}
+
+// AlgoVersioner allows engines to report the active algorithm version per request.
+type AlgoVersioner interface {
+	VersionForRecommend(ctx context.Context, req RecommendRequest) string
+	VersionForSimilar(ctx context.Context, req SimilarRequest) string
 }
 
 // ServiceOption configures the service.
@@ -76,6 +84,15 @@ func (s *Service) Recommend(ctx context.Context, req RecommendRequest) ([]Item, 
 		return nil, nil, meta, err
 	} else if cfg.Version != "" {
 		meta.ConfigVersion = cfg.Version
+		if req.Weights == nil && cfg.Weights != nil {
+			req.Weights = cfg.Weights
+		}
+		if req.Algorithm == "" && cfg.Algo != "" {
+			req.Algorithm = cfg.Algo
+		}
+	}
+	if v, ok := s.engine.(AlgoVersioner); ok {
+		meta.AlgoVersion = v.VersionForRecommend(ctx, req)
 	}
 	if rules, err := s.loadTenantRules(ctx, req.Surface); err != nil {
 		return nil, nil, meta, err
@@ -84,6 +101,9 @@ func (s *Service) Recommend(ctx context.Context, req RecommendRequest) ([]Item, 
 	}
 	items, warnings, err := s.engine.Recommend(ctx, req)
 	if err != nil {
+		if errors.Is(err, artifacts.ErrArtifactIncompatible) || errors.Is(err, artifacts.ErrManifestIncompatible) {
+			return nil, warnings, meta, ErrArtifactIncompatible
+		}
 		return nil, warnings, meta, err
 	}
 	applyDeterministicOrdering(items)
@@ -104,6 +124,12 @@ func (s *Service) Similar(ctx context.Context, req SimilarRequest) ([]Item, []Wa
 		return nil, nil, meta, err
 	} else if cfg.Version != "" {
 		meta.ConfigVersion = cfg.Version
+		if req.Algorithm == "" && cfg.Algo != "" {
+			req.Algorithm = cfg.Algo
+		}
+	}
+	if v, ok := s.engine.(AlgoVersioner); ok {
+		meta.AlgoVersion = v.VersionForSimilar(ctx, req)
 	}
 	if rules, err := s.loadTenantRules(ctx, req.Surface); err != nil {
 		return nil, nil, meta, err
@@ -112,6 +138,9 @@ func (s *Service) Similar(ctx context.Context, req SimilarRequest) ([]Item, []Wa
 	}
 	items, warnings, err := s.engine.Similar(ctx, req)
 	if err != nil {
+		if errors.Is(err, artifacts.ErrArtifactIncompatible) || errors.Is(err, artifacts.ErrManifestIncompatible) {
+			return nil, warnings, meta, ErrArtifactIncompatible
+		}
 		return nil, warnings, meta, err
 	}
 	applyDeterministicOrdering(items)

@@ -50,6 +50,9 @@ func (errs ValidationErrors) Fields() []ValidationError {
 // Validate checks configuration invariants.
 func (c Config) Validate() error {
 	var errs ValidationErrors
+	if c.DefaultAlgorithm != "" && !IsSupportedAlgorithm(c.DefaultAlgorithm) {
+		errs = append(errs, ValidationError{Field: "default_algorithm", Message: "must be one of blend, popularity, cooc, implicit"})
+	}
 	if c.BlendAlpha < 0 {
 		errs = append(errs, ValidationError{Field: "blend_alpha", Message: "must be >= 0"})
 	}
@@ -127,6 +130,9 @@ func (r Request) Validate() error {
 	var errs ValidationErrors
 	if r.OrgID == uuid.Nil {
 		errs = append(errs, ValidationError{Field: "org_id", Message: "must be set"})
+	}
+	if r.Algorithm != "" && !IsSupportedAlgorithm(r.Algorithm) {
+		errs = append(errs, ValidationError{Field: "algorithm", Message: "must be one of blend, popularity, cooc, implicit"})
 	}
 	if r.K < 0 {
 		errs = append(errs, ValidationError{Field: "k", Message: "must be >= 0"})

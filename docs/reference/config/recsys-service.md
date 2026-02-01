@@ -13,6 +13,9 @@ Canonical env var list: `recsys/api/.env.example`.
 - cache.rules_ttl_seconds: rules cache TTL
 - exposure.log_path: file path (JSONL)
 - exposure.log_format: service_v1 | eval_v1
+- algo.mode: blend | popularity | cooc | implicit (default: blend)
+- algo.plugin_enabled: enable Go plugin loading (dev only)
+- algo.plugin_path: filesystem path to .so plugin (dev only)
 - artifacts.enabled: enable artifact/manifest mode
 - artifacts.manifest_template: manifest URI template (supports {tenant} and {surface})
 - artifacts.manifest_ttl_seconds: manifest cache TTL

@@ -127,6 +127,10 @@ func (h *RecsysHandler) recommend(w http.ResponseWriter, r *http.Request) {
 			h.writeOverloaded(w, r)
 			return
 		}
+		if errors.Is(err, recsysvc.ErrArtifactIncompatible) {
+			writeProblem(w, r, http.StatusUnprocessableEntity, "RECSYS_ARTIFACT_INCOMPATIBLE", "artifact incompatible")
+			return
+		}
 		writeProblem(w, r, http.StatusInternalServerError, "RECSYS_INTERNAL", "internal error")
 		return
 	}
@@ -169,6 +173,10 @@ func (h *RecsysHandler) similar(w http.ResponseWriter, r *http.Request) {
 		if errors.Is(err, recsysvc.ErrOverloaded) {
 			appmetrics.RecordBackpressureRejection()
 			h.writeOverloaded(w, r)
+			return
+		}
+		if errors.Is(err, recsysvc.ErrArtifactIncompatible) {
+			writeProblem(w, r, http.StatusUnprocessableEntity, "RECSYS_ARTIFACT_INCOMPATIBLE", "artifact incompatible")
 			return
 		}
 		writeProblem(w, r, http.StatusInternalServerError, "RECSYS_INTERNAL", "internal error")
