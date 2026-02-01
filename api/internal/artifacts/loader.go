@@ -25,6 +25,8 @@ type Loader struct {
 	popCache         *cache.TTLCache[string, PopularityArtifactV1]
 	coocCache        *cache.TTLCache[string, CoocArtifactV1]
 	implicitCache    *cache.TTLCache[string, ImplicitArtifactV1]
+	contentCache     *cache.TTLCache[string, ContentArtifactV1]
+	sessionCache     *cache.TTLCache[string, SessionSeqArtifactV1]
 	manifestTTL      time.Duration
 	artifactTTL      time.Duration
 	maxBytes         int
@@ -43,6 +45,8 @@ func NewLoader(reader objectstore.Reader, cfg LoaderConfig) *Loader {
 		popCache:         cache.NewTTL[string, PopularityArtifactV1](nil),
 		coocCache:        cache.NewTTL[string, CoocArtifactV1](nil),
 		implicitCache:    cache.NewTTL[string, ImplicitArtifactV1](nil),
+		contentCache:     cache.NewTTL[string, ContentArtifactV1](nil),
+		sessionCache:     cache.NewTTL[string, SessionSeqArtifactV1](nil),
 		manifestTTL:      cfg.ManifestTTL,
 		artifactTTL:      cfg.ArtifactTTL,
 		maxBytes:         cfg.MaxBytes,
@@ -73,6 +77,12 @@ func (l *Loader) Invalidate(tenant, surface string) int {
 	}
 	if l.implicitCache != nil {
 		n += l.implicitCache.Invalidate(func(key string, _ ImplicitArtifactV1) bool { return true })
+	}
+	if l.contentCache != nil {
+		n += l.contentCache.Invalidate(func(key string, _ ContentArtifactV1) bool { return true })
+	}
+	if l.sessionCache != nil {
+		n += l.sessionCache.Invalidate(func(key string, _ SessionSeqArtifactV1) bool { return true })
 	}
 	return n
 }
@@ -214,6 +224,68 @@ func (l *Loader) LoadImplicit(ctx context.Context, uri string) (ImplicitArtifact
 	}
 	if l.artifactTTL > 0 {
 		l.implicitCache.Set(uri, art, l.artifactTTL)
+	}
+	return art, true, nil
+}
+
+func (l *Loader) LoadContent(ctx context.Context, uri string) (ContentArtifactV1, bool, error) {
+	if l == nil {
+		return ContentArtifactV1{}, false, fmt.Errorf("loader is nil")
+	}
+	uri = strings.TrimSpace(uri)
+	if uri == "" {
+		return ContentArtifactV1{}, false, nil
+	}
+	if val, ok := l.contentCache.Get(uri); ok {
+		return val, true, nil
+	}
+	data, err := l.reader.Get(ctx, uri)
+	if err != nil {
+		if _, ok := err.(objectstore.ErrNotFound); ok {
+			return ContentArtifactV1{}, false, nil
+		}
+		return ContentArtifactV1{}, false, err
+	}
+	var art ContentArtifactV1
+	if err := json.Unmarshal(data, &art); err != nil {
+		return ContentArtifactV1{}, false, wrapArtifactError(err)
+	}
+	if err := art.Validate(); err != nil {
+		return ContentArtifactV1{}, false, wrapArtifactError(err)
+	}
+	if l.artifactTTL > 0 {
+		l.contentCache.Set(uri, art, l.artifactTTL)
+	}
+	return art, true, nil
+}
+
+func (l *Loader) LoadSessionSeq(ctx context.Context, uri string) (SessionSeqArtifactV1, bool, error) {
+	if l == nil {
+		return SessionSeqArtifactV1{}, false, fmt.Errorf("loader is nil")
+	}
+	uri = strings.TrimSpace(uri)
+	if uri == "" {
+		return SessionSeqArtifactV1{}, false, nil
+	}
+	if val, ok := l.sessionCache.Get(uri); ok {
+		return val, true, nil
+	}
+	data, err := l.reader.Get(ctx, uri)
+	if err != nil {
+		if _, ok := err.(objectstore.ErrNotFound); ok {
+			return SessionSeqArtifactV1{}, false, nil
+		}
+		return SessionSeqArtifactV1{}, false, err
+	}
+	var art SessionSeqArtifactV1
+	if err := json.Unmarshal(data, &art); err != nil {
+		return SessionSeqArtifactV1{}, false, wrapArtifactError(err)
+	}
+	if err := art.Validate(); err != nil {
+		return SessionSeqArtifactV1{}, false, wrapArtifactError(err)
+	}
+	if l.artifactTTL > 0 {
+		l.sessionCache.Set(uri, art, l.artifactTTL)
 	}
 	return art, true, nil
 }

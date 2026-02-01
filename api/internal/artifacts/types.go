@@ -10,6 +10,8 @@ const (
 	TypePopularity = "popularity"
 	TypeCooc       = "cooc"
 	TypeImplicit   = "implicit"
+	TypeContentSim = "content_sim"
+	TypeSessionSeq = "session_seq"
 )
 
 type ManifestV1 struct {
@@ -153,6 +155,83 @@ func (a ImplicitArtifactV1) Validate() error {
 	}
 	if _, ok := ParseTime(a.Window.End); !ok {
 		return errors.New("implicit artifact window.end must be RFC3339")
+	}
+	return nil
+}
+
+type ContentItem struct {
+	ItemID string   `json:"item_id"`
+	Tags   []string `json:"tags"`
+}
+
+// ContentArtifactV1 stores item tags for content-based similarity.
+type ContentArtifactV1 struct {
+	V            int           `json:"v"`
+	ArtifactType string        `json:"artifact_type"`
+	Tenant       string        `json:"tenant"`
+	Surface      string        `json:"surface"`
+	Segment      string        `json:"segment,omitempty"`
+	Window       windowJSON    `json:"window"`
+	Items        []ContentItem `json:"items"`
+	Build        BuildInfo     `json:"build"`
+}
+
+func (a ContentArtifactV1) Validate() error {
+	if a.V != 1 {
+		return fmt.Errorf("unsupported content artifact version: %d", a.V)
+	}
+	if a.ArtifactType != TypeContentSim {
+		return fmt.Errorf("content artifact_type mismatch: %s", a.ArtifactType)
+	}
+	if a.Tenant == "" || a.Surface == "" {
+		return errors.New("content artifact tenant and surface required")
+	}
+	if _, ok := ParseTime(a.Window.Start); !ok {
+		return errors.New("content artifact window.start must be RFC3339")
+	}
+	if _, ok := ParseTime(a.Window.End); !ok {
+		return errors.New("content artifact window.end must be RFC3339")
+	}
+	return nil
+}
+
+type SessionSeqItem struct {
+	ItemID string  `json:"item_id"`
+	Score  float64 `json:"score"`
+}
+
+type SessionSeqUser struct {
+	UserID string           `json:"user_id"`
+	Items  []SessionSeqItem `json:"items"`
+}
+
+// SessionSeqArtifactV1 stores user-specific sequential signals.
+type SessionSeqArtifactV1 struct {
+	V            int              `json:"v"`
+	ArtifactType string           `json:"artifact_type"`
+	Tenant       string           `json:"tenant"`
+	Surface      string           `json:"surface"`
+	Segment      string           `json:"segment,omitempty"`
+	Window       windowJSON       `json:"window"`
+	Users        []SessionSeqUser `json:"users"`
+	Build        BuildInfo        `json:"build"`
+}
+
+func (a SessionSeqArtifactV1) Validate() error {
+	if a.V != 1 {
+		return fmt.Errorf("unsupported session_seq artifact version: %d", a.V)
+	}
+	if a.ArtifactType != TypeSessionSeq {
+		return fmt.Errorf("session_seq artifact_type mismatch: %s", a.ArtifactType)
+	}
+	if a.Tenant == "" || a.Surface == "" {
+		return errors.New("session_seq artifact tenant and surface required")
+	}
+	if _, ok := ParseTime(a.Window.Start); !ok {
+		return errors.New("session_seq artifact window.start must be RFC3339")
+	}
+	if _, ok := ParseTime(a.Window.End); !ok {
+		return errors.New("session_seq artifact window.end must be RFC3339")
 	}
 	return nil
 }

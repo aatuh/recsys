@@ -53,6 +53,8 @@ Top-level fields:
 - `max_neighbors_per_item`
 - `max_items_per_artifact`
 - `min_cooc_support`
+- `max_users_per_run`
+- `max_items_per_user`
 
 See `explanation/validation-and-guardrails.md`.
 

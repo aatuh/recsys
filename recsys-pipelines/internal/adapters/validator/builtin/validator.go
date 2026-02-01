@@ -118,7 +118,11 @@ func (v *Builtin) ValidateArtifact(ctx context.Context, ref artifacts.Ref, artif
 	case artifacts.TypeCooc:
 		return v.validateCooc(ref, artifactJSON)
 	case artifacts.TypeImplicit:
-		return apperr.New(apperr.KindInvalidArgument, "implicit artifacts are not supported by pipelines yet", nil)
+		return v.validateImplicit(ref, artifactJSON)
+	case artifacts.TypeContentSim:
+		return v.validateContent(ref, artifactJSON)
+	case artifacts.TypeSessionSeq:
+		return v.validateSessionSeq(ref, artifactJSON)
 	default:
 		return apperr.New(apperr.KindInvalidArgument, "unknown artifact type", fmt.Errorf("type=%s", ref.Key.Type))
 	}
@@ -233,6 +237,139 @@ func (v *Builtin) validateCooc(ref artifacts.Ref, b []byte) error {
 	}
 	return nil
 }
+
+func (v *Builtin) validateImplicit(ref artifacts.Ref, b []byte) error {
+	var a artifacts.ImplicitArtifactV1
+	if err := json.Unmarshal(b, &a); err != nil {
+		return apperr.New(apperr.KindValidationFailed, "invalid implicit artifact json", err)
+	}
+	if a.V != 1 {
+		return apperr.New(apperr.KindValidationFailed, "unsupported implicit artifact version", fmt.Errorf("v=%d", a.V))
+	}
+	if a.ArtifactType != string(artifacts.TypeImplicit) {
+		return apperr.New(apperr.KindValidationFailed, "implicit artifact_type mismatch", fmt.Errorf("type=%s", a.ArtifactType))
+	}
+	if a.Build.Version != ref.Version {
+		return apperr.New(apperr.KindValidationFailed, "artifact version mismatch", fmt.Errorf("ref=%s payload=%s", ref.Version, a.Build.Version))
+	}
+	if a.Tenant != ref.Key.Tenant || a.Surface != ref.Key.Surface || a.Segment != ref.Key.Segment {
+		return apperr.New(apperr.KindValidationFailed, "artifact key mismatch", nil)
+	}
+	aw, err := parseWindow(a.Window.Start, a.Window.End)
+	if err != nil {
+		return err
+	}
+	if !windowsEqualUTC(aw, ref.Window) {
+		return apperr.New(apperr.KindValidationFailed, "artifact window mismatch", nil)
+	}
+	for _, u := range a.Users {
+		if u.UserID == "" {
+			return apperr.New(apperr.KindValidationFailed, "implicit user_id is empty", nil)
+		}
+		for _, it := range u.Items {
+			if it.ItemID == "" {
+				return apperr.New(apperr.KindValidationFailed, "implicit item_id is empty", fmt.Errorf("user=%s", u.UserID))
+			}
+			if it.Score < 0 {
+				return apperr.New(apperr.KindValidationFailed, "implicit score negative", fmt.Errorf("user=%s item=%s", u.UserID, it.ItemID))
+			}
+		}
+	}
+	ver, err := recomputeImplicitVersion(a)
+	if err != nil {
+		return err
+	}
+	if ver != ref.Version {
+		return apperr.New(apperr.KindValidationFailed, "implicit version hash mismatch", fmt.Errorf("computed=%s payload=%s", ver, ref.Version))
+	}
+	return nil
+}
+
+func (v *Builtin) validateContent(ref artifacts.Ref, b []byte) error {
+	var a artifacts.ContentArtifactV1
+	if err := json.Unmarshal(b, &a); err != nil {
+		return apperr.New(apperr.KindValidationFailed, "invalid content artifact json", err)
+	}
+	if a.V != 1 {
+		return apperr.New(apperr.KindValidationFailed, "unsupported content artifact version", fmt.Errorf("v=%d", a.V))
+	}
+	if a.ArtifactType != string(artifacts.TypeContentSim) {
+		return apperr.New(apperr.KindValidationFailed, "content artifact_type mismatch", fmt.Errorf("type=%s", a.ArtifactType))
+	}
+	if a.Build.Version != ref.Version {
+		return apperr.New(apperr.KindValidationFailed, "artifact version mismatch", fmt.Errorf("ref=%s payload=%s", ref.Version, a.Build.Version))
+	}
+	if a.Tenant != ref.Key.Tenant || a.Surface != ref.Key.Surface || a.Segment != ref.Key.Segment {
+		return apperr.New(apperr.KindValidationFailed, "artifact key mismatch", nil)
+	}
+	aw, err := parseWindow(a.Window.Start, a.Window.End)
+	if err != nil {
+		return err
+	}
+	if !windowsEqualUTC(aw, ref.Window) {
+		return apperr.New(apperr.KindValidationFailed, "artifact window mismatch", nil)
+	}
+	for _, it := range a.Items {
+		if it.ItemID == "" {
+			return apperr.New(apperr.KindValidationFailed, "content item_id is empty", nil)
+		}
+	}
+	ver, err := recomputeContentVersion(a)
+	if err != nil {
+		return err
+	}
+	if ver != ref.Version {
+		return apperr.New(apperr.KindValidationFailed, "content version hash mismatch", fmt.Errorf("computed=%s payload=%s", ver, ref.Version))
+	}
+	return nil
+}
+
+func (v *Builtin) validateSessionSeq(ref artifacts.Ref, b []byte) error {
+	var a artifacts.SessionSeqArtifactV1
+	if err := json.Unmarshal(b, &a); err != nil {
+		return apperr.New(apperr.KindValidationFailed, "invalid session_seq artifact json", err)
+	}
+	if a.V != 1 {
+		return apperr.New(apperr.KindValidationFailed, "unsupported session_seq artifact version", fmt.Errorf("v=%d", a.V))
+	}
+	if a.ArtifactType != string(artifacts.TypeSessionSeq) {
+		return apperr.New(apperr.KindValidationFailed, "session_seq artifact_type mismatch", fmt.Errorf("type=%s", a.ArtifactType))
+	}
+	if a.Build.Version != ref.Version {
+		return apperr.New(apperr.KindValidationFailed, "artifact version mismatch", fmt.Errorf("ref=%s payload=%s", ref.Version, a.Build.Version))
+	}
+	if a.Tenant != ref.Key.Tenant || a.Surface != ref.Key.Surface || a.Segment != ref.Key.Segment {
+		return apperr.New(apperr.KindValidationFailed, "artifact key mismatch", nil)
+	}
+	aw, err := parseWindow(a.Window.Start, a.Window.End)
+	if err != nil {
+		return err
+	}
+	if !windowsEqualUTC(aw, ref.Window) {
+		return apperr.New(apperr.KindValidationFailed, "artifact window mismatch", nil)
+	}
+	for _, u := range a.Users {
+		if u.UserID == "" {
+			return apperr.New(apperr.KindValidationFailed, "session_seq user_id is empty", nil)
+		}
+		for _, it := range u.Items {
+			if it.ItemID == "" {
+				return apperr.New(apperr.KindValidationFailed, "session_seq item_id is empty", fmt.Errorf("user=%s", u.UserID))
+			}
+			if it.Score < 0 {
+				return apperr.New(apperr.KindValidationFailed, "session_seq score negative", fmt.Errorf("user=%s item=%s", u.UserID, it.ItemID))
+			}
+		}
+	}
+	ver, err := recomputeSessionSeqVersion(a)
+	if err != nil {
+		return err
+	}
+	if ver != ref.Version {
+		return apperr.New(apperr.KindValidationFailed, "session_seq version hash mismatch", fmt.Errorf("computed=%s payload=%s", ver, ref.Version))
+	}
+	return nil
+}
 func recomputePopularityVersion(a artifacts.PopularityArtifactV1) (string, error) {
 	a.Build = artifacts.BuildInfo{}
 	b, err := json.Marshal(a)
@@ -246,6 +383,33 @@ func recomputeCoocVersion(a artifacts.CoocArtifactV1) (string, error) {
 	b, err := json.Marshal(a)
 	if err != nil {
 		return "", apperr.New(apperr.KindValidationFailed, "marshal cooc for version", err)
+	}
+	return lineage.SHA256Hex(b), nil
+}
+
+func recomputeImplicitVersion(a artifacts.ImplicitArtifactV1) (string, error) {
+	a.Build = artifacts.BuildInfo{}
+	b, err := json.Marshal(a)
+	if err != nil {
+		return "", apperr.New(apperr.KindValidationFailed, "marshal implicit for version", err)
+	}
+	return lineage.SHA256Hex(b), nil
+}
+
+func recomputeContentVersion(a artifacts.ContentArtifactV1) (string, error) {
+	a.Build = artifacts.BuildInfo{}
+	b, err := json.Marshal(a)
+	if err != nil {
+		return "", apperr.New(apperr.KindValidationFailed, "marshal content for version", err)
+	}
+	return lineage.SHA256Hex(b), nil
+}
+
+func recomputeSessionSeqVersion(a artifacts.SessionSeqArtifactV1) (string, error) {
+	a.Build = artifacts.BuildInfo{}
+	b, err := json.Marshal(a)
+	if err != nil {
+		return "", apperr.New(apperr.KindValidationFailed, "marshal session_seq for version", err)
 	}
 	return lineage.SHA256Hex(b), nil
 }

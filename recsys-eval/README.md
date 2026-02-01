@@ -17,7 +17,7 @@ If you only read one thing: read docs/CONCEPTS.md.
 - Experiment analysis (A/B from production logs)
 - Off-policy evaluation (OPE) when experiments are hard
 - Interleaving analysis for sensitive ranker comparisons
-- JSON reports + optional decision artifact
+- JSON/Markdown/HTML reports + optional decision artifact
 
 ## Quick start (JSONL)
 
@@ -38,6 +38,14 @@ recsys-eval run \
   --dataset configs/examples/dataset.jsonl.yaml \
   --config configs/eval/offline.default.yaml \
   --output /tmp/offline_report.json
+
+# Markdown report
+recsys-eval run \
+  --mode offline \
+  --dataset configs/examples/dataset.jsonl.yaml \
+  --config configs/eval/offline.default.yaml \
+  --output /tmp/offline_report.md \
+  --output-format markdown
 
 # Experiment analysis
 recsys-eval run \
@@ -64,6 +72,7 @@ recsys-eval run \
 ## Outputs
 
 The primary output is a JSON report that conforms to api/schemas/report.v1.json.
+You can also emit Markdown or HTML summaries for sharing.
 It always includes:
 - run_id
 - mode

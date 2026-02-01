@@ -13,9 +13,12 @@ import (
 
 	"github.com/aatuh/recsys-suite/recsys-eval/internal/adapters/clock/system"
 	"github.com/aatuh/recsys-suite/recsys-eval/internal/adapters/logger/std"
+	"github.com/aatuh/recsys-suite/recsys-eval/internal/adapters/reporting/html"
 	"github.com/aatuh/recsys-suite/recsys-eval/internal/adapters/reporting/json"
+	"github.com/aatuh/recsys-suite/recsys-eval/internal/adapters/reporting/markdown"
 	"github.com/aatuh/recsys-suite/recsys-eval/internal/app/usecase"
 	"github.com/aatuh/recsys-suite/recsys-eval/internal/app/workflow"
+	"github.com/aatuh/recsys-suite/recsys-eval/internal/ports/reporting"
 )
 
 func newRootCmd() *cobra.Command {
@@ -26,6 +29,7 @@ func newRootCmd() *cobra.Command {
 		baselinePath string
 		mode         string
 		experimentID string
+		outputFormat string
 	)
 
 	rootCmd := &cobra.Command{
@@ -62,7 +66,10 @@ func newRootCmd() *cobra.Command {
 
 			clock := system.Clock{}
 			logger := std.Logger{}
-			reporter := json.Writer{}
+			reporter, err := selectReporter(outputFormat)
+			if err != nil {
+				return err
+			}
 
 			ctx := context.Background()
 
@@ -221,7 +228,7 @@ func newRootCmd() *cobra.Command {
 			}
 		},
 	}
-	addRunFlags(runCmd, &datasetPath, &configPath, &outputPath, &baselinePath, &mode, &experimentID)
+	addRunFlags(runCmd, &datasetPath, &configPath, &outputPath, &baselinePath, &mode, &experimentID, &outputFormat)
 
 	validateCmd := &cobra.Command{
 		Use:   "validate",
@@ -248,13 +255,27 @@ func newRootCmd() *cobra.Command {
 	return rootCmd
 }
 
-func addRunFlags(cmd *cobra.Command, datasetPath, configPath, outputPath, baselinePath, mode, experimentID *string) {
+func addRunFlags(cmd *cobra.Command, datasetPath, configPath, outputPath, baselinePath, mode, experimentID, outputFormat *string) {
 	cmd.Flags().StringVar(datasetPath, "dataset", "", "Dataset config path (YAML)")
 	cmd.Flags().StringVar(configPath, "config", "", "Evaluation config path (YAML)")
-	cmd.Flags().StringVar(outputPath, "output", "", "Output report path (JSON)")
+	cmd.Flags().StringVar(outputPath, "output", "", "Output report path")
 	cmd.Flags().StringVar(baselinePath, "baseline", "", "Baseline report path (JSON)")
 	cmd.Flags().StringVar(mode, "mode", "", "Evaluation mode: offline | experiment | ope | interleaving | aa-check")
 	cmd.Flags().StringVar(experimentID, "experiment-id", "", "Experiment ID override")
+	cmd.Flags().StringVar(outputFormat, "output-format", "json", "Output format: json | markdown | html")
+}
+
+func selectReporter(format string) (reporting.Writer, error) {
+	switch strings.ToLower(strings.TrimSpace(format)) {
+	case "", "json":
+		return json.Writer{}, nil
+	case "md", "markdown":
+		return markdown.Writer{}, nil
+	case "html":
+		return html.Writer{}, nil
+	default:
+		return nil, fmt.Errorf("unknown output format: %s", format)
+	}
 }
 
 func loadYAMLStrict(path string, out any) error {

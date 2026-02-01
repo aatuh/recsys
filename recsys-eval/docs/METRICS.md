@@ -68,6 +68,26 @@ Examples:
 
 These are especially useful when you care about discovery and fairness.
 
+### Distribution metrics implemented here
+
+These are **proxy** metrics derived from exposures and outcomes (no catalog
+metadata required):
+
+- **Coverage@K**: unique items shown in top K across all requests divided by
+  unique items seen anywhere in recommendations or outcomes. It answers
+  "how much of the observed catalog is exposed in the top slots?"
+
+- **Novelty@K**: average `-log2(popularity)` for items shown in top K, where
+  popularity is the global exposure frequency. Higher means "less popular on
+  average". This is a proxy for long‑tail exposure.
+
+- **Diversity@K**: normalized entropy of the item distribution in top K
+  recommendations across requests. Values near 1.0 mean a wide spread;
+  values near 0 mean concentration on a few items.
+
+If you have real catalog metadata (categories, embeddings), you should
+compute richer diversity/novelty metrics upstream and feed them as outcomes.
+
 ## Common mistakes
 
 - "CTR improved so we are done":

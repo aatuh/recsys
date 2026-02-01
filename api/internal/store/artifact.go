@@ -234,6 +234,178 @@ func (s *ArtifactAlgoStore) CollaborativeTopK(
 	return items, nil
 }
 
+// ContentSimilarityTopK returns candidates by tag overlap using content artifacts.
+func (s *ArtifactAlgoStore) ContentSimilarityTopK(
+	ctx context.Context,
+	orgID uuid.UUID,
+	ns string,
+	tags []string,
+	k int,
+	excludeIDs []string,
+) ([]recmodel.ScoredItem, error) {
+	if k <= 0 {
+		return nil, nil
+	}
+	tags = normalizeTags(tags)
+	if len(tags) == 0 {
+		return nil, nil
+	}
+	if s == nil || s.loader == nil {
+		return nil, recmodel.ErrFeatureUnavailable
+	}
+	tenant := tenantKey(ctx, orgID)
+	if tenant == "" {
+		return nil, recmodel.ErrFeatureUnavailable
+	}
+	ns = normalizeNamespace(ns)
+
+	content, ok, err := s.loadContent(ctx, tenant, ns)
+	if err != nil {
+		return nil, err
+	}
+	if !ok && ns != "default" {
+		ns = "default"
+		content, ok, err = s.loadContent(ctx, tenant, ns)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if !ok {
+		return nil, recmodel.ErrFeatureUnavailable
+	}
+
+	excludeSet := make(map[string]struct{}, len(excludeIDs))
+	for _, id := range excludeIDs {
+		id = strings.TrimSpace(id)
+		if id != "" {
+			excludeSet[id] = struct{}{}
+		}
+	}
+	tagSet := make(map[string]struct{}, len(tags))
+	for _, tag := range tags {
+		if tag != "" {
+			tagSet[tag] = struct{}{}
+		}
+	}
+
+	items := make([]recmodel.ScoredItem, 0, len(content.Items))
+	for _, item := range content.Items {
+		id := strings.TrimSpace(item.ItemID)
+		if id == "" {
+			continue
+		}
+		if _, excluded := excludeSet[id]; excluded {
+			continue
+		}
+		score := 0.0
+		for _, tag := range normalizeTags(item.Tags) {
+			if _, ok := tagSet[tag]; ok {
+				score++
+			}
+		}
+		if score <= 0 {
+			continue
+		}
+		items = append(items, recmodel.ScoredItem{ItemID: id, Score: score})
+	}
+	if len(items) == 0 {
+		return nil, nil
+	}
+	sort.SliceStable(items, func(i, j int) bool {
+		if items[i].Score == items[j].Score {
+			return items[i].ItemID < items[j].ItemID
+		}
+		return items[i].Score > items[j].Score
+	})
+	if k > 0 && len(items) > k {
+		items = items[:k]
+	}
+	return items, nil
+}
+
+// SessionSequenceTopK returns sequential candidates using session sequence artifacts.
+func (s *ArtifactAlgoStore) SessionSequenceTopK(
+	ctx context.Context,
+	orgID uuid.UUID,
+	ns string,
+	userID string,
+	lookback int,
+	horizonMinutes float64,
+	excludeIDs []string,
+	k int,
+) ([]recmodel.ScoredItem, error) {
+	if k <= 0 {
+		return nil, nil
+	}
+	userID = strings.TrimSpace(userID)
+	if userID == "" {
+		return nil, nil
+	}
+	if s == nil || s.loader == nil {
+		return nil, recmodel.ErrFeatureUnavailable
+	}
+	_ = lookback
+	_ = horizonMinutes
+
+	tenant := tenantKey(ctx, orgID)
+	if tenant == "" {
+		return nil, recmodel.ErrFeatureUnavailable
+	}
+	ns = normalizeNamespace(ns)
+
+	sess, ok, err := s.loadSessionSeq(ctx, tenant, ns)
+	if err != nil {
+		return nil, err
+	}
+	if !ok && ns != "default" {
+		ns = "default"
+		sess, ok, err = s.loadSessionSeq(ctx, tenant, ns)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if !ok {
+		return nil, recmodel.ErrFeatureUnavailable
+	}
+
+	excludeSet := make(map[string]struct{}, len(excludeIDs))
+	for _, id := range excludeIDs {
+		id = strings.TrimSpace(id)
+		if id != "" {
+			excludeSet[id] = struct{}{}
+		}
+	}
+	var items []recmodel.ScoredItem
+	for _, user := range sess.Users {
+		if strings.TrimSpace(user.UserID) != userID {
+			continue
+		}
+		for _, item := range user.Items {
+			if item.ItemID == "" || item.Score <= 0 {
+				continue
+			}
+			if _, excluded := excludeSet[item.ItemID]; excluded {
+				continue
+			}
+			items = append(items, recmodel.ScoredItem{ItemID: item.ItemID, Score: item.Score})
+		}
+		break
+	}
+	if len(items) == 0 {
+		return nil, nil
+	}
+	sort.SliceStable(items, func(i, j int) bool {
+		if items[i].Score == items[j].Score {
+			return items[i].ItemID < items[j].ItemID
+		}
+		return items[i].Score > items[j].Score
+	})
+	if k > 0 && len(items) > k {
+		items = items[:k]
+	}
+	return items, nil
+}
+
 func (s *ArtifactAlgoStore) loadPopularity(ctx context.Context, tenant, ns string) ([]artifacts.PopularityItem, bool, error) {
 	if s == nil || s.loader == nil {
 		return nil, false, nil
@@ -289,6 +461,61 @@ func (s *ArtifactAlgoStore) loadImplicit(ctx context.Context, tenant, ns string)
 		return artifacts.ImplicitArtifactV1{}, ok, err
 	}
 	return implicit, true, nil
+}
+
+func (s *ArtifactAlgoStore) loadContent(ctx context.Context, tenant, ns string) (artifacts.ContentArtifactV1, bool, error) {
+	if s == nil || s.loader == nil {
+		return artifacts.ContentArtifactV1{}, false, nil
+	}
+	manifest, ok, err := s.loader.LoadManifest(ctx, tenant, ns)
+	if err != nil || !ok {
+		return artifacts.ContentArtifactV1{}, ok, err
+	}
+	uri := strings.TrimSpace(manifest.Current[artifacts.TypeContentSim])
+	if uri == "" {
+		return artifacts.ContentArtifactV1{}, false, nil
+	}
+	content, ok, err := s.loader.LoadContent(ctx, uri)
+	if err != nil || !ok {
+		return artifacts.ContentArtifactV1{}, ok, err
+	}
+	return content, true, nil
+}
+
+func (s *ArtifactAlgoStore) loadSessionSeq(ctx context.Context, tenant, ns string) (artifacts.SessionSeqArtifactV1, bool, error) {
+	if s == nil || s.loader == nil {
+		return artifacts.SessionSeqArtifactV1{}, false, nil
+	}
+	manifest, ok, err := s.loader.LoadManifest(ctx, tenant, ns)
+	if err != nil || !ok {
+		return artifacts.SessionSeqArtifactV1{}, ok, err
+	}
+	uri := strings.TrimSpace(manifest.Current[artifacts.TypeSessionSeq])
+	if uri == "" {
+		return artifacts.SessionSeqArtifactV1{}, false, nil
+	}
+	sess, ok, err := s.loader.LoadSessionSeq(ctx, uri)
+	if err != nil || !ok {
+		return artifacts.SessionSeqArtifactV1{}, ok, err
+	}
+	return sess, true, nil
+}
+
+func normalizeTags(tags []string) []string {
+	out := make([]string, 0, len(tags))
+	seen := make(map[string]struct{}, len(tags))
+	for _, tag := range tags {
+		t := strings.ToLower(strings.TrimSpace(tag))
+		if t == "" {
+			continue
+		}
+		if _, ok := seen[t]; ok {
+			continue
+		}
+		seen[t] = struct{}{}
+		out = append(out, t)
+	}
+	return out
 }
 
 func (s *ArtifactAlgoStore) filterPopularity(
@@ -478,3 +705,6 @@ func tenantKey(ctx context.Context, orgID uuid.UUID) string {
 var _ recmodel.EngineStore = (*ArtifactAlgoStore)(nil)
 var _ recmodel.CooccurrenceStore = (*ArtifactAlgoStore)(nil)
 var _ recmodel.AvailabilityStore = (*ArtifactAlgoStore)(nil)
+var _ recmodel.CollaborativeStore = (*ArtifactAlgoStore)(nil)
+var _ recmodel.ContentStore = (*ArtifactAlgoStore)(nil)
+var _ recmodel.SessionStore = (*ArtifactAlgoStore)(nil)

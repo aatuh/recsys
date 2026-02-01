@@ -35,6 +35,8 @@ Offline mode can support stream mode for large presorted JSONL inputs:
 - requires exposures and outcomes sorted by request_id
 
 If inputs are not sorted, stream mode will not behave correctly.
+Note: dataset-level distribution metrics (coverage/novelty/diversity) are not
+available in stream mode.
 
 ## Practical knobs (recommended)
 

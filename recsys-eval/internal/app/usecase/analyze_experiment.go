@@ -367,6 +367,8 @@ type variantAccumulator struct {
 	latencies              []float64
 	errors                 int
 	empty                  int
+	minTS                  time.Time
+	maxTS                  time.Time
 	covariateSum           float64
 	covariateCount         int
 	clickIndicatorSum      float64
@@ -387,6 +389,14 @@ func (v *variantAccumulator) addExposure(exp dataset.Exposure, out outcomeMetric
 	v.clicks += out.clicks
 	v.conversions += out.conversions
 	v.revenue += out.revenue
+	if !exp.Timestamp.IsZero() {
+		if v.minTS.IsZero() || exp.Timestamp.Before(v.minTS) {
+			v.minTS = exp.Timestamp
+		}
+		if v.maxTS.IsZero() || exp.Timestamp.After(v.maxTS) {
+			v.maxTS = exp.Timestamp
+		}
+	}
 	if exp.LatencyMs != nil {
 		v.latencies = append(v.latencies, *exp.LatencyMs)
 	}
@@ -504,6 +514,13 @@ func buildVariantMetrics(vmap map[string]*variantAccumulator, cuped *cupedParams
 		if acc.exposures > 0 {
 			revenuePerReq = acc.revenue / float64(acc.exposures)
 		}
+		throughput := 0.0
+		if !acc.minTS.IsZero() && !acc.maxTS.IsZero() && acc.maxTS.After(acc.minTS) {
+			seconds := acc.maxTS.Sub(acc.minTS).Seconds()
+			if seconds > 0 {
+				throughput = float64(acc.exposures) / seconds
+			}
+		}
 		metric := report.VariantMetrics{
 			Variant:           acc.variant,
 			Exposures:         acc.exposures,
@@ -513,6 +530,7 @@ func buildVariantMetrics(vmap map[string]*variantAccumulator, cuped *cupedParams
 			ConversionRate:    cvr,
 			Revenue:           acc.revenue,
 			RevenuePerRequest: revenuePerReq,
+			ThroughputRPS:     throughput,
 		}
 
 		if cuped != nil && cuped.enabled && acc.covariateCount > 0 {

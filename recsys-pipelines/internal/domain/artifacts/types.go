@@ -14,6 +14,8 @@ const (
 	TypePopularity Type = "popularity"
 	TypeCooc       Type = "cooc"
 	TypeImplicit   Type = "implicit"
+	TypeContentSim Type = "content_sim"
+	TypeSessionSeq Type = "session_seq"
 )
 
 type Key struct {

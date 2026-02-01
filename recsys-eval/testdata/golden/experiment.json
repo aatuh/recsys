@@ -40,6 +40,7 @@
           "exposures": 2,
           "revenue": 0,
           "revenue_per_request": 0,
+          "throughput_rps": 0.016666666666666666,
           "variant": "A"
         },
         {
@@ -126,6 +127,7 @@
         "exposures": 2,
         "revenue": 0,
         "revenue_per_request": 0,
+        "throughput_rps": 0.016666666666666666,
         "variant": "A"
       },
       {

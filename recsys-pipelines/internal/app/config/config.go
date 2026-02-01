@@ -29,6 +29,8 @@ type Limits struct {
 	MaxNeighborsPerItem    int `json:"max_neighbors_per_item"`
 	MaxItemsPerArtifact    int `json:"max_items_per_artifact"`
 	MinCoocSupport         int `json:"min_cooc_support"`
+	MaxUsersPerRun         int `json:"max_users_per_run"`
+	MaxItemsPerUser        int `json:"max_items_per_user"`
 }
 
 type ObjectStoreConfig struct {
@@ -149,6 +151,12 @@ func LoadEnvConfig(path string) (EnvConfig, error) {
 	}
 	if c.Limits.MinCoocSupport == 0 {
 		c.Limits.MinCoocSupport = 2
+	}
+	if c.Limits.MaxUsersPerRun == 0 {
+		c.Limits.MaxUsersPerRun = 100_000
+	}
+	if c.Limits.MaxItemsPerUser == 0 {
+		c.Limits.MaxItemsPerUser = 500
 	}
 	return c, nil
 }

@@ -20,6 +20,9 @@ raw exposure events.
 Current v1 artifact types:
 - **popularity**: top-N items by exposure count
 - **cooc**: item-item co-occurrence neighbors within a session
+- **implicit**: user→item scores from implicit feedback
+- **content_sim**: item tags for content-based similarity
+- **session_seq**: user→next-item sequence signals
 
 Key production properties:
 - **Idempotent canonicalization**: reruns for the same day window do not
@@ -56,7 +59,7 @@ Ingest + canonicalize (idempotent)
 Validate canonical data (gates)
    |
    v
-Compute artifacts (popularity, cooc)
+Compute artifacts (popularity, cooc, implicit, content_sim, session_seq)
    |
    v
 Stage artifacts (optional)

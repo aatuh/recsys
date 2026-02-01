@@ -13,6 +13,7 @@ import (
 
 	"github.com/aatuh/recsys-suite/recsys-eval/internal/domain/dataset"
 	"github.com/aatuh/recsys-suite/recsys-eval/internal/domain/metrics"
+	"github.com/aatuh/recsys-suite/recsys-eval/internal/domain/metrics/distribution"
 	"github.com/aatuh/recsys-suite/recsys-eval/internal/domain/metrics/ranking"
 	"github.com/aatuh/recsys-suite/recsys-eval/internal/domain/report"
 	"github.com/aatuh/recsys-suite/recsys-eval/internal/domain/statistics"
@@ -88,6 +89,7 @@ func (u OfflineEvalUsecase) Run(ctx context.Context, evalCfg OfflineConfig, outp
 
 	reg := metrics.NewRegistry()
 	ranking.RegisterDefaults(reg)
+	distribution.RegisterDefaults(reg)
 	metricDefs, err := buildMetrics(reg, evalCfg.Metrics)
 	if err != nil {
 		return report.Report{}, err
@@ -176,9 +178,15 @@ func (u OfflineEvalUsecase) runStream(ctx context.Context, evalCfg OfflineConfig
 
 	reg := metrics.NewRegistry()
 	ranking.RegisterDefaults(reg)
+	distribution.RegisterDefaults(reg)
 	metricDefs, err := buildMetrics(reg, evalCfg.Metrics)
 	if err != nil {
 		return report.Report{}, err
+	}
+	for _, metric := range metricDefs {
+		if _, ok := metric.(metrics.DatasetMetric); ok {
+			return report.Report{}, fmt.Errorf("dataset metrics are not supported in stream mode")
+		}
 	}
 
 	globalSums := make([]float64, len(metricDefs))
@@ -316,6 +324,11 @@ func buildMetrics(reg *metrics.Registry, specs []metrics.MetricSpec) ([]metrics.
 func aggregateMetrics(metricDefs []metrics.Metric, cases []metrics.EvalCase, bootstrapCfg *BootstrapConfig) []report.MetricResult {
 	results := make([]report.MetricResult, 0, len(metricDefs))
 	for idx, metric := range metricDefs {
+		if datasetMetric, ok := metric.(metrics.DatasetMetric); ok {
+			value := datasetMetric.ComputeDataset(cases)
+			results = append(results, report.MetricResult{Name: metric.Name(), Value: value})
+			continue
+		}
 		values := make([]float64, len(cases))
 		sum := 0.0
 		for i, c := range cases {

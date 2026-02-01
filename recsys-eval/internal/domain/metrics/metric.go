@@ -17,6 +17,13 @@ type Metric interface {
 	Compute(c EvalCase) float64
 }
 
+// DatasetMetric computes a dataset-level score across all cases.
+// It is not supported in stream mode.
+type DatasetMetric interface {
+	Metric
+	ComputeDataset(cases []EvalCase) float64
+}
+
 // Registry maps metric names to factories.
 type Registry struct {
 	factories map[string]func(spec MetricSpec) (Metric, error)

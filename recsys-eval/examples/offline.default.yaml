@@ -9,6 +9,12 @@ offline:
       k: 10
     - name: ndcg
       k: 10
+    - name: coverage
+      k: 10
+    - name: novelty
+      k: 10
+    - name: diversity
+      k: 10
     - name: hitrate
       k: 10
   slice_keys: ["tenant", "surface", "locale", "device", "user_type"]

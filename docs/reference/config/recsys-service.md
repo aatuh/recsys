@@ -13,7 +13,7 @@ Canonical env var list: `recsys/api/.env.example`.
 - cache.rules_ttl_seconds: rules cache TTL
 - exposure.log_path: file path (JSONL)
 - exposure.log_format: service_v1 | eval_v1
-- algo.mode: blend | popularity | cooc | implicit (default: blend)
+- algo.mode: blend | popularity | cooc | implicit | content_sim | session_seq (default: blend)
 - algo.plugin_enabled: enable Go plugin loading (dev only)
 - algo.plugin_path: filesystem path to .so plugin (dev only)
 - artifacts.enabled: enable artifact/manifest mode
@@ -26,3 +26,6 @@ Canonical env var list: `recsys/api/.env.example`.
 - artifacts.s3.secret_key: S3 secret key
 - artifacts.s3.region: S3 region
 - artifacts.s3.use_ssl: use TLS for S3 (true/false)
+
+Notes:
+- content_sim and session_seq modes require corresponding artifacts in the manifest.

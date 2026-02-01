@@ -39,6 +39,9 @@ type PublishInput struct {
 
 	Popularity *ArtifactBlob
 	Cooc       *ArtifactBlob
+	Implicit   *ArtifactBlob
+	Content    *ArtifactBlob
+	SessionSeq *ArtifactBlob
 }
 
 func (uc *PublishArtifacts) Execute(ctx context.Context, in PublishInput) error {
@@ -92,6 +95,27 @@ func (uc *PublishArtifacts) Execute(ctx context.Context, in PublishInput) error 
 			return err
 		}
 		current["cooc"] = uri
+	}
+	if in.Implicit != nil {
+		uri, err := publishOne("implicit", in.Implicit)
+		if err != nil {
+			return err
+		}
+		current["implicit"] = uri
+	}
+	if in.Content != nil {
+		uri, err := publishOne("content_sim", in.Content)
+		if err != nil {
+			return err
+		}
+		current["content_sim"] = uri
+	}
+	if in.SessionSeq != nil {
+		uri, err := publishOne("session_seq", in.SessionSeq)
+		if err != nil {
+			return err
+		}
+		current["session_seq"] = uri
 	}
 
 	next := artifacts.NewManifest(in.Tenant, in.Surface, current, uc.rt.Clock.NowUTC())

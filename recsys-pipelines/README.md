@@ -7,7 +7,7 @@ This repository is the **offline factory** of a recommender stack:
 
 - It ingests raw exposure events (JSONL, Postgres, or S3 batch).
 - It canonicalizes them into a deterministic, replayable dataset.
-- It computes artifacts (v1: popularity and co-occurrence).
+- It computes artifacts (v1: popularity, co-occurrence, implicit, content_sim, session_seq).
 - It validates outputs and enforces hard resource limits.
 - It publishes artifacts to a versioned object store and updates a
   single "current" manifest pointer.
@@ -69,6 +69,9 @@ explanations, and reference). See `docs/index.md` for the entry point.
 - `job_ingest`: ingest + canonicalize (job-per-container style)
 - `job_popularity`: compute + stage popularity artifact
 - `job_cooc`: compute + stage co-occurrence artifact
+- `job_implicit`: compute + stage implicit (collaborative) artifact
+- `job_content_sim`: compute + stage content similarity artifact
+- `job_session_seq`: compute + stage session sequence artifact
 - `job_validate`: validate canonical event quality for a window range
 - `job_publish`: publish staged artifacts + swap the current manifest
 - `job_db_signals`: write popularity + co-vis signals into Postgres

@@ -15,6 +15,17 @@ Engineers wiring recsys-eval into CI/CD or scheduled pipelines.
 3) Upload report artifact
 4) Fail the pipeline if gates fail
 
+Example (tiny dataset gate used in CI):
+
+```bash
+recsys-eval run \
+  --mode offline \
+  --dataset configs/examples/dataset.jsonl.yaml \
+  --config configs/eval/offline.ci.yaml \
+  --output /tmp/offline_report.json \
+  --baseline testdata/golden/offline.json
+```
+
 ## Exit codes
 
 recsys-eval is designed to be automation-friendly:

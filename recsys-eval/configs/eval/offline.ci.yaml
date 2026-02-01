@@ -1,0 +1,11 @@
+mode: offline
+offline:
+  metrics:
+    - name: precision
+      k: 2
+    - name: recall
+      k: 2
+  slice_keys: ["tenant", "surface"]
+  gates:
+    - metric: precision@2
+      max_drop: 0.001

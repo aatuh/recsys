@@ -124,6 +124,7 @@ type VariantMetrics struct {
 	ConversionRate         float64  `json:"conversion_rate"`
 	Revenue                float64  `json:"revenue"`
 	RevenuePerRequest      float64  `json:"revenue_per_request"`
+	ThroughputRPS          float64  `json:"throughput_rps,omitempty"`
 	CTRAdjusted            *float64 `json:"ctr_adjusted,omitempty"`
 	ConversionRateAdjusted *float64 `json:"conversion_rate_adjusted,omitempty"`
 }
