@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"strings"
+	"time"
 
 	"github.com/aatuh/recsys-suite/api/internal/admin"
 	"github.com/aatuh/recsys-suite/api/internal/services/adminsvc"
@@ -295,6 +296,117 @@ insert into cache_invalidation_events (
 		return nil
 	}
 	return err
+}
+
+// ListAuditLog returns recent audit entries for a tenant.
+func (s *AdminStore) ListAuditLog(ctx context.Context, tenantID string, query adminsvc.AuditQuery) (adminsvc.AuditLog, error) {
+	if s == nil || s.Pool == nil {
+		return adminsvc.AuditLog{}, admin.ErrTenantNotFound
+	}
+	db := txpostgres.FromCtx(ctx, s.Pool)
+	tenantUUID, err := resolveTenantIDByExternal(ctx, db, tenantID)
+	if err != nil {
+		return adminsvc.AuditLog{}, err
+	}
+
+	limit := query.Limit
+	if limit <= 0 {
+		limit = adminsvc.DefaultAuditLimit
+	}
+	if limit > adminsvc.MaxAuditLimit {
+		limit = adminsvc.MaxAuditLimit
+	}
+	before := query.Before
+	if before.IsZero() {
+		before = time.Now().UTC().Add(1 * time.Hour)
+	}
+	beforeID := query.BeforeID
+	if beforeID <= 0 {
+		beforeID = int64(^uint64(0) >> 1)
+	}
+
+	const q = `
+select id, occurred_at, actor_sub, actor_type, action, entity_type, entity_id,
+       request_id, ip, user_agent, before_state, after_state, extra
+  from audit_log
+ where tenant_id = $1
+   and (occurred_at, id) < ($2, $3)
+ order by occurred_at desc, id desc
+ limit $4;
+`
+	rows, err := db.Query(ctx, q, tenantUUID, before, beforeID, limit+1)
+	if err != nil {
+		return adminsvc.AuditLog{}, err
+	}
+	defer rows.Close()
+
+	entries := make([]adminsvc.AuditEntry, 0, limit)
+	for rows.Next() {
+		var entry adminsvc.AuditEntry
+		var requestID *uuid.UUID
+		if err := rows.Scan(
+			&entry.ID,
+			&entry.OccurredAt,
+			&entry.ActorSub,
+			&entry.ActorType,
+			&entry.Action,
+			&entry.EntityType,
+			&entry.EntityID,
+			&requestID,
+			&entry.IP,
+			&entry.UserAgent,
+			&entry.Before,
+			&entry.After,
+			&entry.Extra,
+		); err != nil {
+			return adminsvc.AuditLog{}, err
+		}
+		entry.TenantID = tenantID
+		if requestID != nil {
+			entry.RequestID = requestID.String()
+		}
+		entries = append(entries, entry)
+	}
+	if err := rows.Err(); err != nil {
+		return adminsvc.AuditLog{}, err
+	}
+
+	var nextBefore time.Time
+	var nextBeforeID int64
+	if len(entries) > limit {
+		next := entries[limit]
+		nextBefore = next.OccurredAt
+		nextBeforeID = next.ID
+		entries = entries[:limit]
+	}
+	return adminsvc.AuditLog{
+		TenantID:     tenantID,
+		Entries:      entries,
+		NextBefore:   nextBefore,
+		NextBeforeID: nextBeforeID,
+	}, nil
+}
+
+// InsertAuditEvent records an audit event in the audit_log table.
+func (s *AdminStore) InsertAuditEvent(ctx context.Context, event adminsvc.AuditEvent) error {
+	if s == nil || s.Pool == nil {
+		return nil
+	}
+	db := txpostgres.FromCtx(ctx, s.Pool)
+	actorID, actorType := normalizeActor(event.Actor)
+	return insertAudit(
+		ctx,
+		db,
+		event.TenantID,
+		actorID,
+		actorType,
+		event.Meta,
+		event.EntityType,
+		event.EntityID,
+		event.Action,
+		event.Before,
+		event.After,
+	)
 }
 
 func resolveTenantIDByExternal(ctx context.Context, db txpostgres.DBer, tenantID string) (uuid.UUID, error) {

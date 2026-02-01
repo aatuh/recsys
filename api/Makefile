@@ -21,7 +21,7 @@ endif
 
 DOCKER_COMPOSE := docker compose $(COMPOSE_FILES)
 
-.PHONY: help dev down logs codegen migrate-build migrate-up migrate-down migrate-status migrate-new tidy test test-cached test-fast test-clean health build-bin
+.PHONY: help dev down logs codegen migrate-build migrate-up migrate-down migrate-status migrate-preflight migrate-new tidy test test-cached test-fast test-clean health build-bin
 
 help: ## Show this help message
 	@echo "Available targets:"
@@ -54,6 +54,9 @@ migrate-down: ## Rollback migrations
 
 migrate-status: ## Show status of the migrations
 	@$(DOCKER_COMPOSE) exec api sh -c "go run ./cmd/migrate -dir \$$MIGRATIONS_DIR status"
+
+migrate-preflight: ## Run migration preflight checks
+	@$(DOCKER_COMPOSE) exec api sh -c "go run ./cmd/migrate -dir \$$MIGRATIONS_DIR preflight"
 
 tidy: ## Tidy go modules
 	@$(DOCKER_COMPOSE) exec api go mod tidy

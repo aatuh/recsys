@@ -5,7 +5,9 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/aatuh/recsys-suite/api/internal/admin"
 	"github.com/aatuh/recsys-suite/api/internal/auth"
@@ -41,6 +43,7 @@ func (h *AdminHandler) Routes() ports.HTTPRouter {
 	r.Get(endpointspec.AdminTenantRules, h.getRules)
 	r.Put(endpointspec.AdminTenantRules, h.putRules)
 	r.Post(endpointspec.AdminTenantInvalidate, h.invalidateCache)
+	r.Get(endpointspec.AdminTenantAudit, h.getAudit)
 	return r
 }
 
@@ -161,6 +164,41 @@ func (h *AdminHandler) invalidateCache(w http.ResponseWriter, r *http.Request) {
 	response_writer.WriteJSON(w, http.StatusOK, mapper.CacheInvalidateResponse(result))
 }
 
+// getAudit handles GET /v1/admin/tenants/{tenant_id}/audit.
+func (h *AdminHandler) getAudit(w http.ResponseWriter, r *http.Request) {
+	tenantID := strings.TrimSpace(chi.URLParam(r, "tenant_id"))
+	if tenantID == "" {
+		writeProblem(w, r, http.StatusBadRequest, "RECSYS_INVALID_TENANT", "tenant_id is required")
+		return
+	}
+	query := r.URL.Query()
+	limit, err := parseLimit(query.Get("limit"), adminsvc.DefaultAuditLimit, adminsvc.MaxAuditLimit)
+	if err != nil {
+		writeProblem(w, r, http.StatusBadRequest, "RECSYS_INVALID_REQUEST", err.Error())
+		return
+	}
+	before, err := parseTime(query.Get("before"))
+	if err != nil {
+		writeProblem(w, r, http.StatusBadRequest, "RECSYS_INVALID_REQUEST", err.Error())
+		return
+	}
+	beforeID, err := parseBeforeID(query.Get("before_id"))
+	if err != nil {
+		writeProblem(w, r, http.StatusBadRequest, "RECSYS_INVALID_REQUEST", err.Error())
+		return
+	}
+	log, err := h.Svc.ListAuditLog(r.Context(), tenantID, adminsvc.AuditQuery{
+		Limit:    limit,
+		Before:   before,
+		BeforeID: beforeID,
+	})
+	if err != nil {
+		h.writeAdminErr(w, r, err)
+		return
+	}
+	response_writer.WriteJSON(w, http.StatusOK, mapper.AuditLogResponse(log))
+}
+
 func (h *AdminHandler) writeAdminErr(w http.ResponseWriter, r *http.Request, err error) {
 	switch {
 	case err == nil:
@@ -215,4 +253,50 @@ func readRawJSON(w http.ResponseWriter, r *http.Request) ([]byte, error) {
 		return nil, err
 	}
 	return raw, nil
+}
+
+func parseLimit(raw string, def, max int) (int, error) {
+	if strings.TrimSpace(raw) == "" {
+		return def, nil
+	}
+	val, err := strconv.Atoi(raw)
+	if err != nil {
+		return 0, errors.New("limit must be an integer")
+	}
+	if val <= 0 {
+		return 0, errors.New("limit must be positive")
+	}
+	if val > max {
+		return max, nil
+	}
+	return val, nil
+}
+
+func parseTime(raw string) (time.Time, error) {
+	raw = strings.TrimSpace(raw)
+	if raw == "" {
+		return time.Time{}, nil
+	}
+	if ts, err := time.Parse(time.RFC3339Nano, raw); err == nil {
+		return ts, nil
+	}
+	if ts, err := time.Parse(time.RFC3339, raw); err == nil {
+		return ts, nil
+	}
+	return time.Time{}, errors.New("before must be RFC3339 timestamp")
+}
+
+func parseBeforeID(raw string) (int64, error) {
+	raw = strings.TrimSpace(raw)
+	if raw == "" {
+		return 0, nil
+	}
+	val, err := strconv.ParseInt(raw, 10, 64)
+	if err != nil {
+		return 0, errors.New("before_id must be an integer")
+	}
+	if val < 0 {
+		return 0, errors.New("before_id must be non-negative")
+	}
+	return val, nil
 }

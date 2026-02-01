@@ -7,4 +7,5 @@ const (
 	AdminTenantConfig     = AdminTenantBase + "/config"
 	AdminTenantRules      = AdminTenantBase + "/rules"
 	AdminTenantInvalidate = AdminTenantBase + "/cache/invalidate"
+	AdminTenantAudit      = AdminTenantBase + "/audit"
 )

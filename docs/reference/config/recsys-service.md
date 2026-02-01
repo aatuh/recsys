@@ -5,10 +5,14 @@ Canonical env var list: `recsys/api/.env.example`.
 - db.dsn: Postgres DSN
 - auth.required: enable auth on protected routes
 - auth.tenant_claim: claim used for tenant id (JWT mode)
-- auth.admin_role: role required for /v1/admin
+- auth.viewer_role: role that can read admin resources (default: viewer)
+- auth.operator_role: role that can mutate admin resources (default: operator)
+- auth.admin_role: role with full admin access (default: admin)
 - auth.dev_headers: enable dev headers (local)
 - auth.dev_tenant_header: tenant header used with dev auth
 - limits.rps_per_tenant: per-tenant rate limit
+- audit.log_path: file path for optional audit JSONL log
+- audit.log_fsync: fsync on each audit write (default: false)
 - cache.config_ttl_seconds: config cache TTL
 - cache.rules_ttl_seconds: rules cache TTL
 - exposure.log_path: file path (JSONL)
@@ -29,3 +33,4 @@ Canonical env var list: `recsys/api/.env.example`.
 
 Notes:
 - content_sim and session_seq modes require corresponding artifacts in the manifest.
+- auth.tenant_claim and auth.role_claims support dotted keys (e.g., realm_access.roles).

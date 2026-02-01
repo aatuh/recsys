@@ -108,8 +108,12 @@ func TestTenantMiddlewareMatch(t *testing.T) {
 }
 
 func TestAdminRoleRequiresRole(t *testing.T) {
-	mw := NewAdminRoleMiddleware(config.AuthConfig{AdminRole: "admin"})
-	req := httptest.NewRequest(http.MethodPost, "/v1/admin/tenants/tenant-a/config", nil)
+	mw := NewAdminRoleMiddleware(config.AuthConfig{
+		ViewerRole:   "viewer",
+		OperatorRole: "operator",
+		AdminRole:    "admin",
+	})
+	req := httptest.NewRequest(http.MethodPut, "/v1/admin/tenants/tenant-a/config", nil)
 	rec := httptest.NewRecorder()
 
 	mw.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -121,8 +125,72 @@ func TestAdminRoleRequiresRole(t *testing.T) {
 	}
 }
 
-func TestAdminRoleAllowsRole(t *testing.T) {
-	mw := NewAdminRoleMiddleware(config.AuthConfig{AdminRole: "admin"})
+func TestAdminRoleAllowsViewerOnRead(t *testing.T) {
+	mw := NewAdminRoleMiddleware(config.AuthConfig{
+		ViewerRole:   "viewer",
+		OperatorRole: "operator",
+		AdminRole:    "admin",
+	})
+	req := httptest.NewRequest(http.MethodGet, "/v1/admin/tenants/tenant-a/config", nil)
+	ctx := auth.WithInfo(req.Context(), auth.Info{Roles: []string{"viewer"}})
+	req = req.WithContext(ctx)
+	rec := httptest.NewRecorder()
+
+	mw.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})).ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rec.Code)
+	}
+}
+
+func TestAdminRoleBlocksViewerOnWrite(t *testing.T) {
+	mw := NewAdminRoleMiddleware(config.AuthConfig{
+		ViewerRole:   "viewer",
+		OperatorRole: "operator",
+		AdminRole:    "admin",
+	})
+	req := httptest.NewRequest(http.MethodPost, "/v1/admin/tenants/tenant-a/config", nil)
+	ctx := auth.WithInfo(req.Context(), auth.Info{Roles: []string{"viewer"}})
+	req = req.WithContext(ctx)
+	rec := httptest.NewRecorder()
+
+	mw.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})).ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusForbidden {
+		t.Fatalf("expected 403, got %d", rec.Code)
+	}
+}
+
+func TestAdminRoleAllowsOperatorOnWrite(t *testing.T) {
+	mw := NewAdminRoleMiddleware(config.AuthConfig{
+		ViewerRole:   "viewer",
+		OperatorRole: "operator",
+		AdminRole:    "admin",
+	})
+	req := httptest.NewRequest(http.MethodPost, "/v1/admin/tenants/tenant-a/config", nil)
+	ctx := auth.WithInfo(req.Context(), auth.Info{Roles: []string{"operator"}})
+	req = req.WithContext(ctx)
+	rec := httptest.NewRecorder()
+
+	mw.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})).ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rec.Code)
+	}
+}
+
+func TestAdminRoleAllowsAdminOnWrite(t *testing.T) {
+	mw := NewAdminRoleMiddleware(config.AuthConfig{
+		ViewerRole:   "viewer",
+		OperatorRole: "operator",
+		AdminRole:    "admin",
+	})
 	req := httptest.NewRequest(http.MethodPost, "/v1/admin/tenants/tenant-a/config", nil)
 	ctx := auth.WithInfo(req.Context(), auth.Info{Roles: []string{"admin"}})
 	req = req.WithContext(ctx)

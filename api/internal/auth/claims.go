@@ -77,7 +77,7 @@ func ExtractRoles(claims map[string]any, keys []string) []string {
 		if key == "" {
 			continue
 		}
-		raw, ok := claims[key]
+		raw, ok := claimLookup(claims, key)
 		if !ok || raw == nil {
 			continue
 		}
@@ -113,7 +113,7 @@ func stringClaim(claims map[string]any, key string) string {
 	if claims == nil {
 		return ""
 	}
-	val, ok := claims[key]
+	val, ok := claimLookup(claims, key)
 	if !ok || val == nil {
 		return ""
 	}
@@ -125,6 +125,38 @@ func stringClaim(claims map[string]any, key string) string {
 	default:
 		return fmt.Sprint(v)
 	}
+}
+
+func claimLookup(claims map[string]any, key string) (any, bool) {
+	if claims == nil {
+		return nil, false
+	}
+	key = strings.TrimSpace(key)
+	if key == "" {
+		return nil, false
+	}
+	if !strings.Contains(key, ".") {
+		val, ok := claims[key]
+		return val, ok
+	}
+	parts := strings.Split(key, ".")
+	var current any = claims
+	for _, part := range parts {
+		part = strings.TrimSpace(part)
+		if part == "" {
+			return nil, false
+		}
+		m, ok := current.(map[string]any)
+		if !ok {
+			return nil, false
+		}
+		val, ok := m[part]
+		if !ok {
+			return nil, false
+		}
+		current = val
+	}
+	return current, true
 }
 
 func splitRoles(input string) []string {

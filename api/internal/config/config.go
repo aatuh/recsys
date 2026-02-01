@@ -45,6 +45,8 @@ type AuthConfig struct {
 	TenantHeader       string
 	TenantClaimKeys    []string
 	RoleClaimKeys      []string
+	ViewerRole         string
+	OperatorRole       string
 	AdminRole          string
 	JWKSAllowedHosts   []string
 	AllowInsecureJWKS  bool
@@ -218,6 +220,8 @@ func Load() Config {
 		TenantHeader:       loader.String("TENANT_HEADER_NAME", "X-Org-Id"),
 		TenantClaimKeys:    tenantClaims,
 		RoleClaimKeys:      roleClaims,
+		ViewerRole:         loader.String("AUTH_VIEWER_ROLE", "viewer"),
+		OperatorRole:       loader.String("AUTH_OPERATOR_ROLE", "operator"),
 		AdminRole:          loader.String("AUTH_ADMIN_ROLE", "admin"),
 		JWKSAllowedHosts:   loader.CSV("AUTH_JWKS_ALLOWED_HOSTS"),
 		AllowInsecureJWKS:  loader.Bool("AUTH_ALLOW_INSECURE_JWKS", false),

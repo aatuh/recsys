@@ -2,6 +2,7 @@ package adminsvc
 
 import (
 	"context"
+	"encoding/json"
 	"strings"
 
 	"github.com/aatuh/recsys-suite/api/internal/admin"
@@ -17,6 +18,8 @@ type Store interface {
 	UpdateTenantRules(ctx context.Context, tenantID string, raw []byte, ifMatch string, actor Actor, meta RequestMeta) (TenantRules, error)
 	ResolveTenantID(ctx context.Context, tenantID string) (uuid.UUID, error)
 	InsertCacheInvalidation(ctx context.Context, event CacheInvalidationEvent) error
+	ListAuditLog(ctx context.Context, tenantID string, query AuditQuery) (AuditLog, error)
+	InsertAuditEvent(ctx context.Context, event AuditEvent) error
 }
 
 // ConfigCache supports cache invalidation for tenant configs.
@@ -48,6 +51,11 @@ type Service struct {
 	rulesManager     RulesManager
 	defaultNamespace string
 }
+
+const (
+	DefaultAuditLimit = 100
+	MaxAuditLimit     = 200
+)
 
 // ServiceOption customizes the admin service.
 type ServiceOption func(*Service)
@@ -200,6 +208,17 @@ func (s *Service) InvalidateCache(ctx context.Context, tenantID string, req Cach
 	if err := s.store.InsertCacheInvalidation(ctx, event); err != nil {
 		return CacheInvalidateResult{}, err
 	}
+	if err := s.store.InsertAuditEvent(ctx, AuditEvent{
+		TenantID:   orgID,
+		Actor:      actor,
+		Meta:       meta,
+		Action:     "cache.invalidate",
+		EntityType: "cache_invalidation",
+		EntityID:   "",
+		After:      mustJSON(map[string]any{"targets": targets, "surface": surface, "status": status}),
+	}); err != nil {
+		return CacheInvalidateResult{}, err
+	}
 	return CacheInvalidateResult{
 		TenantID:    tenantID,
 		Targets:     targets,
@@ -207,6 +226,20 @@ func (s *Service) InvalidateCache(ctx context.Context, tenantID string, req Cach
 		Status:      status,
 		Invalidated: invalidated,
 	}, nil
+}
+
+// ListAuditLog returns audit events for a tenant.
+func (s *Service) ListAuditLog(ctx context.Context, tenantID string, query AuditQuery) (AuditLog, error) {
+	if s == nil || s.store == nil {
+		return AuditLog{}, admin.ErrTenantNotFound
+	}
+	if query.Limit <= 0 {
+		query.Limit = DefaultAuditLimit
+	}
+	if query.Limit > MaxAuditLimit {
+		query.Limit = MaxAuditLimit
+	}
+	return s.store.ListAuditLog(ctx, tenantID, query)
 }
 
 func normalizeTargets(targets []string) []string {
@@ -227,4 +260,12 @@ func normalizeTargets(targets []string) []string {
 		out = append(out, key)
 	}
 	return out
+}
+
+func mustJSON(payload any) []byte {
+	raw, err := json.Marshal(payload)
+	if err != nil {
+		return nil
+	}
+	return raw
 }

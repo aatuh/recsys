@@ -216,6 +216,38 @@ paths:
         "404": { $ref: "#/components/responses/Problem" }
         "422": { $ref: "#/components/responses/Problem" }
         "500": { $ref: "#/components/responses/Problem" }
+  /v1/admin/tenants/{tenant_id}/audit:
+    get:
+      summary: List audit log entries
+      operationId: adminListAudit
+      parameters:
+        - name: tenant_id
+          in: path
+          required: true
+          schema: { type: string }
+        - name: limit
+          in: query
+          required: false
+          schema: { type: integer, format: int32, default: 100, maximum: 200 }
+        - name: before
+          in: query
+          required: false
+          schema: { type: string, format: date-time }
+        - name: before_id
+          in: query
+          required: false
+          schema: { type: integer, format: int64 }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AuditLogResponse" }
+        "400": { $ref: "#/components/responses/Problem" }
+        "401": { $ref: "#/components/responses/Problem" }
+        "403": { $ref: "#/components/responses/Problem" }
+        "404": { $ref: "#/components/responses/Problem" }
+        "500": { $ref: "#/components/responses/Problem" }
 components:
   securitySchemes:
     bearerAuth:
@@ -452,6 +484,32 @@ components:
         invalidated:
           type: object
           additionalProperties: { type: integer }
+    AuditLogEntry:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        occurred_at: { type: string, format: date-time }
+        tenant_id: { type: string }
+        actor_sub: { type: string }
+        actor_type: { type: string }
+        action: { type: string }
+        entity_type: { type: string }
+        entity_id: { type: string }
+        request_id: { type: string }
+        ip: { type: string }
+        user_agent: { type: string }
+        before_state: { type: object, additionalProperties: true }
+        after_state: { type: object, additionalProperties: true }
+        extra: { type: object, additionalProperties: true }
+    AuditLogResponse:
+      type: object
+      properties:
+        tenant_id: { type: string }
+        entries:
+          type: array
+          items: { $ref: "#/components/schemas/AuditLogEntry" }
+        next_before: { type: string, format: date-time }
+        next_before_id: { type: integer, format: int64 }
     AdminConfigPayload:
       type: object
       additionalProperties: true

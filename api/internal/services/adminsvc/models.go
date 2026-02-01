@@ -3,6 +3,7 @@ package adminsvc
 import (
 	"encoding/json"
 	"net"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -58,4 +59,50 @@ type CacheInvalidationEvent struct {
 	Surface     string
 	Status      string
 	ErrorDetail string
+}
+
+// AuditQuery filters audit log listings.
+type AuditQuery struct {
+	Limit    int
+	Before   time.Time
+	BeforeID int64
+}
+
+// AuditEntry describes a stored audit event.
+type AuditEntry struct {
+	ID         int64
+	OccurredAt time.Time
+	TenantID   string
+	ActorSub   string
+	ActorType  string
+	Action     string
+	EntityType string
+	EntityID   string
+	RequestID  string
+	IP         net.IP
+	UserAgent  string
+	Before     json.RawMessage
+	After      json.RawMessage
+	Extra      json.RawMessage
+}
+
+// AuditLog is a paginated audit log response.
+type AuditLog struct {
+	TenantID     string
+	Entries      []AuditEntry
+	NextBefore   time.Time
+	NextBeforeID int64
+}
+
+// AuditEvent captures a change to be recorded.
+type AuditEvent struct {
+	TenantID   uuid.UUID
+	Actor      Actor
+	Meta       RequestMeta
+	Action     string
+	EntityType string
+	EntityID   string
+	Before     json.RawMessage
+	After      json.RawMessage
+	Extra      json.RawMessage
 }

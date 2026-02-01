@@ -56,6 +56,7 @@ Note:
 - `operations/runbooks/service-not-ready.md`
 - `operations/runbooks/empty-recs.md`
 - `operations/runbooks/rollback-config-rules.md`
+- `operations/performance-and-capacity.md`
 
 ## Contributing
 

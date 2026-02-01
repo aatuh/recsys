@@ -67,6 +67,11 @@ If you prefer JWT:
 - Include an admin role (default `admin`) under a role claim (see
   `AUTH_ROLE_CLAIMS`) to access admin endpoints.
 
+RBAC roles (JWT or API keys):
+- `viewer`: read-only admin access (GET config/rules/audit).
+- `operator`: config/rules updates + cache invalidation.
+- `admin`: full admin access (includes operator + viewer).
+
 ## 3) Admin endpoints
 
 All admin endpoints are under `/v1/admin`.
@@ -162,6 +167,23 @@ Valid targets: `config`, `rules`, `popularity`.
 Notes:
 - `surface` is optional. If provided, invalidation is scoped to that surface.
 - `popularity` invalidates artifact/manifest caches (no‑op in DB‑only mode).
+
+### GET /v1/admin/tenants/{tenant_id}/audit
+
+Returns recent audit log entries for admin actions (write operations).
+
+Query parameters:
+- `limit` (optional, default 100, max 200)
+- `before` (optional, RFC3339 timestamp for pagination)
+- `before_id` (optional, numeric id for pagination tie‑break)
+
+Example:
+
+```
+GET /v1/admin/tenants/demo/audit?limit=50
+```
+
+Response includes `entries` and optional `next_before`/`next_before_id` cursor.
 
 ## 4) Call the API
 
