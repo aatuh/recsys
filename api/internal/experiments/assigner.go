@@ -6,7 +6,7 @@ import (
 	"encoding/binary"
 	"strings"
 
-	"recsys/internal/services/recsysvc"
+	"github.com/aatuh/recsys-suite/api/internal/services/recsysvc"
 )
 
 // Assigner determines experiment variants.

@@ -3,8 +3,8 @@ package handlers
 import (
 	"net/http"
 
-	"recsys/internal/http/problem"
-	"recsys/internal/validation"
+	"github.com/aatuh/recsys-suite/api/internal/http/problem"
+	"github.com/aatuh/recsys-suite/api/internal/validation"
 )
 
 func writeValidationError(w http.ResponseWriter, r *http.Request, err error) {

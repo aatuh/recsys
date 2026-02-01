@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"recsys/src/specs/types"
+	"github.com/aatuh/recsys-suite/api/src/specs/types"
 )
 
 const (

@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"recsys/internal/auth"
-	"recsys/internal/config"
+	"github.com/aatuh/recsys-suite/api/internal/auth"
+	"github.com/aatuh/recsys-suite/api/internal/config"
 
 	"github.com/aatuh/api-toolkit/authorization"
 	"github.com/aatuh/api-toolkit/middleware/ratelimit"

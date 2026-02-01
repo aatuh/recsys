@@ -12,9 +12,9 @@ import (
 	"syscall"
 	"time"
 
-	"recsys/internal/config"
-	appmw "recsys/internal/http/middleware"
-	"recsys/migrations"
+	"github.com/aatuh/recsys-suite/api/internal/config"
+	appmw "github.com/aatuh/recsys-suite/api/internal/http/middleware"
+	"github.com/aatuh/recsys-suite/api/migrations"
 
 	"github.com/aatuh/api-toolkit-contrib/adapters/logzap"
 	"github.com/aatuh/api-toolkit-contrib/bootstrap"

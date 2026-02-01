@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"recsys/internal/cache"
-	appmetrics "recsys/internal/metrics"
+	"github.com/aatuh/recsys-suite/api/internal/cache"
+	appmetrics "github.com/aatuh/recsys-suite/api/internal/metrics"
 )
 
 type tenantKey struct {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"recsys/internal/admin"
+	"github.com/aatuh/recsys-suite/api/internal/admin"
 
 	"github.com/google/uuid"
 )

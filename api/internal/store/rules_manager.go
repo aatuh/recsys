@@ -10,7 +10,7 @@ import (
 
 	"github.com/aatuh/api-toolkit-contrib/adapters/txpostgres"
 	"github.com/aatuh/api-toolkit/ports"
-	"github.com/aatuh/recsys-algo/rules"
+	"github.com/aatuh/recsys-suite/api/recsys-algo/rules"
 	"github.com/google/uuid"
 )
 

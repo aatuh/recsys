@@ -7,8 +7,8 @@ import (
 	"net/url"
 	"strings"
 
-	"recsys/internal/config"
-	"recsys/internal/http/problem"
+	"github.com/aatuh/recsys-suite/api/internal/config"
+	"github.com/aatuh/recsys-suite/api/internal/http/problem"
 
 	jwtint "github.com/aatuh/api-toolkit-contrib/integrations/auth/jwt"
 	"github.com/aatuh/api-toolkit-contrib/middleware/auth/devheaders"

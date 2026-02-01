@@ -4,7 +4,7 @@
   "canonical_dir": "../tmp/demo-pipelines/canonical",
   "artifacts_dir": "../tmp/demo-pipelines/artifacts",
   "object_store_dir": "../tmp/demo-pipelines/objectstore",
-  "registry_dir": "s3://recsys-artifacts/registry",
+  "registry_dir": "../tmp/demo-pipelines/registry",
   "object_store": {
     "type": "minio",
     "dir": "../tmp/demo-pipelines/objectstore",

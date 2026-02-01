@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"strings"
 
-	"recsys/internal/audit"
-	"recsys/internal/auth"
-	"recsys/internal/config"
-	"recsys/internal/http/problem"
+	"github.com/aatuh/recsys-suite/api/internal/audit"
+	"github.com/aatuh/recsys-suite/api/internal/auth"
+	"github.com/aatuh/recsys-suite/api/internal/config"
+	"github.com/aatuh/recsys-suite/api/internal/http/problem"
 
 	"github.com/aatuh/api-toolkit/authorization"
 	"github.com/aatuh/api-toolkit/response_writer"

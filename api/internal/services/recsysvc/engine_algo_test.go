@@ -3,8 +3,8 @@ package recsysvc
 import (
 	"testing"
 
-	"github.com/aatuh/recsys-algo/algorithm"
-	"github.com/aatuh/recsys-algo/rules"
+	"github.com/aatuh/recsys-suite/api/recsys-algo/algorithm"
+	"github.com/aatuh/recsys-suite/api/recsys-algo/rules"
 )
 
 func TestApplyCandidateAllowListFilters(t *testing.T) {

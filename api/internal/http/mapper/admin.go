@@ -3,8 +3,8 @@ package mapper
 import (
 	"encoding/json"
 
-	"recsys/internal/services/adminsvc"
-	"recsys/src/specs/types"
+	"github.com/aatuh/recsys-suite/api/internal/services/adminsvc"
+	"github.com/aatuh/recsys-suite/api/src/specs/types"
 )
 
 // TenantConfigResponse maps admin config to DTO.

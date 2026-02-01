@@ -5,20 +5,20 @@ import (
 	"strings"
 	"time"
 
-	"recsys/internal/artifacts"
-	"recsys/internal/config"
-	"recsys/internal/experiments"
-	"recsys/internal/exposure"
-	"recsys/internal/objectstore"
-	"recsys/internal/services/adminsvc"
-	"recsys/internal/services/recsysvc"
-	"recsys/internal/store"
+	"github.com/aatuh/recsys-suite/api/internal/artifacts"
+	"github.com/aatuh/recsys-suite/api/internal/config"
+	"github.com/aatuh/recsys-suite/api/internal/experiments"
+	"github.com/aatuh/recsys-suite/api/internal/exposure"
+	"github.com/aatuh/recsys-suite/api/internal/objectstore"
+	"github.com/aatuh/recsys-suite/api/internal/services/adminsvc"
+	"github.com/aatuh/recsys-suite/api/internal/services/recsysvc"
+	"github.com/aatuh/recsys-suite/api/internal/store"
 
 	"github.com/aatuh/api-toolkit-contrib/adapters/validation"
 	"github.com/aatuh/api-toolkit/ports"
-	"github.com/aatuh/recsys-algo/algorithm"
-	recmodel "github.com/aatuh/recsys-algo/model"
-	"github.com/aatuh/recsys-algo/rules"
+	"github.com/aatuh/recsys-suite/api/recsys-algo/algorithm"
+	recmodel "github.com/aatuh/recsys-suite/api/recsys-algo/model"
+	"github.com/aatuh/recsys-suite/api/recsys-algo/rules"
 )
 
 type appDeps struct {

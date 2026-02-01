@@ -7,9 +7,9 @@ import (
 	"strings"
 
 	"github.com/aatuh/api-toolkit/authorization"
-	"github.com/aatuh/recsys-algo/algorithm"
-	recmodel "github.com/aatuh/recsys-algo/model"
-	"github.com/aatuh/recsys-algo/rules"
+	"github.com/aatuh/recsys-suite/api/recsys-algo/algorithm"
+	recmodel "github.com/aatuh/recsys-suite/api/recsys-algo/model"
+	"github.com/aatuh/recsys-suite/api/recsys-algo/rules"
 	"github.com/google/uuid"
 )
 

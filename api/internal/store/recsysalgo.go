@@ -8,7 +8,7 @@ import (
 
 	"github.com/aatuh/api-toolkit-contrib/adapters/txpostgres"
 	"github.com/aatuh/api-toolkit/ports"
-	recmodel "github.com/aatuh/recsys-algo/model"
+	recmodel "github.com/aatuh/recsys-suite/api/recsys-algo/model"
 	"github.com/google/uuid"
 )
 

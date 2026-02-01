@@ -1,11 +1,11 @@
-module recsys
+module github.com/aatuh/recsys-suite/api
 
 go 1.25.1
 
 require (
 	github.com/aatuh/api-toolkit v1.0.7
 	github.com/aatuh/api-toolkit-contrib v0.0.0-00010101000000-000000000000
-	github.com/aatuh/recsys-algo v0.0.0-00010101000000-000000000000
+	github.com/aatuh/recsys-suite/api/recsys-algo v0.0.0-00010101000000-000000000000
 	github.com/go-chi/chi/v5 v5.2.4
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.8.0
@@ -17,7 +17,7 @@ require (
 replace (
 	github.com/aatuh/api-toolkit => ../../api-toolkit
 	github.com/aatuh/api-toolkit-contrib => ../../api-toolkit/contrib
-	github.com/aatuh/recsys-algo => ./recsys-algo
+	github.com/aatuh/recsys-suite/api/recsys-algo => ../recsys-algo
 )
 
 require (

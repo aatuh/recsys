@@ -6,8 +6,8 @@ import (
 	"errors"
 	"strings"
 
-	"recsys/internal/admin"
-	"recsys/internal/services/adminsvc"
+	"github.com/aatuh/recsys-suite/api/internal/admin"
+	"github.com/aatuh/recsys-suite/api/internal/services/adminsvc"
 
 	"github.com/aatuh/api-toolkit-contrib/adapters/txpostgres"
 	"github.com/aatuh/api-toolkit/ports"

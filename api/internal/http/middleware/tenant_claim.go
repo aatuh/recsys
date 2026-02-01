@@ -3,9 +3,9 @@ package middleware
 import (
 	"net/http"
 
-	"recsys/internal/auth"
-	"recsys/internal/config"
-	"recsys/internal/http/problem"
+	"github.com/aatuh/recsys-suite/api/internal/auth"
+	"github.com/aatuh/recsys-suite/api/internal/config"
+	"github.com/aatuh/recsys-suite/api/internal/http/problem"
 )
 
 // RequireTenantClaim enforces that a tenant claim is present when configured.

@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"recsys/internal/audit"
-	"recsys/internal/config"
+	"github.com/aatuh/recsys-suite/api/internal/audit"
+	"github.com/aatuh/recsys-suite/api/internal/config"
 
 	"github.com/aatuh/api-toolkit/ports"
 )

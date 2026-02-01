@@ -3,7 +3,7 @@ package main
 import (
 	"time"
 
-	"recsys/internal/config"
+	"github.com/aatuh/recsys-suite/api/internal/config"
 
 	"github.com/aatuh/api-toolkit/endpoints/docs"
 	"github.com/aatuh/api-toolkit/endpoints/health"

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"recsys/migrations"
+	"github.com/aatuh/recsys-suite/api/migrations"
 
 	toolkitmigrate "github.com/aatuh/api-toolkit-contrib/cmd/migrate"
 )

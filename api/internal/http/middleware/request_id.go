@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	"recsys/internal/http/problem"
+	"github.com/aatuh/recsys-suite/api/internal/http/problem"
 )
 
 // EnsureRequestIDHeader echoes the request id header when present.

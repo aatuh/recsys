@@ -1,7 +1,7 @@
 package main
 
 import (
-	"recsys/internal/http/handlers"
+	"github.com/aatuh/recsys-suite/api/internal/http/handlers"
 
 	"github.com/aatuh/api-toolkit/ports"
 )

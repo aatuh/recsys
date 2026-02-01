@@ -55,7 +55,7 @@ These are concrete issues I saw that will bite real users immediately:
 
 1. **`docker-compose.yml` references a `./web` build context but `web/` is missing** → `docker compose up` can’t be your “golden path” right now.
 2. **Workflows located inside `recsys-pipelines/.github/workflows/` don’t run on GitHub** (only root `.github/workflows/` is used). So you effectively have less CI/release automation than it looks.
-3. **Go module paths are inconsistent** (`module recsys-eval`, `github.com/pureapi/recsys-pipelines`, `github.com/aatuh/...`), which will confuse customers and break reproducible builds/imports in a monorepo context.
+3. **Go module paths are inconsistent** (`module recsys-eval`, `github.com/aatuh/recsys-pipelines`, `github.com/aatuh/...`), which will confuse customers and break reproducible builds/imports in a monorepo context.
 4. API spec appears duplicated/misaligned (OpenAPI 3.1 in docs vs a swagger/ folder pattern). You need one canonical spec. ([OpenAPI Initiative Publications][8])
 
 Those become P0 tickets below.
@@ -64,9 +64,9 @@ Those become P0 tickets below.
 
 # Comprehensive backlog (decisions already made)
 
-## [ ] Epic A — Make a “golden path” that works on a clean machine (P0)
+## [x] Epic A — Make a “golden path” that works on a clean machine (P0)
 
-### [ ] RECSYS-001 — Fix broken docker-compose golden path
+### [x] RECSYS-001 — Fix broken docker-compose golden path
 
 **Decision:** remove `web` from default compose; ship it later as optional add-on.
 **What to do**
@@ -84,7 +84,7 @@ Those become P0 tickets below.
 
   and reach the API through proxy without editing files.
 
-### [ ] RECSYS-002 — Add a one-command demo script
+### [x] RECSYS-002 — Add a one-command demo script
 
 **Decision:** provide `./scripts/demo.sh` as the canonical “does it work?” entrypoint.
 **What to do**
@@ -98,7 +98,7 @@ Those become P0 tickets below.
      **Acceptance**
 * `./scripts/demo.sh` exits 0 and prints a sample recommendation list.
 
-### [ ] RECSYS-003 — Provide a minimal demo dataset
+### [x] RECSYS-003 — Provide a minimal demo dataset
 
 **Decision:** store a small, permissively-licensed synthetic dataset in-repo.
 **What to do**
@@ -110,16 +110,16 @@ Those become P0 tickets below.
 
 ---
 
-## [ ] Epic B — Standardize repo identity & Go module structure (P0)
+## [x] Epic B — Standardize repo identity & Go module structure (P0)
 
-### [ ] RECSYS-010 — Decide canonical repo + module paths and migrate
+### [x] RECSYS-010 — Decide canonical repo + module paths and migrate
 
-**Decision:** monorepo named `github.com/pureapi/recsys-suite` with module paths:
+**Decision:** monorepo named `github.com/aatuh/recsys-suite` with module paths:
 
-* `github.com/pureapi/recsys-suite/recsys-eval`
-* `github.com/pureapi/recsys-suite/recsys-pipelines`
-* `github.com/pureapi/recsys-suite/api`
-* `github.com/pureapi/recsys-suite/api/recsys-algo`
+* `github.com/aatuh/recsys-suite/recsys-eval`
+* `github.com/aatuh/recsys-suite/recsys-pipelines`
+* `github.com/aatuh/recsys-suite/api`
+* `github.com/aatuh/recsys-suite/api/recsys-algo`
   **What to do**
 * Update each `go.mod` `module ...` line accordingly.
 * Update imports across the codebase.
@@ -128,7 +128,7 @@ Those become P0 tickets below.
 * `go test ./...` succeeds inside each module.
 * `go mod tidy` produces clean diffs.
 
-### [ ] RECSYS-011 — Add a Go workspace for local dev
+### [x] RECSYS-011 — Add a Go workspace for local dev
 
 **Decision:** use `go.work` at repo root for multi-module local development.
 **What to do**
@@ -138,7 +138,7 @@ Those become P0 tickets below.
   **Acceptance**
 * From repo root: `go work sync` + `go test ./...` works.
 
-### [ ] RECSYS-012 — Make version tags correct for multi-module Go
+### [x] RECSYS-012 — Make version tags correct for multi-module Go
 
 **Decision:** tag releases using module prefixes (e.g., `recsys-eval/v0.2.0`). ([go.dev][4])
 **What to do**
@@ -204,7 +204,7 @@ Those become P0 tickets below.
 **What to do**
 
 * Add GoReleaser configs for `recsys-eval` and `recsys-pipelines`.
-* Publish Docker images: `ghcr.io/pureapi/recsys-svc:<version>`, etc.
+* Publish Docker images: `ghcr.io/aatuh/recsys-svc:<version>`, etc.
   **Acceptance**
 * Git tag → GitHub Release with binaries + images.
 

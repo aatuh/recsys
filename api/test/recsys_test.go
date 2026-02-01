@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"recsys/src/specs/endpoints"
-	"recsys/src/specs/types"
+	"github.com/aatuh/recsys-suite/api/src/specs/endpoints"
+	"github.com/aatuh/recsys-suite/api/src/specs/types"
 )
 
 func TestRecommendValidate(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	"recsys/internal/services/recsysvc"
+	"github.com/aatuh/recsys-suite/api/internal/services/recsysvc"
 
 	"github.com/aatuh/api-toolkit-contrib/adapters/txpostgres"
 	"github.com/aatuh/api-toolkit/ports"

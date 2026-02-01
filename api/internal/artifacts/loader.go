@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"recsys/internal/cache"
-	"recsys/internal/objectstore"
+	"github.com/aatuh/recsys-suite/api/internal/cache"
+	"github.com/aatuh/recsys-suite/api/internal/objectstore"
 )
 
 type LoaderConfig struct {

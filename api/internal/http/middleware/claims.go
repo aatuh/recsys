@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 
-	"recsys/internal/auth"
-	"recsys/internal/config"
+	"github.com/aatuh/recsys-suite/api/internal/auth"
+	"github.com/aatuh/recsys-suite/api/internal/config"
 
 	jwtint "github.com/aatuh/api-toolkit-contrib/integrations/auth/jwt"
 	"github.com/aatuh/api-toolkit/authorization"

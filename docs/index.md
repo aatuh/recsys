@@ -44,6 +44,12 @@ Note:
 - `explanation/surface-namespaces.md`
 - `explanation/data-modes.md`
 
+## Development
+
+- Use the repo-level Go workspace: `go work sync` from `recsys/`.
+- Each module is versioned/released independently; tags are module-prefixed
+  (e.g., `recsys-eval/v0.2.0`). Run tests per module (e.g., `cd recsys-eval && go test ./...`).
+
 ## Operations
 
 - `operations/runbooks/service-not-ready.md`

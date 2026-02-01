@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"recsys/internal/services/recsysvc"
-	"recsys/src/specs/types"
+	"github.com/aatuh/recsys-suite/api/internal/services/recsysvc"
+	"github.com/aatuh/recsys-suite/api/src/specs/types"
 )
 
 const (

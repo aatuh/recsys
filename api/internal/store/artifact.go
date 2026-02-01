@@ -6,10 +6,10 @@ import (
 	"strings"
 	"time"
 
-	"recsys/internal/artifacts"
+	"github.com/aatuh/recsys-suite/api/internal/artifacts"
 
 	"github.com/aatuh/api-toolkit/authorization"
-	recmodel "github.com/aatuh/recsys-algo/model"
+	recmodel "github.com/aatuh/recsys-suite/api/recsys-algo/model"
 	"github.com/google/uuid"
 )
 

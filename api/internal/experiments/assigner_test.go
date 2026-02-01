@@ -3,7 +3,7 @@ package experiments
 import (
 	"testing"
 
-	"recsys/internal/services/recsysvc"
+	"github.com/aatuh/recsys-suite/api/internal/services/recsysvc"
 )
 
 func TestDeterministicAssignerStableVariant(t *testing.T) {

@@ -5,8 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"recsys/internal/auth"
-	"recsys/internal/config"
+	"github.com/aatuh/recsys-suite/api/internal/auth"
+	"github.com/aatuh/recsys-suite/api/internal/config"
 )
 
 func TestRequireTenantClaimBlocksMissingClaim(t *testing.T) {

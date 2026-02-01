@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"recsys/src/specs/types"
+	"github.com/aatuh/recsys-suite/api/src/specs/types"
 )
 
 func TestNormalizeRecommendDefaults(t *testing.T) {
