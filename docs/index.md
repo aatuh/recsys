@@ -22,6 +22,7 @@ The suite is four modules that form an end-to-end recommendation system loop:
 2. Integrate: `how-to/integrate-recsys-service.md`
 3. Operate: `how-to/operate-pipelines.md`
 4. Evaluate: `how-to/run-eval-and-ship.md`
+5. Deploy: `how-to/deploy-helm.md`
 
 ## Reference
 

@@ -1,0 +1,19 @@
+{{- if .Values.postgres.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "recsys.fullname" . }}-postgres
+  labels:
+    {{- include "recsys.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.postgres.service.port }}
+      targetPort: pg
+      protocol: TCP
+      name: pg
+  selector:
+    app.kubernetes.io/name: {{ include "recsys.name" . }}
+    app.kubernetes.io/component: postgres
+{{- end }}

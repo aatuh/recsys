@@ -54,6 +54,13 @@ recsys-eval run \
   --config configs/eval/experiment.default.yaml \
   --output /tmp/experiment_report.json
 
+# Offline evaluation (signals sample dataset)
+recsys-eval run \
+  --mode offline \
+  --dataset configs/examples/dataset.signals.yaml \
+  --config configs/eval/offline.signals.yaml \
+  --output /tmp/offline_signals_report.json
+
 # Off-policy evaluation (OPE)
 recsys-eval run \
   --mode ope \

@@ -1,0 +1,13 @@
+{{- if .Values.pipelines.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "recsys.fullname" . }}-pipelines
+  labels:
+    {{- include "recsys.labels" . | nindent 4 }}
+    app.kubernetes.io/component: pipelines
+
+data:
+  pipelines.json: |
+{{ .Values.pipelines.configJson | indent 4 }}
+{{- end }}

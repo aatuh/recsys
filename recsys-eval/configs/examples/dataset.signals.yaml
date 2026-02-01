@@ -1,0 +1,9 @@
+exposures:
+  type: jsonl
+  path: testdata/datasets/signals/exposures.jsonl
+outcomes:
+  type: jsonl
+  path: testdata/datasets/signals/outcomes.jsonl
+assignments:
+  type: jsonl
+  path: testdata/datasets/signals/assignments.jsonl

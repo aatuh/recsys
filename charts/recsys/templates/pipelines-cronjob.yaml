@@ -1,0 +1,38 @@
+{{- if .Values.pipelines.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "recsys.fullname" . }}-pipelines
+  labels:
+    {{- include "recsys.labels" . | nindent 4 }}
+    app.kubernetes.io/component: pipelines
+spec:
+  schedule: {{ .Values.pipelines.schedule | quote }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: {{ include "recsys.name" . }}
+            app.kubernetes.io/component: pipelines
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: pipelines
+              image: "{{ .Values.pipelines.image.repository }}:{{ .Values.pipelines.image.tag }}"
+              imagePullPolicy: {{ .Values.pipelines.image.pullPolicy }}
+              command: {{ toYaml .Values.pipelines.command | nindent 14 }}
+              args: {{ toYaml .Values.pipelines.args | nindent 14 }}
+              env:
+                {{- range $key, $value := .Values.pipelines.env }}
+                - name: {{ $key }}
+                  value: {{ $value | quote }}
+                {{- end }}
+              volumeMounts:
+                - name: config
+                  mountPath: /config
+          volumes:
+            - name: config
+              configMap:
+                name: {{ include "recsys.fullname" . }}-pipelines
+{{- end }}

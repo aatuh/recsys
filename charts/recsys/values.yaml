@@ -1,0 +1,84 @@
+api:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/aatuh/recsys-svc
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8000
+  env:
+    API_ADDR: ":8000"
+    LOG_LEVEL: info
+    MIGRATE_ON_START: "true"
+    RECSYS_ARTIFACT_MODE_ENABLED: "true"
+  secrets: {}
+  resources: {}
+  podAnnotations: {}
+  securityContext: {}
+  podSecurityContext: {}
+
+pipelines:
+  enabled: false
+  image:
+    repository: ghcr.io/aatuh/recsys-pipelines
+    tag: latest
+    pullPolicy: IfNotPresent
+  schedule: "0 2 * * *"
+  command:
+    - recsys-pipelines
+    - run
+  args:
+    - --config
+    - /config/pipelines.json
+    - --tenant
+    - demo
+    - --surface
+    - home
+    - --start
+    - "2026-01-01"
+    - --end
+    - "2026-01-01"
+  env: {}
+  resources: {}
+  configJson: |
+    {
+      "out_dir": ".out",
+      "raw_source": {"type": "s3"},
+      "object_store": {"type": "s3"},
+      "registry_dir": "registry"
+    }
+
+postgres:
+  enabled: false
+  image:
+    repository: postgres
+    tag: "16"
+  auth:
+    database: recsys-db
+    username: recsys-db
+    password: recsys
+  service:
+    port: 5432
+  persistence:
+    enabled: false
+    size: 10Gi
+
+minio:
+  enabled: false
+  image:
+    repository: minio/minio
+    tag: "RELEASE.2024-10-13T13-34-11Z"
+  accessKey: minioadmin
+  secretKey: minioadmin
+  bucket: recsys-artifacts
+  service:
+    port: 9000
+    consolePort: 9001
+  persistence:
+    enabled: false
+    size: 10Gi
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""

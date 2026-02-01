@@ -1,0 +1,11 @@
+Recsys Suite deployed.
+
+Service endpoint:
+  {{ include "recsys.fullname" . }}-api:{{ .Values.api.service.port }}
+
+Postgres enabled: {{ .Values.postgres.enabled }}
+MinIO enabled: {{ .Values.minio.enabled }}
+Pipelines CronJob enabled: {{ .Values.pipelines.enabled }}
+
+If you disabled Postgres/MinIO, make sure DATABASE_URL and artifact S3 settings
+are provided in values.api.env or values.api.secrets.

@@ -1,0 +1,25 @@
+api:
+  env:
+    API_ADDR: ":8000"
+    LOG_LEVEL: debug
+    MIGRATE_ON_START: "true"
+    AUTH_REQUIRED: "false"
+    DEV_AUTH_ENABLED: "true"
+    RECSYS_ARTIFACT_MODE_ENABLED: "true"
+    RECSYS_ARTIFACT_MANIFEST_TTL: 30s
+    RECSYS_ARTIFACT_CACHE_TTL: 30s
+    RECSYS_ALGO_MODE: blend
+  image:
+    repository: recsys-svc
+    tag: local
+    pullPolicy: IfNotPresen
+postgres:
+  enabled: true
+  persistence:
+    enabled: false
+minio:
+  enabled: true
+  persistence:
+    enabled: false
+pipelines:
+  enabled: false

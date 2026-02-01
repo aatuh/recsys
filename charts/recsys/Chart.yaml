@@ -1,0 +1,6 @@
+apiVersion: v2
+name: recsys
+description: Recsys Suite (service + optional pipelines + optional postgres/minio)
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

@@ -1,0 +1,18 @@
+mode: offline
+offline:
+  metrics:
+    - name: precision
+      k: 3
+    - name: recall
+      k: 3
+    - name: ndcg
+      k: 3
+    - name: hitrate
+      k: 3
+    - name: coverage
+      k: 3
+    - name: novelty
+      k: 3
+    - name: diversity
+      k: 3
+  slice_keys: ["tenant", "surface"]
