@@ -139,6 +139,7 @@ func (u OfflineEvalUsecase) Run(ctx context.Context, evalCfg OfflineConfig, outp
 			}
 		}
 	}
+	rep.Summary.Executive = buildExecutiveSummary(rep)
 
 	if err := u.Reporter.Write(ctx, rep, outputPath); err != nil {
 		return report.Report{}, err
@@ -289,6 +290,7 @@ func (u OfflineEvalUsecase) runStream(ctx context.Context, evalCfg OfflineConfig
 			}
 		}
 	}
+	rep.Summary.Executive = buildExecutiveSummary(rep)
 
 	if err := u.Reporter.Write(ctx, rep, outputPath); err != nil {
 		return report.Report{}, err

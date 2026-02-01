@@ -12,7 +12,59 @@
     "git_commit": {"type": "string"},
     "effective_config": {"type": ["object", "array"]},
     "input_dataset_fingerprint": {"type": "string"},
-    "summary": {"type": "object"},
+    "summary": {
+      "type": "object",
+      "required": ["cases_evaluated"],
+      "properties": {
+        "cases_evaluated": {"type": "integer"},
+        "executive": {
+          "type": "object",
+          "properties": {
+            "decision": {"type": "string", "enum": ["pass", "fail", "not_configured"]},
+            "gate_failures": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "metric": {"type": "string"},
+                  "max_drop": {"type": "number"},
+                  "delta": {"type": "number"},
+                  "passed": {"type": "boolean"}
+                }
+              }
+            },
+            "highlights": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {"type": "string"},
+                  "value": {"type": "number"}
+                }
+              }
+            },
+            "key_deltas": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {"type": "string"},
+                  "delta": {"type": "number"},
+                  "relative_delta": {"type": "number"},
+                  "before": {"type": "number"},
+                  "after": {"type": "number"}
+                }
+              }
+            },
+            "next_steps": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          }
+        }
+      },
+      "additionalProperties": true
+    },
     "offline": {"type": "object"},
     "experiment": {"type": "object"},
     "ope": {"type": "object"},

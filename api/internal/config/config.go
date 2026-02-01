@@ -29,6 +29,7 @@ type Config struct {
 	Experiment  ExperimentConfig
 	Explain     ExplainConfig
 	Artifacts   ArtifactConfig
+	License     LicenseConfig
 	Algo        AlgoConfig
 }
 
@@ -111,6 +112,14 @@ type ArtifactConfig struct {
 	ArtifactTTL      time.Duration
 	MaxBytes         int
 	S3               ArtifactS3Config
+}
+
+// LicenseConfig configures license status handling.
+type LicenseConfig struct {
+	FilePath      string
+	PublicKey     string
+	PublicKeyFile string
+	CacheTTL      time.Duration
 }
 
 // ArtifactS3Config configures S3-compatible access for artifacts.
@@ -288,6 +297,12 @@ func Load() Config {
 			UseSSL:    loader.Bool("RECSYS_ARTIFACT_S3_USE_SSL", false),
 		},
 	}
+	licenseCfg := LicenseConfig{
+		FilePath:      loader.String("RECSYS_LICENSE_FILE", ""),
+		PublicKey:     loader.String("RECSYS_LICENSE_PUBLIC_KEY", ""),
+		PublicKeyFile: loader.String("RECSYS_LICENSE_PUBLIC_KEY_FILE", ""),
+		CacheTTL:      loader.Duration("RECSYS_LICENSE_CACHE_TTL", time.Minute),
+	}
 	expVariants := loader.CSV("EXPERIMENT_DEFAULT_VARIANTS")
 	if len(expVariants) == 0 {
 		expVariants = []string{"A", "B"}
@@ -356,6 +371,7 @@ func Load() Config {
 		Experiment: expCfg,
 		Explain:    explainCfg,
 		Artifacts:  artifactCfg,
+		License:    licenseCfg,
 		Algo:       algoCfg,
 	}
 	if err := loader.Err(); err != nil {

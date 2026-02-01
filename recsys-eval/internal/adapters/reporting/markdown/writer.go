@@ -24,6 +24,32 @@ func (Writer) Write(_ context.Context, rep report.Report, path string) error {
 		b.WriteString("\n")
 	}
 
+	if rep.Summary.Executive != nil {
+		b.WriteString("## Executive Summary\n\n")
+		if rep.Summary.Executive.Decision != "" {
+			b.WriteString(fmt.Sprintf("- Decision: `%s`\n", rep.Summary.Executive.Decision))
+		}
+		if len(rep.Summary.Executive.Highlights) > 0 {
+			b.WriteString("- Highlights:\n")
+			for _, m := range rep.Summary.Executive.Highlights {
+				b.WriteString(fmt.Sprintf("  - %s: %.6f\n", m.Name, m.Value))
+			}
+		}
+		if len(rep.Summary.Executive.KeyDeltas) > 0 {
+			b.WriteString("- Key Deltas vs Baseline:\n")
+			for _, d := range rep.Summary.Executive.KeyDeltas {
+				b.WriteString(fmt.Sprintf("  - %s: %.6f\n", d.Name, d.Delta))
+			}
+		}
+		if len(rep.Summary.Executive.NextSteps) > 0 {
+			b.WriteString("- Next Steps:\n")
+			for _, step := range rep.Summary.Executive.NextSteps {
+				b.WriteString(fmt.Sprintf("  - %s\n", step))
+			}
+		}
+		b.WriteString("\n")
+	}
+
 	if rep.Offline != nil {
 		b.WriteString("## Offline Metrics\n\n")
 		writeMetricTable(&b, rep.Offline.Metrics)

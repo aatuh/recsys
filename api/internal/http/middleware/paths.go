@@ -10,6 +10,9 @@ func isProtectedPath(r *http.Request) bool {
 		return false
 	}
 	path := r.URL.Path
+	if path == "/v1/license" || path == "/api/v1/license" {
+		return false
+	}
 	return path == "/v1" ||
 		strings.HasPrefix(path, "/v1/") ||
 		path == "/api/v1" ||

@@ -152,6 +152,7 @@ func (u InterleavingUsecase) Run(ctx context.Context, cfg InterleavingConfig, ou
 			PValue:    pValue,
 		},
 	}
+	rep.Summary.Executive = buildExecutiveSummary(rep)
 
 	if err := u.Reporter.Write(ctx, rep, outputPath); err != nil {
 		return report.Report{}, err

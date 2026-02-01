@@ -128,6 +128,7 @@ func (u AACheckUsecase) Run(ctx context.Context, cfg ExperimentConfig, outputPat
 		DataQuality: &dq,
 		Warnings:    warnings,
 	}
+	rep.Summary.Executive = buildExecutiveSummary(rep)
 
 	if err := u.Reporter.Write(ctx, rep, outputPath); err != nil {
 		return report.Report{}, err

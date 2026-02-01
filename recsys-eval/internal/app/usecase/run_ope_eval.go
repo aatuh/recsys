@@ -253,6 +253,7 @@ func (u OPEUsecase) Run(ctx context.Context, evalCfg OPEConfig, outputPath strin
 		}(),
 		Warnings: warnings,
 	}
+	rep.Summary.Executive = buildExecutiveSummary(rep)
 
 	if err := u.Reporter.Write(ctx, rep, outputPath); err != nil {
 		return report.Report{}, err

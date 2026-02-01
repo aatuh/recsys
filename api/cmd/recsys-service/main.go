@@ -50,6 +50,7 @@ func loggerFromEnv(env, level string) ports.Logger {
 func main() {
 	cfg := config.Load()
 	log := loggerFromEnv(cfg.Env, cfg.LogLevel)
+	log.Info("recsys service starting", "version", version, "commit", commit, "date", date)
 
 	ctx := context.Background()
 	traceShutdown, tracingEnabled, traceErr := telemetry.InitTracing(ctx, cfg.Telemetry.Tracing)

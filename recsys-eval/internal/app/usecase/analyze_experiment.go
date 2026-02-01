@@ -177,6 +177,7 @@ func (u ExperimentUsecase) run(ctx context.Context, evalCfg ExperimentConfig, ou
 		},
 		DataQuality: &dq,
 	}
+	rep.Summary.Executive = buildExecutiveSummary(rep)
 
 	if err := u.Reporter.Write(ctx, rep, outputPath); err != nil {
 		return report.Report{}, nil, err
@@ -321,6 +322,7 @@ func (u ExperimentUsecase) runStream(ctx context.Context, evalCfg ExperimentConf
 		},
 		DataQuality: &dq,
 	}
+	rep.Summary.Executive = buildExecutiveSummary(rep)
 
 	if err := u.Reporter.Write(ctx, rep, outputPath); err != nil {
 		return report.Report{}, nil, err

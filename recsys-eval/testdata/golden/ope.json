@@ -58,7 +58,13 @@
   },
   "run_id": "ope-20250101T000000Z",
   "summary": {
-    "cases_evaluated": 2
+    "cases_evaluated": 2,
+    "executive": {
+      "decision": "not_configured",
+      "next_steps": [
+        "Increase sample size to stabilize metrics."
+      ]
+    }
   },
   "version": "0.1.0"
 }

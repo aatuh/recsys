@@ -37,6 +37,37 @@ const htmlTemplate = `<!doctype html>
   <p><strong>Cases Evaluated:</strong> <code>{{ .Report.Summary.CasesEvaluated }}</code></p>
   {{ end }}
 
+  {{ if .Report.Summary.Executive }}
+  <h2>Executive Summary</h2>
+  {{ if .Report.Summary.Executive.Decision }}
+  <p><strong>Decision:</strong> <code>{{ .Report.Summary.Executive.Decision }}</code></p>
+  {{ end }}
+  {{ if .Report.Summary.Executive.Highlights }}
+  <h3>Highlights</h3>
+  <ul>
+    {{ range .Report.Summary.Executive.Highlights }}
+    <li>{{ .Name }}: {{ printf "%.6f" .Value }}</li>
+    {{ end }}
+  </ul>
+  {{ end }}
+  {{ if .Report.Summary.Executive.KeyDeltas }}
+  <h3>Key Deltas vs Baseline</h3>
+  <ul>
+    {{ range .Report.Summary.Executive.KeyDeltas }}
+    <li>{{ .Name }}: {{ printf "%.6f" .Delta }}</li>
+    {{ end }}
+  </ul>
+  {{ end }}
+  {{ if .Report.Summary.Executive.NextSteps }}
+  <h3>Next Steps</h3>
+  <ul>
+    {{ range .Report.Summary.Executive.NextSteps }}
+    <li>{{ . }}</li>
+    {{ end }}
+  </ul>
+  {{ end }}
+  {{ end }}
+
   {{ if .Report.Offline }}
   <h2>Offline Metrics</h2>
   {{ if .Report.Offline.Metrics }}

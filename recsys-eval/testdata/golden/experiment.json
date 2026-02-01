@@ -147,7 +147,27 @@
   "mode": "experiment",
   "run_id": "experiment-20250101T000000Z",
   "summary": {
-    "cases_evaluated": 3
+    "cases_evaluated": 3,
+    "executive": {
+      "decision": "not_configured",
+      "highlights": [
+        {
+          "name": "ctr",
+          "value": 0.5
+        },
+        {
+          "name": "conversion_rate",
+          "value": 0
+        },
+        {
+          "name": "revenue_per_request",
+          "value": 0
+        }
+      ],
+      "next_steps": [
+        "Increase sample size to stabilize metrics."
+      ]
+    }
   },
   "version": "0.1.0"
 }

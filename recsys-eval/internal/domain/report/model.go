@@ -42,7 +42,17 @@ func SupportedModes() []string {
 
 // Summary captures high-level run info.
 type Summary struct {
-	CasesEvaluated int `json:"cases_evaluated"`
+	CasesEvaluated int               `json:"cases_evaluated"`
+	Executive      *ExecutiveSummary `json:"executive,omitempty"`
+}
+
+// ExecutiveSummary provides a human-readable top line for decision makers.
+type ExecutiveSummary struct {
+	Decision     string         `json:"decision,omitempty"`
+	GateFailures []GateResult   `json:"gate_failures,omitempty"`
+	Highlights   []MetricResult `json:"highlights,omitempty"`
+	KeyDeltas    []MetricDelta  `json:"key_deltas,omitempty"`
+	NextSteps    []string       `json:"next_steps,omitempty"`
 }
 
 // ArtifactProvenance captures manifest and artifact metadata for the run.

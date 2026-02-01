@@ -6,4 +6,5 @@ const (
 	Recommend         = RecsysBase + "/recommend"
 	RecommendValidate = Recommend + "/validate"
 	Similar           = RecsysBase + "/similar"
+	LicenseStatus     = RecsysBase + "/license"
 )

@@ -10,6 +10,7 @@ import (
 	"github.com/aatuh/recsys-suite/api/internal/config"
 	"github.com/aatuh/recsys-suite/api/internal/experiments"
 	"github.com/aatuh/recsys-suite/api/internal/exposure"
+	"github.com/aatuh/recsys-suite/api/internal/license"
 	"github.com/aatuh/recsys-suite/api/internal/objectstore"
 	"github.com/aatuh/recsys-suite/api/internal/services/adminsvc"
 	"github.com/aatuh/recsys-suite/api/internal/services/recsysvc"
@@ -33,6 +34,7 @@ type appDeps struct {
 	ExplainMaxItems     int
 	ExplainRequireAdmin bool
 	AdminRole           string
+	LicenseManager      *license.Manager
 	Close               func()
 }
 
@@ -81,6 +83,7 @@ func buildAppDeps(log ports.Logger, pool ports.DatabasePool, cfg config.Config) 
 			ManifestTTL:      cfg.Artifacts.ManifestTTL,
 			ArtifactTTL:      cfg.Artifacts.ArtifactTTL,
 			MaxBytes:         cfg.Artifacts.MaxBytes,
+			Logger:           log,
 		})
 		algoStore = store.NewArtifactAlgoStore(loader, store.NewAlgoStore(pool))
 		artifactCache = loader
@@ -186,6 +189,12 @@ func buildAppDeps(log ports.Logger, pool ports.DatabasePool, cfg config.Config) 
 			closers[i]()
 		}
 	}
+	licenseManager := license.NewManager(license.Config{
+		FilePath:      cfg.License.FilePath,
+		PublicKey:     cfg.License.PublicKey,
+		PublicKeyFile: cfg.License.PublicKeyFile,
+		CacheTTL:      cfg.License.CacheTTL,
+	}, log)
 
 	return appDeps{
 		RecsysService:       recSvc,
@@ -198,6 +207,7 @@ func buildAppDeps(log ports.Logger, pool ports.DatabasePool, cfg config.Config) 
 		ExplainMaxItems:     cfg.Explain.MaxItems,
 		ExplainRequireAdmin: cfg.Explain.RequireAdmin,
 		AdminRole:           cfg.Auth.AdminRole,
+		LicenseManager:      licenseManager,
 		Close:               closeFn,
 	}, nil
 }

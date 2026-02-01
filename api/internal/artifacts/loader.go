@@ -2,6 +2,8 @@ package artifacts
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -9,6 +11,8 @@ import (
 
 	"github.com/aatuh/recsys-suite/api/internal/cache"
 	"github.com/aatuh/recsys-suite/api/internal/objectstore"
+
+	"github.com/aatuh/api-toolkit/ports"
 )
 
 type LoaderConfig struct {
@@ -16,6 +20,7 @@ type LoaderConfig struct {
 	ManifestTTL      time.Duration
 	ArtifactTTL      time.Duration
 	MaxBytes         int
+	Logger           ports.Logger
 }
 
 type Loader struct {
@@ -30,6 +35,7 @@ type Loader struct {
 	manifestTTL      time.Duration
 	artifactTTL      time.Duration
 	maxBytes         int
+	logger           ports.Logger
 }
 
 type manifestKey struct {
@@ -50,6 +56,7 @@ func NewLoader(reader objectstore.Reader, cfg LoaderConfig) *Loader {
 		manifestTTL:      cfg.ManifestTTL,
 		artifactTTL:      cfg.ArtifactTTL,
 		maxBytes:         cfg.MaxBytes,
+		logger:           cfg.Logger,
 	}
 }
 
@@ -129,10 +136,28 @@ func (l *Loader) LoadManifest(ctx context.Context, tenant, surface string) (Mani
 	if manifest.Tenant != tenant || manifest.Surface != surface {
 		return ManifestV1{}, false, wrapManifestError(fmt.Errorf("manifest tenant/surface mismatch"))
 	}
+	if l.logger != nil {
+		l.logger.Info(
+			"artifact manifest loaded",
+			"tenant", tenant,
+			"surface", surface,
+			"uri", uri,
+			"hash", hashBytes(data),
+			"updated_at", manifest.UpdatedAt,
+		)
+	}
 	if l.manifestTTL > 0 {
 		l.manifestCache.Set(key, manifest, l.manifestTTL)
 	}
 	return manifest, true, nil
+}
+
+func hashBytes(data []byte) string {
+	if len(data) == 0 {
+		return ""
+	}
+	sum := sha256.Sum256(data)
+	return hex.EncodeToString(sum[:])
 }
 
 func (l *Loader) LoadPopularity(ctx context.Context, uri string) (PopularityArtifactV1, bool, error) {

@@ -235,6 +235,40 @@
         },
         "type": "object"
       },
+      "LicenseStatusResponse": {
+        "properties": {
+          "commercial": {
+            "type": "boolean"
+          },
+          "customer": {
+            "type": "string"
+          },
+          "entitlements": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "unknown",
+              "valid",
+              "invalid",
+              "expired"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "commercial"
+        ],
+        "type": "object"
+      },
       "NormalizedRecommendRequest": {
         "properties": {
           "anchors": {
@@ -978,6 +1012,25 @@
           }
         },
         "summary": "Update tenant rules"
+      }
+    },
+    "/v1/license": {
+      "get": {
+        "operationId": "licenseStatus",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LicenseStatusResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "security": [],
+        "summary": "Get license status"
       }
     },
     "/v1/recommend": {

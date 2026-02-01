@@ -18,6 +18,9 @@ func mountAppRoutes(r ports.HTTPRouter, log ports.Logger, deps appDeps) {
 	)
 	recsysHandler.RegisterRoutes(r)
 
+	licenseHandler := handlers.NewLicenseHandler(deps.LicenseManager, log)
+	licenseHandler.RegisterRoutes(r)
+
 	adminHandler := handlers.NewAdminHandler(deps.AdminService, log, deps.Validator)
 	r.Mount("/", adminHandler.Routes())
 }
