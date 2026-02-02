@@ -15,9 +15,7 @@ require (
 	github.com/prometheus/client_golang v1.23.2
 )
 
-replace (
-	github.com/aatuh/recsys-suite/api/recsys-algo => ../recsys-algo
-)
+replace github.com/aatuh/recsys-suite/api/recsys-algo => ../recsys-algo
 
 require (
 	github.com/MicahParks/jwkset v0.11.0 // indirect

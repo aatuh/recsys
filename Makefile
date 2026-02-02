@@ -7,18 +7,11 @@ export VERSION
 export COMMIT
 export DATE
 
-TOOLKIT ?= 1
-API_TOOLKIT_PATH ?= ../api-toolkit
-export API_TOOLKIT_PATH
-
 API_SVC ?= 1
 API_SVC_PATH ?= ../api-svc
 export API_SVC
 
 COMPOSE_FILES := -f docker-compose.yml
-ifneq (,$(or $(filter 1,$(TOOLKIT)),$(filter 1,$(API_SVC))))
-COMPOSE_FILES += -f docker-compose.toolkit.yml
-endif
 
 COMPOSE_ANSI ?= auto
 COMPOSE_PROGRESS ?= plain
@@ -30,7 +23,6 @@ help: ## Show this help message
 
 dev: ## Start development environment
 	@echo "🚀 Starting development environment (VERSION=$(VERSION), COMMIT=$(COMMIT), TOOLKIT=$(TOOLKIT))..."
-	@if [ "$(TOOLKIT)" = "1" ]; then echo "🔧 Using local api-toolkit from '$(API_TOOLKIT_PATH)'"; fi
 	@$(DOCKER_COMPOSE) $(COMPOSE_FILES) up -d
 
 down: ## Clean up containers and volumes

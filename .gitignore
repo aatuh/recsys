@@ -5,7 +5,8 @@
 !**/.github/
 !**/.goreleaser.yaml
 !**/.golangci.yml
-!.reuse
+!.reuse/
+!.markdownlint-cli2.jsonc
 
 **/tmp/
 **/bin/
