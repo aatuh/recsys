@@ -117,7 +117,7 @@ Use the payment links (recommended for fastest fulfillment) or contact us for En
 - Growth (annual)
 - Enterprise (contact)
 
-(Links are provided in the README or project website.)
+Contact: `contact@recsys.app`
 
 ---
 

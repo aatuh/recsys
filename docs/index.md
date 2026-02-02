@@ -34,11 +34,11 @@ The suite is four modules that form an end-to-end recommendation system loop:
 ## Reference
 
 - REST API: [`reference/api/openapi.yaml`](reference/api/openapi.yaml)
-- Admin API: [`reference/api/admin.md`](`reference/api/admin.md`)
-- Contracts: [`reference/data-contracts/`](`reference/data-contracts/`)
-- Config: [`reference/config/`](`reference/config/`)
-- CLI: [`reference/cli/`](`reference/cli/`)
-- Database: [`reference/database/`](`reference/database/`)
+- Admin API: [`reference/api/admin.md`](reference/api/admin.md)
+- Contracts: [`reference/data-contracts/`](reference/data-contracts/)
+- Config: [`reference/config/`](reference/config/)
+- CLI: [`reference/cli/`](reference/cli/)
+- Database: [`reference/database/`](reference/database/)
 
 Note:
 
