@@ -1,3 +1,6 @@
+# Suite Context
+
+```mermaid
 flowchart LR
   C[Client] --> S[recsys-service]
   S --> A[recsys-algo]
@@ -11,3 +14,4 @@ flowchart LR
   O --> V
   V --> D[Decision]
   D --> S
+```

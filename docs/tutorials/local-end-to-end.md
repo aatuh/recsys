@@ -74,4 +74,4 @@ See: `reference/api/examples/`
 
 Run offline regression and (optionally) experiment analysis.
 
-See: `how-to/run-eval-and-ship.md`
+See: [`how-to/run-eval-and-ship.md`](../how-to/run-eval-and-ship.md)
