@@ -1,9 +1,11 @@
 # Interleaving: fast ranker comparison on the same traffic
 
 ## Who this is for
+
 Engineers comparing two rankers or weight sets.
 
 ## What you will get
+
 - What interleaving measures
 - When it is the right tool
 - Common mistakes

@@ -8,12 +8,15 @@
 6) Handle failures: empty list fallback, respect 429 Retry-After
 
 Notes:
+
 - `surface` also acts as the **namespace** for signals and rules.
 - For local MVPs, a `default` namespace fallback is available (see `explanation/surface-namespaces.md`).
 - Admin bootstrap (tenant + config + rules) is required before first use:
+
   see `reference/api/admin.md`.
 
 Tenant headers (local dev):
+
 - When `DEV_AUTH_ENABLED=true`, send **both**:
   - `X-Dev-Org-Id` (dev auth tenant context)
   - `X-Org-Id` (tenant scope enforced by middleware)

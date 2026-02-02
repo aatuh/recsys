@@ -1,0 +1,22 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: recsys-suite
+Source: https://github.com/aatuh/recsys-suite
+
+Files: **
+Files-Excluded: recsys-eval/**
+ LICENSES/Apache-2.0.txt
+ LICENSES/AGPL-3.0-only.txt
+Copyright: 2026 @aatuh
+License: AGPL-3.0-only
+
+Files: recsys-eval/**
+Copyright: 2026 @aatuh
+License: Apache-2.0
+
+Files: LICENSES/Apache-2.0.txt
+Copyright: 2004-2024 Apache Software Foundation
+License: Apache-2.0
+
+Files: LICENSES/AGPL-3.0-only.txt
+Copyright: 2007 Free Software Foundation, Inc.
+License: AGPL-3.0-only

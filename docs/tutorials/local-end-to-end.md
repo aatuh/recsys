@@ -4,6 +4,7 @@ Goal: run a tiny dataset through pipelines, serve recommendations, and generate
 an evaluation report.
 
 Prereqs:
+
 - Docker + docker compose
 - curl
 - POSIX shell
@@ -15,6 +16,7 @@ Bring up Postgres and recsys-service. Ensure migrations are applied.
 ## 2. Load demo tenant + config + rules
 
 Create:
+
 - tenant: demo
 - config and rules (versioned, current pointer updated)
 
@@ -24,6 +26,7 @@ See also: `reference/api/admin.md` (auth + bootstrap details, tenant insert SQL)
 ## 3. Load a tiny dataset
 
 Use `tutorials/datasets/tiny/`:
+
 - catalog.csv
 - exposures.jsonl
 - interactions.jsonl
@@ -44,7 +47,7 @@ If you want artifact/manifest mode locally, use the bundled MinIO in
 
 Service env (local):
 
-```
+```bash
 RECSYS_ARTIFACT_MODE_ENABLED=true
 RECSYS_ARTIFACT_MANIFEST_TEMPLATE=s3://recsys-artifacts/registry/current/{tenant}/{surface}/manifest.json
 RECSYS_ARTIFACT_S3_ENDPOINT=minio:9000

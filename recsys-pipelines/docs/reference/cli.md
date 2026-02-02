@@ -4,6 +4,7 @@
 ## recsys-pipelines
 
 Commands:
+
 - `run` : ingest + validate + compute + publish
 - `version`
 
@@ -20,6 +21,7 @@ recsys-pipelines run \
 ```
 
 Notes:
+
 - end date is inclusive
 - windows are daily UTC
 

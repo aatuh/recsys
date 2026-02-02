@@ -11,14 +11,16 @@
 ## Read in this order
 
 1) `start-here.md`
-2) `explanation/artifacts-and-versioning.md`
-3) `operations/slos-and-freshness.md`
-4) `operations/runbooks/pipeline-failed.md`
+1) `explanation/artifacts-and-versioning.md`
+1) `operations/slos-and-freshness.md`
+1) `operations/runbooks/pipeline-failed.md`
 
 ## Key concepts
 
 - Artifacts are versioned and rollbackable because production needs safe
+
   recovery.
+
 - Manifest pointers are updated last so serving never points to missing blobs.
 - Validation gates exist to prevent bad artifacts from reaching users.
 

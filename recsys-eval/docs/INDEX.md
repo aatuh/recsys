@@ -1,24 +1,29 @@
 # Documentation index
 
 If you are new:
-- README.md
-- docs/CONCEPTS.md
+
+- [`../README.md`](../README.md)
+- [`CONCEPTS.md`](CONCEPTS.md)
 
 If you need to integrate:
-- docs/DATA_CONTRACTS.md
-- docs/INTEGRATION.md
+
+- [`DATA_CONTRACTS.md`](DATA_CONTRACTS.md)
+- [`INTEGRATION.md`](INTEGRATION.md)
 
 If you need to interpret results:
-- docs/METRICS.md
-- docs/INTERPRETING_RESULTS.md
+
+- [`METRICS.md`](METRICS.md)
+- [`INTERPRETING_RESULTS.md`](INTERPRETING_RESULTS.md)
 
 If you run this in CI or ops:
-- docs/CI_GATES.md
-- docs/SCALING.md
-- docs/RUNBOOKS.md
-- docs/TROUBLESHOOTING.md
+
+- [`CI_GATES.md`](CI_GATES.md)
+- [`SCALING.md`](SCALING.md)
+- [`RUNBOOKS.md`](RUNBOOKS.md)
+- [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md)
 
 Deep dives:
-- docs/OPE.md
-- docs/INTERLEAVING.md
-- docs/ARCHITECTURE.md
+
+- [`OPE.md`](OPE.md)
+- [`INTERLEAVING.md`](INTERLEAVING.md)
+- [`ARCHITECTURE.md`](ARCHITECTURE.md)

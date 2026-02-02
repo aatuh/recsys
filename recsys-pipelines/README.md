@@ -10,6 +10,7 @@ This repository is the **offline factory** of a recommender stack:
 - It computes artifacts (v1: popularity, co-occurrence, implicit, content_sim, session_seq).
 - It validates outputs and enforces hard resource limits.
 - It publishes artifacts to a versioned object store and updates a
+
   single "current" manifest pointer.
 
 If you are new: start at `docs/start-here.md`.
@@ -19,6 +20,7 @@ If you are new: start at `docs/start-here.md`.
 ## Quickstart
 
 Requirements:
+
 - Go toolchain (see `go.mod`)
 
 Run the pipeline locally against the tiny sample dataset:
@@ -36,6 +38,7 @@ make build
 ```
 
 Outputs (default `.out/`):
+
 - Canonical events: `.out/canonical/<tenant>/<surface>/exposures/YYYY-MM-DD.jsonl`
 - Staged artifacts: `.out/artifacts/<tenant>/<surface>/<segment>/<type>/<window>/...`
 - Published blobs: `.out/objectstore/<tenant>/<surface>/<type>/<version>.json`

@@ -6,12 +6,14 @@
 The pipeline validates canonical data before computing/publishing.
 
 Builtin checks include:
+
 - event parsing and required fields
 - timestamp inside the window
 - maximum events processed
 - maximum distinct sessions/items
 
 Artifacts are also validated:
+
 - correct type/version/window
 - version matches recomputed hash
 - maximum sizes (items/neighbors)

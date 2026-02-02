@@ -13,12 +13,13 @@ and capture sizing data for production planning.
 
 Use the built-in harness:
 
-```
+```bash
 ./scripts/loadtest.sh
 ```
 
 Key parameters (env vars):
-- `BASE_URL` (default: http://localhost:8000)
+
+- `BASE_URL` (default: <http://localhost:8000>)
 - `ENDPOINT` (default: /v1/recommend; set /v1/similar for similar-items)
 - `TENANT_ID`, `SURFACE`, `K`
 - `REQUESTS`, `CONCURRENCY`
@@ -26,7 +27,7 @@ Key parameters (env vars):
 
 Example:
 
-```
+```bash
 BASE_URL=http://localhost:8000 \
 ENDPOINT=/v1/recommend \
 TENANT_ID=demo \
@@ -37,6 +38,7 @@ CONCURRENCY=25 \
 ```
 
 Capture:
+
 - `rps` (requests/sec)
 - p50/p95/p99 latency
 - error rate (non-2xx + timeouts)
@@ -46,12 +48,12 @@ Capture:
 Use this table as a **living record**. Fill with measured results from your
 environment (hardware, cache settings, dataset size).
 
-| Tier | Target QPS | p95 Latency | CPU | Memory | Notes |
-|------|------------|-------------|-----|--------|-------|
-| dev  |            |             |     |        | local, seeded data |
-| small|            |             |     |        | single tenant |
-| med  |            |             |     |        | multi-tenant |
-| large|            |             |     |        | dedicated cache |
+| Tier  | Target QPS | p95 Latency | CPU | Memory | Notes              |
+| :---- | ---------: | ----------: | --: | -----: | ------------------ |
+| dev   |            |             |     |        | local, seeded data |
+| small |            |             |     |        | single tenant      |
+| med   |            |             |     |        | multi-tenant       |
+| large |            |             |     |        | dedicated cache    |
 
 ## 4) Tuning levers
 
@@ -63,6 +65,7 @@ environment (hardware, cache settings, dataset size).
 ## 5) Repeat after changes
 
 Re-run the load test after:
+
 - schema changes (new signals)
 - algorithm changes
 - cache or artifact mode changes

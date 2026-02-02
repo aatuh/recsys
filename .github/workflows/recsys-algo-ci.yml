@@ -6,7 +6,7 @@ on:
       - "recsys-algo/**"
       - ".github/workflows/recsys-algo-ci.yml"
   push:
-    branches: [main]
+    branches: [master]
     paths:
       - "recsys-algo/**"
       - ".github/workflows/recsys-algo-ci.yml"

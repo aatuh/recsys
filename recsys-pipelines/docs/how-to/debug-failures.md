@@ -4,6 +4,7 @@
 ## 1) Identify the step
 
 Look at logs for one of:
+
 - ingest
 - validate
 - popularity

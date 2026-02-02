@@ -18,7 +18,7 @@ Top-level fields:
 
 ## object_store
 
-```
+```json
 {
   "type": "fs | s3 | minio",
   "dir": ".out/objectstore",
@@ -31,17 +31,17 @@ Top-level fields:
     "use_ssl": false
   }
 }
-```
+```json
 
 ## db
 
-```
+```json
 {
   "dsn": "postgres://user:pass@localhost:5432/db?sslmode=disable",
   "auto_create_tenant": true,
   "statement_timeout_s": 5
 }
-```
+```json
 
 ## limits
 
@@ -60,7 +60,7 @@ See `explanation/validation-and-guardrails.md`.
 
 ## raw_source
 
-```
+```json
 {
   "type": "fs | s3 | minio | postgres | kafka",
   "dir": "testdata/events",

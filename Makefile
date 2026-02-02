@@ -1,4 +1,4 @@
-.PHONY: help codegen dev down build test fmt lint health reuse mdlint
+.PHONY: help codegen dev down build test fmt lint health reuse mdlint mkdocs-serve
 
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 COMMIT ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo none)
@@ -77,7 +77,22 @@ lint: ## Lint code
 
 mdlint: ## Lint Markdown files
 	@echo "🧾 Linting Markdown..."
-	@npx --yes markdownlint-cli2
+	npx --yes markdownlint-cli2
+
+mkdocs-serve: ## Serve MkDocs site locally
+	./scripts/docs_sync.sh
+	@echo "📚 Serving MkDocs at http://localhost:8001 ..."
+	@command -v mkdocs >/dev/null 2>&1 || { \
+		echo "Installing mkdocs into .venv..."; \
+		python -m venv .venv; \
+		. .venv/bin/activate && python -m pip install --upgrade pip mkdocs mkdocs-material; \
+	}
+	@. .venv/bin/activate 2>/dev/null || true; \
+	if command -v mkdocs >/dev/null 2>&1; then \
+		mkdocs serve -f mkdocs.yml -a 0.0.0.0:8001; \
+	else \
+		. .venv/bin/activate && .venv/bin/mkdocs serve -f mkdocs.yml -a 0.0.0.0:8001; \
+	fi
 
 reuse: ## Run REUSE lint (license compliance)
 	@echo "🔎 Running REUSE lint..."

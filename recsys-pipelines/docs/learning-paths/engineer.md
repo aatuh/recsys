@@ -11,11 +11,11 @@
 ## Read in this order
 
 1) `tutorials/local-quickstart.md`
-2) `reference/cli.md`
-3) `reference/config.md`
-4) `explanation/architecture.md`
-5) `how-to/add-artifact-type.md`
-6) `contributing/dev-workflow.md`
+1) `reference/cli.md`
+1) `reference/config.md`
+1) `explanation/architecture.md`
+1) `how-to/add-artifact-type.md`
+1) `contributing/dev-workflow.md`
 
 ## Golden rules
 

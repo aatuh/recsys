@@ -30,6 +30,7 @@ cat .out/registry/current/demo/home/manifest.json
 ```
 
 You should see:
+
 - canonical events under `.out/canonical/demo/home/exposures/`
 - versioned blobs under `.out/objectstore/demo/home/...`
 - a manifest pointer under `.out/registry/current/demo/home/manifest.json`

@@ -7,12 +7,14 @@ with guardrails.
 If you only read one thing: read docs/CONCEPTS.md.
 
 ## Who this is for
+
 - Engineers shipping recommender changes
 - Analysts and DS folks validating impact
 - Platform teams wiring evaluation into CI
 - Anyone who wants a clear "ship / hold / rollback" decision trail
 
 ## What you get
+
 - Offline evaluation (fast regression gate)
 - Experiment analysis (A/B from production logs)
 - Off-policy evaluation (OPE) when experiments are hard
@@ -24,14 +26,17 @@ If you only read one thing: read docs/CONCEPTS.md.
 1) Validate your inputs (recommended):
 
 ```bash
+
 recsys-eval validate \
   --schema exposure.v1 \
   --input testdata/datasets/tiny/exposures.jsonl
+
 ```
 
-2) Run an evaluation (choose one mode):
+1) Run an evaluation (choose one mode):
 
 ```bash
+
 # Offline evaluation
 recsys-eval run \
   --mode offline \
@@ -74,6 +79,7 @@ recsys-eval run \
   --dataset configs/examples/dataset.interleaving.jsonl.yaml \
   --config configs/eval/interleaving.default.yaml \
   --output /tmp/interleaving_report.json
+
 ```
 
 ## Outputs
@@ -81,6 +87,7 @@ recsys-eval run \
 The primary output is a JSON report that conforms to api/schemas/report.v1.json.
 You can also emit Markdown or HTML summaries for sharing.
 It always includes:
+
 - run_id
 - mode
 - created_at
@@ -100,6 +107,7 @@ api/schemas/decision.v1.json.
 - docs/INTERPRETING_RESULTS.md: how to read reports and make decisions
 
 Company-grade additions:
+
 - docs/INTEGRATION.md: how to emit logs from a serving system
 - docs/CI_GATES.md: exit codes, gating, and recommended pipelines
 - docs/SCALING.md: large datasets and stream mode

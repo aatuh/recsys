@@ -5,6 +5,7 @@
 required fields, validation fails even if `recsys-eval run` produced a report.
 
 Schema sources (repo):
+
 - `recsys/recsys-eval/schemas/exposure.v1.json`
 - `recsys/recsys-eval/schemas/outcome.v1.json`
 - `recsys/recsys-eval/schemas/assignment.v1.json`
@@ -12,12 +13,14 @@ Schema sources (repo):
 ## exposure.v1 (required fields)
 
 Required:
+
 - `request_id` (string, non-empty)
 - `user_id` (string, non-empty)
 - `ts` (RFC3339 date-time)
 - `items` (array of `{ item_id, rank }`)
 
 Allowed optional fields:
+
 - `context` (object of string values)
 - `latency_ms` (number >= 0)
 - `error` (boolean)
@@ -33,6 +36,7 @@ Examples (JSONL; one object per line):
 ## outcome.v1 (required fields)
 
 Required:
+
 - `request_id` (string, non-empty)
 - `user_id` (string, non-empty)
 - `item_id` (string, non-empty)
@@ -40,6 +44,7 @@ Required:
 - `ts` (RFC3339 date-time)
 
 Allowed optional fields:
+
 - `value` (number)
 
 Examples (JSONL; one object per line):
@@ -53,6 +58,7 @@ Examples (JSONL; one object per line):
 ## assignment.v1 (required fields)
 
 Required:
+
 - `experiment_id` (string, non-empty)
 - `variant` (string, non-empty)
 - `request_id` (string, non-empty)
@@ -60,6 +66,7 @@ Required:
 - `ts` (RFC3339 date-time)
 
 Allowed optional fields:
+
 - `context` (object of string values)
 
 Examples (JSONL; one object per line):
@@ -75,6 +82,7 @@ Examples (JSONL; one object per line):
 - Use RFC3339 timestamps for `ts`.
 - `user_id` must be non-empty (use a stable pseudonymous ID if needed).
 - Join key is **request_id**: outcomes and assignments must use the same
+
   `request_id` as the exposure.
 
 ## Service exposure logs vs eval schema
@@ -82,7 +90,7 @@ Examples (JSONL; one object per line):
 `recsys-service` logs exposures in its native format by default. To emit
 `exposure.v1` directly for recsys-eval, set:
 
-```
+```bash
 EXPOSURE_LOG_FORMAT=eval_v1
 ```
 

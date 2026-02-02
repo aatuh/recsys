@@ -1,13 +1,14 @@
-
 # Commercial licensing (overview)
 
-This page explains how to purchase and use a **commercial license** for parts of this repository that are otherwise licensed under **AGPLv3**.
+This page explains how to purchase and use a **commercial license** for parts of this repository that are otherwise
+licensed under **AGPLv3**.
 
 This page is informational and describes our commercial offering at a high level.
 
 ## Why a commercial license?
 
-The AGPLv3 is designed for software used over a network. If you modify AGPL-covered code and provide network access to users, AGPLv3 requires offering those users access to the Corresponding Source of your modified version (see Section 13).
+The AGPLv3 is designed for software used over a network. If you modify AGPL-covered code and provide network access to users,
+AGPLv3 requires offering those users access to the Corresponding Source of your modified version (see Section 13).
 
 A commercial license allows you to use the covered components under alternative terms, typically enabling:
 
@@ -35,13 +36,13 @@ A typical commercial purchase includes:
 - Security and patch releases according to the purchased tier
 - Optional support terms (if purchased)
 
-See `PRICING.md` for tier definitions.
+See [`PRICING.md`](PRICING.md) for tier definitions.
 
 ## How to buy
 
 Recommended low-friction flow:
 
-1. Choose a tier in `PRICING.md`
+1. Choose a tier in [`PRICING.md`](PRICING.md)
 2. Purchase via a self-serve checkout (e.g., Stripe payment link) **or** request an invoice
 3. Receive:
    - commercial license paperwork,
@@ -50,8 +51,8 @@ Recommended low-friction flow:
 
 **Placeholder:** Replace the following with your actual process:
 
-- Sales contact: `sales@MY_DOMAIN.app`
-- Billing contact: `billing@MY_DOMAIN.app`
+- Sales contact: `sales@recsys.app`
+- Billing contact: `billing@recsys.app`
 
 ## Evaluation licenses (optional)
 

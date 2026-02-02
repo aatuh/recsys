@@ -6,19 +6,11 @@ COMMIT ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo none)
 DATE ?= $(shell date -u +%Y-%m-%dT%H:%M:%SZ)
 LDFLAGS ?= -X main.version=$(VERSION) -X main.commit=$(COMMIT) -X main.date=$(DATE)
 
-TOOLKIT ?= 1
-API_TOOLKIT_PATH ?= ../api-toolkit
-export API_TOOLKIT_PATH
-
 API_SVC ?= 1
 API_SVC_PATH ?= ../api-svc
 export API_SVC
 
 COMPOSE_FILES := -f ../docker-compose.yml
-ifneq (,$(or $(filter 1,$(TOOLKIT)),$(filter 1,$(API_SVC))))
-COMPOSE_FILES += -f ../docker-compose.toolkit.yml
-endif
-
 DOCKER_COMPOSE := docker compose $(COMPOSE_FILES)
 
 .PHONY: help dev down logs codegen migrate-build migrate-up migrate-down migrate-status migrate-preflight migrate-new tidy test test-cached test-fast test-clean health build-bin

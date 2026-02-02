@@ -13,8 +13,8 @@ Raising limits blindly can cause OOM or slowdowns.
 ## Triage
 
 1) Identify which limit triggered (events/sessions/items/neighbors)
-2) Inspect raw event volume for the window
-3) Look for data bugs (duplicate events, runaway session ids)
+1) Inspect raw event volume for the window
+1) Look for data bugs (duplicate events, runaway session ids)
 
 ## Recovery
 

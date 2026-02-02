@@ -11,10 +11,10 @@
 ## Read in this order
 
 1) `reference/schemas-events.md`
-2) `explanation/data-lifecycle.md`
-3) `how-to/run-backfill.md`
-4) `how-to/add-event-field.md`
-5) `reference/output-layout.md`
+1) `explanation/data-lifecycle.md`
+1) `how-to/run-backfill.md`
+1) `how-to/add-event-field.md`
+1) `reference/output-layout.md`
 
 ## Key practical advice
 

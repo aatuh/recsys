@@ -14,10 +14,10 @@ If publish failed mid-run, serving should still point to the previous version.
 ## Triage checklist
 
 1) Identify which step failed (logs): ingest / validate / compute / publish
-2) Check disk paths and permissions
-3) Check raw input presence and format
-4) If validation failed, inspect the reported rule
-5) If limit exceeded, see `runbooks/limit-exceeded.md`
+1) Check disk paths and permissions
+1) Check raw input presence and format
+1) If validation failed, inspect the reported rule
+1) If limit exceeded, see `runbooks/limit-exceeded.md`
 
 ## Recovery
 

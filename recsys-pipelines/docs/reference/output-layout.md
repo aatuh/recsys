@@ -10,6 +10,7 @@ With default local config, outputs go under `.out/`.
 ## Staged artifacts
 
 `.out/artifacts/<tenant>/<surface>/<segment>/<type>/<start>_<end>/`
+
 - `<version>.json`
 - `current.version`
 
@@ -20,9 +21,11 @@ With default local config, outputs go under `.out/`.
 ## Registry
 
 Current manifest:
+
 - `.out/registry/current/<tenant>/<surface>/manifest.json`
 
 Version records:
+
 - `.out/registry/records/<tenant>/<surface>/<type>/<version>.json`
 
 ## Notes

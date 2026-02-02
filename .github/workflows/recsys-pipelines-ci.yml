@@ -6,7 +6,7 @@ on:
       - "recsys-pipelines/**"
       - ".github/workflows/recsys-pipelines-ci.yml"
   push:
-    branches: [main]
+    branches: [master]
     paths:
       - "recsys-pipelines/**"
       - ".github/workflows/recsys-pipelines-ci.yml"

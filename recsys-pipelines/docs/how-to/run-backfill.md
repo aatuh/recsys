@@ -7,8 +7,8 @@ windows** and includes a maximum range limit.
 ## Safe approach
 
 1) Start small: one day.
-2) Expand gradually.
-3) Monitor validation and resource limits.
+1) Expand gradually.
+1) Monitor validation and resource limits.
 
 ## Using the all-in-one CLI
 

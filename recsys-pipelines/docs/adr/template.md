@@ -1,5 +1,5 @@
 
-# ADR-XXXX: <title>
+# ADR-XXXX: `title`
 
 Date: YYYY-MM-DD
 

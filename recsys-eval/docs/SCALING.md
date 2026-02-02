@@ -1,9 +1,11 @@
 # Scaling: large datasets and performance
 
 ## Who this is for
+
 Anyone running recsys-eval on real production-sized logs.
 
 ## What you will get
+
 - When JSONL is enough and when to move to a warehouse
 - How stream mode works and what it requires
 - Practical tips to avoid OOM and slow runs
@@ -11,10 +13,12 @@ Anyone running recsys-eval on real production-sized logs.
 ## Reality check
 
 If your logs are gigabytes:
+
 - reading everything into memory is not acceptable
 - joining exposures and outcomes is the main cost center
 
 Your goals:
+
 - bounded memory
 - stable runtime
 - reproducible results
@@ -22,15 +26,18 @@ Your goals:
 ## Data source choices
 
 Small datasets:
+
 - JSONL is fine
 
 Large datasets:
+
 - prefer a warehouse-backed adapter (Postgres, etc.)
 - let SQL do joins when possible
 
 ## Stream mode (JSONL)
 
 Offline mode can support stream mode for large presorted JSONL inputs:
+
 - merge join by request_id
 - requires exposures and outcomes sorted by request_id
 

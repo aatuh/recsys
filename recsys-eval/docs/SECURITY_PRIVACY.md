@@ -1,9 +1,11 @@
 # Security and privacy notes
 
 ## Who this is for
+
 Anyone handling real user data.
 
 ## What you will get
+
 - A safe baseline for logging and storage
 - Common pitfalls
 

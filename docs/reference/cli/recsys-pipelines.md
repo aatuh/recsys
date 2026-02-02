@@ -1,6 +1,7 @@
 # CLI: recsys-pipelines (lean)
 
 Suggested commands:
+
 - ingest
 - canonicalize
 - popularity
@@ -9,4 +10,5 @@ Suggested commands:
 - backfill
 
 Note:
+
 - The CLI currently expects **JSON** config files.

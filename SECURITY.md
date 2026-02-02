@@ -1,4 +1,3 @@
-
 # Security Policy
 
 ## Reporting a vulnerability
@@ -6,10 +5,12 @@
 Please **do not** open public GitHub issues for security vulnerabilities.
 
 Preferred reporting options:
+
 1. **GitHub Security Advisories / Private vulnerability reporting** (if enabled for this repo)
-2. Email: `security@YOURDOMAIN` (replace with a real address)
+2. Email: `security@recsys.app`
 
 Include:
+
 - A clear description of the issue and potential impact
 - Steps to reproduce (PoC if possible)
 - Affected versions/commit hashes
@@ -18,6 +19,7 @@ Include:
 ## Coordinated disclosure
 
 We follow coordinated disclosure:
+
 - We will acknowledge receipt within **72 hours** (best effort)
 - We will work with you on a disclosure timeline where feasible
 - We will credit reporters in release notes unless you prefer anonymity

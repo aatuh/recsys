@@ -5,24 +5,29 @@ This repo uses ports/adapters and a workflow pipeline.
 
 ## Checklist
 
-1) Define the domain model
-- Add a new `artifacts.Type` value
-- Add a v1 model struct and constructor
+1. Define the domain model
 
-2) Implement a compute usecase
-- IO via `datasource.CanonicalStore`
-- Deterministic version hash (exclude build info)
+   - Add a new `artifacts.Type` value
+   - Add a v1 model struct and constructor
 
-3) Update validation
-- Extend builtin validator: schema checks + version recompute
+1. Implement a compute usecase
 
-4) Wire into workflow
-- Add to `workflow.Pipeline.RunDay`
-- Add to job mode (compute job + publish job)
+   - IO via `datasource.CanonicalStore`
+   - Deterministic version hash (exclude build info)
 
-5) Add reference docs
-- Add schema under `schemas/artifacts/`
-- Update `reference/output-layout.md`
+1. Update validation
+
+   - Extend builtin validator: schema checks + version recompute
+
+1. Wire into workflow
+
+   - Add to `workflow.Pipeline.RunDay`
+   - Add to job mode (compute job + publish job)
+
+1. Add reference docs
+
+   - Add schema under `schemas/artifacts/`
+   - Update `reference/output-layout.md`
 
 ## Non-negotiables
 

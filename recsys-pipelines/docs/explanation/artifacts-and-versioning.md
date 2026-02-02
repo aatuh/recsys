@@ -22,9 +22,9 @@ If the canonical input does not change, the version should not change.
 Publishing is ordered to keep serving safe:
 
 1) Write the versioned blob
-2) Validate the artifact (including version recompute)
-3) Write the version record
-4) Swap the manifest pointer last
+1) Validate the artifact (including version recompute)
+1) Write the version record
+1) Swap the manifest pointer last
 
 This means a failed publish does not break "current".
 

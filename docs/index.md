@@ -1,4 +1,4 @@
-# recsys suite documentation (lean)
+# RecSys suite documentation
 
 Welcome. This documentation is intended to start running the suite, integrate it
 into an application, and operate it safely.
@@ -8,12 +8,19 @@ into an application, and operate it safely.
 The suite is four modules that form an end-to-end recommendation system loop:
 
 - **recsys-service**: low-latency recommendation API (auth, tenancy, limits,
+
   caching, observability, exposure logging).
+
 - **recsys-algo**: deterministic ranking logic (candidate merge, scoring,
+
   constraints, rules, diversity).
+
 - **recsys-pipelines**: offline/stream processing that turns events into
+
   versioned artifacts the service consumes.
+
 - **recsys-eval**: offline regression + online experiment analysis that decides
+
   what to ship.
 
 ## Where to start
@@ -34,7 +41,9 @@ The suite is four modules that form an end-to-end recommendation system loop:
 - Database: `reference/database/`
 
 Note:
+
 - Admin endpoints are documented in `reference/api/admin.md` and mirrored in
+
   OpenAPI; ignore `api/swagger/swagger.yaml` (legacy).
 
 ## Concepts
@@ -49,6 +58,7 @@ Note:
 
 - Use the repo-level Go workspace: `go work sync` from `recsys/`.
 - Each module is versioned/released independently; tags are module-prefixed
+
   (e.g., `recsys-eval/v0.2.0`). Run tests per module (e.g., `cd recsys-eval && go test ./...`).
 
 ## Operations

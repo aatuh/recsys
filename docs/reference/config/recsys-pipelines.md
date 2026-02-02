@@ -3,6 +3,7 @@
 Note: the current CLI expects **JSON** configs.
 
 Core knobs you will likely set:
+
 - raw_source.type: fs|s3|minio|postgres|kafka
 - object_store.type: fs|s3|minio
 - registry_dir: manifest registry location (fs)
@@ -11,6 +12,7 @@ Core knobs you will likely set:
 - limits.max_items_per_artifact, limits.max_neighbors_per_item
 
 Artifacts produced (v1):
+
 - popularity
 - cooc
 - implicit (collaborative)

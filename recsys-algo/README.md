@@ -31,42 +31,44 @@ go get github.com/aatuh/recsys-suite/api/recsys-algo
 package main
 
 import (
-	"context"
-	"fmt"
+    "context"
+    "fmt"
 
-	"github.com/aatuh/recsys-suite/api/recsys-algo/algorithm"
-	recmodel "github.com/aatuh/recsys-suite/api/recsys-algo/model"
+    "github.com/aatuh/recsys-suite/api/recsys-algo/algorithm"
+    recmodel "github.com/aatuh/recsys-suite/api/recsys-algo/model"
 
-	"github.com/google/uuid"
+    "github.com/google/uuid"
 )
 
 type popStore struct{}
 
-func (popStore) PopularityTopK(ctx context.Context, orgID uuid.UUID, ns string, halfLifeDays float64, k int, c *recmodel.PopConstraints) ([]recmodel.ScoredItem, error) {
-	return []recmodel.ScoredItem{
-		{ItemID: "a", Score: 10},
-		{ItemID: "b", Score: 8},
-		{ItemID: "c", Score: 6},
-	}, nil
+func (popStore) PopularityTopK(ctx context.Context, orgID uuid.UUID, ns string, halfLifeDays float64, k int, c
+*recmodel.PopConstraints) ([]recmodel.ScoredItem, error) {
+    return []recmodel.ScoredItem{
+        {ItemID: "a", Score: 10},
+        {ItemID: "b", Score: 8},
+        {ItemID: "c", Score: 6},
+    }, nil
 }
 
-func (popStore) ListItemsTags(ctx context.Context, orgID uuid.UUID, ns string, itemIDs []string) (map[string]recmodel.ItemTags, error) {
-	return map[string]recmodel.ItemTags{}, nil
+func (popStore) ListItemsTags(ctx context.Context, orgID uuid.UUID, ns string, itemIDs []string)
+(map[string]recmodel.ItemTags, error) {
+    return map[string]recmodel.ItemTags{}, nil
 }
 
 func main() {
-	engine := algorithm.NewEngine(algorithm.Config{BlendAlpha: 1}, popStore{}, nil)
-	resp, _, err := engine.Recommend(context.Background(), algorithm.Request{
-		OrgID:     uuid.New(),
-		Namespace: "default",
-		K:         3,
-	})
-	if err != nil {
-		panic(err)
-	}
-	for _, item := range resp.Items {
-		fmt.Printf("%s %.2f\n", item.ItemID, item.Score)
-	}
+    engine := algorithm.NewEngine(algorithm.Config{BlendAlpha: 1}, popStore{}, nil)
+    resp, _, err := engine.Recommend(context.Background(), algorithm.Request{
+        OrgID:     uuid.New(),
+        Namespace: "default",
+        K:         3,
+    })
+    if err != nil {
+        panic(err)
+    }
+    for _, item := range resp.Items {
+        fmt.Printf("%s %.2f\n", item.ItemID, item.Score)
+    }
 }
 ```
 

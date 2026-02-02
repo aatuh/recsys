@@ -9,8 +9,8 @@
 ## Triage
 
 1) Confirm scheduler ran
-2) Confirm pipeline completed successfully
-3) Check for validation failures or limit exceeded
+1) Confirm pipeline completed successfully
+1) Check for validation failures or limit exceeded
 
 ## Recovery
 

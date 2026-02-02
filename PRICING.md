@@ -1,6 +1,7 @@
 # Pricing (Commercial License)
 
-This repository includes open-source components (e.g., Apache-2.0 and AGPLv3). A commercial license is available for organizations that want commercial terms and/or prefer not to adopt AGPL obligations for production use.
+This repository includes open-source components (e.g., Apache-2.0 and AGPLv3). A commercial license is available for
+organizations that want commercial terms and/or prefer not to adopt AGPL obligations for production use.
 
 All prices below are **EUR, excl. VAT**.
 
@@ -8,9 +9,12 @@ All prices below are **EUR, excl. VAT**.
 
 ## Quick definitions
 
-- **Tenant**: A logically separate recommendation domain with its own catalog and behavior signals (e.g., brand, product line, customer partition).
-- **Production deployment**: One production environment serving real end-user traffic (e.g., a Kubernetes cluster/namespace or a distinct production installation).
-- **Non-production environments**: Up to **2 non-prod environments** (dev/staging) per production deployment are included at no extra charge.
+- **Tenant**: A logically separate recommendation domain with its own catalog and behavior signals (e.g., brand, product
+  line, customer partition).
+- **Production deployment**: One production environment serving real end-user traffic (e.g., a Kubernetes cluster/namespace
+  or a distinct production installation).
+- **Non-production environments**: Up to **2 non-prod environments** (dev/staging) per production deployment are included
+  at no extra charge.
 
 If your use case involves OEM/resale, multi-region HA across many clusters, or unusually large scale, use **Enterprise**.
 
@@ -92,7 +96,7 @@ Includes:
 
 - A signed license file (offline verifiable), or equivalent commercial entitlement artifact
 - Credentials to pull signed commercial images from the private registry
-- Instructions to run the “Commercial lane” of the evaluation pack (if applicable)
+- Instructions to run the "Commercial lane" of the evaluation pack (if applicable)
 
 ---
 
@@ -119,4 +123,4 @@ Use the payment links (recommended for fastest fulfillment) or contact us for En
 
 ## Contact
 
-If you need Enterprise terms, OEM/resale rights, or help selecting the right plan, contact: `contact@MY_DOMAIN.app`
+If you need Enterprise terms, OEM/resale rights, or help selecting the right plan, contact: `contact@recsys.app`

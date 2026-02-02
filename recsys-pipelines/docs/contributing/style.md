@@ -7,6 +7,7 @@
 - Keep public APIs minimal.
 
 Documentation:
+
 - Prefer short sections.
 - Use concrete examples.
 - Explain the "why" in explanation docs.

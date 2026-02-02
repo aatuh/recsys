@@ -10,7 +10,7 @@
 ## Steps
 
 1) Update JSON schema: `schemas/events/exposure.v1.json`
-2) Update domain event struct: `internal/domain/events/exposure.go`
-3) Update raw event decoder if needed
-4) Update canonical writer/reader tests
-5) Update docs: `reference/schemas-events.md`
+1) Update domain event struct: `internal/domain/events/exposure.go`
+1) Update raw event decoder if needed
+1) Update canonical writer/reader tests
+1) Update docs: `reference/schemas-events.md`

@@ -26,6 +26,7 @@ Enable artifact mode:
 
 - `RECSYS_ARTIFACT_MODE_ENABLED=true`
 - `RECSYS_ARTIFACT_MANIFEST_TEMPLATE` (e.g. `s3://recsys/registry/current/{tenant}/{surface}/manifest.json`
+
   or `file:///data/registry/current/{tenant}/{surface}/manifest.json`)
 
 Notes:
@@ -38,6 +39,7 @@ Notes:
 
 - Use **DB-only** for MVP and local testing (default today).
 - Use **object store + manifest** for production-scale artifacts once the
+
   pipelines are producing artifacts and the service is configured to read them.
 
 ## Which mode is active?

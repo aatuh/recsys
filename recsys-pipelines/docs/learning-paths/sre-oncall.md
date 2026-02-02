@@ -11,10 +11,10 @@
 ## Read in this order
 
 1) `operations/slos-and-freshness.md`
-2) `operations/runbooks/pipeline-failed.md`
-3) `operations/runbooks/stale-artifacts.md`
-4) `operations/runbooks/limit-exceeded.md`
-5) `how-to/rollback-manifest.md`
+1) `operations/runbooks/pipeline-failed.md`
+1) `operations/runbooks/stale-artifacts.md`
+1) `operations/runbooks/limit-exceeded.md`
+1) `how-to/rollback-manifest.md`
 
 ## What to alert on
 

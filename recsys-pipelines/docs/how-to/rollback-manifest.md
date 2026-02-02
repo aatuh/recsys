@@ -17,9 +17,9 @@ ls -1 .out/registry/records/demo/home/popularity | head
 ls -1 .out/registry/records/demo/home/cooc | head
 ```
 
-2) Pick a version record and get its `URI`.
+1) Pick a version record and get its `URI`.
 
-3) Edit the manifest file:
+1) Edit the manifest file:
 
 `.out/registry/current/demo/home/manifest.json`
 
@@ -29,6 +29,7 @@ Change `current.popularity` and/or `current.cooc` to point to the older URIs.
 
 In production, implement a dedicated rollback command in your operator tooling
 that:
+
 - validates the target blob exists
 - writes an audit record
 - swaps the pointer atomically

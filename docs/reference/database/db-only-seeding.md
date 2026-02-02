@@ -15,6 +15,7 @@ Assume the result is `:tenant_id`.
 ## 2) item_tags
 
 Columns:
+
 - tenant_id (uuid)
 - namespace (surface, text)
 - item_id (text)
@@ -36,6 +37,7 @@ do update set tags = excluded.tags,
 ## 3) item_popularity_daily
 
 Columns:
+
 - tenant_id (uuid)
 - namespace (surface, text)
 - item_id (text)
@@ -57,6 +59,7 @@ multiple days are present.
 ## 4) item_covisit_daily (for /v1/similar)
 
 Columns:
+
 - tenant_id (uuid)
 - namespace (surface, text)
 - item_id (anchor)
@@ -74,5 +77,6 @@ do update set score = excluded.score;
 ```
 
 If `/v1/similar` returns empty:
+
 - ensure co-vis rows exist **for the same surface** (namespace)
 - ensure the anchor item exists in `item_covisit_daily`

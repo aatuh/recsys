@@ -1,6 +1,7 @@
 # Database schema (lean)
 
 Use Postgres for:
+
 - tenant config/rules (versioned + current pointers)
 - exposure logging
 - audit log
@@ -9,4 +10,5 @@ Use Postgres for:
 Partition high-volume exposure tables by time.
 
 DB-only seed examples:
+
 - `reference/database/db-only-seeding.md`

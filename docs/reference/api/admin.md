@@ -4,10 +4,14 @@ This page documents the **admin/control-plane** endpoints and the minimum
 bootstrap steps required to call `/v1/recommend` and `/v1/similar`.
 
 Why this exists:
+
 - The public OpenAPI file documents only the recommend endpoints.
 - Admin endpoints (tenant config/rules/invalidation) are required to bootstrap a
+
   tenant but are **not** in `reference/api/openapi.yaml` yet.
+
 - A legacy swagger file exists at `recsys/api/swagger/swagger.yaml`; it is **not**
+
   authoritative. Use `reference/api/openapi.yaml` + this page.
 
 ## 0) Prereqs
@@ -27,8 +31,11 @@ on conflict (external_id) do nothing;
 ```
 
 Notes:
+
 - `external_id` should match the tenant/org claim in your JWT, or the dev tenant
+
   header value (see below).
+
 - You can also use the tenant UUID in admin paths; `external_id` is preferred.
 
 ## 2) Auth + tenancy (local dev)
@@ -37,7 +44,7 @@ Local dev can use **dev headers** instead of JWT:
 
 Set in `.env`:
 
-```
+```bash
 AUTH_REQUIRED=true
 AUTH_REQUIRE_TENANT_CLAIM=false
 DEV_AUTH_ENABLED=true
@@ -48,26 +55,32 @@ AUTH_ADMIN_ROLE=   # empty to disable admin role checks locally
 
 Then send headers on every request:
 
-```
+```text
 X-Dev-User-Id: dev-user-1
 X-Dev-Org-Id: demo
 X-Org-Id: demo   # must match tenant scope
 ```
 
 Why two tenant headers?
+
 - `X-Dev-Org-Id` is used to **derive tenant context** in local/dev mode.
 - `X-Org-Id` is the tenant header enforced by the tenant middleware.
 
 Tip (single header in local dev):
+
 - Set `DEV_AUTH_TENANT_HEADER=X-Org-Id` to use **one** header for both dev auth
+
   and tenant scope.
 
 If you prefer JWT:
+
 - Provide a bearer token with a tenant claim (see `AUTH_TENANT_CLAIMS`).
 - Include an admin role (default `admin`) under a role claim (see
+
   `AUTH_ROLE_CLAIMS`) to access admin endpoints.
 
 RBAC roles (JWT or API keys):
+
 - `viewer`: read-only admin access (GET config/rules/audit).
 - `operator`: config/rules updates + cache invalidation.
 - `admin`: full admin access (includes operator + viewer).
@@ -87,7 +100,9 @@ Returns current tenant config and `config_version`.
 Updates tenant config (optimistic concurrency).
 
 Headers:
+
 - `If-Match`: optional. Use the `config_version` from the latest GET response.
+
   Omit for the first insert.
 
 Payload (minimal example):
@@ -101,10 +116,12 @@ Payload (minimal example):
 ```
 
 Validation notes:
+
 - weights must be non‑negative
 - limits must be non‑negative
 
 Common config keys (current behavior):
+
 - `weights.pop`, `weights.cooc`, `weights.emb`
 - `flags` (boolean map, free-form)
 - `limits.max_k`, `limits.max_exclude_ids`
@@ -118,7 +135,9 @@ Returns current tenant rules and `rules_version`.
 Updates tenant rules (optimistic concurrency).
 
 Headers:
+
 - `If-Match`: optional. Use the `rules_version` from the latest GET response.
+
   Omit for the first insert.
 
 Payload (minimal example array):
@@ -144,6 +163,7 @@ Supported actions: `pin`, `boost`, `block` (aliases allowed: `promote`, `exclude
 Supported targets: `item`, `tag`, `brand`, `category`.
 
 Common rule keys (current parser):
+
 - `action`: `pin` | `boost` | `block`
 - `target_type`: `item` | `tag` | `brand` | `category`
 - `target_key`: string (for tag/brand/category)
@@ -165,6 +185,7 @@ Payload:
 Valid targets: `config`, `rules`, `popularity`.
 
 Notes:
+
 - `surface` is optional. If provided, invalidation is scoped to that surface.
 - `popularity` invalidates artifact/manifest caches (no‑op in DB‑only mode).
 
@@ -173,13 +194,14 @@ Notes:
 Returns recent audit log entries for admin actions (write operations).
 
 Query parameters:
+
 - `limit` (optional, default 100, max 200)
 - `before` (optional, RFC3339 timestamp for pagination)
 - `before_id` (optional, numeric id for pagination tie‑break)
 
 Example:
 
-```
+```http
 GET /v1/admin/tenants/demo/audit?limit=50
 ```
 
@@ -191,5 +213,6 @@ Once config and rules exist, you can call `/v1/recommend` or `/v1/similar`
 using the same tenant headers/token.
 
 See also:
+
 - `reference/api/examples/admin-config.http`
 - `tutorials/local-end-to-end.md`

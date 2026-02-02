@@ -18,6 +18,7 @@ The output artifacts are meant to be consumed by an online recommender service.
 raw exposure events.
 
 Current v1 artifact types:
+
 - **popularity**: top-N items by exposure count
 - **cooc**: item-item co-occurrence neighbors within a session
 - **implicit**: user→item scores from implicit feedback
@@ -25,8 +26,11 @@ Current v1 artifact types:
 - **session_seq**: user→next-item sequence signals
 
 Key production properties:
+
 - **Idempotent canonicalization**: reruns for the same day window do not
+
   duplicate events.
+
 - **Atomic writes**: artifacts and pointers are written using temp+rename.
 - **Validation gates**: publishing is blocked if validation fails.
 - **Guardrails**: configurable limits prevent resource blowups.
@@ -66,9 +70,10 @@ Stage artifacts (optional)
    |
    v
 Publish (atomic):
-  - write versioned blob
-  - write registry record
-  - update current manifest pointer
+
+- write versioned blob
+- write registry record
+- update current manifest pointer
 
 ## What you should do next
 
@@ -77,4 +82,5 @@ Publish (atomic):
 - Learn operations: `operations/slos-and-freshness.md`
 
 If you are here because something broke, jump to:
+
 - `operations/runbooks/`

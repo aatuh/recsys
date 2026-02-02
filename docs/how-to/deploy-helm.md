@@ -6,9 +6,11 @@ Postgres and MinIO are **disabled by default** so you can bring your own.
 ## 1) Install (BYO Postgres + S3)
 
 ```bash
+RECSYS_ARTIFACT_MANIFEST_TEMPLATE='s3://recsys-artifacts/registry/current/{tenant}/{surface}/manifest.json'
+
 helm install recsys ./charts/recsys \
   --set api.env.DATABASE_URL='postgres://user:pass@db:5432/recsys?sslmode=disable' \
-  --set api.env.RECSYS_ARTIFACT_MANIFEST_TEMPLATE='s3://recsys-artifacts/registry/current/{tenant}/{surface}/manifest.json' \
+  --set api.env.RECSYS_ARTIFACT_MANIFEST_TEMPLATE="${RECSYS_ARTIFACT_MANIFEST_TEMPLATE}" \
   --set api.env.RECSYS_ARTIFACT_S3_ENDPOINT='s3.example.com' \
   --set api.env.RECSYS_ARTIFACT_S3_ACCESS_KEY='***' \
   --set api.env.RECSYS_ARTIFACT_S3_SECRET_KEY='***'

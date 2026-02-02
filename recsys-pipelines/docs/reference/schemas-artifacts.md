@@ -4,6 +4,7 @@
 Artifacts are JSON documents intended for serving systems.
 
 Currently:
+
 - Popularity artifact v1
 - Co-occurrence artifact v1
 - Implicit artifact v1 (collaborative)
@@ -12,6 +13,7 @@ Currently:
 - Manifest v1
 
 Schemas:
+
 - `schemas/artifacts/manifest.v1.json`
 - (recommended) `schemas/artifacts/popularity.v1.json`
 - (recommended) `schemas/artifacts/cooc.v1.json`

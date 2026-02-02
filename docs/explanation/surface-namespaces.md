@@ -18,10 +18,12 @@ surface namespace is missing. This is helpful for local development but can be
 surprising in production.
 
 Best practice:
+
 - Seed per-surface data for production.
 - Use `default` only for shared or global signals.
 
 Note on similar-items:
+
 - `/v1/similar` reads co-visit signals scoped by **surface/namespace**.
 - If you only seed `home`, requests for `surface=pdp` will return empty results.
 

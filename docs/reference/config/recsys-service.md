@@ -32,5 +32,6 @@ Canonical env var list: `recsys/api/.env.example`.
 - artifacts.s3.use_ssl: use TLS for S3 (true/false)
 
 Notes:
+
 - content_sim and session_seq modes require corresponding artifacts in the manifest.
 - auth.tenant_claim and auth.role_claims support dotted keys (e.g., realm_access.roles).

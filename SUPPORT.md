@@ -1,4 +1,3 @@
-
 # Support
 
 This project supports **self-serve adoption**. We keep support lightweight and mostly asynchronous.
@@ -6,34 +5,40 @@ This project supports **self-serve adoption**. We keep support lightweight and m
 ## Community support (free)
 
 - GitHub Issues for bugs and feature requests
-- Discussions (if enabled) for questions
+- Discussions for questions
 
 We do not guarantee response times for free support.
 
 ## Commercial support (paid)
 
-Commercial customers get the support level defined in their order form.
+Commercial customers get the support level defined in their agreement.
 
-Typical support channels:
-- Private support email: `support@YOURDOMAIN` (replace)
-- Private issue tracker or GitHub private issues (optional)
+Typical support channels include:
+
+- Private support email which will be provided upon commercial agreement
+- Private issue tracker or GitHub private issues
 
 **No-meetings policy (default):**
+
 - Support is **async-first**
 - Calls are only by exception and must be pre-agreed and time-boxed
 
 ## What we can help with
+
 - Installation and upgrade guidance
 - Reproducible bug investigation (with logs/configs)
 - Security patch guidance
 
 ## What we do not provide by default
+
 - 24/7 on-call
 - Operating your infrastructure
 - Unlimited custom development without a fixed scope
 
 ## Before opening an issue
+
 Please include:
+
 - Version/commit hash
 - Deployment mode (docker compose / k8s / helm)
 - Logs and minimal reproduction steps

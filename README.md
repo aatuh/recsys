@@ -1,3 +1,3 @@
-# recsys suite documentation
+# RecSys Suite Documentation
 
-See docs/index.md
+See [`docs/index.md`](docs/index.md)

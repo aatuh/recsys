@@ -5,14 +5,12 @@ on:
     paths:
       - "api/**"
       - "docker-compose.yml"
-      - "docker-compose.toolkit.yml"
       - ".github/workflows/recsys-api-ci.yml"
   push:
-    branches: [main]
+    branches: [master]
     paths:
       - "api/**"
       - "docker-compose.yml"
-      - "docker-compose.toolkit.yml"
       - ".github/workflows/recsys-api-ci.yml"
 
 jobs:

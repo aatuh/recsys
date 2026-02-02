@@ -14,7 +14,7 @@ DOCS_DIR="${ROOT_DIR}/docs"
 get_repo_url() {
   local u
   if ! u="$(git -C "${ROOT_DIR}" remote get-url origin 2>/dev/null)"; then
-    echo "https://github.com/<ORG>/<REPO>"
+    echo "https://github.com/aatuh/recsys"
     return 0
   fi
 
@@ -31,7 +31,6 @@ BRANCH="$(git -C "${ROOT_DIR}" rev-parse --abbrev-ref HEAD 2>/dev/null || echo m
 write_wrapper() {
   local src="$1"
   local dst_rel="$2"
-  local title="$3"
 
   local dst="${DOCS_DIR}/${dst_rel}"
   mkdir -p "$(dirname "${dst}")"
@@ -59,6 +58,7 @@ write_wrapper() {
     -e 's#\((\./)?CODE_OF_CONDUCT\.md\)#(/code-of-conduct/)#g' \
     -e 's#\((\./)?GOVERNANCE\.md\)#(/governance/)#g' \
     -e 's#\((\./)?LICENSES-README\.md\)#(/licenses/)#g' \
+    -e 's#\((\./)?LICENSES/\)#(https://github.com/aatuh/recsys/LICENSES/)#g' \
     "${tmp}"
 
   # Templates: keep in repo, but link to GitHub (not published as site pages)
@@ -74,8 +74,6 @@ write_wrapper() {
   Regenerate via: ./scripts/docs_sync.sh
 -->
 
-# ${title}
-
 EOF
 
   cat "${tmp}" >> "${dst}"
@@ -83,15 +81,16 @@ EOF
 }
 
 # Map canonical repo markdown -> published URL via docs/<slug>/index.md
-write_wrapper "PRICING.md"            "pricing/index.md"           "Pricing"
-write_wrapper "COMMERCIAL.md"         "commercial/index.md"        "Commercial"
-write_wrapper "LICENSING.md"          "licensing/index.md"         "Licensing"
-write_wrapper "EVAL_LICENSE.md"       "eval-license/index.md"      "Evaluation License"
-write_wrapper "SECURITY.md"           "security/index.md"          "Security"
-write_wrapper "SUPPORT.md"            "support/index.md"           "Support"
-write_wrapper "CONTRIBUTING.md"       "contributing-repo/index.md" "Contributing"
-write_wrapper "CODE_OF_CONDUCT.md"    "code-of-conduct/index.md"   "Code of Conduct"
-write_wrapper "GOVERNANCE.md"         "governance/index.md"        "Governance"
-write_wrapper "LICENSES-README.md"    "licenses/index.md"          "Licenses"
+# If adding new entries, sync between mkdocs.yml, .gitignore, docs_sync.sh
+write_wrapper "PRICING.md"            "pricing/index.md"
+write_wrapper "COMMERCIAL.md"         "commercial/index.md"
+write_wrapper "LICENSING.md"          "licensing/index.md"
+write_wrapper "EVAL_LICENSE.md"       "eval-license/index.md"
+write_wrapper "SECURITY.md"           "security/index.md"
+write_wrapper "SUPPORT.md"            "support/index.md"
+write_wrapper "CONTRIBUTING.md"       "contributing-repo/index.md"
+write_wrapper "CODE_OF_CONDUCT.md"    "code-of-conduct/index.md"
+write_wrapper "GOVERNANCE.md"         "governance/index.md"
+write_wrapper "LICENSES-README.md"    "licenses/index.md"
 
 echo "Docs sync complete."
