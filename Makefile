@@ -1,4 +1,4 @@
-.PHONY: help codegen dev down build test fmt lint health
+.PHONY: help codegen dev down build test fmt lint health reuse mdlint
 
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 COMMIT ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo none)
@@ -75,6 +75,24 @@ lint: ## Lint code
 	cd recsys-pipelines && make lint
 	cd recsys-algo && make lint
 
+mdlint: ## Lint Markdown files
+	@echo "🧾 Linting Markdown..."
+	@npx --yes markdownlint-cli2
+
+reuse: ## Run REUSE lint (license compliance)
+	@echo "🔎 Running REUSE lint..."
+	@command -v reuse >/dev/null 2>&1 || { \
+		echo "Installing reuse into .venv..."; \
+		python -m venv .venv; \
+		. .venv/bin/activate && python -m pip install --upgrade pip reuse; \
+	}
+	@. .venv/bin/activate 2>/dev/null || true; \
+	if command -v reuse >/dev/null 2>&1; then \
+		reuse lint; \
+	else \
+		. .venv/bin/activate && .venv/bin/reuse lint; \
+	fi
+
 health: ## Check service healthiness
 	@echo "🏥 Checking service healthiness..."
 	cd api && make health
@@ -85,3 +103,4 @@ finalize: ## Thorough validity check and generation
 	make lint
 	make test
 	make codegen
+	make mdlint
