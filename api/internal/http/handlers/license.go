@@ -7,8 +7,8 @@ import (
 	"github.com/aatuh/recsys-suite/api/internal/license"
 	endpointspec "github.com/aatuh/recsys-suite/api/src/specs/endpoints"
 
-	"github.com/aatuh/api-toolkit/ports"
-	"github.com/aatuh/api-toolkit/response_writer"
+	"github.com/aatuh/api-toolkit/v2/ports"
+	"github.com/aatuh/api-toolkit/v2/response_writer"
 )
 
 // LicenseHandler exposes license status endpoint.

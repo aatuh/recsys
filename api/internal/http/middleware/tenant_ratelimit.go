@@ -8,9 +8,9 @@ import (
 	"github.com/aatuh/recsys-suite/api/internal/auth"
 	"github.com/aatuh/recsys-suite/api/internal/config"
 
-	"github.com/aatuh/api-toolkit/authorization"
-	"github.com/aatuh/api-toolkit/middleware/ratelimit"
-	"github.com/aatuh/api-toolkit/ports"
+	"github.com/aatuh/api-toolkit/v2/authorization"
+	"github.com/aatuh/api-toolkit/v2/middleware/ratelimit"
+	"github.com/aatuh/api-toolkit/v2/ports"
 )
 
 // TenantRateLimitMiddleware enforces per-tenant rate limits.

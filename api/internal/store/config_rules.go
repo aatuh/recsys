@@ -7,8 +7,8 @@ import (
 
 	"github.com/aatuh/recsys-suite/api/internal/services/recsysvc"
 
-	"github.com/aatuh/api-toolkit-contrib/adapters/txpostgres"
-	"github.com/aatuh/api-toolkit/ports"
+	"github.com/aatuh/api-toolkit/contrib/v2/adapters/txpostgres"
+	"github.com/aatuh/api-toolkit/v2/ports"
 )
 
 // TenantConfigStore is a Postgres-backed adapter for tenant configs.

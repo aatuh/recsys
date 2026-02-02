@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/aatuh/api-toolkit/authorization"
+	"github.com/aatuh/api-toolkit/v2/authorization"
 	"github.com/aatuh/recsys-suite/api/internal/artifacts"
 )
 

@@ -7,11 +7,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aatuh/api-toolkit-contrib/config"
-	jwtint "github.com/aatuh/api-toolkit-contrib/integrations/auth/jwt"
-	"github.com/aatuh/api-toolkit-contrib/middleware/auth/devheaders"
-	"github.com/aatuh/api-toolkit-contrib/telemetry"
-	"github.com/aatuh/api-toolkit/endpoints/health"
+	"github.com/aatuh/api-toolkit/contrib/v2/config"
+	jwtint "github.com/aatuh/api-toolkit/contrib/v2/integrations/auth/jwt"
+	"github.com/aatuh/api-toolkit/contrib/v2/middleware/auth/devheaders"
+	"github.com/aatuh/api-toolkit/contrib/v2/telemetry"
+	"github.com/aatuh/api-toolkit/v2/endpoints/health"
 )
 
 // Config extends the base toolkit config with app-specific settings.

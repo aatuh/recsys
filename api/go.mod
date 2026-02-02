@@ -3,11 +3,12 @@ module github.com/aatuh/recsys-suite/api
 go 1.25.1
 
 require (
-	github.com/aatuh/api-toolkit v1.0.7
-	github.com/aatuh/api-toolkit-contrib v0.0.0-00010101000000-000000000000
+	github.com/aatuh/api-toolkit/contrib/v2 v2.0.1
+	github.com/aatuh/api-toolkit/v2 v2.0.1
 	github.com/aatuh/recsys-suite/api/recsys-algo v0.0.0-00010101000000-000000000000
 	github.com/getkin/kin-openapi v0.133.0
 	github.com/go-chi/chi/v5 v5.2.4
+	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/minio/minio-go/v7 v7.0.78
@@ -15,8 +16,6 @@ require (
 )
 
 replace (
-	github.com/aatuh/api-toolkit => ../../api-toolkit
-	github.com/aatuh/api-toolkit-contrib => ../../api-toolkit/contrib
 	github.com/aatuh/recsys-suite/api/recsys-algo => ../recsys-algo
 )
 
@@ -40,7 +39,6 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.30.1 // indirect
 	github.com/goccy/go-json v0.10.3 // indirect
-	github.com/golang-jwt/jwt/v5 v5.3.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.3 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect

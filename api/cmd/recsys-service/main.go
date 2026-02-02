@@ -17,14 +17,14 @@ import (
 	appmw "github.com/aatuh/recsys-suite/api/internal/http/middleware"
 	"github.com/aatuh/recsys-suite/api/migrations"
 
-	"github.com/aatuh/api-toolkit-contrib/adapters/logzap"
-	"github.com/aatuh/api-toolkit-contrib/bootstrap"
-	"github.com/aatuh/api-toolkit-contrib/middleware/metrics"
-	"github.com/aatuh/api-toolkit-contrib/telemetry"
-	"github.com/aatuh/api-toolkit/endpoints/health"
-	versionep "github.com/aatuh/api-toolkit/endpoints/version"
-	"github.com/aatuh/api-toolkit/ports"
-	"github.com/aatuh/api-toolkit/specs"
+	"github.com/aatuh/api-toolkit/contrib/v2/adapters/logzap"
+	"github.com/aatuh/api-toolkit/contrib/v2/bootstrap"
+	"github.com/aatuh/api-toolkit/contrib/v2/middleware/metrics"
+	"github.com/aatuh/api-toolkit/contrib/v2/telemetry"
+	"github.com/aatuh/api-toolkit/v2/endpoints/health"
+	versionep "github.com/aatuh/api-toolkit/v2/endpoints/version"
+	"github.com/aatuh/api-toolkit/v2/ports"
+	"github.com/aatuh/api-toolkit/v2/specs"
 )
 
 var (

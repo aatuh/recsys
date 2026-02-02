@@ -9,8 +9,8 @@ import (
 	"github.com/aatuh/recsys-suite/api/internal/config"
 	"github.com/aatuh/recsys-suite/api/internal/http/problem"
 
-	"github.com/aatuh/api-toolkit/authorization"
-	"github.com/aatuh/api-toolkit/response_writer"
+	"github.com/aatuh/api-toolkit/v2/authorization"
+	"github.com/aatuh/api-toolkit/v2/response_writer"
 )
 
 // AuditMiddleware logs admin actions to an audit sink.

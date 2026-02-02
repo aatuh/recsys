@@ -9,7 +9,7 @@ import (
 	"github.com/aatuh/recsys-suite/api/internal/config"
 	"github.com/aatuh/recsys-suite/api/internal/store"
 
-	"github.com/aatuh/api-toolkit/ports"
+	"github.com/aatuh/api-toolkit/v2/ports"
 )
 
 // SecurityStack bundles configured middleware and cleanup hooks.

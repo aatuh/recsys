@@ -5,9 +5,9 @@ import (
 
 	"github.com/aatuh/recsys-suite/api/internal/config"
 
-	"github.com/aatuh/api-toolkit/endpoints/docs"
-	"github.com/aatuh/api-toolkit/endpoints/health"
-	"github.com/aatuh/api-toolkit/ports"
+	"github.com/aatuh/api-toolkit/v2/endpoints/docs"
+	"github.com/aatuh/api-toolkit/v2/endpoints/health"
+	"github.com/aatuh/api-toolkit/v2/ports"
 )
 
 func setupDocsHandler(cfg config.Config, log ports.Logger) *docs.Handler {

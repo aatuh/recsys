@@ -8,7 +8,7 @@ import (
 
 	"github.com/aatuh/recsys-suite/api/internal/artifacts"
 
-	"github.com/aatuh/api-toolkit/authorization"
+	"github.com/aatuh/api-toolkit/v2/authorization"
 	recmodel "github.com/aatuh/recsys-suite/api/recsys-algo/model"
 	"github.com/google/uuid"
 )

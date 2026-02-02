@@ -10,7 +10,7 @@ import (
 	"github.com/aatuh/recsys-suite/api/internal/config"
 	"github.com/aatuh/recsys-suite/api/internal/http/problem"
 
-	"github.com/aatuh/api-toolkit/ports"
+	"github.com/aatuh/api-toolkit/v2/ports"
 	"github.com/go-chi/chi/v5"
 )
 

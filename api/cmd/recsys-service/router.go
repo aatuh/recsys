@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/aatuh/recsys-suite/api/internal/http/handlers"
 
-	"github.com/aatuh/api-toolkit/ports"
+	"github.com/aatuh/api-toolkit/v2/ports"
 )
 
 func mountAppRoutes(r ports.HTTPRouter, log ports.Logger, deps appDeps) {

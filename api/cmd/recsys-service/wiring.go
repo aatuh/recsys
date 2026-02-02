@@ -16,8 +16,8 @@ import (
 	"github.com/aatuh/recsys-suite/api/internal/services/recsysvc"
 	"github.com/aatuh/recsys-suite/api/internal/store"
 
-	"github.com/aatuh/api-toolkit-contrib/adapters/validation"
-	"github.com/aatuh/api-toolkit/ports"
+	"github.com/aatuh/api-toolkit/contrib/v2/adapters/validation"
+	"github.com/aatuh/api-toolkit/v2/ports"
 	"github.com/aatuh/recsys-suite/api/recsys-algo/algorithm"
 	recmodel "github.com/aatuh/recsys-suite/api/recsys-algo/model"
 	"github.com/aatuh/recsys-suite/api/recsys-algo/rules"

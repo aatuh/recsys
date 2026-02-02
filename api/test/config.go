@@ -3,7 +3,7 @@ package test
 import (
 	"testing"
 
-	"github.com/aatuh/api-toolkit-contrib/adapters/envvar"
+	"github.com/aatuh/api-toolkit/contrib/v2/adapters/envvar"
 )
 
 // Config holds integration-test configuration loaded from environment variables.

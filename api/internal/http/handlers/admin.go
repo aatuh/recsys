@@ -18,9 +18,9 @@ import (
 	endpointspec "github.com/aatuh/recsys-suite/api/src/specs/endpoints"
 	"github.com/aatuh/recsys-suite/api/src/specs/types"
 
-	"github.com/aatuh/api-toolkit-contrib/adapters/chi"
-	"github.com/aatuh/api-toolkit/ports"
-	"github.com/aatuh/api-toolkit/response_writer"
+	"github.com/aatuh/api-toolkit/contrib/v2/adapters/chi"
+	"github.com/aatuh/api-toolkit/v2/ports"
+	"github.com/aatuh/api-toolkit/v2/response_writer"
 )
 
 // AdminHandler exposes admin/control-plane endpoints.

@@ -9,9 +9,9 @@ import (
 
 	"github.com/aatuh/recsys-suite/api/internal/config"
 
-	jwtint "github.com/aatuh/api-toolkit-contrib/integrations/auth/jwt"
-	"github.com/aatuh/api-toolkit-contrib/middleware/auth/devheaders"
-	"github.com/aatuh/api-toolkit/ports"
+	jwtint "github.com/aatuh/api-toolkit/contrib/v2/integrations/auth/jwt"
+	"github.com/aatuh/api-toolkit/contrib/v2/middleware/auth/devheaders"
+	"github.com/aatuh/api-toolkit/v2/ports"
 )
 
 // AuthSetup bundles auth middleware setup results.

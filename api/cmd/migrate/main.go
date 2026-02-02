@@ -5,7 +5,7 @@ import (
 
 	"github.com/aatuh/recsys-suite/api/migrations"
 
-	toolkitmigrate "github.com/aatuh/api-toolkit-contrib/cmd/migrate"
+	toolkitmigrate "github.com/aatuh/api-toolkit/contrib/v2/cmd/migrate"
 )
 
 // Build with: go build -o bin/migrate ./cmd/migrate

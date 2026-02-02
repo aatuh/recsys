@@ -12,7 +12,7 @@ import (
 	"github.com/aatuh/recsys-suite/api/internal/cache"
 	"github.com/aatuh/recsys-suite/api/internal/objectstore"
 
-	"github.com/aatuh/api-toolkit/ports"
+	"github.com/aatuh/api-toolkit/v2/ports"
 )
 
 type LoaderConfig struct {

@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aatuh/api-toolkit/authorization"
+	"github.com/aatuh/api-toolkit/v2/authorization"
 	"github.com/aatuh/recsys-suite/api/internal/artifacts"
 	"github.com/aatuh/recsys-suite/api/internal/objectstore"
 	"github.com/google/uuid"

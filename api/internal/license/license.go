@@ -13,7 +13,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/aatuh/api-toolkit/ports"
+	"github.com/aatuh/api-toolkit/v2/ports"
 	"github.com/golang-jwt/jwt/v5"
 )
 

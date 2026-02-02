@@ -5,8 +5,8 @@ import (
 
 	"github.com/aatuh/recsys-suite/api/internal/http/problem"
 
-	toolkitdocs "github.com/aatuh/api-toolkit/endpoints/docs"
-	"github.com/aatuh/api-toolkit/ports"
+	toolkitdocs "github.com/aatuh/api-toolkit/v2/endpoints/docs"
+	"github.com/aatuh/api-toolkit/v2/ports"
 )
 
 func mountDocsRoutes(r ports.HTTPRouter, handler *toolkitdocs.Handler, openapiJSON, openapiYAML []byte) {

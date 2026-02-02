@@ -8,7 +8,7 @@ import (
 	"github.com/aatuh/recsys-suite/api/internal/config"
 	"github.com/aatuh/recsys-suite/api/internal/http/problem"
 
-	"github.com/aatuh/api-toolkit/middleware/auth/tenant"
+	"github.com/aatuh/api-toolkit/v2/middleware/auth/tenant"
 	"github.com/go-chi/chi/v5"
 )
 

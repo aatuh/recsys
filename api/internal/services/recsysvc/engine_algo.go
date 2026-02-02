@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/aatuh/api-toolkit/authorization"
+	"github.com/aatuh/api-toolkit/v2/authorization"
 	"github.com/aatuh/recsys-suite/api/recsys-algo/algorithm"
 	recmodel "github.com/aatuh/recsys-suite/api/recsys-algo/model"
 	"github.com/aatuh/recsys-suite/api/recsys-algo/rules"

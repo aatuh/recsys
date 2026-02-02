@@ -5,4 +5,6 @@ use (
 	./recsys-algo
 	./recsys-eval
 	./recsys-pipelines
+	../api-toolkit
+	../api-toolkit/contrib
 )

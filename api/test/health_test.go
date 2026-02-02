@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aatuh/api-toolkit/specs"
+	"github.com/aatuh/api-toolkit/v2/specs"
 )
 
 type healthResponse struct {

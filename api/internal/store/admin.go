@@ -10,8 +10,8 @@ import (
 	"github.com/aatuh/recsys-suite/api/internal/admin"
 	"github.com/aatuh/recsys-suite/api/internal/services/adminsvc"
 
-	"github.com/aatuh/api-toolkit-contrib/adapters/txpostgres"
-	"github.com/aatuh/api-toolkit/ports"
+	"github.com/aatuh/api-toolkit/contrib/v2/adapters/txpostgres"
+	"github.com/aatuh/api-toolkit/v2/ports"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgconn"
 )
