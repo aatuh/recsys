@@ -1,9 +1,9 @@
 site_name: RecSys
-repo_url: https://github.com/aatuh/recsys # used for "View source" links and for rewritten template links
+repo_url: https://github.com/aatuh/recsys
 
 docs_dir: docs
 site_dir: site
-use_directory_urls: true  # /pricing/ instead of /pricing.html :contentReference[oaicite:2]{index=2}
+use_directory_urls: true  # /pricing/ instead of /pricing.html
 
 theme:
   name: material
@@ -24,69 +24,96 @@ markdown_extensions:
   - tables
   - toc:
       permalink: true
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+
+extra_javascript:
+  - https://unpkg.com/mermaid@10.9.1/dist/mermaid.min.js
+  - javascripts/mermaid-init.js
 
 nav:
   - Home: index.md
+  - Start here: start-here/index.md
+
   - Licensing & Pricing:
-    - Licensing: licensing/index.md
-    - Evaluation license: licensing/eval_license.md
-    - Commercial Use & Licensing: licensing/commercial.md
-    - Commercial license: licensing/commercial_license.md
-    - Pricing: licensing/pricing.md
-    - Order Form: licensing/order_form.md
+      - Licensing: licensing/index.md
+      - Evaluation license: licensing/eval_license.md
+      - Commercial Use & Licensing: licensing/commercial.md
+      - Commercial license: licensing/commercial_license.md
+      - Pricing: licensing/pricing.md
+      - Order Form: licensing/order_form.md
 
   - RecSys:
-    - Start here:
-        - Local end-to-end: tutorials/local-end-to-end.md
-        - Deploy with Helm: how-to/deploy-helm.md
-        - Run eval and ship: how-to/run-eval-and-ship.md
-        - Integrate service: how-to/integrate-recsys-service.md
-        - Operate pipelines: how-to/operate-pipelines.md
+      - Start here:
+          - Start here (overview): start-here/index.md
+          - Suite context diagram: start-here/diagrams/suite-context.md
+          - Local end-to-end: tutorials/local-end-to-end.md
+          - Deploy with Helm: how-to/deploy-helm.md
+          - Run eval and ship: how-to/run-eval-and-ship.md
+          - Integrate service: how-to/integrate-recsys-service.md
+          - Operate pipelines: how-to/operate-pipelines.md
 
-    - Explanation:
-        - Suite architecture: explanation/suite-architecture.md
-        - Candidate vs ranking: explanation/candidate-vs-ranking.md
-        - Data modes: explanation/data-modes.md
-        - Exposure logging & attribution: explanation/exposure-logging-and-attribution.md
-        - Surface namespaces: explanation/surface-namespaces.md
+      - Explanation:
+          - Suite architecture: explanation/suite-architecture.md
+          - Candidate vs ranking: explanation/candidate-vs-ranking.md
+          - Data modes: explanation/data-modes.md
+          - Exposure logging & attribution: explanation/exposure-logging-and-attribution.md
+          - Surface namespaces: explanation/surface-namespaces.md
 
-    - Tutorials:
-        - Local end-to-end: tutorials/local-end-to-end.md
-        - Tiny dataset (README): tutorials/datasets/tiny/README.md
+      - Tutorials:
+          - Local end-to-end: tutorials/local-end-to-end.md
+          - Tiny dataset (README): tutorials/datasets/tiny/README.md
 
-    - How-to:
-        - Deploy with Helm: how-to/deploy-helm.md
-        - Integrate service: how-to/integrate-recsys-service.md
-        - Operate pipelines: how-to/operate-pipelines.md
-        - Run eval and ship: how-to/run-eval-and-ship.md
+      - How-to:
+          - Deploy with Helm: how-to/deploy-helm.md
+          - Integrate service: how-to/integrate-recsys-service.md
+          - Operate pipelines: how-to/operate-pipelines.md
+          - Run eval and ship: how-to/run-eval-and-ship.md
 
-    - Reference:
-        - API:
-            - Admin: reference/api/admin.md
-        - CLI:
-            - recsys-eval: reference/cli/recsys-eval.md
-            - recsys-pipelines: reference/cli/recsys-pipelines.md
-        - Config:
-            - recsys-service: reference/config/recsys-service.md
-            - recsys-eval: reference/config/recsys-eval.md
-            - recsys-pipelines: reference/config/recsys-pipelines.md
-        - Data contracts:
-            - Eval events: reference/data-contracts/eval-events.md
-            - Field catalog: reference/data-contracts/field-catalog.md
-        - Database:
-            - Schema: reference/database/schema.md
-            - Migrations: reference/database/migrations.md
-            - DB-only seeding: reference/database/db-only-seeding.md
+      - Reference:
+          - API:
+              - OpenAPI: reference/api/openapi.yaml
+              - Admin & bootstrap: reference/api/admin.md
+          - CLI:
+              - Overview: reference/cli/index.md
+              - recsys-eval: reference/cli/recsys-eval.md
+              - recsys-pipelines: reference/cli/recsys-pipelines.md
+          - Config:
+              - Overview: reference/config/index.md
+              - recsys-service: reference/config/recsys-service.md
+              - recsys-eval: reference/config/recsys-eval.md
+              - recsys-pipelines: reference/config/recsys-pipelines.md
+          - Data contracts:
+              - Overview: reference/data-contracts/index.md
+              - Eval events: reference/data-contracts/eval-events.md
+              - Field catalog: reference/data-contracts/field-catalog.md
+          - Database:
+              - Overview: reference/database/index.md
+              - Schema: reference/database/schema.md
+              - Migrations: reference/database/migrations.md
+              - DB-only seeding: reference/database/db-only-seeding.md
 
-    - Operations:
-        - Performance & capacity: operations/performance-and-capacity.md
-        - Runbooks:
-            - Empty recs: operations/runbooks/empty-recs.md
-            - Rollback config rules: operations/runbooks/rollback-config-rules.md
-            - Service not ready: operations/runbooks/service-not-ready.md
+      - Operations:
+          - Performance & capacity: operations/performance-and-capacity.md
+          - Runbooks:
+              - Empty recs: operations/runbooks/empty-recs.md
+              - Rollback config rules: operations/runbooks/rollback-config-rules.md
+              - Service not ready: operations/runbooks/service-not-ready.md
 
   - RecSys Algo:
-      - Index: recsys-algo/overview.md
+      - Index: recsys-algo/index.md
+      - Concepts: recsys-algo/concepts.md
+      - Store ports: recsys-algo/store-ports.md
+      - Examples: recsys-algo/examples.md
+      - Releases: recsys-algo/releases.md
 
   - RecSys Eval:
       - Index: recsys-eval/docs/index.md
@@ -156,6 +183,8 @@ nav:
 
   - Project:
       - Index: project/index.md
+      - Docs style guide: project/docs-style.md
+      - Glossary: project/glossary.md
       - Code of Conduct: project/code_of_conduct.md
       - Contributing: project/contributing.md
       - Governance: project/governance.md

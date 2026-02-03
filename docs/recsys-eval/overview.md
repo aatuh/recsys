@@ -4,7 +4,7 @@ recsys-eval turns recommendation logs into reports that tell you whether a
 recommender change is better, worse, or unclear - globally and per segment -
 with guardrails.
 
-If you only read one thing: read docs/CONCEPTS.md.
+If you only read one thing: read [`Concepts`](docs/concepts.md).
 
 ## Who this is for
 
@@ -26,17 +26,14 @@ If you only read one thing: read docs/CONCEPTS.md.
 1) Validate your inputs (recommended):
 
 ```bash
-
 recsys-eval validate \
   --schema exposure.v1 \
   --input testdata/datasets/tiny/exposures.jsonl
-
 ```
 
 1) Run an evaluation (choose one mode):
 
 ```bash
-
 # Offline evaluation
 recsys-eval run \
   --mode offline \
@@ -79,7 +76,6 @@ recsys-eval run \
   --dataset configs/examples/dataset.interleaving.jsonl.yaml \
   --config configs/eval/interleaving.default.yaml \
   --output /tmp/interleaving_report.json
-
 ```
 
 ## Outputs
@@ -102,18 +98,18 @@ api/schemas/decision.v1.json.
 
 ## Read next
 
-- docs/CONCEPTS.md: what the system does and how to think about it
-- docs/DATA_CONTRACTS.md: what your inputs must look like
-- docs/INTERPRETING_RESULTS.md: how to read reports and make decisions
+- [`Concepts`](docs/concepts.md): what the system does and how to think about it
+- [`Data contracts`](docs/data_contracts.md): what your inputs must look like
+- [`Interpreting results`](docs/interpreting_results.md): how to read reports and make decisions
 
 Company-grade additions:
 
-- docs/INTEGRATION.md: how to emit logs from a serving system
-- docs/CI_GATES.md: exit codes, gating, and recommended pipelines
-- docs/SCALING.md: large datasets and stream mode
-- docs/RUNBOOKS.md and docs/TROUBLESHOOTING.md: debug and operate it
-- docs/OPE.md and docs/INTERLEAVING.md: deeper dives
-- docs/ARCHITECTURE.md: extension points and how to add features
+- [`Integration`](docs/integration.md): how to emit logs from a serving system
+- [`CI gates`](docs/ci_gates.md): exit codes, gating, and recommended pipelines
+- [`Scaling`](docs/scaling.md): large datasets and stream mode
+- [`Runbooks`](docs/runbooks.md) and [`Troubleshooting`](docs/troubleshooting.md): debug and operate it
+- [`OPE`](docs/ope.md) and [`Interleaving`](docs/interleaving.md): deeper dives
+- [`Architecture`](docs/architecture.md): extension points and how to add features
 
 ---
 

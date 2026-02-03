@@ -20,7 +20,7 @@ The authoritative license texts are in:
 ## How to determine the license for a file
 
 We recommend (and are moving toward) using **SPDX license identifiers** in file headers and storing license texts in a
-[`LICENSES/`](LICENSES/) directory (REUSE specification style).
+`LICENSES/` directory (REUSE specification style).
 
 If there is ever a mismatch between this page and file headers, the **per-file SPDX identifier**
 (or the closest directory-level declaration) is the source of truth.
@@ -44,7 +44,7 @@ We offer a commercial license as an alternative set of terms for parts of this r
 See:
 
 - `COMMERCIAL.md` (overview, what you get, and how to buy)
-- `PRICING.md` (tiers)
+- `pricing.md` (tiers)
 
 ## Third-party dependencies
 

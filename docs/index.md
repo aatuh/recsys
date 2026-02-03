@@ -7,21 +7,10 @@ into an application, and operate it safely.
 
 The suite is four modules that form an end-to-end recommendation system loop:
 
-- **recsys-service**: low-latency recommendation API (auth, tenancy, limits,
-
-  caching, observability, exposure logging).
-
-- **recsys-algo**: deterministic ranking logic (candidate merge, scoring,
-
-  constraints, rules, diversity).
-
-- **recsys-pipelines**: offline/stream processing that turns events into
-
-  versioned artifacts the service consumes.
-
-- **recsys-eval**: offline regression + online experiment analysis that decides
-
-  what to ship.
+- **recsys-service**: low-latency recommendation API (auth, tenancy, limits, caching, observability, exposure logging).
+- **recsys-algo**: deterministic ranking logic (candidate merge, scoring, constraints, rules, diversity).
+- **recsys-pipelines**: offline/stream processing that turns events into versioned artifacts the service consumes.
+- **recsys-eval**: offline regression + online experiment analysis that decides what to ship.
 
 ## Where to start
 
@@ -68,4 +57,4 @@ Note:
 
 ## Contributing
 
-- [`contributing/docs-style.md`](contributing/docs-style.md)
+- [`project/docs-style.md`](project/docs-style.md)

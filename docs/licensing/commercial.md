@@ -36,13 +36,13 @@ A typical commercial purchase includes:
 - Security and patch releases according to the purchased tier
 - Optional support terms (if purchased)
 
-See [`PRICING.md`](PRICING.md) for tier definitions.
+See [`pricing.md`](pricing.md) for tier definitions.
 
 ## How to buy
 
 Recommended low-friction flow:
 
-1. Choose a tier in [`PRICING.md`](PRICING.md)
+1. Choose a tier in [`pricing.md`](pricing.md)
 2. Purchase via a self-serve checkout (e.g., Stripe payment link) **or** request an invoice
 3. Receive:
    - commercial license paperwork,

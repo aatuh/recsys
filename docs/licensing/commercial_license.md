@@ -23,10 +23,10 @@ updates provided by Vendor under this Agreement.
 - **"Commercial Artifacts"**: Vendor-provided binaries, container images, license files/keys, and related
 deliverables made available under commercial terms.
 - **"Open Source Components"**: Components distributed under open-source licenses (e.g., Apache-2.0, AGPLv3)
-as identified in `LICENSING.md` or applicable notices.
+as identified in `licensing/index.md` or applicable notices.
 - **"Production Deployment"**: A production environment serving real end-user traffic.
 - **"Tenant"**: A logically separate recommendation domain (catalog + signals partition) as described in
-`PRICING.md` or the Order Form.
+`pricing.md` or the Order Form.
 - **"Authorized Scope"**: The entitlements purchased by Customer and specified in the Order Form (e.g.,
   number of tenants, number of production deployments).
 - **"Order Form"**: A document signed or accepted by Customer and Vendor that references this Agreement and
@@ -79,7 +79,7 @@ expressly allowed in an Order Form;
 
 5.1. Open Source Components are governed by their respective open-source licenses.  
 5.2. This Agreement grants additional permissions for commercial use of the covered components as specified in
-Order Forms and/or `LICENSING.md`.  
+Order Forms and/or `licensing/index.md`.  
 5.3. Nothing in this Agreement limits Customer’s rights under applicable open-source licenses for Open Source
 Components.
 

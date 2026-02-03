@@ -2,7 +2,7 @@
 
 If you are new:
 
-- [`RecSys Eval Overview`](overview.md)
+- [`RecSys Eval Overview`](../overview.md)
 - [`Concepts`](concepts.md)
 
 If you need to integrate:

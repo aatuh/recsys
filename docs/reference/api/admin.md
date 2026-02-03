@@ -5,14 +5,8 @@ bootstrap steps required to call `/v1/recommend` and `/v1/similar`.
 
 Why this exists:
 
-- The public OpenAPI file documents only the recommend endpoints.
-- Admin endpoints (tenant config/rules/invalidation) are required to bootstrap a
-
-  tenant but are **not** in `reference/api/openapi.yaml` yet.
-
-- A legacy swagger file exists at `recsys/api/swagger/swagger.yaml`; it is **not**
-
-  authoritative. Use `reference/api/openapi.yaml` + this page.
+- The OpenAPI file (`reference/api/openapi.yaml`) documents the HTTP surface.
+- This page adds **bootstrap guidance**, examples, and operational notes for admin/control-plane usage.
 
 ## 0) Prereqs
 

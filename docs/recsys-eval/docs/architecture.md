@@ -39,7 +39,7 @@ If you keep domain pure, tests become easy and reliability improves.
 1) Implement the metric in internal/domain/metrics/...
 2) Add it to the registry (internal/domain/metrics/registry.go)
 3) Add tests with toy inputs and known outputs
-4) Document it in [`docs/METRICS.md`](docs/METRICS.md)
+4) Document it in [`metrics.md`](metrics.md)
 
 ## Add a new datasource
 

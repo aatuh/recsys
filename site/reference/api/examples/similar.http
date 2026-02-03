@@ -1,0 +1,5 @@
+POST https://example.com/v1/similar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "surface": "pdp", "item_id": "item_1", "k": 20 }

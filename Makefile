@@ -71,21 +71,6 @@ mdlint: ## Lint Markdown files
 	@echo "🧾 Linting Markdown..."
 	npx --yes markdownlint-cli2
 
-
-mkdocs: ## Serve MkDocs site locally
-	@echo "📚 Serving MkDocs at http://localhost:8001 ..."
-	@command -v mkdocs >/dev/null 2>&1 || { \
-		echo "Installing mkdocs into .venv..."; \
-		python -m venv .venv; \
-		. .venv/bin/activate && python -m pip install --upgrade pip mkdocs mkdocs-material; \
-	}
-	@. .venv/bin/activate 2>/dev/null || true; \
-	if command -v mkdocs >/dev/null 2>&1; then \
-		mkdocs serve -f mkdocs.yml -a 0.0.0.0:8001; \
-	else \
-		. .venv/bin/activate && .venv/bin/mkdocs serve -f mkdocs.yml -a 0.0.0.0:8001; \
-	fi
-
 reuse: ## Run REUSE lint (license compliance)
 	@echo "🔎 Running REUSE lint..."
 	@command -v reuse >/dev/null 2>&1 || { \
@@ -111,4 +96,41 @@ finalize: ## Thorough validity check and generation
 	make test
 	make codegen
 	make mdlint
-	make docsync
+	make docs-check
+
+.PHONY: docs-serve docs-build docs-check
+
+docs-serve: ## Serve MkDocs site locally
+	make mdlint
+	make docs-check
+	@echo "📚 Serving MkDocs at http://localhost:8001 ..."
+	@command -v mkdocs >/dev/null 2>&1 || { \
+		echo "Installing mkdocs into .venv..."; \
+		python -m venv .venv; \
+		. .venv/bin/activate && python -m pip install --upgrade pip mkdocs mkdocs-material pymdown-extensions; \
+	}
+	@. .venv/bin/activate 2>/dev/null || true; \
+	if command -v mkdocs >/dev/null 2>&1; then \
+		mkdocs serve -f mkdocs.yml -a 0.0.0.0:8001; \
+	else \
+		. .venv/bin/activate && .venv/bin/mkdocs serve -f mkdocs.yml -a 0.0.0.0:8001; \
+	fi
+
+
+docs-build: ## Build MkDocs site (strict)
+	@command -v mkdocs >/dev/null 2>&1 || { \
+		echo "Installing mkdocs into .venv..."; \
+		python -m venv .venv; \
+		. .venv/bin/activate && python -m pip install --upgrade pip mkdocs mkdocs-material pymdown-extensions; \
+	}
+	@. .venv/bin/activate 2>/dev/null || true; \
+	if command -v mkdocs >/dev/null 2>&1; then \
+		mkdocs build --strict -f mkdocs.yml -d site; \
+	else \
+		. .venv/bin/activate && .venv/bin/mkdocs build --strict -f mkdocs.yml -d site; \
+	fi
+
+
+docs-check: ## Check docs internal links + strict MkDocs build
+	@python3 scripts/docs_linkcheck.py
+	@$(MAKE) docs-build

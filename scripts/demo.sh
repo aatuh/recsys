@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# Demo script: boots the local stack via docker compose, runs recsys-pipelines
-# on demo data, publishes the manifest to MinIO, seeds a tenant, and calls
-# /v1/recommend with dev headers. Output is saved under tmp/.
+# Demo script: boots the local stack, runs pipelines on tiny data,
+# publishes artifacts to MinIO, and calls /v1/recommend.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
