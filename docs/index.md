@@ -3,6 +3,12 @@
 Welcome. This documentation is intended to start running the suite, integrate it
 into an application, and operate it safely.
 
+You can access this documentation in several ways:
+
+- Visit `https://recsys.app`.
+- Run `make docs-serve` and open `http://localhost:8001`.
+- Browse the files in the repository under `/docs`.
+
 ## What is the suite?
 
 The suite is four modules that form an end-to-end recommendation system loop:

@@ -1,5 +1,0 @@
-POST https://example.com/v1/recommend
-Authorization: Bearer {{token}}
-Content-Type: application/json
-
-{ "surface": "home", "k": 20, "user": { "user_id": "u_1", "anonymous_id": null, "session_id": "s_1" } }
