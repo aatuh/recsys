@@ -11,9 +11,6 @@ This Commercial License Agreement ("Agreement") is between:
 This Agreement provides the general terms for Customer’s commercial use of the Software. **Specific scope,
 fees, and entitlements are set out in one or more Order Forms** that reference this Agreement.
 
-> TEMPLATE NOTICE: This is a starting template for commercial contracting. It should be reviewed for your
-jurisdiction and business needs.
-
 ---
 
 ## 1. Definitions
