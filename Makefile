@@ -107,7 +107,7 @@ docs-serve: ## Serve MkDocs site locally
 	@command -v mkdocs >/dev/null 2>&1 || { \
 		echo "Installing mkdocs into .venv..."; \
 		python -m venv .venv; \
-		. .venv/bin/activate && python -m pip install --upgrade pip mkdocs mkdocs-material pymdown-extensions; \
+		. .venv/bin/activate && python -m pip install --upgrade pip mkdocs mkdocs-swagger-ui-tag mkdocs-material pymdown-extensions; \
 	}
 	@. .venv/bin/activate 2>/dev/null || true; \
 	if command -v mkdocs >/dev/null 2>&1; then \
@@ -121,7 +121,7 @@ docs-build: ## Build MkDocs site (strict)
 	@command -v mkdocs >/dev/null 2>&1 || { \
 		echo "Installing mkdocs into .venv..."; \
 		python -m venv .venv; \
-		. .venv/bin/activate && python -m pip install --upgrade pip mkdocs mkdocs-material pymdown-extensions; \
+		. .venv/bin/activate && python -m pip install --upgrade pip mkdocs mkdocs-swagger-ui-tag mkdocs-material pymdown-extensions; \
 	}
 	@. .venv/bin/activate 2>/dev/null || true; \
 	if command -v mkdocs >/dev/null 2>&1; then \

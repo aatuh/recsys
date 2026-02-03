@@ -42,7 +42,6 @@ RECSYS_ARTIFACT_S3_USE_SSL=false
 Tip:
 
 - If `registry_dir` points to `s3://.../registry`, pipelines will write
-
   manifests directly to MinIO and you **do not** need a manual upload step.
   A local path (e.g. `registry`) requires uploading the manifest yourself.
 

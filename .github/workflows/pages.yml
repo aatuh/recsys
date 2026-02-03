@@ -28,10 +28,10 @@ jobs:
             - name: Install docs deps
               run: |
                   python -m pip install --upgrade pip
-                  pip install mkdocs mkdocs-material
+                  pip install mkdocs mkdocs-swagger-ui-tag mkdocs-material pymdown-extensions
 
-            - name: Sync project pages into MkDocs source dir
-              run: ./scripts/docs_sync.sh
+            - name: Internal link check
+              run: python3 scripts/docs_linkcheck.py
 
             - name: Build site
               run: mkdocs build --strict --site-dir site

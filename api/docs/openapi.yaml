@@ -4,7 +4,10 @@ info:
   description: Recommendation service API
   version: "1.0.0"
 servers:
+  - url: http://localhost:8000
+    description: Local docker compose
   - url: https://example.com
+    description: Placeholder
 security:
   - bearerAuth: []
   - apiKeyAuth: []

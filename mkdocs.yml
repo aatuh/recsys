@@ -16,6 +16,9 @@ theme:
 
 plugins:
   - search
+  - swagger-ui-tag:
+      extra_css:
+        - stylesheets/swagger-iframe.css
 
 markdown_extensions:
   - admonition
@@ -38,6 +41,8 @@ markdown_extensions:
 extra_javascript:
   - https://unpkg.com/mermaid@10.9.1/dist/mermaid.min.js
   - javascripts/mermaid-init.js
+  - javascripts/swagger-resize-fix.js
+  - javascripts/swagger-iframe-autosize.js
 
 nav:
   - Home: index.md
@@ -80,7 +85,7 @@ nav:
 
       - Reference:
           - API:
-              - OpenAPI: reference/api/openapi.yaml
+              - API Reference: reference/api/api-reference.md
               - Admin & bootstrap: reference/api/admin.md
           - CLI:
               - Overview: reference/cli/index.md

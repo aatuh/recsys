@@ -1595,14 +1595,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/api/openapi.yaml" class="md-nav__link">
+      <a href="../../reference/api/api-reference/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    OpenAPI
+    API Reference
   
 
     
@@ -5221,10 +5221,10 @@
 </code></pre></div>
 <p>Tip:</p>
 <ul>
-<li>If <code>registry_dir</code> points to <code>s3://.../registry</code>, pipelines will write</li>
+<li>If <code>registry_dir</code> points to <code>s3://.../registry</code>, pipelines will write
+  manifests directly to MinIO and you <strong>do not</strong> need a manual upload step.
+  A local path (e.g. <code>registry</code>) requires uploading the manifest yourself.</li>
 </ul>
-<p>manifests directly to MinIO and you <strong>do not</strong> need a manual upload step.
-  A local path (e.g. <code>registry</code>) requires uploading the manifest yourself.</p>
 <p>DB-only mode:</p>
 <ul>
 <li>write signals into Postgres tables instead of publishing artifacts</li>
@@ -5294,6 +5294,10 @@
         <script src="https://unpkg.com/mermaid@10.9.1/dist/mermaid.min.js"></script>
       
         <script src="../../javascripts/mermaid-init.js"></script>
+      
+        <script src="../../javascripts/swagger-resize-fix.js"></script>
+      
+        <script src="../../javascripts/swagger-iframe-autosize.js"></script>
       
     
   </body>
