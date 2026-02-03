@@ -1200,7 +1200,8 @@
   ],
   "servers": [
     {
-      "url": "https://example.com"
+      "description": "Local docker compose",
+      "url": "http://localhost:8000"
     }
   ]
 }

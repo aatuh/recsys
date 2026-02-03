@@ -1,26 +1,50 @@
 package main
 
 import (
-	"github.com/aatuh/recsys-suite/api/internal/http/handlers"
+	"os"
+	"strings"
 
+	"github.com/aatuh/recsys-suite/api/internal/config"
+
+	"github.com/aatuh/api-toolkit/contrib/v2/adapters/chi"
+	"github.com/aatuh/api-toolkit/contrib/v2/bootstrap"
+	metricsmw "github.com/aatuh/api-toolkit/contrib/v2/middleware/metrics"
+	"github.com/aatuh/api-toolkit/v2/httpx/identity"
+	rateln "github.com/aatuh/api-toolkit/v2/middleware/ratelimit"
 	"github.com/aatuh/api-toolkit/v2/ports"
 )
 
-func mountAppRoutes(r ports.HTTPRouter, log ports.Logger, deps appDeps) {
-	recsysHandler := handlers.NewRecsysHandler(
-		deps.RecsysService,
-		log,
-		deps.Validator,
-		handlers.WithOverloadRetryAfter(deps.OverloadRetryAfter),
-		handlers.WithExposureLogger(deps.ExposureLogger, deps.ExposureHasher),
-		handlers.WithExperimentAssigner(deps.ExperimentAssigner),
-		handlers.WithExplainControls(deps.ExplainMaxItems, deps.ExplainRequireAdmin, deps.AdminRole),
+func buildRouter(log ports.Logger, cfg config.Config) (ports.HTTPRouter, error) {
+	r := chi.New()
+
+	resolver := identity.Resolver{HeaderPolicy: identity.HeaderPolicyBoth}
+	if raw := strings.TrimSpace(os.Getenv("TRUSTED_PROXIES")); raw != "" {
+		if prefixes, err := identity.ParseTrustedProxies(strings.Split(raw, ",")); err == nil {
+			resolver.TrustedProxies = prefixes
+		}
+	}
+
+	profile, err := bootstrap.ProfileStrictAPI(log,
+		bootstrap.WithIdentityResolver(resolver),
+		bootstrap.WithRateLimitOptions(rateln.Options{
+			Capacity:                  30,
+			RefillRate:                15,
+			SkipEnabled:               cfg.RateLimitSkipEnabled,
+			SkipHeader:                cfg.RateLimitSkipHeader,
+			AllowDangerousDevBypasses: cfg.RateLimitAllowDangerousDevBypasses,
+		}),
+		bootstrap.WithMetricsRecorder(metricsmw.NewPrometheusRecorder(nil, nil)),
+		bootstrap.WithCORSOptions(ports.CORSOptions{
+			AllowedOrigins:   cfg.CORS.AllowedOrigins,
+			AllowedMethods:   cfg.CORS.AllowedMethods,
+			AllowedHeaders:   cfg.CORS.AllowedHeaders,
+			AllowCredentials: cfg.CORS.AllowCredentials,
+			MaxAge:           cfg.CORS.MaxAge,
+		}),
 	)
-	recsysHandler.RegisterRoutes(r)
-
-	licenseHandler := handlers.NewLicenseHandler(deps.LicenseManager, log)
-	licenseHandler.RegisterRoutes(r)
-
-	adminHandler := handlers.NewAdminHandler(deps.AdminService, log, deps.Validator)
-	r.Mount("/", adminHandler.Routes())
+	if err != nil {
+		return nil, err
+	}
+	profile.Apply(r)
+	return r, nil
 }

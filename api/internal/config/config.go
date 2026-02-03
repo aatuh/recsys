@@ -21,6 +21,7 @@ type Config struct {
 	Health      health.Config
 	App         AppConfig
 	Auth        AuthConfig
+	CORS        CORSConfig
 	RateLimit   RateLimitConfig
 	Audit       AuditConfig
 	Performance PerformanceConfig
@@ -56,6 +57,15 @@ type AuthConfig struct {
 	DevHeaders      devheaders.Config
 	DevTenantHeader string
 	APIKeys         APIKeyConfig
+}
+
+// CORSConfig controls CORS responses for browser clients (e.g., Swagger UI).
+type CORSConfig struct {
+	AllowedOrigins   []string
+	AllowedMethods   []string
+	AllowedHeaders   []string
+	AllowCredentials bool
+	MaxAge           int
 }
 
 // APIKeyConfig controls API key authentication.
@@ -243,6 +253,33 @@ func Load() Config {
 			HashSecret: loader.String("API_KEY_HASH_SECRET", ""),
 		},
 	}
+	corsOrigins := loader.CSV("CORS_ALLOWED_ORIGINS")
+	if len(corsOrigins) == 0 {
+		corsOrigins = []string{"*"}
+	}
+	corsMethods := loader.CSV("CORS_ALLOWED_METHODS")
+	if len(corsMethods) == 0 {
+		corsMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
+	}
+	corsHeaders := loader.CSV("CORS_ALLOWED_HEADERS")
+	if len(corsHeaders) == 0 {
+		corsHeaders = []string{"Accept", "Authorization", "Content-Type"}
+	}
+	corsHeaders = append(corsHeaders,
+		authCfg.TenantHeader,
+		authCfg.DevTenantHeader,
+		authCfg.DevHeaders.UserIDHeader,
+		authCfg.DevHeaders.EmailHeader,
+		authCfg.APIKeys.Header,
+		"X-Request-Id",
+	)
+	corsCfg := CORSConfig{
+		AllowedOrigins:   uniqueStrings(corsOrigins),
+		AllowedMethods:   uniqueStrings(corsMethods),
+		AllowedHeaders:   uniqueStrings(corsHeaders),
+		AllowCredentials: loader.Bool("CORS_ALLOW_CREDENTIALS", false),
+		MaxAge:           loader.Int("CORS_MAX_AGE", 300),
+	}
 	rateCfg := RateLimitConfig{
 		TenantEnabled:    loader.Bool("TENANT_RATE_LIMIT_ENABLED", true),
 		TenantCapacity:   float64(loader.Int("TENANT_RATE_LIMIT_CAPACITY", 60)),
@@ -361,6 +398,7 @@ func Load() Config {
 			ProjectTag: loader.String("PROJECT_TAG", ""),
 		},
 		Auth:        authCfg,
+		CORS:        corsCfg,
 		RateLimit:   rateCfg,
 		Audit:       auditCfg,
 		Performance: perfCfg,
@@ -433,6 +471,23 @@ func int16CSV(loader *config.Loader, key string) []int16 {
 	}
 	if len(out) == 0 {
 		return nil
+	}
+	return out
+}
+
+func uniqueStrings(values []string) []string {
+	seen := make(map[string]struct{}, len(values))
+	out := make([]string, 0, len(values))
+	for _, raw := range values {
+		val := strings.TrimSpace(raw)
+		if val == "" {
+			continue
+		}
+		if _, ok := seen[val]; ok {
+			continue
+		}
+		seen[val] = struct{}{}
+		out = append(out, val)
 	}
 	return out
 }

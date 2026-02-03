@@ -71,7 +71,7 @@ func main() {
 		)
 	}
 
-	r, err := bootstrap.NewDefaultRouter(log)
+	r, err := buildRouter(log, cfg)
 	if err != nil {
 		log.Error("failed to initialize router", "err", err)
 		os.Exit(1)
