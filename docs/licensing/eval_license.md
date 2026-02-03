@@ -1,4 +1,4 @@
-# Evaluation License Terms (Recsys)
+# RecSys Evaluation License Terms
 
 **Last updated:** 2026-02-01  
 **Vendor:** RecSys ("Vendor")  
@@ -20,7 +20,7 @@ these Evaluation License Terms.
 
 ## 2. Definitions
 
-- **"Software"**: The Recsys software components and documentation.
+- **"Software"**: The RecSys software components and documentation.
 - **"Evaluation Materials"**: Any of the following, provided by Vendor for evaluation: (a) commercial builds (e.g.,
   container images, binaries), (b) license files/keys, (c) documentation or evaluation pack, (d) updates to any of the
   foregoing.
@@ -111,7 +111,7 @@ support during evaluation.
 
 ## 9. Open Source Components
 
-If Licensee uses any open-source components of Recsys separately, such components are governed by their respective
+If Licensee uses any open-source components of RecSys separately, such components are governed by their respective
 open-source licenses. These Evaluation Terms govern only Evaluation Materials provided under this document.
 
 ---

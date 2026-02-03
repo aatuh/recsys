@@ -1,4 +1,4 @@
-# Exposure logging and attribution (lean)
+# Exposure logging and attribution
 
 Log what you showed (exposure) and what the user did (outcome).
 Join by request_id when possible.

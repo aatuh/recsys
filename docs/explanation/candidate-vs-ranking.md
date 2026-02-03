@@ -1,4 +1,4 @@
-# Candidate generation vs ranking (lean)
+# Candidate generation vs ranking
 
 Candidates: high-recall sources (popularity, cooc, embeddings)
 Ranking: scoring + constraints + diversification to produce the final top-K

@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# Deploys recsys-service to a local Kubernetes cluster (kind or minikube).
+# - Builds a local Docker image (optionally Dockerfile.dev with --dev)
+# - Loads it into the cluster (kind load or minikube docker-env)
+# - Installs/updates the Helm chart with values.local.yaml
+# - Waits for the API deployment to be ready and prints port-forward command
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# Runs the Go-based load test client against recsys-service.
+# - Uses env vars for target URL, tenant/surface, and auth headers
+# - Exercises /v1/recommend (or another endpoint) with configurable concurrency
+# - Sends a mix of user_ids for realistic cache and personalization behavior
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

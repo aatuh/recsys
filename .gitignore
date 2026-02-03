@@ -10,16 +10,3 @@
 
 **/tmp/
 **/bin/
-
-# mkdocs
-# If adding new entries, sync between mkdocs.yml, .gitignore, docs_sync.sh
-docs/pricing/
-docs/commercial/
-docs/licensing/
-docs/eval-license/
-docs/security/
-docs/support/
-docs/contributing-repo/
-docs/code-of-conduct/
-docs/governance/
-docs/licenses/

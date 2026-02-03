@@ -1,4 +1,4 @@
-# Database schema (lean)
+# Database schema
 
 Use Postgres for:
 

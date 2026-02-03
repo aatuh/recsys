@@ -20,10 +20,10 @@ helm install recsys ./charts/recsys \
 
 ```bash
 # kind
-./scripts/helm-local.sh --kind
+./scripts/helm_local.sh --kind
 
 # minikube
-./scripts/helm-local.sh --minikube
+./scripts/helm_local.sh --minikube
 ```
 
 ## 3) Enable pipelines CronJob

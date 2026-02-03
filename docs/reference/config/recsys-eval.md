@@ -1,4 +1,4 @@
-# recsys-eval configuration (lean)
+# recsys-eval configuration
 
 - offline.primary_metric: e.g. ndcg@20
 - offline.fail_threshold: relative drop threshold

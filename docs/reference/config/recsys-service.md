@@ -1,4 +1,4 @@
-# recsys-service configuration (lean)
+# recsys-service configuration
 
 Canonical env var list: `recsys/api/.env.example`.
 

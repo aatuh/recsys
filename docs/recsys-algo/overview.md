@@ -110,3 +110,9 @@ Optional capabilities enable more signals:
 If a capability is missing, the engine treats the signal as unavailable and
 continues. You can also return `model.ErrFeatureUnavailable` from a method to
 disable a signal at runtime.
+
+---
+
+## Releases
+
+Tag releases with the module prefix, e.g. `recsys-algo/v0.2.0`.

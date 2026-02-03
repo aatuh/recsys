@@ -1,4 +1,4 @@
-# CLI: recsys-eval (lean)
+# CLI: recsys-eval
 
 Commands:
 

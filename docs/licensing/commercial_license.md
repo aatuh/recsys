@@ -1,4 +1,4 @@
-# Commercial License Agreement (Template) — Recsys
+# RecSys Commercial License Agreement
 
 **Version:** `1.0`  
 **Last updated:** `2026-02-01`
@@ -18,7 +18,7 @@ jurisdiction and business needs.
 
 ## 1. Definitions
 
-- **"Software"**: The Recsys software identified in an Order Form, including related documentation, and any
+- **"Software"**: The RecSys software identified in an Order Form, including related documentation, and any
 updates provided by Vendor under this Agreement.
 - **"Commercial Artifacts"**: Vendor-provided binaries, container images, license files/keys, and related
 deliverables made available under commercial terms.

@@ -1,4 +1,4 @@
-# Field catalog (lean)
+# Field catalog
 
 exposure.v1:
 

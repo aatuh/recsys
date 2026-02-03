@@ -1,4 +1,4 @@
-# CLI: recsys-pipelines (lean)
+# CLI: recsys-pipelines
 
 Suggested commands:
 

@@ -1,4 +1,4 @@
-# Suite architecture (lean)
+# Suite architecture
 
 Serving: client -> recsys-service -> recsys-algo -> response + exposure log
 Pipelines: exposures/outcomes -> artifacts + manifest

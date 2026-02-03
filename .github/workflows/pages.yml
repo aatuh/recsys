@@ -30,7 +30,7 @@ jobs:
                   python -m pip install --upgrade pip
                   pip install mkdocs mkdocs-material
 
-            - name: Sync project pages into docs/
+            - name: Sync project pages into MkDocs source dir
               run: ./scripts/docs_sync.sh
 
             - name: Build site

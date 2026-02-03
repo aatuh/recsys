@@ -71,8 +71,12 @@ mdlint: ## Lint Markdown files
 	@echo "🧾 Linting Markdown..."
 	npx --yes markdownlint-cli2
 
-mkdocs-serve: ## Serve MkDocs site locally
-	./scripts/docs_sync.sh
+syncdocs: # Sync documentation into docs
+	@echo "📚 Syncing documentation..."
+	./scripts/sync_docs.sh
+
+mkdocs: ## Serve MkDocs site locally
+	make syncdocs
 	@echo "📚 Serving MkDocs at http://localhost:8001 ..."
 	@command -v mkdocs >/dev/null 2>&1 || { \
 		echo "Installing mkdocs into .venv..."; \
@@ -111,3 +115,4 @@ finalize: ## Thorough validity check and generation
 	make test
 	make codegen
 	make mdlint
+	make docsync

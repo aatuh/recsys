@@ -1,4 +1,4 @@
-# recsys-pipelines configuration (lean)
+# recsys-pipelines configuration
 
 Note: the current CLI expects **JSON** configs.
 

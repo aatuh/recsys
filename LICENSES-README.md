@@ -1,12 +1,3 @@
-# License Directory Notes
+# Licenses README
 
-This repository uses multiple licenses.
-
-Recommended best practice (REUSE/SPDX style):
-
-- License texts are stored in [`LICENSES/`](LICENSES/) directory.
-<!-- REUSE-IgnoreStart -->
-- Use `SPDX-License-Identifier:` headers in files
-<!-- REUSE-IgnoreEnd -->
-
-Current split: See [`LICENSING.md`](LICENSING.md) for the human-readable guide.
+See [`docs/project/licenses_readme.md`](docs/project/licenses_readme.md)
