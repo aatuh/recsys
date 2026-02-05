@@ -35,7 +35,7 @@ you comply with the Apache-2.0 conditions (e.g., preserving notices).
 The serving stack is licensed under the **GNU Affero General Public License v3 (AGPLv3)**.
 
 If your organization cannot or does not want to comply with AGPL obligations, you can obtain a **commercial license**
-(see `COMMERCIAL.md`).
+(see [`commercial.md`](commercial.md)).
 
 ## Do you need a commercial license? (decision tree)
 
@@ -62,8 +62,8 @@ We offer a commercial license as an alternative set of terms for parts of this r
 
 See:
 
-- `COMMERCIAL.md` (overview, what you get, and how to buy)
-- `pricing.md` (tiers)
+- [`commercial.md`](commercial.md) (overview, what you get, and how to buy)
+- [`pricing.md`](pricing.md) (tiers)
 
 ## Third-party dependencies
 

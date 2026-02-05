@@ -1,5 +1,7 @@
 # RecSys suite
 
+RecSys is an auditable recommendation system suite with deterministic ranking and versioned ship/rollback.
+
 This repository contains a complete, production-oriented recommendation system stack:
 
 - **recsys-service** (`api/`): low-latency HTTP API for serving recommendations

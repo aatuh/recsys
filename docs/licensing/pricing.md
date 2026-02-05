@@ -125,10 +125,19 @@ Use the payment links (recommended for fastest fulfillment) or contact us for En
 - Growth (annual)
 - Enterprise (contact)
 
-Contact: `contact@recsys.app`
+Contact options:
+
+- Email: [`contact@recsys.app`][pricing_contact]
+- LinkedIn: [`linkedin.com/showcase/recsys-suite`][recsys_linkedin]
 
 ---
 
 ## Contact
 
-If you need Enterprise terms, OEM/resale rights, or help selecting the right plan, contact: `contact@recsys.app`
+If you need Enterprise terms, OEM/resale rights, or help selecting the right plan, contact:
+
+- Email: [`contact@recsys.app`][pricing_contact]
+- LinkedIn: [`linkedin.com/showcase/recsys-suite`][recsys_linkedin]
+
+[pricing_contact]: mailto:contact@recsys.app?subject=RecSys%20pricing%20inquiry
+[recsys_linkedin]: https://www.linkedin.com/showcase/recsys-suite

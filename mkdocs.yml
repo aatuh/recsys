@@ -98,6 +98,13 @@ extra_javascript:
 nav:
   - Overview:
       - What is RecSys: index.md
+      - Start evaluation: evaluate/index.md
+      - Pricing: pricing/index.md
+      - Trust center:
+          - Overview: security/index.md
+          - Security pack: security/security-pack.md
+      - Developers: developers/index.md
+      - Business hub: business/index.md
       - For businesses:
           - Overview: for-businesses/index.md
           - Use cases: for-businesses/use-cases.md
@@ -287,6 +294,7 @@ nav:
   - Project:
       - Project index: project/index.md
       - Docs style guide: project/docs-style.md
+      - Message map: project/message-map.md
       - Docs versioning: project/docs-versioning.md
       - Docs per release: project/docs-per-release.md
       - Glossary: project/glossary.md

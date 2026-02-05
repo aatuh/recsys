@@ -45,6 +45,7 @@ Recommended low-friction flow:
 1. Choose a tier in [`pricing.md`](pricing.md)
 2. Request a commercial license (public or private inquiry)
 3. Receive:
+
    - commercial license paperwork,
    - delivery instructions for artifacts (if applicable),
    - optional support contact
@@ -52,8 +53,8 @@ Recommended low-friction flow:
 How to request a commercial license:
 
 - Open a GitHub issue titled **"Commercial licensing inquiry"** (public), or
-- If your inquiry must be confidential, say so in the issue and we will move to a private channel before exchanging
-  details.
+- Email: [`contact@recsys.app`][pricing_contact]
+- LinkedIn: [`linkedin.com/showcase/recsys-suite`][recsys_linkedin]
 
 ## Evaluation licenses (optional)
 
@@ -63,11 +64,14 @@ If you offer evaluation terms, define them clearly:
 - Limits (e.g., 1 deployment, non-production)
 - What’s included (e.g., private artifact access)
 
-Document details in `docs/licensing/eval_license.md` if you provide this.
+Document details in [`eval_license.md`](eval_license.md) if you provide this.
 
 ## Where are the legal terms?
 
 Commercial terms live in:
 
-- `docs/licensing/commercial_license.md`
-- `docs/licensing/order_form.md`
+- [`commercial_license.md`](commercial_license.md)
+- [`order_form.md`](order_form.md)
+
+[pricing_contact]: mailto:contact@recsys.app?subject=RecSys%20pricing%20inquiry
+[recsys_linkedin]: https://www.linkedin.com/showcase/recsys-suite

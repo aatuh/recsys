@@ -11,6 +11,22 @@ tags:
 Welcome. This documentation is intended to start running the suite, integrate it
 into an application, and operate it safely.
 
+RecSys is an auditable recommendation system suite with deterministic ranking and versioned ship/rollback.
+
+[Start evaluation](evaluate/index.md){ .md-button .md-button--primary }
+[Developer hub](developers/index.md){ .md-button }
+
+## Choose your path
+
+<div class="grid cards" markdown>
+
+- **[I’m a developer](developers/index.md)**  
+  Run locally, integrate one surface, produce the first eval report.
+- **[I’m evaluating for business](business/index.md)**  
+  Pilot plan, success metrics, trust center, pricing.
+
+</div>
+
 You can access this documentation in several ways:
 
 - Visit [`https://recsys.app`](https://recsys.app).
