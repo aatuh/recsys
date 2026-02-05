@@ -37,4 +37,9 @@ make build
 - Independent retries
 - Separate scaling policies
 
-Next: `operations/slos-and-freshness.md`.
+## Read next
+
+- SLOs and freshness: [`operations/slos-and-freshness.md`](../operations/slos-and-freshness.md)
+- Schedule pipelines: [`how-to/schedule-pipelines.md`](../how-to/schedule-pipelines.md)
+- Debug failures: [`how-to/debug-failures.md`](../how-to/debug-failures.md)
+- Start here: [`start-here.md`](../start-here.md)

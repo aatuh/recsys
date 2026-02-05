@@ -1,3 +1,10 @@
+---
+tags:
+  - security
+  - business
+  - ops
+---
+
 # Security, privacy, and compliance (overview)
 
 ## Who this is for

@@ -14,9 +14,8 @@ All the hosted documentation lives under [`/docs`](/docs), rendered with MkDocs 
 You can access this documentation in several ways:
 
 - Visit [`https://recsys.app`](https://recsys.app).
-- Visit [`https://github.com/aatuh/recsys`](https://github.com/aatuh/recsys).
+- Visit [`https://github.com/aatuh/recsys`](https://github.com/aatuh/recsys) and browse the `/docs` directory.
 - Run `make docs-serve` and open [`http://localhost:8001`](http://localhost:8001).
-- Browse the files in the repository under [`/docs`](/docs).
 
 Start here:
 

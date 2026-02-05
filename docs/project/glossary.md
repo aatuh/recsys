@@ -7,10 +7,31 @@ A small shared vocabulary used throughout the suite docs.
 An immutable, version-addressed blob produced offline (for example: popularity, co-visitation, embeddings) and consumed
 by `recsys-service`.
 
+## Artifact/manifest mode
+
+A deployment mode where `recsys-pipelines` publishes versioned artifacts and a mutable “current manifest pointer”, and
+`recsys-service` reads the current manifest and fetches referenced blobs.
+
+See: [`explanation/data-modes.md`](../explanation/data-modes.md)
+
+## DB-only mode
+
+A deployment mode where the service reads signals directly from Postgres tables (no offline artifact publish step).
+
+DB-only mode is useful for early pilots because it minimizes moving parts, but it trades off offline reproducibility
+and versioned “ship/rollback” via manifests.
+
+See: [`explanation/data-modes.md`](../explanation/data-modes.md)
+
 ## Manifest
 
 A small document that maps artifact types to artifact URIs for a `(tenant, surface)` pair. In artifact mode, the “current
 manifest pointer” is what you ship and roll back.
+
+## Freshness
+
+An operational concept: “are recommendations based on recent-enough data?” In artifact/manifest mode, freshness is often
+defined as “the current manifest was updated within an expected window”.
 
 ## Candidate
 
@@ -70,3 +91,8 @@ evaluation slices.
 ## Tenant
 
 An organization boundary for configuration and data isolation.
+
+## recsys-svc
+
+The Docker Compose container name used in this repo for the `recsys-service` API. In docs and architecture discussions,
+prefer the module name `recsys-service`.

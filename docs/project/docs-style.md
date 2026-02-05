@@ -1,6 +1,6 @@
 # Documentation style guide
 
-This repository follows the **Diataxis** structure:
+This repository follows the following structure:
 
 - **Tutorials**: learning by doing
 - **How-to**: goal-oriented steps
@@ -28,6 +28,38 @@ Module docs may have their own style guides and can deviate when that improves c
   - examples and sample outputs (when applicable)
 - Prefer relative links inside `/docs`.
 - Avoid linking to repository paths that do not exist in the rendered MkDocs site.
+
+## Tags (optional but recommended)
+
+This docs site uses Material for MkDocs **tags** for role- and topic-based browsing.
+
+Add tags as YAML front matter at the top of a page:
+
+```md
+---
+tags:
+  - how-to
+  - integration
+  - developer
+---
+
+# How-to: Integrate RecSys
+```
+
+Guidelines:
+
+- Use **2–5 tags per page**.
+- Prefer **consistent, shared tags** over one-off variants.
+- Avoid `title:` in front matter; keep the page title as the `#` heading
+  (our markdownlint config treats `title:` as an extra H1).
+
+Recommended tags:
+
+- Doc type: `overview`, `quickstart`, `tutorial`, `how-to`, `explanation`, `reference`, `runbook`
+- Role: `business`, `developer`, `ops`, `ml`
+- Components: `recsys-service`, `recsys-algo`, `recsys-pipelines`, `recsys-eval`
+- Topics (examples): `architecture`, `integration`, `deployment`, `api`, `config`, `data-contracts`, `database`,
+  `artifacts`, `evaluation`, `security`
 
 ## Suite-level page templates
 

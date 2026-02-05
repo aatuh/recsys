@@ -30,3 +30,11 @@ Run jobs for the same date range and publish last.
 - End date is inclusive.
 - Canonicalization is idempotent per day partition.
 - Publishing updates the manifest pointer last.
+
+## Read next
+
+- Backfill safely: [`how-to/backfill-safely.md`](backfill-safely.md)
+- Windows and backfills (concepts): [`explanation/windows-and-backfills.md`](../explanation/windows-and-backfills.md)
+- Validation and guardrails: [`explanation/validation-and-guardrails.md`](../explanation/validation-and-guardrails.md)
+- Output layout: [`reference/output-layout.md`](../reference/output-layout.md)
+- Limit exceeded runbook: [`operations/runbooks/limit-exceeded.md`](../operations/runbooks/limit-exceeded.md)

@@ -1,3 +1,11 @@
+---
+tags:
+  - how-to
+  - deployment
+  - ops
+  - recsys-service
+---
+
 # Deploy with Helm (production-ish)
 
 ## Who this is for

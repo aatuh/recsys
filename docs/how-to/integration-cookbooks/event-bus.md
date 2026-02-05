@@ -1,3 +1,12 @@
+---
+tags:
+  - how-to
+  - integration
+  - ops
+  - developer
+  - recsys-service
+---
+
 # Cookbook: integrate with an event bus (streaming)
 
 ## Who this is for

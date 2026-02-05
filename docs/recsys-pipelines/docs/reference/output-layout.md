@@ -32,3 +32,10 @@ Version records:
 
 - Records are append-only and version-addressed.
 - Manifest points to URIs (`file://...` in local mode).
+
+## Read next
+
+- Start here: [`start-here.md`](../start-here.md)
+- Operate pipelines daily: [`how-to/operate-daily.md`](../how-to/operate-daily.md)
+- Artifacts and versioning: [`explanation/artifacts-and-versioning.md`](../explanation/artifacts-and-versioning.md)
+- Roll back the manifest: [`how-to/rollback-manifest.md`](../how-to/rollback-manifest.md)

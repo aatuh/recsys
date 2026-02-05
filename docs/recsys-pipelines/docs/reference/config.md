@@ -87,3 +87,10 @@ See `explanation/validation-and-guardrails.md`.
 
 Note: the Kafka connector is scaffolded and returns a clear error until it is
 implemented with a streaming consumer.
+
+## Read next
+
+- Start here: [`start-here.md`](../start-here.md)
+- Validation and guardrails: [`explanation/validation-and-guardrails.md`](../explanation/validation-and-guardrails.md)
+- Run incremental: [`how-to/run-incremental.md`](../how-to/run-incremental.md)
+- Limit exceeded runbook: [`operations/runbooks/limit-exceeded.md`](../operations/runbooks/limit-exceeded.md)

@@ -18,7 +18,7 @@ and co-occurrence) from raw exposure events.
 - Data Engineering / Analytics: [`learning-paths/data-engineer.md`](learning-paths/data-engineer.md)
 - SRE / Platform: [`learning-paths/sre-oncall.md`](learning-paths/sre-oncall.md)
 
-## Docs map (Diataxis)
+## Docs map
 
 - **Tutorials**: learning by doing
 - **How-to guides**: task-focused recipes
@@ -26,3 +26,10 @@ and co-occurrence) from raw exposure events.
 - **Reference**: exact contracts and CLI/config details
 
 See [`explanation/documentation-approach.md`](explanation/documentation-approach.md).
+
+## Read next
+
+- Start here: [`start-here.md`](start-here.md)
+- Local quickstart: [`tutorials/local-quickstart.md`](tutorials/local-quickstart.md)
+- Operate pipelines daily: [`how-to/operate-daily.md`](how-to/operate-daily.md)
+- Config reference: [`reference/config.md`](reference/config.md)

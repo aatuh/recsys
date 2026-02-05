@@ -14,3 +14,10 @@
 1) Update raw event decoder if needed
 1) Update canonical writer/reader tests
 1) Update docs: `reference/schemas-events.md`
+
+## Read next
+
+- Start here: [`start-here.md`](../start-here.md)
+- Event schemas: [`reference/schemas-events.md`](../reference/schemas-events.md)
+- Data lifecycle: [`explanation/data-lifecycle.md`](../explanation/data-lifecycle.md)
+- Validation and guardrails: [`explanation/validation-and-guardrails.md`](../explanation/validation-and-guardrails.md)

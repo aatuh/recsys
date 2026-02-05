@@ -40,3 +40,11 @@ spec:
 ```
 
 Use `--incremental` for daily runs and `--start/--end` for backfills.
+
+## Read next
+
+- Operate pipelines daily: [`how-to/operate-daily.md`](operate-daily.md)
+- Run incremental: [`how-to/run-incremental.md`](run-incremental.md)
+- SLOs and freshness: [`operations/slos-and-freshness.md`](../operations/slos-and-freshness.md)
+- Pipeline failed runbook: [`operations/runbooks/pipeline-failed.md`](../operations/runbooks/pipeline-failed.md)
+- Config reference: [`reference/config.md`](../reference/config.md)

@@ -97,3 +97,10 @@ Choose one:
 - Ignoring SRM warnings in experiments.
 
 Treat the report as a navigation tool, not a trophy.
+
+## Read next
+
+- Interpretation cheat sheet: [`recsys-eval/docs/workflows/interpretation-cheat-sheet.md`](workflows/interpretation-cheat-sheet.md)
+- Metrics: [`recsys-eval/docs/metrics.md`](metrics.md)
+- Runbooks: [`recsys-eval/docs/runbooks.md`](runbooks.md)
+- Online A/B workflow: [`recsys-eval/docs/workflows/online-ab-in-production.md`](workflows/online-ab-in-production.md)

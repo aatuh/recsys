@@ -34,3 +34,10 @@ This repo uses ports/adapters and a workflow pipeline.
 - Deterministic output for same canonical inputs
 - Bounded resource usage
 - Publish pointer updated last
+
+## Read next
+
+- Start here: [`start-here.md`](../start-here.md)
+- Artifacts and versioning: [`explanation/artifacts-and-versioning.md`](../explanation/artifacts-and-versioning.md)
+- Artifact schemas: [`reference/schemas-artifacts.md`](../reference/schemas-artifacts.md)
+- Output layout: [`reference/output-layout.md`](../reference/output-layout.md)

@@ -1,3 +1,11 @@
+---
+tags:
+  - quickstart
+  - overview
+  - developer
+  - business
+---
+
 # Docs map
 
 ## Who this is for

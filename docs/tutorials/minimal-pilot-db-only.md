@@ -1,3 +1,11 @@
+---
+tags:
+  - tutorial
+  - quickstart
+  - developer
+  - recsys-service
+---
+
 # Tutorial: minimal pilot mode (DB-only, popularity baseline)
 
 ## Who this is for

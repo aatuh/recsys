@@ -1,3 +1,10 @@
+---
+tags:
+  - reference
+  - config
+  - developer
+---
+
 # Configuration reference
 
 ## Who this is for
@@ -15,6 +22,7 @@
 - [`recsys-service`](recsys-service.md)
 - [`recsys-eval`](recsys-eval.md)
 - [`recsys-pipelines`](recsys-pipelines.md)
+- Helm deployment (how values map to config): [`how-to/deploy-helm.md`](../../how-to/deploy-helm.md)
 
 ## Read next
 

@@ -107,6 +107,20 @@ finalize: ## Thorough validity check and generation
 
 .PHONY: docs-serve docs-build docs-check
 
+DOCS_PIP_PACKAGES := mkdocs mkdocs-swagger-ui-tag mkdocs-material pymdown-extensions \
+	mkdocs-git-revision-date-localized-plugin mkdocs-git-authors-plugin \
+	mkdocs-redirects mkdocs-minify-plugin mkdocs-glightbox \
+	pillow cairosvg
+
+.PHONY: docs-deps
+
+docs-deps: ## Install MkDocs and required plugins into .venv
+	@if [ ! -d .venv ]; then \
+		echo "Installing docs dependencies into .venv..."; \
+		python -m venv .venv; \
+	fi
+	@. .venv/bin/activate && python -m pip install --disable-pip-version-check $(DOCS_PIP_PACKAGES)
+
 docs-serve: ## Serve MkDocs site locally
 	$(MAKE) mdlint
 	$(MAKE) docs-check
@@ -127,11 +141,12 @@ docs-serve: ## Serve MkDocs site locally
 
 
 docs-build: ## Build MkDocs site (strict)
+	$(MAKE) docs-deps
 	@command -v mkdocs >/dev/null 2>&1 || { \
 		if [ ! -x .venv/bin/mkdocs ]; then \
 			echo "Installing mkdocs into .venv..."; \
 			python -m venv .venv; \
-			. .venv/bin/activate && python -m pip install --disable-pip-version-check mkdocs mkdocs-swagger-ui-tag mkdocs-material pymdown-extensions; \
+			. .venv/bin/activate && python -m pip install --disable-pip-version-check $(DOCS_PIP_PACKAGES); \
 		fi; \
 	}
 	@. .venv/bin/activate 2>/dev/null || true; \

@@ -1,3 +1,12 @@
+---
+tags:
+  - explanation
+  - evaluation
+  - ml
+  - business
+  - recsys-eval
+---
+
 # Experimentation model (A/B, interleaving, OPE)
 
 ## Who this is for

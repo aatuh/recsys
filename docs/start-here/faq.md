@@ -1,3 +1,11 @@
+---
+tags:
+  - overview
+  - quickstart
+  - business
+  - developer
+---
+
 # FAQ (for stakeholders)
 
 ## Who this is for

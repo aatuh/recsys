@@ -20,7 +20,7 @@ A commercial license allows you to use the covered components under alternative 
 
 Commercial licensing applies to the components that are AGPLv3 in this repository, including typically:
 
-- `recsys-svc` (serving API)
+- `recsys-service` (serving API; `docker compose` service name: `api`)
 - `recsys-algo` (algorithms used by the service)
 - `recsys-pipelines` (batch pipelines and artifact generation)
 
@@ -43,16 +43,17 @@ See [`pricing.md`](pricing.md) for tier definitions.
 Recommended low-friction flow:
 
 1. Choose a tier in [`pricing.md`](pricing.md)
-2. Purchase via a self-serve checkout (e.g., Stripe payment link) **or** request an invoice
+2. Request a commercial license (public or private inquiry)
 3. Receive:
    - commercial license paperwork,
    - delivery instructions for artifacts (if applicable),
    - optional support contact
 
-**Placeholder:** Replace the following with your actual process:
+How to request a commercial license:
 
-- Sales contact: `sales@recsys.app`
-- Billing contact: `billing@recsys.app`
+- Open a GitHub issue titled **"Commercial licensing inquiry"** (public), or
+- If your inquiry must be confidential, say so in the issue and we will move to a private channel before exchanging
+  details.
 
 ## Evaluation licenses (optional)
 

@@ -18,9 +18,16 @@ make smoke
 
 ## Adding docs
 
-Docs live under `docs/` and follow Diataxis.
+Docs live under `docs/` and follow Diataxis framework.
 
 - tutorials: `docs/tutorials/`
 - how-to: `docs/how-to/`
 - explanation: `docs/explanation/`
 - reference: `docs/reference/`
+
+## Read next
+
+- Contributing style guide: [`contributing/style.md`](style.md)
+- Releasing: [`contributing/releasing.md`](releasing.md)
+- Architecture overview: [`explanation/architecture.md`](../explanation/architecture.md)
+- Start here: [`start-here.md`](../start-here.md)

@@ -1,3 +1,10 @@
+---
+tags:
+  - runbook
+  - ops
+  - recsys-service
+---
+
 # Runbook: Empty recs
 
 ## Symptoms

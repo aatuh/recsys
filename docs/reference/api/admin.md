@@ -1,3 +1,12 @@
+---
+tags:
+  - reference
+  - api
+  - ops
+  - developer
+  - recsys-service
+---
+
 # Admin API + local bootstrap (recsys-service)
 
 This page documents the **admin/control-plane** endpoints and the minimum

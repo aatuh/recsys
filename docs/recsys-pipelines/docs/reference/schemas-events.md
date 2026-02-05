@@ -27,3 +27,10 @@ Optional fields:
 - `rank`
 
 See also: `testdata/events/`.
+
+## Read next
+
+- Start here: [`start-here.md`](../start-here.md)
+- Add event field: [`how-to/add-event-field.md`](../how-to/add-event-field.md)
+- Data lifecycle: [`explanation/data-lifecycle.md`](../explanation/data-lifecycle.md)
+- Run a backfill: [`how-to/run-backfill.md`](../how-to/run-backfill.md)

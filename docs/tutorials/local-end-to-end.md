@@ -1,3 +1,13 @@
+---
+tags:
+  - tutorial
+  - quickstart
+  - developer
+  - recsys-service
+  - recsys-pipelines
+  - recsys-eval
+---
+
 # Tutorial: local end-to-end (service → logging → eval)
 
 Goal: serve non-empty recommendations locally, emit an eval-compatible exposure log, and generate a `recsys-eval`
@@ -220,7 +230,7 @@ If you get an empty list, check:
 Copy the exposure file out of the container:
 
 ```bash
-docker cp recsys-svc:/app/tmp/exposures.eval.jsonl /tmp/exposures.jsonl
+docker compose cp api:/app/tmp/exposures.eval.jsonl /tmp/exposures.jsonl
 ```
 
 Extract the hashed `user_id` from the exposure file (this is what `recsys-service` logs for eval format):

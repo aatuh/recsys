@@ -42,3 +42,10 @@ configs/examples/dataset.interleaving.jsonl.yaml
 
 - comparing rankers trained on different candidate sets without noting it
 - treating interleaving wins as business KPI wins
+
+## Read next
+
+- Concepts: [`recsys-eval/docs/concepts.md`](concepts.md)
+- Metrics: [`recsys-eval/docs/metrics.md`](metrics.md)
+- Interpreting results: [`recsys-eval/docs/interpreting_results.md`](interpreting_results.md)
+- Data contracts: [`recsys-eval/docs/data_contracts.md`](data_contracts.md)

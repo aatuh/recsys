@@ -34,3 +34,11 @@ Rollback is changing the manifest pointer to an older URI.
 The older versioned blob remains available.
 
 See `how-to/rollback-manifest.md`.
+
+## Read next
+
+- Start here: [`start-here.md`](../start-here.md)
+- Roll back artifacts safely: [`how-to/rollback-safely.md`](../how-to/rollback-safely.md)
+- Output layout (where manifests and records live): [`reference/output-layout.md`](../reference/output-layout.md)
+- Stale artifacts runbook: [`operations/runbooks/stale-artifacts.md`](../operations/runbooks/stale-artifacts.md)
+- Glossary: [`glossary.md`](../glossary.md)

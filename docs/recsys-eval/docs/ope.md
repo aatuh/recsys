@@ -70,3 +70,10 @@ Do not use OPE when:
 - Use offline evaluation first.
 - Use OPE as an early filter.
 - Use A/B or interleaving for the final decision.
+
+## Read next
+
+- Concepts: [`recsys-eval/docs/concepts.md`](concepts.md)
+- Data contracts: [`recsys-eval/docs/data_contracts.md`](data_contracts.md)
+- Interpreting results: [`recsys-eval/docs/interpreting_results.md`](interpreting_results.md)
+- Security & privacy: [`recsys-eval/docs/security_privacy.md`](security_privacy.md)

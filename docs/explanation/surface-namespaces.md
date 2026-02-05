@@ -1,3 +1,11 @@
+---
+tags:
+  - explanation
+  - config
+  - developer
+  - recsys-service
+---
+
 # Surface namespaces
 
 The service treats **surface** as a first-class scoping key. In practice this

@@ -27,6 +27,11 @@ IGNORE_PREFIXES = (
     "#",
 )
 
+RAW_GRID_CARDS_LINES = {
+    "{ .grid .cards }",
+    "{: .grid .cards }",
+}
+
 
 def norm_target(md_path: Path, href: str) -> Path | None:
     # Strip anchors and query strings
@@ -62,8 +67,28 @@ def norm_target(md_path: Path, href: str) -> Path | None:
 
 def main() -> int:
     missing: list[tuple[Path, str]] = []
+    raw_grid_cards: list[tuple[Path, int]] = []
     for md in DOCS.rglob("*.md"):
         txt = md.read_text(encoding="utf-8", errors="ignore")
+
+        in_fence = False
+        fence = ""
+        for lineno, line in enumerate(txt.splitlines(), start=1):
+            stripped = line.strip()
+            if stripped.startswith(("```", "~~~")):
+                marker = stripped[:3]
+                if not in_fence:
+                    in_fence = True
+                    fence = marker
+                elif marker == fence:
+                    in_fence = False
+                    fence = ""
+                continue
+            if in_fence:
+                continue
+            if stripped in RAW_GRID_CARDS_LINES:
+                raw_grid_cards.append((md.relative_to(DOCS), lineno))
+
         for m in LINK_RE.finditer(txt):
             href = m.group(1).strip()
             target = norm_target(md, href)
@@ -76,6 +101,12 @@ def main() -> int:
         print("Broken internal links detected:\n")
         for src, href in missing:
             print(f"- {src}: {href}")
+        return 1
+
+    if raw_grid_cards:
+        print("Found raw '{: .grid .cards }' markers (not rendered by MkDocs Material):\n")
+        for src, lineno in raw_grid_cards:
+            print(f"- {src}:{lineno}")
         return 1
 
     print("Docs link check OK")

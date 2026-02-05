@@ -61,3 +61,10 @@ job_content_sim \
   --start YYYY-MM-DD \
   --end YYYY-MM-DD
 ```
+
+## Read next
+
+- Start here: [`start-here.md`](../start-here.md)
+- Config reference: [`reference/config.md`](config.md)
+- Debug failures: [`how-to/debug-failures.md`](../how-to/debug-failures.md)
+- Exit codes: [`reference/exit-codes.md`](exit-codes.md)

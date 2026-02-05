@@ -32,3 +32,10 @@
   - `how-to/rollback-manifest.md`
 - "What if data is missing for a day?"
   - `explanation/data-lifecycle.md`
+
+## Read next
+
+- Start here: [`start-here.md`](../start-here.md)
+- Artifacts and versioning: [`explanation/artifacts-and-versioning.md`](../explanation/artifacts-and-versioning.md)
+- SLOs and freshness: [`operations/slos-and-freshness.md`](../operations/slos-and-freshness.md)
+- Roll back artifacts safely: [`how-to/rollback-safely.md`](../how-to/rollback-safely.md)

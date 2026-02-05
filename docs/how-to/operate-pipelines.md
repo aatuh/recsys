@@ -1,3 +1,11 @@
+---
+tags:
+  - how-to
+  - ops
+  - artifacts
+  - recsys-pipelines
+---
+
 # How-to: operate recsys-pipelines
 
 ## Who this is for

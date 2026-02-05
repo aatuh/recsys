@@ -1,3 +1,9 @@
+---
+tags:
+  - ops
+  - performance
+---
+
 # Performance and capacity guide
 
 This guide describes how to run reproducible load tests against recsys-service

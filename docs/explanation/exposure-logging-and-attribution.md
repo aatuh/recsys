@@ -1,3 +1,13 @@
+---
+tags:
+  - explanation
+  - evaluation
+  - ops
+  - developer
+  - recsys-service
+  - recsys-eval
+---
+
 # Exposure logging and attribution
 
 ## Who this is for

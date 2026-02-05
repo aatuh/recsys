@@ -1,3 +1,11 @@
+---
+tags:
+  - explanation
+  - ml
+  - developer
+  - recsys-algo
+---
+
 # Candidate generation vs ranking
 
 ## Who this is for

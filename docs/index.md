@@ -1,3 +1,11 @@
+---
+tags:
+  - overview
+  - business
+  - developer
+  - ops
+---
+
 # RecSys suite documentation
 
 Welcome. This documentation is intended to start running the suite, integrate it
@@ -6,15 +14,57 @@ into an application, and operate it safely.
 You can access this documentation in several ways:
 
 - Visit [`https://recsys.app`](https://recsys.app).
-- Visit [`https://github.com/aatuh/recsys`](https://github.com/aatuh/recsys).
+- Browse the source repository: [`github.com/aatuh/recsys`](https://github.com/aatuh/recsys) (see `/docs`).
+- Follow product updates on LinkedIn: [`linkedin.com/showcase/recsys-suite`](https://www.linkedin.com/showcase/recsys-suite).
 - Run `make docs-serve` and open [`http://localhost:8001`](http://localhost:8001).
-- Browse the files in the repository under [`/docs`](/docs).
-
-Browse the source repository on GitHub: [`github.com/aatuh/recsys`](https://github.com/aatuh/recsys).
 
 ## Need guided help?
 
-- RecSys Copilot for docs/tech/business Q&A: [`chatgpt.com/g/.../recsys-copilot`](https://chatgpt.com/g/g-68c82a5c7704819185d0ff929b6fff11-recsys-copilot).
+- RecSys Copilot (Custom GPT): [`chatgpt.com/g/.../recsys-copilot`](https://chatgpt.com/g/g-68c82a5c7704819185d0ff929b6fff11-recsys-copilot).
+
+## Quick paths
+
+<div class="grid cards" markdown>
+
+- **[Start here](start-here/index.md)**  
+  Role-based entry points and the recommended reading order.
+- **[Run end-to-end locally](tutorials/local-end-to-end.md)**  
+  20–30 min tutorial to run the full loop on your laptop.
+- **[Integrate into your app](how-to/integrate-recsys-service.md)**  
+  Auth, tenancy, contracts, and copy/paste examples.
+- **[Operate pipelines](how-to/operate-pipelines.md)**  
+  Shipping, rollbacks, and day-2 operations.
+- **[Deploy with Helm](how-to/deploy-helm.md)**  
+  Kubernetes deployment guide and production checks.
+- **[API reference](reference/api/api-reference.md)**  
+  OpenAPI, examples, and error semantics.
+
+</div>
+
+## For buyers and stakeholders
+
+If you're evaluating RecSys as a product, start with these:
+
+<div class="grid cards" markdown>
+
+- **[For businesses hub](for-businesses/index.md)**  
+  A buyer-first path: value → pilot → requirements → pricing.
+- **[Stakeholder overview](start-here/what-is-recsys.md)**  
+  What you get, what you need, and where RecSys fits.
+- **[Pilot plan](start-here/pilot-plan.md)**  
+  A practical 2–6 week plan with deliverables and exit criteria.
+- **[ROI and risk model](start-here/roi-and-risk-model.md)**  
+  A template for lift measurement, guardrails, and ownership boundaries.
+- **[Security, privacy, compliance](start-here/security-privacy-compliance.md)**  
+  What we store, what we log, and how to run this safely.
+- **[Operational reliability & rollback](start-here/operational-reliability-and-rollback.md)**  
+  How changes are shipped and reversed without drama.
+- **[Licensing & pricing](licensing/index.md)**  
+  How to evaluate licensing quickly and what “commercial” means here.
+- **[Support model](project/support.md)**  
+  What support looks like and how incidents are handled.
+
+</div>
 
 ## What is the suite?
 

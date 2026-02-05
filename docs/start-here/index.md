@@ -1,7 +1,31 @@
+---
+tags:
+  - quickstart
+  - business
+  - developer
+---
+
 # Start here
 
 This site documents the **RecSys suite**: a production-ready set of modules for building, shipping, and operating a
 recommendation system.
+
+## Quick paths
+
+<div class="grid cards" markdown>
+
+- **[Run end-to-end locally](../tutorials/local-end-to-end.md)**  
+  20–30 min tutorial to run the full loop on your laptop.
+- **[Deploy with Helm](../how-to/deploy-helm.md)**  
+  Kubernetes deployment guide and production checks.
+- **[Integrate the API](../how-to/integrate-recsys-service.md)**  
+  Auth, tenancy, contracts, and copy/paste examples.
+- **[Operate pipelines](../how-to/operate-pipelines.md)**  
+  Shipping, rollbacks, and day-2 operations.
+- **[API reference](../reference/api/api-reference.md)**  
+  OpenAPI, examples, and error semantics.
+
+</div>
 
 ## Who this is for
 
@@ -55,8 +79,12 @@ recommendation system.
 - What the suite is and what it takes to pilot:
   - [`start-here/what-is-recsys.md`](what-is-recsys.md)
   - [`start-here/pilot-plan.md`](pilot-plan.md)
+  - [`start-here/roi-and-risk-model.md`](roi-and-risk-model.md)
   - [`start-here/responsibilities.md`](responsibilities.md)
+  - [`start-here/operational-reliability-and-rollback.md`](operational-reliability-and-rollback.md)
   - Security and privacy overview: [`start-here/security-privacy-compliance.md`](security-privacy-compliance.md)
+  - Licensing and pricing: [`licensing/index.md`](../licensing/index.md)
+  - Support model: [`project/support.md`](../project/support.md)
 
 - What to expect from evaluation and decisions:
   - [`recsys-eval/docs/interpreting_results.md`](../recsys-eval/docs/interpreting_results.md)

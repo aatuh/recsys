@@ -59,3 +59,10 @@ If you keep domain pure, tests become easy and reliability improves.
 - Adapters can import ports and domain.
 
 This keeps the system testable and change-friendly.
+
+## Read next
+
+- Workflows (practical entry points): [`recsys-eval/docs/index.md`](index.md)
+- Offline gate in CI: [`recsys-eval/docs/workflows/offline-gate-in-ci.md`](workflows/offline-gate-in-ci.md)
+- Integration logging plan: [`recsys-eval/docs/integration.md`](integration.md)
+- Concepts: [`recsys-eval/docs/concepts.md`](concepts.md)

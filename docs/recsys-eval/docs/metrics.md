@@ -125,3 +125,10 @@ Start with:
 - segment slicing limited to the top business cuts (tenant/surface/device)
 
 Add more only after you can run the basics reliably.
+
+## Read next
+
+- Interpretation cheat sheet: [`recsys-eval/docs/workflows/interpretation-cheat-sheet.md`](workflows/interpretation-cheat-sheet.md)
+- Interpreting results: [`recsys-eval/docs/interpreting_results.md`](interpreting_results.md)
+- Concepts: [`recsys-eval/docs/concepts.md`](concepts.md)
+- Offline gate in CI: [`recsys-eval/docs/workflows/offline-gate-in-ci.md`](workflows/offline-gate-in-ci.md)

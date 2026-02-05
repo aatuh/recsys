@@ -1,3 +1,11 @@
+---
+tags:
+  - runbook
+  - ops
+  - database
+  - recsys-service
+---
+
 # Runbook: Database migration issues
 
 ## Symptoms

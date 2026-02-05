@@ -1,3 +1,11 @@
+---
+tags:
+  - explanation
+  - ml
+  - developer
+  - recsys-algo
+---
+
 # Cold start strategies
 
 ## Who this is for

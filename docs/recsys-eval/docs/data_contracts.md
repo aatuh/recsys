@@ -131,3 +131,10 @@ In reports, look for:
 - missing tenant/surface fields (kills segmentation)
 
 If joins look wrong, stop and fix instrumentation. Do not "tune metrics".
+
+## Read next
+
+- Integration logging plan: [`recsys-eval/docs/integration.md`](integration.md)
+- Workflow: Offline gate in CI: [`recsys-eval/docs/workflows/offline-gate-in-ci.md`](workflows/offline-gate-in-ci.md)
+- Suite-level contract index: [`reference/data-contracts/index.md`](../../reference/data-contracts/index.md)
+- Troubleshooting joins: [`recsys-eval/docs/troubleshooting.md`](troubleshooting.md)

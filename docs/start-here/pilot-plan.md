@@ -1,4 +1,11 @@
-# Pilot plan (4–6 weeks)
+---
+tags:
+  - quickstart
+  - evaluation
+  - business
+---
+
+# Pilot plan (2–6 weeks)
 
 ## Who this is for
 
@@ -29,6 +36,26 @@ You need the ability to produce:
 - stable IDs for joins (a `request_id`, plus a pseudonymous `user_id` or session identifier)
 
 See: [`reference/data-contracts/index.md`](../reference/data-contracts/index.md)
+
+## Fast path: pilot in 2–4 weeks
+
+If you already have production-like logging and a team that can move quickly, you can compress the pilot:
+
+- **Week 1:** integrate one surface, validate joins, generate the first report.
+- **Week 2:** ship one controlled improvement (rules/constraints or one new signal) and practice rollback once.
+- **Weeks 3–4 (optional):** run an online experiment for the key surface with explicit guardrails.
+
+Fast path prerequisites:
+
+- You can emit `exposure.v1` and `outcome.v1` (or can map to them within a week).
+- You can roll back configuration/rules quickly (no long redeploy cycles).
+- Someone owns instrumentation quality (join-rate and schema correctness).
+
+Fast path exit criteria (minimum):
+
+- Logs validate and join integrity is sane (don’t ship on broken instrumentation).
+- A report exists for baseline vs candidate and is reproducible.
+- Rollback has been tested once (config/rules and/or manifest pointer).
 
 ## Phase 1 (Week 1): baseline + instrumentation
 

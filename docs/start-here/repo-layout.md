@@ -1,3 +1,10 @@
+---
+tags:
+  - reference
+  - project
+  - developer
+---
+
 # Repo layout and Go module paths
 
 This repository is hosted at `github.com/aatuh/recsys`, but the Go module import paths currently use the

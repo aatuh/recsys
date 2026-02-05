@@ -1,3 +1,11 @@
+---
+tags:
+  - how-to
+  - integration
+  - developer
+  - recsys-service
+---
+
 # Cookbook: integrate with a webshop
 
 ## Who this is for

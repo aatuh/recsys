@@ -32,3 +32,11 @@ Resource limits protect the pipeline from unbounded inputs:
 If you see "limit exceeded", raise limits only after understanding why.
 
 Operational guidance: `operations/runbooks/limit-exceeded.md`.
+
+## Read next
+
+- Limit exceeded runbook: [`operations/runbooks/limit-exceeded.md`](../operations/runbooks/limit-exceeded.md)
+- Config reference (limits and inputs): [`reference/config.md`](../reference/config.md)
+- Debug failures: [`how-to/debug-failures.md`](../how-to/debug-failures.md)
+- Operate pipelines daily: [`how-to/operate-daily.md`](../how-to/operate-daily.md)
+- Glossary: [`glossary.md`](../glossary.md)

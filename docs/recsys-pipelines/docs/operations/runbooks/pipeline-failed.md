@@ -26,3 +26,10 @@ If publish failed mid-run, serving should still point to the previous version.
 - If publish already updated to a bad version, roll back the manifest
 
 See `how-to/rollback-manifest.md`.
+
+## Read next
+
+- Debug failures: [`how-to/debug-failures.md`](../../how-to/debug-failures.md)
+- Roll back artifacts safely: [`how-to/rollback-safely.md`](../../how-to/rollback-safely.md)
+- Validation failed runbook: [`operations/runbooks/validation-failed.md`](validation-failed.md)
+- SLOs and freshness: [`operations/slos-and-freshness.md`](../slos-and-freshness.md)

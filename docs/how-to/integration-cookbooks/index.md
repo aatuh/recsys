@@ -1,3 +1,11 @@
+---
+tags:
+  - how-to
+  - integration
+  - developer
+  - recsys-service
+---
+
 # Integration cookbooks (map RecSys to your domain)
 
 ## Who this is for

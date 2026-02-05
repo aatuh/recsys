@@ -24,3 +24,9 @@ This doc is intentionally short. It exists to set expectations.
 - training models
 - serving recommendations
 - replacing a full experimentation platform
+
+## Read next
+
+- Overview: [`recsys-eval/overview.md`](../overview.md)
+- Workflows: [`recsys-eval/docs/index.md`](index.md)
+- Architecture: [`recsys-eval/docs/architecture.md`](architecture.md)

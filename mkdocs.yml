@@ -1,5 +1,7 @@
 site_name: RecSys
+site_description: Production-ready recommendation system suite (service, ranking, pipelines, evaluation)
 repo_url: https://github.com/aatuh/recsys
+edit_uri: edit/master/docs/
 site_url: https://recsys.app
 
 docs_dir: docs
@@ -8,26 +10,70 @@ use_directory_urls: true  # /pricing/ instead of /pricing.html
 
 theme:
   name: material
+  logo: assets/logo.png
+  favicon: assets/favicon.png
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
   features:
     - navigation.instant
     - navigation.tabs
     - navigation.top
+    - navigation.sections
+    - navigation.indexes
+    - navigation.path
+    - navigation.footer
+    - toc.follow
     - search.suggest
+    - search.highlight
     - content.code.copy
+    - content.action.edit
+    - content.action.view
 
 extra:
   version:
     provider: mike
+  social:
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/showcase/recsys-suite
+      name: RecSys suite on LinkedIn
 
 plugins:
   - search
   - swagger-ui-tag:
       extra_css:
         - stylesheets/swagger-iframe.css
+  - tags
+  - blog:
+      blog_dir: whats-new
+  - social
+  - git-revision-date-localized:
+      type: timeago
+      strict: false
+      fallback_to_build_date: true
+  - git-authors:
+      strict: false
+      show_email_address: false
+  - redirects:
+      redirect_maps: {}
+  - minify:
+      minify_html: true
+  - glightbox
 
 markdown_extensions:
   - admonition
   - attr_list
+  - md_in_html
   - footnotes
   - tables
   - toc:
@@ -39,7 +85,7 @@ markdown_extensions:
       custom_fences:
         - name: mermaid
           class: mermaid
-          format: pymdownx.superfences.fence_code_format
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:
       alternate_style: true
 
@@ -50,32 +96,35 @@ extra_javascript:
   - javascripts/swagger-iframe-autosize.js
 
 nav:
-  - Home: index.md
-  - What's new: whats-new/index.md
-  - Start here:
-      - Start here (overview): start-here/index.md
-      - Docs map: start-here/docs-map.md
-      - Stakeholder overview: start-here/what-is-recsys.md
-      - Stakeholder FAQ: start-here/faq.md
-      - Pilot plan (4–6 weeks): start-here/pilot-plan.md
-      - Responsibilities (RACI): start-here/responsibilities.md
-      - Customer onboarding checklist: start-here/customer-onboarding-checklist.md
-      - Security, privacy, compliance: start-here/security-privacy-compliance.md
+  - Overview:
+      - What is RecSys: index.md
+      - For businesses:
+          - Overview: for-businesses/index.md
+          - Use cases: for-businesses/use-cases.md
+          - Success metrics: for-businesses/success-metrics.md
+          - Value model (ROI): for-businesses/value-model.md
+          - Evidence: for-businesses/evidence.md
+          - Pilot plan (2–6 weeks): start-here/pilot-plan.md
+          - ROI and risk model: start-here/roi-and-risk-model.md
+          - Operational reliability & rollback: start-here/operational-reliability-and-rollback.md
+          - Security, privacy, compliance: start-here/security-privacy-compliance.md
+          - Licensing & pricing: licensing/index.md
+          - Support model: project/support.md
+      - What's new: whats-new/index.md
+      - Tags: tags.md
+      - Architecture (suite): explanation/suite-architecture.md
       - Suite context diagram: start-here/diagrams/suite-context.md
-      - Repo layout and module paths: start-here/repo-layout.md
-      - Known limitations: start-here/known-limitations.md
-
-  - Licensing & Pricing:
-      - Licensing: licensing/index.md
-      - Evaluation license: licensing/eval_license.md
-      - Commercial Use & Licensing: licensing/commercial.md
-      - Commercial license: licensing/commercial_license.md
-      - Pricing: licensing/pricing.md
-      - Order Form: licensing/order_form.md
-
-  - RecSys:
-      - Explanation:
-          - Suite architecture: explanation/suite-architecture.md
+      - Evaluation & onboarding:
+          - Stakeholder overview: start-here/what-is-recsys.md
+          - Stakeholder FAQ: start-here/faq.md
+          - Pilot plan (2–6 weeks): start-here/pilot-plan.md
+          - ROI and risk model: start-here/roi-and-risk-model.md
+          - Operational reliability & rollback: start-here/operational-reliability-and-rollback.md
+          - Responsibilities (RACI): start-here/responsibilities.md
+          - Customer onboarding checklist: start-here/customer-onboarding-checklist.md
+          - Security, privacy, compliance: start-here/security-privacy-compliance.md
+          - Known limitations: start-here/known-limitations.md
+      - Concepts:
           - Candidate vs ranking: explanation/candidate-vs-ranking.md
           - Cold start strategies: explanation/cold-start-strategies.md
           - Experimentation model: explanation/experimentation-model.md
@@ -84,145 +133,164 @@ nav:
           - Pipelines operational invariants: explanation/pipelines-operational-invariants.md
           - Exposure logging & attribution: explanation/exposure-logging-and-attribution.md
           - Surface namespaces: explanation/surface-namespaces.md
+      - Repo layout and module paths: start-here/repo-layout.md
 
+  - Quickstart:
+      - Start here: start-here/index.md
+      - Docs map: start-here/docs-map.md
       - Tutorials:
           - Local end-to-end: tutorials/local-end-to-end.md
-          - Minimal pilot (DB-only): tutorials/minimal-pilot-db-only.md
           - Production-like run: tutorials/production-like-run.md
+          - Minimal pilot (DB-only): tutorials/minimal-pilot-db-only.md
           - Tiny dataset (README): tutorials/datasets/tiny/README.md
+      - Deploy with Helm: how-to/deploy-helm.md
 
-      - How-to:
-          - Deploy with Helm: how-to/deploy-helm.md
-          - Integrate service: how-to/integrate-recsys-service.md
-          - Integration cookbooks:
-              - Overview: how-to/integration-cookbooks/index.md
-              - Webshop: how-to/integration-cookbooks/webshop.md
-              - Content feed: how-to/integration-cookbooks/content-feed.md
-              - Event bus: how-to/integration-cookbooks/event-bus.md
-          - Operate pipelines: how-to/operate-pipelines.md
-          - Run eval and ship: how-to/run-eval-and-ship.md
+  - Guides:
+      - Integrate service: how-to/integrate-recsys-service.md
+      - Integration cookbooks:
+          - Overview: how-to/integration-cookbooks/index.md
+          - Webshop: how-to/integration-cookbooks/webshop.md
+          - Content feed: how-to/integration-cookbooks/content-feed.md
+          - Event bus: how-to/integration-cookbooks/event-bus.md
+      - Operate pipelines: how-to/operate-pipelines.md
+      - Run eval and ship: how-to/run-eval-and-ship.md
+      - Components:
+          - recsys-algo:
+              - Index: recsys-algo/index.md
+              - Concepts: recsys-algo/concepts.md
+              - Store ports: recsys-algo/store-ports.md
+              - Examples: recsys-algo/examples.md
+              - Releases: recsys-algo/releases.md
+          - recsys-eval:
+              - Index: recsys-eval/docs/index.md
+              - Overview: recsys-eval/overview.md
+              - Workflows:
+                  - Offline gate in CI: recsys-eval/docs/workflows/offline-gate-in-ci.md
+                  - Online A/B in production: recsys-eval/docs/workflows/online-ab-in-production.md
+                  - Interpretation cheat sheet: recsys-eval/docs/workflows/interpretation-cheat-sheet.md
+              - Architecture: recsys-eval/docs/architecture.md
+              - CI gates: recsys-eval/docs/ci_gates.md
+              - Concepts: recsys-eval/docs/concepts.md
+              - Data contracts: recsys-eval/docs/data_contracts.md
+              - Integration: recsys-eval/docs/integration.md
+              - Interleaving: recsys-eval/docs/interleaving.md
+              - Interpreting results: recsys-eval/docs/interpreting_results.md
+              - Metrics: recsys-eval/docs/metrics.md
+              - OPE: recsys-eval/docs/ope.md
+              - Roadmap: recsys-eval/docs/roadmap.md
+              - Runbooks: recsys-eval/docs/runbooks.md
+              - Scaling: recsys-eval/docs/scaling.md
+              - Security & privacy: recsys-eval/docs/security_privacy.md
+              - Style: recsys-eval/docs/style.md
+              - Troubleshooting: recsys-eval/docs/troubleshooting.md
+          - recsys-pipelines:
+              - Index: recsys-pipelines/docs/index.md
+              - Overview: recsys-pipelines/overview.md
+              - Start here: recsys-pipelines/docs/start-here.md
+              - Glossary: recsys-pipelines/docs/glossary.md
+              - Learning paths:
+                  - Engineer: recsys-pipelines/docs/learning-paths/engineer.md
+                  - Data engineer: recsys-pipelines/docs/learning-paths/data-engineer.md
+                  - SRE / on-call: recsys-pipelines/docs/learning-paths/sre-oncall.md
+                  - Product / stakeholders: recsys-pipelines/docs/learning-paths/product.md
+              - Tutorials:
+                  - Local quickstart: recsys-pipelines/docs/tutorials/local-quickstart.md
+                  - Job-per-container mode: recsys-pipelines/docs/tutorials/job-mode.md
+              - How-to:
+                  - Operate pipelines daily: recsys-pipelines/docs/how-to/operate-daily.md
+                  - Backfill safely: recsys-pipelines/docs/how-to/backfill-safely.md
+                  - Roll back artifacts safely: recsys-pipelines/docs/how-to/rollback-safely.md
+                  - Run incremental: recsys-pipelines/docs/how-to/run-incremental.md
+                  - Run a backfill: recsys-pipelines/docs/how-to/run-backfill.md
+                  - Schedule pipelines: recsys-pipelines/docs/how-to/schedule-pipelines.md
+                  - Debug failures: recsys-pipelines/docs/how-to/debug-failures.md
+                  - Roll back the manifest: recsys-pipelines/docs/how-to/rollback-manifest.md
+                  - Add artifact type: recsys-pipelines/docs/how-to/add-artifact-type.md
+                  - Add event field: recsys-pipelines/docs/how-to/add-event-field.md
+              - Explanation:
+                  - Architecture: recsys-pipelines/docs/explanation/architecture.md
+                  - Data lifecycle: recsys-pipelines/docs/explanation/data-lifecycle.md
+                  - Windows and backfills: recsys-pipelines/docs/explanation/windows-and-backfills.md
+                  - Artifacts and versioning: recsys-pipelines/docs/explanation/artifacts-and-versioning.md
+                  - Validation and guardrails: recsys-pipelines/docs/explanation/validation-and-guardrails.md
+                  - Documentation approach: recsys-pipelines/docs/explanation/documentation-approach.md
+              - Reference:
+                  - CLI: recsys-pipelines/docs/reference/cli.md
+                  - Config: recsys-pipelines/docs/reference/config.md
+                  - Output layout: recsys-pipelines/docs/reference/output-layout.md
+                  - Exit codes: recsys-pipelines/docs/reference/exit-codes.md
+                  - Event schema: recsys-pipelines/docs/reference/schemas-events.md
+                  - Artifact schema: recsys-pipelines/docs/reference/schemas-artifacts.md
+              - Operations:
+                  - SLOs and freshness: recsys-pipelines/docs/operations/slos-and-freshness.md
+                  - Runbooks:
+                      - Pipeline failed: recsys-pipelines/docs/operations/runbooks/pipeline-failed.md
+                      - Validation failed: recsys-pipelines/docs/operations/runbooks/validation-failed.md
+                      - Limit exceeded: recsys-pipelines/docs/operations/runbooks/limit-exceeded.md
+                      - Stale artifacts: recsys-pipelines/docs/operations/runbooks/stale-artifacts.md
+              - Contributing:
+                  - Dev workflow: recsys-pipelines/docs/contributing/dev-workflow.md
+                  - Style guide: recsys-pipelines/docs/contributing/style.md
+                  - Releasing: recsys-pipelines/docs/contributing/releasing.md
+              - ADRs:
+                  - ADR index: recsys-pipelines/docs/adr/README.md
+                  - Template: recsys-pipelines/docs/adr/template.md
 
-      - Reference:
-          - API:
-              - API Reference: reference/api/api-reference.md
-              - Examples: reference/api/examples.md
-              - Errors & troubleshooting: reference/api/errors.md
-              - Admin & bootstrap: reference/api/admin.md
-          - CLI:
-              - Overview: reference/cli/index.md
-              - recsys-eval: reference/cli/recsys-eval.md
-              - recsys-pipelines: reference/cli/recsys-pipelines.md
-          - Config:
-              - Overview: reference/config/index.md
-              - recsys-service: reference/config/recsys-service.md
-              - recsys-eval: reference/config/recsys-eval.md
-              - recsys-pipelines: reference/config/recsys-pipelines.md
-          - Data contracts:
-              - Overview: reference/data-contracts/index.md
-              - Eval events: reference/data-contracts/eval-events.md
-              - Event join logic: reference/data-contracts/join-logic.md
-              - Field catalog: reference/data-contracts/field-catalog.md
-          - Database:
-              - Overview: reference/database/index.md
-              - Schema: reference/database/schema.md
-              - Migrations: reference/database/migrations.md
-              - DB-only seeding: reference/database/db-only-seeding.md
+  - Reference:
+      - Overview: reference/index.md
+      - API:
+          - API reference: reference/api/api-reference.md
+          - Examples: reference/api/examples.md
+          - Errors & troubleshooting: reference/api/errors.md
+          - Admin & bootstrap: reference/api/admin.md
+      - CLI:
+          - Overview: reference/cli/index.md
+          - recsys-eval: reference/cli/recsys-eval.md
+          - recsys-pipelines: reference/cli/recsys-pipelines.md
+      - Config:
+          - Overview: reference/config/index.md
+          - recsys-service: reference/config/recsys-service.md
+          - recsys-eval: reference/config/recsys-eval.md
+          - recsys-pipelines: reference/config/recsys-pipelines.md
+      - Data contracts:
+          - Overview: reference/data-contracts/index.md
+          - Eval events: reference/data-contracts/eval-events.md
+          - Event join logic: reference/data-contracts/join-logic.md
+          - Field catalog: reference/data-contracts/field-catalog.md
+      - Database:
+          - Overview: reference/database/index.md
+          - Schema: reference/database/schema.md
+          - Migrations: reference/database/migrations.md
+          - DB-only seeding: reference/database/db-only-seeding.md
 
-      - Operations:
-          - Performance & capacity: operations/performance-and-capacity.md
-          - Production readiness checklist: operations/production-readiness-checklist.md
-          - Runbooks:
-              - Empty recs: operations/runbooks/empty-recs.md
-              - Stale manifest: operations/runbooks/stale-manifest.md
-              - Database migration issues: operations/runbooks/db-migration-issues.md
-              - Rollback config rules: operations/runbooks/rollback-config-rules.md
-              - Service not ready: operations/runbooks/service-not-ready.md
+  - Operations:
+      - Overview: operations/index.md
+      - Performance & capacity: operations/performance-and-capacity.md
+      - Production readiness checklist: operations/production-readiness-checklist.md
+      - Runbooks:
+          - Empty recs: operations/runbooks/empty-recs.md
+          - Stale manifest: operations/runbooks/stale-manifest.md
+          - Database migration issues: operations/runbooks/db-migration-issues.md
+          - Rollback config rules: operations/runbooks/rollback-config-rules.md
+          - Service not ready: operations/runbooks/service-not-ready.md
 
-  - RecSys Algo:
-      - Index: recsys-algo/index.md
-      - Concepts: recsys-algo/concepts.md
-      - Store ports: recsys-algo/store-ports.md
-      - Examples: recsys-algo/examples.md
-      - Releases: recsys-algo/releases.md
-
-  - RecSys Eval:
-      - Index: recsys-eval/docs/index.md
-      - RecSys Eval Overview: recsys-eval/overview.md
-      - Architecture: recsys-eval/docs/architecture.md
-      - CI Gates: recsys-eval/docs/ci_gates.md
-      - Concepts: recsys-eval/docs/concepts.md
-      - Data Contracts: recsys-eval/docs/data_contracts.md
-      - Integration: recsys-eval/docs/integration.md
-      - Interleaving: recsys-eval/docs/interleaving.md
-      - Interpreting Results: recsys-eval/docs/interpreting_results.md
-      - Metrics: recsys-eval/docs/metrics.md
-      - OPE: recsys-eval/docs/ope.md
-      - Roadmap: recsys-eval/docs/roadmap.md
-      - Runbooks: recsys-eval/docs/runbooks.md
-      - Scaling: recsys-eval/docs/scaling.md
-      - Security & Privacy: recsys-eval/docs/security_privacy.md
-      - Style: recsys-eval/docs/style.md
-      - Troubleshooting: recsys-eval/docs/troubleshooting.md
-
-  - RecSys Pipelines:
-      - Index: recsys-pipelines/docs/index.md
-      - RecSys Pipelines Overview: recsys-pipelines/overview.md
-      - Start here: recsys-pipelines/docs/start-here.md
-      - Glossary: recsys-pipelines/docs/glossary.md
-      - Learning paths:
-          - Engineer: recsys-pipelines/docs/learning-paths/engineer.md
-          - Data engineer: recsys-pipelines/docs/learning-paths/data-engineer.md
-          - SRE / on-call: recsys-pipelines/docs/learning-paths/sre-oncall.md
-          - Product / stakeholders: recsys-pipelines/docs/learning-paths/product.md
-      - Tutorials:
-          - Local quickstart: recsys-pipelines/docs/tutorials/local-quickstart.md
-          - Job-per-container mode: recsys-pipelines/docs/tutorials/job-mode.md
-      - How-to:
-          - Run incremental: recsys-pipelines/docs/how-to/run-incremental.md
-          - Run a backfill: recsys-pipelines/docs/how-to/run-backfill.md
-          - Schedule pipelines: recsys-pipelines/docs/how-to/schedule-pipelines.md
-          - Debug failures: recsys-pipelines/docs/how-to/debug-failures.md
-          - Roll back the manifest: recsys-pipelines/docs/how-to/rollback-manifest.md
-          - Add artifact type: recsys-pipelines/docs/how-to/add-artifact-type.md
-          - Add event field: recsys-pipelines/docs/how-to/add-event-field.md
-      - Explanation:
-          - Architecture: recsys-pipelines/docs/explanation/architecture.md
-          - Data lifecycle: recsys-pipelines/docs/explanation/data-lifecycle.md
-          - Windows and backfills: recsys-pipelines/docs/explanation/windows-and-backfills.md
-          - Artifacts and versioning: recsys-pipelines/docs/explanation/artifacts-and-versioning.md
-          - Validation and guardrails: recsys-pipelines/docs/explanation/validation-and-guardrails.md
-          - Documentation approach: recsys-pipelines/docs/explanation/documentation-approach.md
-      - Reference:
-          - CLI: recsys-pipelines/docs/reference/cli.md
-          - Config: recsys-pipelines/docs/reference/config.md
-          - Output layout: recsys-pipelines/docs/reference/output-layout.md
-          - Exit codes: recsys-pipelines/docs/reference/exit-codes.md
-          - Event schema: recsys-pipelines/docs/reference/schemas-events.md
-          - Artifact schema: recsys-pipelines/docs/reference/schemas-artifacts.md
-      - Operations:
-          - SLOs and freshness: recsys-pipelines/docs/operations/slos-and-freshness.md
-          - Runbooks:
-              - Pipeline failed: recsys-pipelines/docs/operations/runbooks/pipeline-failed.md
-              - Validation failed: recsys-pipelines/docs/operations/runbooks/validation-failed.md
-              - Limit exceeded: recsys-pipelines/docs/operations/runbooks/limit-exceeded.md
-              - Stale artifacts: recsys-pipelines/docs/operations/runbooks/stale-artifacts.md
-      - Contributing:
-          - Dev workflow: recsys-pipelines/docs/contributing/dev-workflow.md
-          - Style guide: recsys-pipelines/docs/contributing/style.md
-          - Releasing: recsys-pipelines/docs/contributing/releasing.md
-      - ADRs:
-          - ADR index: recsys-pipelines/docs/adr/README.md
-          - Template: recsys-pipelines/docs/adr/template.md
+  - Commercial:
+      - Licensing overview: licensing/index.md
+      - Pricing: licensing/pricing.md
+      - Evaluation license: licensing/eval_license.md
+      - Commercial use: licensing/commercial.md
+      - Commercial license: licensing/commercial_license.md
+      - Order form: licensing/order_form.md
+      - Security: project/security.md
+      - Support: project/support.md
 
   - Project:
-      - Index: project/index.md
+      - Project index: project/index.md
       - Docs style guide: project/docs-style.md
       - Docs versioning: project/docs-versioning.md
       - Docs per release: project/docs-per-release.md
       - Glossary: project/glossary.md
-      - Code of Conduct: project/code_of_conduct.md
-      - Contributing: project/contributing.md
       - Governance: project/governance.md
+      - Contributing: project/contributing.md
+      - Code of Conduct: project/code_of_conduct.md
       - License Directory Notes: project/licenses_readme.md
-      - Security Policy: project/security.md
-      - Support: project/support.md

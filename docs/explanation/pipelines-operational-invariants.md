@@ -1,3 +1,11 @@
+---
+tags:
+  - explanation
+  - ops
+  - pipelines
+  - recsys-pipelines
+---
+
 # Pipelines operational invariants (safety model)
 
 ## Who this is for

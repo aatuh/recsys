@@ -1,3 +1,12 @@
+---
+tags:
+  - how-to
+  - integration
+  - api
+  - developer
+  - recsys-service
+---
+
 # How-to: integrate recsys-service into an application
 
 ## Who this is for

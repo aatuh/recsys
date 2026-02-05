@@ -1,3 +1,10 @@
+---
+tags:
+  - overview
+  - evaluation
+  - business
+---
+
 # Known limitations and non-goals (current)
 
 This page is intentionally blunt. It exists so evaluators and operators can set expectations early.

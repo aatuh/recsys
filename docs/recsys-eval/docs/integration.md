@@ -106,3 +106,10 @@ OPE:
 
 Start with the tiny dataset shipped in testdata. If you cannot make your
 production logs look like that, you will struggle later.
+
+## Read next
+
+- Data contracts: [`recsys-eval/docs/data_contracts.md`](data_contracts.md)
+- Online A/B workflow: [`recsys-eval/docs/workflows/online-ab-in-production.md`](workflows/online-ab-in-production.md)
+- Troubleshooting joins and SRM: [`recsys-eval/docs/troubleshooting.md`](troubleshooting.md)
+- Security & privacy: [`recsys-eval/docs/security_privacy.md`](security_privacy.md)

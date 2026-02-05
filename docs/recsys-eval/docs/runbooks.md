@@ -99,3 +99,10 @@ Fix:
 - do not ship based on OPE
 - improve propensity logging and overlap
 - prefer A/B or interleaving
+
+## Read next
+
+- Troubleshooting: [`recsys-eval/docs/troubleshooting.md`](troubleshooting.md)
+- Online A/B workflow: [`recsys-eval/docs/workflows/online-ab-in-production.md`](workflows/online-ab-in-production.md)
+- CI gates: [`recsys-eval/docs/ci_gates.md`](ci_gates.md)
+- Metrics: [`recsys-eval/docs/metrics.md`](metrics.md)

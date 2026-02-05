@@ -1,3 +1,13 @@
+---
+tags:
+  - explanation
+  - artifacts
+  - ops
+  - developer
+  - recsys-pipelines
+  - recsys-service
+---
+
 # Artifacts and manifest lifecycle (pipelines → service)
 
 ## Who this is for

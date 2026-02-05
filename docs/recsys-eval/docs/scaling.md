@@ -59,3 +59,9 @@ available in stream mode.
 - Are you outputting huge reports because you enabled too much detail?
 
 When in doubt, reduce scope, confirm correctness, then scale up.
+
+## Read next
+
+- CI gates: [`recsys-eval/docs/ci_gates.md`](ci_gates.md)
+- Troubleshooting: [`recsys-eval/docs/troubleshooting.md`](troubleshooting.md)
+- Architecture: [`recsys-eval/docs/architecture.md`](architecture.md)

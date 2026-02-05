@@ -1,3 +1,11 @@
+---
+tags:
+  - runbook
+  - ops
+  - artifacts
+  - recsys-service
+---
+
 # Runbook: Stale manifest (artifact mode)
 
 ## Symptoms

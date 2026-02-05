@@ -1,3 +1,10 @@
+---
+tags:
+  - explanation
+  - architecture
+  - overview
+---
+
 # Suite Context
 
 ```mermaid

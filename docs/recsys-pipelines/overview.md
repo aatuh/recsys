@@ -54,8 +54,8 @@ make smoke
 
 ## Documentation
 
-Docs are organized using the Diataxis approach (tutorials, how-to guides,
-explanations, and reference). See `docs/index.md` for the entry point.
+Docs are organized into tutorials, how-to guides, explanations, and reference.
+See `docs/index.md` for the entry point.
 
 - Start here: `docs/start-here.md`
 - Tutorials: `docs/tutorials/`

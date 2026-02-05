@@ -1,3 +1,10 @@
+---
+tags:
+  - reference
+  - data-contracts
+  - developer
+---
+
 # Data contracts
 
 ## Who this is for

@@ -1,3 +1,11 @@
+---
+tags:
+  - explanation
+  - architecture
+  - overview
+  - developer
+---
+
 # Suite architecture
 
 ## Who this is for

@@ -1,3 +1,11 @@
+---
+tags:
+  - runbook
+  - ops
+  - config
+  - recsys-service
+---
+
 # Runbook: Roll back config/rules
 
 This runbook covers **rolling back tenant config and rules** in `recsys-service`.

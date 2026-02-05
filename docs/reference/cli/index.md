@@ -1,3 +1,11 @@
+---
+tags:
+  - reference
+  - cli
+  - developer
+  - ops
+---
+
 # CLI reference
 
 ## Who this is for

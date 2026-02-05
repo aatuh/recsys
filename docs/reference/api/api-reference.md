@@ -1,3 +1,11 @@
+---
+tags:
+  - reference
+  - api
+  - developer
+  - recsys-service
+---
+
 # API Reference
 
 This page is the **integration hub** for `recsys-service`:

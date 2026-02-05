@@ -25,3 +25,9 @@ If you do not need a field, do not collect it.
 
 Propensity logging can include per-item scores. Treat them as sensitive.
 They can leak model behavior and business logic if exposed carelessly.
+
+## Read next
+
+- Suite security overview: [`start-here/security-privacy-compliance.md`](../../start-here/security-privacy-compliance.md)
+- Integration logging plan: [`recsys-eval/docs/integration.md`](integration.md)
+- Data contracts: [`recsys-eval/docs/data_contracts.md`](data_contracts.md)

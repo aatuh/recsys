@@ -51,4 +51,9 @@ make smoke
 - Where the outputs land
 - Why reruns are safe
 
-Next: `tutorials/job-mode.md` or `explanation/artifacts-and-versioning.md`.
+## Read next
+
+- Job-per-step mode: [`tutorials/job-mode.md`](job-mode.md)
+- Artifacts and versioning: [`explanation/artifacts-and-versioning.md`](../explanation/artifacts-and-versioning.md)
+- Output layout: [`reference/output-layout.md`](../reference/output-layout.md)
+- Start here: [`start-here.md`](../start-here.md)

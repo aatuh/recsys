@@ -39,3 +39,11 @@ Publishing is ordered so that the manifest pointer updates last.
 This means serving should still point to the previous version.
 
 See `operations/runbooks/pipeline-failed.md`.
+
+## Read next
+
+- Operate pipelines daily: [`how-to/operate-daily.md`](operate-daily.md)
+- Pipeline failed runbook: [`operations/runbooks/pipeline-failed.md`](../operations/runbooks/pipeline-failed.md)
+- Validation failed runbook: [`operations/runbooks/validation-failed.md`](../operations/runbooks/validation-failed.md)
+- Limit exceeded runbook: [`operations/runbooks/limit-exceeded.md`](../operations/runbooks/limit-exceeded.md)
+- Output layout (verify “current”): [`reference/output-layout.md`](../reference/output-layout.md)

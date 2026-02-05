@@ -1,3 +1,11 @@
+---
+tags:
+  - explanation
+  - artifacts
+  - ops
+  - developer
+---
+
 # Data modes: DB-only vs object store
 
 The service supports **DB-only mode** and **artifact/manifest mode**. DB-only

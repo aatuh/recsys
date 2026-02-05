@@ -21,3 +21,10 @@
 - Treat canonical events as the contract boundary.
 - Keep schema evolution backwards compatible.
 - Always validate before publishing.
+
+## Read next
+
+- Start here: [`start-here.md`](../start-here.md)
+- Event schemas: [`reference/schemas-events.md`](../reference/schemas-events.md)
+- Backfill safely: [`how-to/backfill-safely.md`](../how-to/backfill-safely.md)
+- Output layout: [`reference/output-layout.md`](../reference/output-layout.md)

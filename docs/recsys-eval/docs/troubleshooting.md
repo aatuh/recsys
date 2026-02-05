@@ -61,3 +61,11 @@ Fix:
 
 - use interleaving to choose between rankers
 - use A/B to decide shipping
+
+## Read next
+
+- Interpretation cheat sheet: [`recsys-eval/docs/workflows/interpretation-cheat-sheet.md`](workflows/interpretation-cheat-sheet.md)
+- Runbooks: [`recsys-eval/docs/runbooks.md`](runbooks.md)
+- Data contracts: [`recsys-eval/docs/data_contracts.md`](data_contracts.md)
+- Integration: [`recsys-eval/docs/integration.md`](integration.md)
+- Interpreting results: [`recsys-eval/docs/interpreting_results.md`](interpreting_results.md)

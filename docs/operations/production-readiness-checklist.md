@@ -1,3 +1,10 @@
+---
+tags:
+  - ops
+  - checklist
+  - security
+---
+
 # Production readiness checklist (RecSys suite)
 
 ## Who this is for

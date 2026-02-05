@@ -19,6 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -33,7 +35,10 @@ jobs:
       - name: Install docs deps
         run: |
           python -m pip install --upgrade pip
-          pip install mkdocs mkdocs-swagger-ui-tag mkdocs-material pymdown-extensions mike codespell
+          pip install mkdocs mkdocs-swagger-ui-tag mkdocs-material pymdown-extensions mike codespell \
+            mkdocs-git-revision-date-localized-plugin mkdocs-git-authors-plugin \
+            mkdocs-redirects mkdocs-minify-plugin mkdocs-glightbox \
+            pillow cairosvg
 
       - name: Markdown lint
         run: make mdlint

@@ -13,3 +13,10 @@ Local build:
 ```bash
 make build
 ```
+
+## Read next
+
+- Developer workflow: [`contributing/dev-workflow.md`](dev-workflow.md)
+- ADR index: [`adr/README.md`](../adr/README.md)
+- Pipelines docs index: [`docs/index.md`](../index.md)
+- Start here: [`start-here.md`](../start-here.md)

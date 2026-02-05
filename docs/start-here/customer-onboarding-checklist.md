@@ -1,3 +1,11 @@
+---
+tags:
+  - quickstart
+  - checklist
+  - business
+  - ops
+---
+
 # Customer onboarding checklist
 
 ## Who this is for

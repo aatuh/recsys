@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" aria-label="RecSys logo" role="img">
+  <g fill="none" stroke="#ffffff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M72 152L128 88L184 152" />
+    <path d="M72 152H184" />
+  </g>
+  <g fill="#ffffff">
+    <circle cx="72" cy="152" r="16" />
+    <circle cx="128" cy="88" r="16" />
+    <circle cx="184" cy="152" r="16" />
+  </g>
+</svg>

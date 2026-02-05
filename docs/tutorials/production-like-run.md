@@ -1,3 +1,12 @@
+---
+tags:
+  - tutorial
+  - ops
+  - artifacts
+  - recsys-service
+  - recsys-pipelines
+---
+
 # Tutorial: production-like run (pipelines → object store → ship/rollback)
 
 Goal: run `recsys-pipelines` to publish artifacts to local MinIO, configure `recsys-service` to read an artifact
@@ -201,13 +210,13 @@ You should be back to a non-zero item count.
 The service logs a line when it loads a manifest:
 
 ```bash
-docker logs --tail 200 recsys-svc | grep -i "artifact manifest loaded"
+docker compose logs --tail 200 api | grep -i "artifact manifest loaded"
 ```
 
 If you do not see it, confirm the environment inside the container:
 
 ```bash
-docker exec recsys-svc sh -c 'printenv | grep -E "RECSYS_ARTIFACT_MODE_ENABLED|RECSYS_ARTIFACT_MANIFEST_TEMPLATE"'
+docker compose exec -T api sh -c 'printenv | grep -E "RECSYS_ARTIFACT_MODE_ENABLED|RECSYS_ARTIFACT_MANIFEST_TEMPLATE"'
 ```
 
 ## Read next

@@ -42,3 +42,8 @@ Use these consistently:
 - "guardrail": a metric that must not regress
 
 Generated: 2026-01-27
+
+## Read next
+
+- Suite docs style guide: [`project/docs-style.md`](../../project/docs-style.md)
+- recsys-eval docs index: [`recsys-eval/docs/index.md`](index.md)

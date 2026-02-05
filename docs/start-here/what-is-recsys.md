@@ -1,3 +1,9 @@
+---
+tags:
+  - overview
+  - business
+---
+
 # What the RecSys suite is (stakeholder overview)
 
 ## Who this is for

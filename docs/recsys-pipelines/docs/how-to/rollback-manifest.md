@@ -35,3 +35,10 @@ that:
 - swaps the pointer atomically
 
 See `explanation/artifacts-and-versioning.md`.
+
+## Read next
+
+- Roll back artifacts safely: [`how-to/rollback-safely.md`](rollback-safely.md)
+- Artifacts and versioning: [`explanation/artifacts-and-versioning.md`](../explanation/artifacts-and-versioning.md)
+- Output layout (registry layout): [`reference/output-layout.md`](../reference/output-layout.md)
+- Stale artifacts runbook: [`operations/runbooks/stale-artifacts.md`](../operations/runbooks/stale-artifacts.md)

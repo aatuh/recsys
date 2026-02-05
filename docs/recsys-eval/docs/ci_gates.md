@@ -70,3 +70,10 @@ Production gates:
 - protect business impact and safety
 
 Do not confuse the two. Use both.
+
+## Read next
+
+- Offline gate workflow: [`recsys-eval/docs/workflows/offline-gate-in-ci.md`](workflows/offline-gate-in-ci.md)
+- Metrics: [`recsys-eval/docs/metrics.md`](metrics.md)
+- Troubleshooting: [`recsys-eval/docs/troubleshooting.md`](troubleshooting.md)
+- Suite workflow: [`how-to/run-eval-and-ship.md`](../../how-to/run-eval-and-ship.md)

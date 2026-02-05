@@ -41,3 +41,11 @@
 
 If you publish a bad artifact, you can degrade user experience immediately.
 Validation prevents "bad data" from reaching serving.
+
+## Read next
+
+- Start here: [`start-here.md`](../start-here.md)
+- Validation and guardrails: [`explanation/validation-and-guardrails.md`](validation-and-guardrails.md)
+- Run incremental: [`how-to/run-incremental.md`](../how-to/run-incremental.md)
+- Validation failed runbook: [`operations/runbooks/validation-failed.md`](../operations/runbooks/validation-failed.md)
+- Glossary: [`glossary.md`](../glossary.md)

@@ -1,3 +1,10 @@
+---
+tags:
+  - runbook
+  - ops
+  - recsys-service
+---
+
 # Runbook: Service not ready
 
 ## Symptoms

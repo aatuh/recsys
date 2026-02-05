@@ -31,3 +31,10 @@ At minimum:
 - Manifest `updated_at`:
 
   `.out/registry/current/<tenant>/<surface>/manifest.json`
+
+## Read next
+
+- Operate pipelines daily: [`how-to/operate-daily.md`](../how-to/operate-daily.md)
+- Schedule pipelines: [`how-to/schedule-pipelines.md`](../how-to/schedule-pipelines.md)
+- Stale artifacts runbook: [`operations/runbooks/stale-artifacts.md`](runbooks/stale-artifacts.md)
+- Pipeline failed runbook: [`operations/runbooks/pipeline-failed.md`](runbooks/pipeline-failed.md)

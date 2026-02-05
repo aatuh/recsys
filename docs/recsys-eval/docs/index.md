@@ -27,3 +27,10 @@ Deep dives:
 - [`OPE`](ope.md)
 - [`Interleaving`](interleaving.md)
 - [`Architecture`](architecture.md)
+
+## Read next
+
+- Overview: [`recsys-eval/overview.md`](../overview.md)
+- Offline gate in CI: [`recsys-eval/docs/workflows/offline-gate-in-ci.md`](workflows/offline-gate-in-ci.md)
+- Online A/B analysis: [`recsys-eval/docs/workflows/online-ab-in-production.md`](workflows/online-ab-in-production.md)
+- Suite workflow: [`how-to/run-eval-and-ship.md`](../../how-to/run-eval-and-ship.md)

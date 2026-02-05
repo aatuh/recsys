@@ -43,3 +43,11 @@ Level 2: containers within this repo
 - Keeps domain logic deterministic and testable
 - Makes storage pluggable (filesystem now, S3/GCS later)
 - Makes validation pluggable (builtin now, GE/dbt later)
+
+## Read next
+
+- Start here: [`start-here.md`](../start-here.md)
+- Data lifecycle (raw → canonical → publish): [`explanation/data-lifecycle.md`](data-lifecycle.md)
+- Operate pipelines daily: [`how-to/operate-daily.md`](../how-to/operate-daily.md)
+- Config reference: [`reference/config.md`](../reference/config.md)
+- Glossary: [`glossary.md`](../glossary.md)

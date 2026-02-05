@@ -1,3 +1,9 @@
+---
+tags:
+  - business
+  - ops
+---
+
 # Responsibilities (RACI): who owns what
 
 ## Who this is for

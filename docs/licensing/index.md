@@ -37,6 +37,25 @@ The serving stack is licensed under the **GNU Affero General Public License v3 (
 If your organization cannot or does not want to comply with AGPL obligations, you can obtain a **commercial license**
 (see `COMMERCIAL.md`).
 
+## Do you need a commercial license? (decision tree)
+
+This is not legal advice. If licensing affects your business, involve counsel.
+
+1. Are you only using `recsys-eval`?
+   - Yes → it is Apache-2.0 (commercial license not needed; comply with Apache-2.0 conditions).
+   - No → continue.
+1. Are you deploying or offering network access to the serving stack (`api/**`, `recsys-algo/**`,
+   `recsys-pipelines/**`)?
+   - No → your obligations depend on how you use/distribute the code.
+   - Yes → AGPLv3 applies.
+1. Can you comply with AGPLv3 terms for your deployment (including source-offer obligations for modifications)?
+   - Yes → use under AGPLv3.
+   - No / we need modifications private → request a commercial license.
+
+Next step:
+
+- Commercial use & how to buy: [`licensing/commercial.md`](commercial.md)
+
 ## Commercial licensing
 
 We offer a commercial license as an alternative set of terms for parts of this repository covered by AGPLv3.

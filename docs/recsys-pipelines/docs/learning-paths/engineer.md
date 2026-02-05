@@ -22,3 +22,10 @@
 - Domain must stay IO-free and deterministic.
 - Publishing must be atomic.
 - Every step must be safe to retry.
+
+## Read next
+
+- Start here: [`start-here.md`](../start-here.md)
+- Local quickstart: [`tutorials/local-quickstart.md`](../tutorials/local-quickstart.md)
+- Add artifact type: [`how-to/add-artifact-type.md`](../how-to/add-artifact-type.md)
+- Developer workflow: [`contributing/dev-workflow.md`](../contributing/dev-workflow.md)

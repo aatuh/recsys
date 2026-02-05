@@ -1,3 +1,12 @@
+---
+tags:
+  - how-to
+  - evaluation
+  - ml
+  - business
+  - recsys-eval
+---
+
 # How-to: run evaluation and make ship decisions
 
 ## Who this is for

@@ -176,3 +176,10 @@ Typical stack:
 - recsys-eval: measures and decides
 
 recsys-eval is the "truth serum": it turns change claims into evidence.
+
+## Read next
+
+- Metrics: [`recsys-eval/docs/metrics.md`](metrics.md)
+- Interpreting results: [`recsys-eval/docs/interpreting_results.md`](interpreting_results.md)
+- Online A/B workflow: [`recsys-eval/docs/workflows/online-ab-in-production.md`](workflows/online-ab-in-production.md)
+- CI gates: [`recsys-eval/docs/ci_gates.md`](ci_gates.md)
