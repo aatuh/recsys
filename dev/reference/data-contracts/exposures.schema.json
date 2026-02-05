@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "exposure.v1.schema.json",
+  "title": "Exposure event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "exposure.v1"
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "tenant_id": {
+      "type": "string"
+    },
+    "request_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "surface": {
+      "type": "string"
+    },
+    "segment": {
+      "type": "string"
+    },
+    "served": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "item_id": {
+            "type": "string"
+          },
+          "rank": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "score": {
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "item_id",
+          "rank"
+        ]
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "occurred_at",
+    "tenant_id",
+    "request_id",
+    "surface",
+    "segment",
+    "served"
+  ]
+}
