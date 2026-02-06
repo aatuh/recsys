@@ -9,6 +9,10 @@ tags:
 
 RecSys is an auditable recommendation system suite with deterministic ranking and versioned ship/rollback.
 
+!!! info "Canonical page"
+    This page is canonical for **commercial plan definitions and prices**. For evaluation flow and licensing decision
+    rules, see the [buyer guide](evaluation-and-licensing.md) and [licensing](../licensing/index.md).
+
 [Start evaluation](../evaluate/index.md){ .md-button .md-button--primary }
 [Read licensing](../licensing/index.md){ .md-button }
 [Buyer guide](evaluation-and-licensing.md){ .md-button }

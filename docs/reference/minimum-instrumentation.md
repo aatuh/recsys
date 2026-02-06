@@ -157,6 +157,14 @@ See: [`reference/data-contracts/join-logic.md`](data-contracts/join-logic.md)
 
 ## Verify (Definition of Done)
 
+- `recsys-eval validate` succeeds for your event logs:
+
+```bash
+recsys-eval validate --schema exposure.v1 --input exposures.jsonl
+recsys-eval validate --schema outcome.v1 --input outcomes.jsonl
+recsys-eval validate --schema assignment.v1 --input assignments.jsonl # if you run experiments
+```
+
 - `recsys-eval validate` passes for `exposure.v1` and `outcome.v1` (and `assignment.v1` if experiments).
 - Join-rate is measured by surface and is not near-zero.
 - You can compute at least one KPI and one guardrail end-to-end.
@@ -165,4 +173,5 @@ See: [`reference/data-contracts/join-logic.md`](data-contracts/join-logic.md)
 
 - Data contracts hub: [`reference/data-contracts/index.md`](data-contracts/index.md)
 - Decision playbook (ship/hold/rollback): [`recsys-eval/docs/decision-playbook.md`](../recsys-eval/docs/decision-playbook.md)
+- Integration spec (headers, request_id, invariants): [`developers/integration-spec.md`](../developers/integration-spec.md)
 - Integration checklist: [`how-to/integration-checklist.md`](../how-to/integration-checklist.md)

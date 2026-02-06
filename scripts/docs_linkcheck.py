@@ -6,6 +6,7 @@ Rules:
 - For links ending with '/', expects <path>/index.md.
 - For links to .md files, expects they exist.
 - Ignores links that point outside docs/ (e.g. ../) to avoid false positives.
+- Checks that leaf reference pages under docs/reference/ are not stubs (Who/What + example).
 
 This is intentionally simple: it catches most drift without requiring external tools.
 """
@@ -31,6 +32,13 @@ RAW_GRID_CARDS_LINES = {
     "{ .grid .cards }",
     "{: .grid .cards }",
 }
+
+REFERENCE = DOCS / "reference"
+
+REQUIRED_REFERENCE_STRINGS = (
+    "## Who this is for",
+    "## What you will get",
+)
 
 
 def norm_target(md_path: Path, href: str) -> Path | None:
@@ -68,6 +76,7 @@ def norm_target(md_path: Path, href: str) -> Path | None:
 def main() -> int:
     missing: list[tuple[Path, str]] = []
     raw_grid_cards: list[tuple[Path, int]] = []
+    reference_stubs: list[tuple[Path, list[str]]] = []
     for md in DOCS.rglob("*.md"):
         txt = md.read_text(encoding="utf-8", errors="ignore")
 
@@ -97,6 +106,16 @@ def main() -> int:
             if not target.exists():
                 missing.append((md.relative_to(DOCS), href))
 
+        if md.is_relative_to(REFERENCE) and md.name != "index.md":
+            problems: list[str] = []
+            for required in REQUIRED_REFERENCE_STRINGS:
+                if required not in txt:
+                    problems.append(f"missing '{required[3:]}' section")
+            if "```" not in txt and "~~~" not in txt:
+                problems.append("missing fenced code example")
+            if problems:
+                reference_stubs.append((md.relative_to(DOCS), problems))
+
     if missing:
         print("Broken internal links detected:\n")
         for src, href in missing:
@@ -107,6 +126,12 @@ def main() -> int:
         print("Found raw '{: .grid .cards }' markers (not rendered by MkDocs Material):\n")
         for src, lineno in raw_grid_cards:
             print(f"- {src}:{lineno}")
+        return 1
+
+    if reference_stubs:
+        print("Reference pages must include Who/What and at least one fenced code example:\n")
+        for src, problems in reference_stubs:
+            print(f"- {src}: {', '.join(problems)}")
         return 1
 
     print("Docs link check OK")

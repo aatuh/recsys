@@ -13,7 +13,8 @@ into an application, and operate it safely.
 
 RecSys is an auditable recommendation system suite with deterministic ranking and versioned ship/rollback.
 
-[Start evaluation](evaluate/index.md){ .md-button .md-button--primary }
+[Run quickstart (10 minutes)](tutorials/quickstart.md){ .md-button .md-button--primary }
+[Start evaluation](evaluate/index.md){ .md-button }
 [Developer hub](developers/index.md){ .md-button }
 
 ## Who this is for
@@ -27,6 +28,12 @@ RecSys is an auditable recommendation system suite with deterministic ranking an
 - Role-based entry points (developer, business, ops, recommendation engineer)
 - Canonical docs for evaluation, pricing/licensing, and the security pack
 - The “happy path” plus runbooks for common failures
+
+## Outcomes you should expect
+
+- A safe ship/hold/rollback loop (with a written decision trail)
+- Deterministic ranking behavior you can reason about and debug
+- Evidence you can share internally: example logs, evaluation reports, and operational runbooks
 
 ## Choose your path
 
@@ -42,6 +49,31 @@ RecSys is an auditable recommendation system suite with deterministic ranking an
   Evaluation workflows, metrics, and “ship/hold/rollback” decisions.
 
 </div>
+
+## Proof you can inspect (no calls required)
+
+<div class="grid cards" markdown>
+
+- **[Evidence (example logs + report excerpt)](for-businesses/evidence.md)**  
+  What “good outputs” look like (response, exposure log, joined outcomes, report snippet).
+- **[Baseline benchmarks](operations/baseline-benchmarks.md)**  
+  Reproducible “anchor numbers” and a template to record your own runs.
+- **[Security pack](security/security-pack.md)**  
+  The artifacts a security review expects (posture, logging, and data handling).
+- **[Known limitations](start-here/known-limitations.md)**  
+  Boundaries and non-goals (blunt) so you can decide fit quickly.
+
+</div>
+
+## What you need (minimum)
+
+!!! info "Minimum pilot requirements"
+    - 1 recommendation surface (for example: home feed, PDP similar-items)
+    - A stable join key: `request_id` present in exposures and outcomes
+    - Exposure + outcome logs (use pseudonymous ids; avoid raw PII)
+    - At least one KPI and one guardrail metric
+
+See: [Minimum instrumentation spec](reference/minimum-instrumentation.md)
 
 You can access this documentation in several ways:
 
@@ -159,3 +191,10 @@ Note:
 ## Contributing
 
 - [`project/docs-style.md`](project/docs-style.md)
+
+## Read next
+
+- Quickstart (10 minutes): [`tutorials/quickstart.md`](tutorials/quickstart.md)
+- Start an evaluation: [`evaluate/index.md`](evaluate/index.md)
+- Integration spec (headers, tenancy, request_id): [`developers/integration-spec.md`](developers/integration-spec.md)
+- Operations hub (runbooks, rollback, performance): [`operations/index.md`](operations/index.md)

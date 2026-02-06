@@ -49,6 +49,8 @@ See also:
 3. Optional trace/explain data can be enabled depending on your ranking setup (see
    [`recsys-algo/concepts.md`](../recsys-algo/concepts.md)).
 
+Scoring details: [`recsys-algo/scoring-model.md`](../recsys-algo/scoring-model.md)
+
 ## Determinism and auditability contract
 
 RecSys is designed so you can answer two questions reliably:

@@ -171,7 +171,7 @@ This gives you:
 - a minimal outcome log
 - a sample evaluation report
 
-## Next steps
+## Read next
 
 - Success metrics (KPIs + guardrails): [Success metrics](success-metrics.md)
 - Evaluation, pricing, and licensing (buyer guide): [Buyer guide](../pricing/evaluation-and-licensing.md)

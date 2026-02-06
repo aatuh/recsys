@@ -1,4 +1,24 @@
+---
+tags:
+  - reference
+  - data-contracts
+  - recsys-eval
+  - developer
+  - evaluation
+---
+
 # recsys-eval event schemas (v1)
+
+## Who this is for
+
+- Developers producing exposure/outcome/assignment JSONL files
+- Data engineers validating that logs meet strict schema requirements
+
+## What you will get
+
+- Required fields and allowed optional fields for each event type
+- JSONL examples you can copy/paste
+- Guidance to avoid validation failures
 
 `recsys-eval validate` uses strict JSON schemas with
 `additionalProperties: false`. If your JSONL includes extra keys or misses

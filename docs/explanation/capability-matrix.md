@@ -39,7 +39,7 @@ tags:
 - If you need a single “no-surprises” list of limitations and non-goals, start here:
   [`start-here/known-limitations.md`](../start-here/known-limitations.md)
 
-## Next steps
+## Read next
 
 - Stakeholder overview: [`start-here/what-is-recsys.md`](../start-here/what-is-recsys.md)
 - Architecture and data flow: [`explanation/how-it-works.md`](how-it-works.md)

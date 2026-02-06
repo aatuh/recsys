@@ -43,4 +43,5 @@ This section is for **running RecSys in production**: performance, readiness, an
 ## Read next
 
 - Production readiness checklist: [`operations/production-readiness-checklist.md`](production-readiness-checklist.md)
+- Failure modes & diagnostics (with runbooks): [`operations/failure-modes.md`](failure-modes.md)
 - Pipelines SLOs and freshness: [`recsys-pipelines/docs/operations/slos-and-freshness.md`](../recsys-pipelines/docs/operations/slos-and-freshness.md)

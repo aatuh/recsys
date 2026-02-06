@@ -1,4 +1,23 @@
+---
+tags:
+  - reference
+  - database
+  - ops
+  - recsys-service
+---
+
 # Migrations (safe upgrade)
+
+## Who this is for
+
+- Operators upgrading Postgres schema safely (local/staging/prod)
+- Developers who need the "what is the migration workflow?" answer
+
+## What you will get
+
+- The migration policy (append-only, safe defaults)
+- Preflight and upgrade commands (copy/paste)
+- A rollback story that avoids destructive `down` migrations
 
 ## Policy
 

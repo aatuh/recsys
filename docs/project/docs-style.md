@@ -86,6 +86,21 @@ Recommended tags:
 
 Use these templates for **suite-level docs** under `docs/` (as opposed to module docs that have their own style guides).
 
+### Exemptions (when "Who/What" is awkward)
+
+Some pages are primarily **legal text** or **forms**. For these, it is acceptable to omit:
+
+- `## Who this is for`
+- `## What you will get`
+
+Examples:
+
+- License texts and pricing definitions (for example: evaluation license, pricing definitions)
+- Order forms and order form templates
+
+Rule of thumb: if the page is meant to be read verbatim by legal/procurement, start with a 1–2 sentence context
+paragraph and link to the canonical buyer guide, then go straight into the content.
+
 ### Tutorials
 
 - Goal (what you will build/run)
@@ -95,7 +110,7 @@ Use these templates for **suite-level docs** under `docs/` (as opposed to module
 - Steps (numbered; each step has action + command + expected outcome)
 - Verify (expected output shape)
 - Troubleshooting (common failures)
-- Next steps (3 links)
+- Read next (3 links)
 
 ### How-to guides
 
@@ -105,7 +120,7 @@ Use these templates for **suite-level docs** under `docs/` (as opposed to module
 - Steps (each step has action + command + expected outcome)
 - Verify
 - Pitfalls / gotchas
-- Next steps (3 links)
+- Read next (3 links)
 
 ### Explanations
 
@@ -113,7 +128,7 @@ Use these templates for **suite-level docs** under `docs/` (as opposed to module
 - What you will get
 - Concepts and data flow (diagram if helpful)
 - Failure modes and recovery notes
-- Next steps (3 links)
+- Read next (3 links)
 
 ### Reference
 
@@ -121,7 +136,7 @@ Use these templates for **suite-level docs** under `docs/` (as opposed to module
 - What you will get
 - Definitions / contracts / options (be precise)
 - Examples (when it prevents ambiguity)
-- Next steps (optional)
+- Read next (optional)
 
 ### Runbooks
 
@@ -153,7 +168,7 @@ Use these skeletons for new suite-level pages. Keep headings consistent so reade
 
 ## Troubleshooting
 
-## Next steps
+## Read next
 ```
 
 ### How-to skeleton
@@ -173,7 +188,7 @@ Use these skeletons for new suite-level pages. Keep headings consistent so reade
 
 ## Pitfalls
 
-## Next steps
+## Read next
 ```
 
 ### Explanation skeleton
@@ -189,7 +204,7 @@ Use these skeletons for new suite-level pages. Keep headings consistent so reade
 
 ## Failure modes and recovery
 
-## Next steps
+## Read next
 ```
 
 ### Reference skeleton
@@ -205,7 +220,7 @@ Use these skeletons for new suite-level pages. Keep headings consistent so reade
 
 ## Examples
 
-## Next steps
+## Read next
 ```
 
 ## Markdown conventions
@@ -221,7 +236,9 @@ Use these skeletons for new suite-level pages. Keep headings consistent so reade
 These are the checks we run on docs changes:
 
 - `make mdlint`: markdownlint rules (including "one H1 per page")
-- `make docs-check`: internal link check, spell check, and a strict MkDocs build
+- `make docs-check`: internal link check, spell check, strict MkDocs build, and a "reference stub" gate
+  (`docs/reference/**` leaf pages must include `## Who this is for`, `## What you will get`, and at least one fenced
+  code block).
 
 ## Glossary linking
 

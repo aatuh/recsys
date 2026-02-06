@@ -11,6 +11,10 @@
 - The main configuration knobs (service env vars) that change ranking behavior
 - Determinism guarantees and the common ways determinism can be broken
 
+!!! info "Evaluation scope"
+    Capability boundaries: [`explanation/capability-matrix.md`](../explanation/capability-matrix.md). Non-goals:
+    [`start-here/known-limitations.md`](../start-here/known-limitations.md).
+
 ## Pipeline order (what runs when)
 
 At a high level, `recsys-algo` runs this sequence:
@@ -24,6 +28,8 @@ At a high level, `recsys-algo` runs this sequence:
 7. **Rules** (optional): pin / boost / block (may inject items).
 8. **Post-ranking diversity** (optional): MMR re-ranking + brand/category caps.
 9. **Response**: sort by score, tie-break by `item_id`, attach reasons/explain blocks when requested.
+
+Formal scoring spec: [`recsys-algo/scoring-model.md`](scoring-model.md)
 
 If you need the serving-layer view (what happens in `recsys-service` before/after the algorithm), read:
 [`explanation/candidate-vs-ranking.md`](../explanation/candidate-vs-ranking.md).

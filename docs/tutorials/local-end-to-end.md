@@ -20,15 +20,35 @@ tags:
 - An eval-compatible exposure log file
 - A sample `recsys-eval` report you can share internally
 
-This tutorial uses **DB-only mode** (fastest way to prove the loop locally). Artifact/manifest mode with pipelines is
-linked at the end.
+> **Choose your data mode**
+>
+> This tutorial uses **DB-only mode** (fastest way to prove the loop locally).
+>
+> - Choose **DB-only** to validate the full loop quickly: serve → log → eval.
+> - Choose **artifact/manifest mode** when you want pipelines to publish versioned artifacts and use the manifest as
+>   a ship/rollback lever.
+>
+> See: [`explanation/data-modes.md`](../explanation/data-modes.md). For artifact mode end-to-end, follow
+> [`tutorials/production-like-run.md`](production-like-run.md).
 
 ## Prereqs
 
-- Docker + Docker Compose
-- curl
+- Docker + Docker Compose (v2)
+- `make`
+- `curl`
 - POSIX shell
+- `python3` (used to parse the exposure log)
 - Go toolchain (to build `recsys-eval`)
+
+Verify you have them:
+
+```bash
+docker compose version
+make --version
+curl --version
+python3 --version
+go version
+```
 
 ## Verify (expected outcome)
 
@@ -433,7 +453,13 @@ docker compose run --rm --entrypoint sh minio-init -c \
 - Pipelines cannot connect to MinIO
   - Ensure `curl -fsS http://localhost:9000/minio/health/ready` succeeds.
 
-## Next steps
+### Runbooks
+
+- Service not ready: [`operations/runbooks/service-not-ready.md`](../operations/runbooks/service-not-ready.md)
+- Empty recs: [`operations/runbooks/empty-recs.md`](../operations/runbooks/empty-recs.md)
+- Database migration issues: [`operations/runbooks/db-migration-issues.md`](../operations/runbooks/db-migration-issues.md)
+
+## Read next
 
 - Production-like suite tutorial: [`tutorials/production-like-run.md`](production-like-run.md)
 - Integrate the serving API into your app: [`how-to/integrate-recsys-service.md`](../how-to/integrate-recsys-service.md)

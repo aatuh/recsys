@@ -9,6 +9,11 @@ tags:
 
 This page is a **self-serve index** of the documents security and procurement teams most commonly request.
 
+!!! info "Canonical page"
+    This page is canonical as a **procurement/security pack index** (what to forward and in what order). For the
+    canonical security/privacy posture, see
+    [Security, privacy, compliance](../start-here/security-privacy-compliance.md).
+
 Tip: use your browser’s **Print → Save as PDF** to produce a single-file “pack” for review.
 
 ## Forward to security (copy/paste)

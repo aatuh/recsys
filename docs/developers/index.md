@@ -72,6 +72,7 @@ Follow this path in order:
 Use the canonical checklist (with anchors you can share in PRs/issues):
 
 - [Integration checklist](../how-to/integration-checklist.md)
+- Integration spec (headers, tenant scope, request_id): [`developers/integration-spec.md`](integration-spec.md)
 
 Quick sanity check:
 

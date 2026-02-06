@@ -17,6 +17,10 @@ RecSys is an auditable recommendation system suite with deterministic ranking an
 [Start evaluation (commercial)][commercial_eval]{ .md-button .md-button--primary }
 [Message on LinkedIn][recsys_linkedin]{ .md-button }
 
+!!! info "Scope check (read before piloting)"
+    Capability boundaries: [`explanation/capability-matrix.md`](../explanation/capability-matrix.md). Non-goals:
+    [`start-here/known-limitations.md`](../start-here/known-limitations.md).
+
 ## Who this is for
 
 - Teams who want to validate lift and operational fit before committing
@@ -61,6 +65,7 @@ See:
 ## Read next
 
 - Pilot plan (2–6 weeks): [`start-here/pilot-plan.md`](../start-here/pilot-plan.md)
+- Procurement pack (Security/Legal/IT/Finance): [`for-businesses/procurement-pack.md`](../for-businesses/procurement-pack.md)
 - How-to run eval and ship decisions: [`how-to/run-eval-and-ship.md`](../how-to/run-eval-and-ship.md)
 - Default evaluation pack (recommended): [`recsys-eval/docs/default-evaluation-pack.md`](../recsys-eval/docs/default-evaluation-pack.md)
 - Operational reliability & rollback: [`start-here/operational-reliability-and-rollback.md`](../start-here/operational-reliability-and-rollback.md)

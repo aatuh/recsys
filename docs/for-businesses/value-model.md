@@ -29,7 +29,7 @@ For the full checklist (including risks and mitigations), use:
 
 - ROI and risk model: [ROI and risk model](../start-here/roi-and-risk-model.md)
 
-## Next steps
+## Read next
 
 - Success metrics (KPIs + guardrails): [Success metrics](success-metrics.md)
 - Pilot plan (2–6 weeks): [Pilot plan](../start-here/pilot-plan.md)

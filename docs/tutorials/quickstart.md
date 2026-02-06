@@ -18,10 +18,32 @@ tags:
 - one successful `POST /v1/recommend`
 - one saved exposure log file you can later evaluate
 
+> **Choose your data mode**
+>
+> This tutorial uses **DB-only mode** (fastest path to first success).
+>
+> - Choose **DB-only** to validate API integration, tenancy, and exposure logging with the smallest moving parts.
+> - Choose **artifact/manifest mode** when you want atomic publish and rollback (pipelines produce artifacts and a
+>   manifest pointer drives serving).
+>
+> See: [`explanation/data-modes.md`](../explanation/data-modes.md). For an artifact-mode walkthrough, jump to
+> [`tutorials/production-like-run.md`](production-like-run.md).
+
 ## Prereqs
 
-- Docker + Docker Compose
-- curl
+- Docker + Docker Compose (v2)
+- `make`
+- `curl`
+- POSIX shell
+- Optional: `jq` (prettier output)
+
+Verify you have them:
+
+```bash
+docker compose version
+make --version
+curl --version
+```
 
 !!! info "Key terms (2 minutes)"
     - **[Tenant](../project/glossary.md#tenant)**: a configuration + data isolation boundary (usually one organization).
@@ -235,7 +257,7 @@ Expected:
 - Exposure log file is missing → confirm `EXPOSURE_LOG_*` in `api/.env`, then restart:
   `docker compose up -d --force-recreate api`
 
-## Next steps
+## Read next
 
 - Integrate into an app: [`how-to/integrate-recsys-service.md`](../how-to/integrate-recsys-service.md)
 - Full walkthrough (serving → logging → eval): [`tutorials/local-end-to-end.md`](local-end-to-end.md)

@@ -16,6 +16,17 @@ This page is the **integration hub** for `recsys-service`:
 - Admin/control-plane + local bootstrap: [`admin.md`](admin.md)
 - Auth & tenancy: [`reference/auth-and-tenancy.md`](../auth-and-tenancy.md)
 
+## Who this is for
+
+- Developers integrating the serving API (`POST /v1/recommend`, `POST /v1/similar`)
+- Operators validating auth/tenancy and admin/control-plane access
+
+## What you will get
+
+- The base URL and versioning conventions
+- A minimal request/response example you can run locally
+- Pointers to the canonical schema, examples, and error semantics
+
 ## Base URL and versioning
 
 - All API endpoints are under `/v1`.

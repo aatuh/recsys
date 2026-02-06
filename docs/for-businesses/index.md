@@ -20,6 +20,11 @@ tags:
 
 ## Buyer journey (2 minutes)
 
+Prefer a single shareable page:
+
+- Buyer journey (5-minute path): [Buyer journey](buyer-journey.md)
+- Procurement pack (Security/Legal/IT/Finance): [Procurement pack](procurement-pack.md)
+
 1. [What is RecSys?](../start-here/what-is-recsys.md) — outcomes, positioning, and where it fits.
 2. [Pilot plan (2–6 weeks)](../start-here/pilot-plan.md) — timeline, deliverables, and exit criteria.
 3. [Evidence (what “good outputs” look like)](evidence.md) — examples of logs, reports, and audit records.
@@ -27,10 +32,29 @@ tags:
    how to procure.
 5. [Security pack](../security/security-pack.md) — self-serve pack for security/procurement review.
 
+## Proof you can inspect (no calls required)
+
+<div class="grid cards" markdown>
+
+- **[Evidence (example logs + report excerpt)](evidence.md)**  
+  What “good outputs” look like (response, exposure log, joined outcomes, report snippet).
+- **[Baseline benchmarks](../operations/baseline-benchmarks.md)**  
+  Reproducible “anchor numbers” and a template to record your own runs.
+- **[Security pack](../security/security-pack.md)**  
+  The artifacts a security review expects (posture, logging, and data handling).
+- **[Known limitations](../start-here/known-limitations.md)**  
+  Boundaries and non-goals (blunt) so you can decide fit quickly.
+
+</div>
+
 ## Jump links
 
 <div class="grid cards" markdown>
 
+- **[Buyer journey (5-minute path)](buyer-journey.md)**  
+  The recommended “what to read, in order” path you can forward to stakeholders.
+- **[Procurement pack](procurement-pack.md)**  
+  Role-based checklist (Security/Legal/IT/Finance) with canonical links only.
 - **[What is RecSys?](../start-here/what-is-recsys.md)**  
   What you get, where it fits, and what outcomes to expect.
 - **[Pilot plan (2–6 weeks)](../start-here/pilot-plan.md)**  
@@ -65,7 +89,7 @@ Start here:
 - Data contracts (schemas + examples): [Data contracts](../reference/data-contracts/index.md)
 - How evaluation decisions are made: [Run eval and ship](../how-to/run-eval-and-ship.md)
 
-## Next steps
+## Read next
 
 - Use cases (what to start with): [Use cases](use-cases.md)
 - Success metrics (KPIs + guardrails): [Success metrics](success-metrics.md)

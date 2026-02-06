@@ -80,7 +80,7 @@ Add one more slice only if you will act on it (device, locale, segment).
 - Over-slicing (finding fake wins by chance).
 - Treating offline metrics as business KPIs.
 
-## Next steps
+## Read next
 
 - Decision thresholds and what-to-do branches: [`recsys-eval/docs/decision-playbook.md`](decision-playbook.md)
 - Suite how-to (runnable commands): [`how-to/run-eval-and-ship.md`](../../how-to/run-eval-and-ship.md)

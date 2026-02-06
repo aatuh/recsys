@@ -38,7 +38,8 @@ In general:
 ### Dev headers (local/test)
 
 When `DEV_AUTH_ENABLED=true`, you can authenticate using headers.
-Defaults live in `api/.env.example`.
+The canonical env var list and defaults live in:
+[`reference/config/recsys-service.md`](config/recsys-service.md).
 
 Common headers:
 
@@ -53,6 +54,18 @@ Tip: if you want to use only one tenant header locally, set:
 Production guidance:
 
 - disable dev headers (`DEV_AUTH_ENABLED=false`)
+
+Example (local dev request):
+
+```bash
+curl -fsS http://localhost:8000/v1/recommend \
+  -H 'Content-Type: application/json' \
+  -H 'X-Request-Id: example-1' \
+  -H 'X-Dev-User-Id: dev-user-1' \
+  -H 'X-Dev-Org-Id: demo' \
+  -H 'X-Org-Id: demo' \
+  -d '{"surface":"home","k":3,"user":{"user_id":"u_1"}}'
+```
 
 ### JWT (production)
 

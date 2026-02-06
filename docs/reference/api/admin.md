@@ -17,6 +17,17 @@ Why this exists:
 - The OpenAPI file (`reference/api/openapi.yaml`) documents the HTTP surface.
 - This page adds **bootstrap guidance**, examples, and operational notes for admin/control-plane usage.
 
+## Who this is for
+
+- Operators configuring tenants, config, rules, and cache invalidation
+- Developers bootstrapping a local environment end-to-end
+
+## What you will get
+
+- The minimum DB bootstrap steps (create a tenant row)
+- Practical auth/tenancy guidance (dev headers vs JWT)
+- Admin endpoint semantics (config, rules, cache invalidation, audit)
+
 ## 0) Prereqs
 
 - Postgres is running and migrations are applied.

@@ -8,6 +8,11 @@ tags:
 
 # Evaluation, pricing, and licensing (buyer guide)
 
+!!! info "Canonical page"
+    This page is canonical for the **evaluation and procurement flow** (what to do next, what artifacts to produce).
+    For plan definitions and prices, see [pricing](index.md). For file-level license rules, see
+    [licensing](../licensing/index.md).
+
 ## Who this is for
 
 - Buyers and stakeholders deciding whether to run a pilot and how to procure the right license.
@@ -46,6 +51,42 @@ tags:
    - How many tenants and deployments do we need?
    - Do we require commercial terms for production use?
    - What support expectations do we need (response time, channels, escalation)?
+
+## Do you need commercial terms? (quick decision tree)
+
+This is not legal advice. If licensing affects your business, involve counsel.
+
+1. Are you only using `recsys-eval/**`?
+   - Yes → it is Apache-2.0 (commercial license not needed; comply with Apache-2.0 conditions).
+   - No → continue.
+2. Are you deploying or offering network access to the serving stack (`api/**`, `recsys-algo/**`, `recsys-pipelines/**`)?
+   - Yes → AGPLv3 applies unless you have commercial terms.
+   - No → your obligations depend on how you use/distribute the code.
+3. Can you comply with AGPLv3 terms for your deployment (including source-offer obligations for modifications)?
+   - Yes → use under AGPLv3.
+   - No / we need modifications private → request a commercial license.
+
+See the canonical decision tree and file-level rules: [Licensing](../licensing/index.md).
+
+## Plan mapping (quick)
+
+- **Commercial Evaluation (30 days)**: a time-boxed pilot under commercial terms (recommended if you want to avoid AGPL
+  uncertainty during the pilot).
+- **Starter**: one production deployment for one tenant, plus a small number of surfaces.
+- **Growth**: a few tenants and/or deployments, with faster async response expectations.
+- **Enterprise**: multi-region HA, OEM/resale, regulated environments, or custom terms.
+
+Canonical plan definitions and prices: [Pricing](index.md).
+
+## How to procure (fast path)
+
+1. Run a pilot on one surface and produce at least one report:
+   [Run eval and ship](../how-to/run-eval-and-ship.md)
+2. Confirm fit for your environment:
+   [Known limitations](../start-here/known-limitations.md) and [Security pack](../security/security-pack.md)
+3. Choose the plan and scope (tenants/deployments/support expectations): [Pricing](index.md)
+4. Use the order form template and contact us:
+   [Order form template](../licensing/order_form.md) and [`contact@recsys.app`][pricing_contact]
 
 ## Outputs and exit criteria
 
@@ -119,8 +160,10 @@ For the canonical decision tree and file-level rules, see:
 - [ ] We confirmed license obligations (AGPL vs commercial terms).
 - [ ] Security reviewed the security pack.
 
-## Next steps
+## Read next
 
 - Pricing overview (commercial plans): [Pricing](index.md)
 - Licensing decision tree: [Licensing](../licensing/index.md)
 - Security pack: [Security pack](../security/security-pack.md)
+
+[pricing_contact]: mailto:contact@recsys.app?subject=RecSys%20Commercial%20Evaluation

@@ -27,10 +27,21 @@ This tutorial uses the small built-in pipelines dataset and focuses on the deplo
 
 ## Prereqs
 
-- Docker + Docker Compose
-- curl
+- Docker + Docker Compose (v2)
+- `make`
+- `curl`
+- POSIX shell
 - Go toolchain (to build `recsys-pipelines`)
 - `jq` (optional; only used to print item counts)
+
+Verify you have them:
+
+```bash
+docker compose version
+make --version
+curl --version
+go version
+```
 
 ## Verify (expected outcome)
 
@@ -273,7 +284,13 @@ Expected:
 
 - The logs include `artifact manifest loaded` after you publish/swapped the manifest.
 
-## Next steps
+## Troubleshooting (runbooks)
+
+- Service not ready: [`operations/runbooks/service-not-ready.md`](../operations/runbooks/service-not-ready.md)
+- Empty recs: [`operations/runbooks/empty-recs.md`](../operations/runbooks/empty-recs.md)
+- Stale manifest: [`operations/runbooks/stale-manifest.md`](../operations/runbooks/stale-manifest.md)
+
+## Read next
 
 - Operate pipelines: [`how-to/operate-pipelines.md`](../how-to/operate-pipelines.md)
 - Run evaluation and make ship decisions: [`how-to/run-eval-and-ship.md`](../how-to/run-eval-and-ship.md)

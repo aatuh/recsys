@@ -9,6 +9,11 @@ tags:
 
 This repository is a **multi-license** codebase. Different directories are licensed under different terms.
 
+!!! info "Canonical page"
+    This page is canonical for the **AGPLv3 vs commercial** decision tree and obligations. For plan pricing, see
+    [pricing](../pricing/index.md). For the recommended evaluation path and procurement checklist, see the
+    [buyer guide](../pricing/evaluation-and-licensing.md).
+
 ## Quick map
 
 Path/component: `recsys-eval/**`

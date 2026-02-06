@@ -1,4 +1,22 @@
-# DB-only signals: schema + seed examples
+---
+tags:
+  - reference
+  - database
+  - developer
+  - recsys-service
+---
+
+# DB-only signals: seed examples
+
+## Who this is for
+
+- Developers running `recsys-service` in DB-only mode
+- Data engineers validating that a surface has enough signal to serve non-empty results
+
+## What you will get
+
+- Copy/paste SQL to seed the minimum DB-only signal tables
+- Notes about common causes of empty recommendations in DB-only mode
 
 Use these tables when running recsys-service in DB-only mode (no artifacts).
 

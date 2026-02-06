@@ -1,4 +1,21 @@
+---
+tags:
+  - reference
+  - api
+  - developer
+  - recsys-service
+---
+
 # API examples (HTTP files)
+
+## Who this is for
+
+- Developers who want copy/paste HTTP examples for integration and debugging
+
+## What you will get
+
+- Example requests for `recommend`, `similar`, and common admin endpoints
+- `.http` snippets compatible with JetBrains and VS Code REST clients
 
 These examples are written in `.http` format for tools like:
 

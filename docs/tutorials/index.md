@@ -32,7 +32,7 @@ tags:
 
 </div>
 
-## Next steps
+## Read next
 
 - Quickstart (10 minutes): [`tutorials/quickstart.md`](quickstart.md)
 - Local end-to-end tutorial: [`tutorials/local-end-to-end.md`](local-end-to-end.md)

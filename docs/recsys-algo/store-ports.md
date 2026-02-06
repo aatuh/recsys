@@ -32,3 +32,8 @@ If a capability is missing, the engine should treat the signal as unavailable an
 ## Runtime feature disabling
 
 To disable a feature at runtime (even if the port exists), return `model.ErrFeatureUnavailable` from a method.
+
+## Read next
+
+- End-to-end extension guide: [`how-to/add-signal-end-to-end.md`](../how-to/add-signal-end-to-end.md)
+- Ranking & constraints reference: [`recsys-algo/ranking-reference.md`](ranking-reference.md)

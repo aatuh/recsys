@@ -61,7 +61,24 @@ The fastest approach is to backfill a small set of top items (for one surface) a
 4. Run evaluation on real logs early:
    - Validate schemas and compute join rates.
 
-## Next steps
+## Verify
+
+- `POST /v1/recommend` returns a non-empty `items[]` list for your surface.
+- Exposures and outcomes share the same stable `request_id`.
+- Join-rate is not near-zero (otherwise KPIs are not trustworthy).
+
+See:
+
+- Integration checklist: [`how-to/integration-checklist.md`](../how-to/integration-checklist.md)
+- Minimum instrumentation spec: [`reference/minimum-instrumentation.md`](../reference/minimum-instrumentation.md)
+
+## Troubleshooting (runbooks)
+
+- Service not ready: [`operations/runbooks/service-not-ready.md`](../operations/runbooks/service-not-ready.md)
+- Empty recs: [`operations/runbooks/empty-recs.md`](../operations/runbooks/empty-recs.md)
+- Database migration issues: [`operations/runbooks/db-migration-issues.md`](../operations/runbooks/db-migration-issues.md)
+
+## Read next
 
 - Integrate service: [`how-to/integrate-recsys-service.md`](../how-to/integrate-recsys-service.md)
 - Define success metrics and exit criteria: [`for-businesses/success-metrics.md`](../for-businesses/success-metrics.md)

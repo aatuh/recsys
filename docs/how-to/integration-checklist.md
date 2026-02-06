@@ -23,6 +23,10 @@ produce a first report.
 - A tenant exists and admin bootstrap is complete (config + rules).
 - You can run the local stack (use [`Tutorial: Quickstart`](../tutorials/quickstart.md) if you want the fastest setup).
 
+!!! info "Canonical spec"
+    For the request/response + logging contract (headers, tenant scope, `request_id` rules), see:
+    [`developers/integration-spec.md`](../developers/integration-spec.md).
+
 ## Checklist
 
 ### 1) Tenant and surface
