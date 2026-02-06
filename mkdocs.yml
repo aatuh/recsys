@@ -3,6 +3,9 @@ site_description: Production-ready recommendation system suite (service, ranking
 repo_url: https://github.com/aatuh/recsys
 edit_uri: edit/master/docs/
 site_url: https://recsys.app
+copyright: >
+  Copyright &copy; RecSys
+  - <a href="#__consent">Change cookie settings</a>
 
 docs_dir: docs
 site_dir: .site
@@ -50,6 +53,19 @@ extra:
   analytics:
     provider: google
     property: G-G37MNTT2PG
+  consent:
+    title: Cookie consent
+    description: >-
+      We use cookies to measure documentation usage and improve this site.
+      You can accept or reject analytics cookies.
+    actions:
+      - accept
+      - reject
+      - manage
+    cookies:
+      analytics:
+        name: Google Analytics
+        checked: false
 
 plugins:
   - search
