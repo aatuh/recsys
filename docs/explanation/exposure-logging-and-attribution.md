@@ -153,7 +153,15 @@ EXPOSURE_LOG_FORMAT=eval_v1
 EXPOSURE_LOG_PATH=/app/tmp/exposures.eval.jsonl
 ```
 
+Config reference:
+
+- [`reference/config/recsys-service.md`](../reference/config/recsys-service.md)
+
 ### Privacy: stable pseudonymous IDs
+
+!!! warning
+    Do not log raw PII (emails, names, phone numbers). Use stable pseudonymous identifiers and keep the hash salt
+    secret.
 
 The service logs **hashed** identifiers (HMAC-SHA256) rather than raw user IDs. Set a secret salt so hashes are stable
 and non-guessable:
@@ -186,6 +194,15 @@ keep schemas valid (but this weakens user-level evaluation).
 - Compute a basic join rate in your warehouse:
   - `% of exposures with at least one matching outcome by request_id`
 - Ensure your top slicing keys exist (at minimum: `tenant_id`, `surface`).
+
+## From logs to evaluation (what you do next)
+
+Once your exposure/outcome logs validate and join, run an offline evaluation and produce a report you can share.
+
+Start with the default pack:
+
+- [`recsys-eval` default evaluation pack (recommended)](../recsys-eval/docs/default-evaluation-pack.md)
+- Run eval and make ship/hold/rollback decisions: [`how-to/run-eval-and-ship.md`](../how-to/run-eval-and-ship.md)
 
 ## Read next
 

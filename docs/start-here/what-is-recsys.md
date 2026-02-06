@@ -105,4 +105,5 @@ Every company’s data readiness differs, but a realistic plan is:
 - Start here (engineers): [`start-here/index.md`](index.md)
 - Pilot plan: [`start-here/pilot-plan.md`](pilot-plan.md)
 - Local end-to-end tutorial: [`tutorials/local-end-to-end.md`](../tutorials/local-end-to-end.md)
+- Capability matrix (scope and non-scope): [`explanation/capability-matrix.md`](../explanation/capability-matrix.md)
 - Known limitations: [`start-here/known-limitations.md`](known-limitations.md)

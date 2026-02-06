@@ -48,18 +48,17 @@ Common guardrails:
 
 Start here:
 
-- How to run evaluation and decide ship/hold/rollback:
-  [`how-to/run-eval-and-ship.md`](../how-to/run-eval-and-ship.md)
+- How to run evaluation and decide ship/hold/rollback: [Run eval and ship](../how-to/run-eval-and-ship.md)
+- Ship/hold/rollback decision playbook: [Decision playbook](../recsys-eval/docs/decision-playbook.md)
 
 Then use the `recsys-eval` workflow pages:
 
-- Offline gate in CI: [`recsys-eval/docs/workflows/offline-gate-in-ci.md`](../recsys-eval/docs/workflows/offline-gate-in-ci.md)
-- Online A/B in production: [`recsys-eval/docs/workflows/online-ab-in-production.md`](../recsys-eval/docs/workflows/online-ab-in-production.md)
-- Interpretation cheat sheet:
-  [`recsys-eval/docs/workflows/interpretation-cheat-sheet.md`](../recsys-eval/docs/workflows/interpretation-cheat-sheet.md)
+- [Offline gate in CI](../recsys-eval/docs/workflows/offline-gate-in-ci.md)
+- [Online A/B in production](../recsys-eval/docs/workflows/online-ab-in-production.md)
+- [Interpretation cheat sheet](../recsys-eval/docs/workflows/interpretation-cheat-sheet.md)
 
-## Read next
+## Next steps
 
-- Evidence page (what outputs look like): [`for-businesses/evidence.md`](evidence.md)
-- Data contracts (schemas + examples): [`reference/data-contracts/index.md`](../reference/data-contracts/index.md)
-- Operational reliability & rollback: [`start-here/operational-reliability-and-rollback.md`](../start-here/operational-reliability-and-rollback.md)
+- Evidence (what outputs look like): [Evidence](evidence.md)
+- ROI and risk model: [ROI and risk model](../start-here/roi-and-risk-model.md)
+- Evaluation, pricing, and licensing (buyer guide): [Buyer guide](../pricing/evaluation-and-licensing.md)

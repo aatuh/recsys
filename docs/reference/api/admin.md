@@ -219,3 +219,4 @@ See also:
 
 - `reference/api/examples/admin-config.http`
 - `tutorials/local-end-to-end.md`
+- Auth & tenancy: [`reference/auth-and-tenancy.md`](../auth-and-tenancy.md)

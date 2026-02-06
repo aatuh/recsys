@@ -1,3 +1,9 @@
+---
+tags:
+  - project
+  - docs
+---
+
 # Docs versioning
 
 ## Who this is for

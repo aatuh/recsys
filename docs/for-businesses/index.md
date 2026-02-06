@@ -18,7 +18,16 @@ tags:
 - The minimum requirements to run a credible pilot (data + people)
 - The trust story: security, operations, rollback, and how decisions are audited
 
-## Start here (2-minute path)
+## Buyer journey (2 minutes)
+
+1. [What is RecSys?](../start-here/what-is-recsys.md) — outcomes, positioning, and where it fits.
+2. [Pilot plan (2–6 weeks)](../start-here/pilot-plan.md) — timeline, deliverables, and exit criteria.
+3. [Evidence (what “good outputs” look like)](evidence.md) — examples of logs, reports, and audit records.
+4. [Evaluation, pricing, and licensing (buyer guide)](../pricing/evaluation-and-licensing.md) — what to do next and
+   how to procure.
+5. [Security pack](../security/security-pack.md) — self-serve pack for security/procurement review.
+
+## Jump links
 
 <div class="grid cards" markdown>
 
@@ -32,6 +41,10 @@ tags:
   What can be rolled back, how fast, and what “healthy” means in production.
 - **[Security, privacy, compliance](../start-here/security-privacy-compliance.md)**  
   What we log/store and how to run this safely.
+- **[Evidence (what “good outputs” look like)](evidence.md)**  
+  Example response, logs, report excerpt, and audit record shape.
+- **[Evaluation, pricing, and licensing (buyer guide)](../pricing/evaluation-and-licensing.md)**  
+  A single page that ties together evaluation, pricing, and licensing.
 - **[Licensing & pricing](../licensing/index.md)**  
   Where the licenses apply and how to think about commercial use.
 
@@ -49,11 +62,11 @@ Minimum requirements:
 
 Start here:
 
-- Data contracts (schemas + examples): [`reference/data-contracts/index.md`](../reference/data-contracts/index.md)
-- How evaluation decisions are made: [`how-to/run-eval-and-ship.md`](../how-to/run-eval-and-ship.md)
+- Data contracts (schemas + examples): [Data contracts](../reference/data-contracts/index.md)
+- How evaluation decisions are made: [Run eval and ship](../how-to/run-eval-and-ship.md)
 
-## Read next
+## Next steps
 
-- Use cases (what to start with): [`for-businesses/use-cases.md`](use-cases.md)
-- Success metrics (KPIs + guardrails): [`for-businesses/success-metrics.md`](success-metrics.md)
-- Evidence (what “good outputs” look like): [`for-businesses/evidence.md`](evidence.md)
+- Use cases (what to start with): [Use cases](use-cases.md)
+- Success metrics (KPIs + guardrails): [Success metrics](success-metrics.md)
+- Evaluation, pricing, and licensing (buyer guide): [Buyer guide](../pricing/evaluation-and-licensing.md)

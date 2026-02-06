@@ -10,6 +10,22 @@ tags:
 
 RecSys is an auditable recommendation system suite with deterministic ranking and versioned ship/rollback.
 
+## Forward to security (copy/paste)
+
+Start review async by sending this short list:
+
+- Security pack (print to PDF): [Security pack](security-pack.md)
+- Security, privacy, compliance overview: [Security, privacy, compliance](../start-here/security-privacy-compliance.md)
+- Production readiness checklist: [Production readiness checklist](../operations/production-readiness-checklist.md)
+- Known limitations and non-goals: [Known limitations](../start-here/known-limitations.md)
+- Licensing + pricing: [Buyer guide](../pricing/evaluation-and-licensing.md)
+- Vulnerability reporting: [Security policy](../project/security.md)
+
+Data ownership stance (short):
+
+- The suite is typically **self-hosted**: you run the infrastructure and own the data.
+- Do not send or log raw PII (use pseudonymous stable IDs).
+
 ## Who this is for
 
 - Security/compliance reviewers evaluating RecSys
@@ -41,6 +57,6 @@ RecSys is an auditable recommendation system suite with deterministic ranking an
 
 ## Read next
 
-- Exposure logging & attribution: [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)
-- Responsibilities (RACI): [`start-here/responsibilities.md`](../start-here/responsibilities.md)
-- Licensing & pricing: [`pricing/index.md`](../pricing/index.md)
+- Exposure logging & attribution: [Exposure logging & attribution](../explanation/exposure-logging-and-attribution.md)
+- Responsibilities (RACI): [Responsibilities (RACI)](../start-here/responsibilities.md)
+- Licensing & pricing: [Pricing](../pricing/index.md)

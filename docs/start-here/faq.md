@@ -22,7 +22,7 @@ tags:
 
 ## Questions
 
-<details>
+<details markdown="1">
 <summary>Will this replace our search?</summary>
 
 No. Search is **intent-driven** (“I want X”), while recommendations are typically **discovery-driven** (“you might like
@@ -33,7 +33,7 @@ Y”). In most products, they work together:
 
 </details>
 
-<details>
+<details markdown="1">
 <summary>How do we control what shows up?</summary>
 
 The suite provides a control plane and policy hooks:
@@ -45,7 +45,7 @@ The suite provides a control plane and policy hooks:
 For “why did we show this?”, use explainability options during development (`options.include_reasons` / `options.explain`).
 </details>
 
-<details>
+<details markdown="1">
 <summary>How do we measure lift and make shipping decisions?</summary>
 
 You measure recommendations with logs:
@@ -62,7 +62,7 @@ Then choose an evaluation mode:
 
 </details>
 
-<details>
+<details markdown="1">
 <summary>What do we need for a pilot?</summary>
 
 Minimum viable pilot (DB-only mode):
@@ -74,7 +74,7 @@ Minimum viable pilot (DB-only mode):
 This is intentionally lightweight so teams can validate the end-to-end loop before adding pipelines and artifact mode.
 </details>
 
-<details>
+<details markdown="1">
 <summary>How do rollbacks work?</summary>
 
 Two rollback levers exist:
@@ -84,7 +84,7 @@ Two rollback levers exist:
 
 </details>
 
-<details>
+<details markdown="1">
 <summary>What about privacy and compliance?</summary>
 
 RecSys is designed to work with **pseudonymous identifiers**. The service can hash identifiers for exposure logging (do

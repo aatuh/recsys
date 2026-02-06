@@ -14,16 +14,12 @@ recommendation system.
 
 <div class="grid cards" markdown>
 
-- **[Run end-to-end locally](../tutorials/local-end-to-end.md)**  
-  20–30 min tutorial to run the full loop on your laptop.
-- **[Deploy with Helm](../how-to/deploy-helm.md)**  
-  Kubernetes deployment guide and production checks.
-- **[Integrate the API](../how-to/integrate-recsys-service.md)**  
-  Auth, tenancy, contracts, and copy/paste examples.
-- **[Operate pipelines](../how-to/operate-pipelines.md)**  
-  Shipping, rollbacks, and day-2 operations.
-- **[API reference](../reference/api/api-reference.md)**  
-  OpenAPI, examples, and error semantics.
+- **[Quickstart (10 minutes)](../tutorials/quickstart.md)**  
+  Fastest path to a non-empty `POST /v1/recommend` + an exposure log.
+- **[Minimum components by goal](minimum-components-by-goal.md)**  
+  Decide DB-only vs artifact/manifest mode and what you need to run.
+- **[Evaluation, pricing, and licensing (buyer guide)](../pricing/evaluation-and-licensing.md)**  
+  Recommended evaluation path + procurement-ready links.
 
 </div>
 
@@ -43,10 +39,12 @@ recommendation system.
 
 1. **Run the suite locally end-to-end**
    - Tutorial: [`tutorials/local-end-to-end.md`](../tutorials/local-end-to-end.md)
+   - If you want the fastest possible first success: [`tutorials/quickstart.md`](../tutorials/quickstart.md)
    - Optional: production-like artifacts + ship/rollback: [`tutorials/production-like-run.md`](../tutorials/production-like-run.md)
 
 2. **Understand the architecture and data flow**
    - Diagram: [`start-here/diagrams/suite-context.md`](diagrams/suite-context.md)
+   - One-page mental model: [`explanation/how-it-works.md`](../explanation/how-it-works.md)
    - Explanation: [`explanation/suite-architecture.md`](../explanation/suite-architecture.md)
    - Repo layout: [`start-here/repo-layout.md`](repo-layout.md)
    - Known limitations: [`start-here/known-limitations.md`](known-limitations.md)

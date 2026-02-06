@@ -14,6 +14,7 @@ This page is the **integration hub** for `recsys-service`:
 - Practical examples: [`examples.md`](examples.md)
 - Error handling & troubleshooting: [`errors.md`](errors.md)
 - Admin/control-plane + local bootstrap: [`admin.md`](admin.md)
+- Auth & tenancy: [`reference/auth-and-tenancy.md`](../auth-and-tenancy.md)
 
 ## Base URL and versioning
 
@@ -31,11 +32,40 @@ The service supports:
 - `X-API-Key: <key>` (API keys)
 
 Local development can also use dev headers (see [`admin.md`](admin.md)).
+For details (headers, claims, roles), see: [`reference/auth-and-tenancy.md`](../auth-and-tenancy.md).
 
 Tenant scope:
 
 - In production, tenant context typically comes from a JWT claim (see `AUTH_TENANT_CLAIMS`).
 - When tenant scope is not derived from auth, send the tenant header (default `X-Org-Id`).
+
+## Hello world (minimal request/response)
+
+If you want the fastest path to a non-empty response, start with:
+
+- Tutorial: [`tutorials/quickstart.md`](../../tutorials/quickstart.md)
+
+Example request (local dev headers):
+
+```bash
+curl -fsS http://localhost:8000/v1/recommend \
+  -H 'Content-Type: application/json' \
+  -H 'X-Request-Id: hello-1' \
+  -H 'X-Dev-User-Id: dev-user-1' \
+  -H 'X-Dev-Org-Id: demo' \
+  -H 'X-Org-Id: demo' \
+  -d '{"surface":"home","k":3,"user":{"user_id":"u_1"}}'
+```
+
+Example response shape (abbreviated):
+
+```json
+{
+  "items": [{ "item_id": "item_1", "rank": 1, "score": 0.12 }],
+  "meta": { "tenant_id": "demo", "surface": "home", "request_id": "hello-1" },
+  "warnings": []
+}
+```
 
 ## Request/response conventions
 

@@ -36,8 +36,8 @@ Common guardrails:
 
 Next page(s):
 
-- Webshop integration cookbook: [`how-to/integration-cookbooks/webshop.md`](../how-to/integration-cookbooks/webshop.md)
-- Data contracts: [`reference/data-contracts/index.md`](../reference/data-contracts/index.md)
+- Webshop integration cookbook: [Webshop integration cookbook](../how-to/integration-cookbooks/webshop.md)
+- Data contracts: [Data contracts](../reference/data-contracts/index.md)
 
 ### PDP “Similar items”
 
@@ -52,8 +52,8 @@ Typical primary KPI:
 
 Next page(s):
 
-- Webshop integration cookbook: [`how-to/integration-cookbooks/webshop.md`](../how-to/integration-cookbooks/webshop.md)
-- Candidate vs ranking (mental model): [`explanation/candidate-vs-ranking.md`](../explanation/candidate-vs-ranking.md)
+- Webshop integration cookbook: [Webshop integration cookbook](../how-to/integration-cookbooks/webshop.md)
+- Candidate vs ranking (mental model): [Candidate vs ranking](../explanation/candidate-vs-ranking.md)
 
 ## Content / media
 
@@ -70,7 +70,7 @@ Typical primary KPI:
 
 Next page(s):
 
-- Content feed cookbook: [`how-to/integration-cookbooks/content-feed.md`](../how-to/integration-cookbooks/content-feed.md)
+- Content feed cookbook: [Content feed cookbook](../how-to/integration-cookbooks/content-feed.md)
 
 ### “For you” feed (home)
 
@@ -85,11 +85,12 @@ Typical primary KPI:
 
 Next page(s):
 
-- Content feed cookbook: [`how-to/integration-cookbooks/content-feed.md`](../how-to/integration-cookbooks/content-feed.md)
-- Operational reliability & rollback: [`start-here/operational-reliability-and-rollback.md`](../start-here/operational-reliability-and-rollback.md)
+- Content feed cookbook: [Content feed cookbook](../how-to/integration-cookbooks/content-feed.md)
+- Operational reliability & rollback:
+  [Operational reliability & rollback](../start-here/operational-reliability-and-rollback.md)
 
-## Read next
+## Next steps
 
-- Success metrics and exit criteria: [`for-businesses/success-metrics.md`](success-metrics.md)
-- Pilot plan (2–6 weeks): [`start-here/pilot-plan.md`](../start-here/pilot-plan.md)
-- ROI and risk model: [`start-here/roi-and-risk-model.md`](../start-here/roi-and-risk-model.md)
+- Success metrics and exit criteria: [Success metrics](success-metrics.md)
+- Pilot plan (2–6 weeks): [Pilot plan](../start-here/pilot-plan.md)
+- Evaluation, pricing, and licensing (buyer guide): [Buyer guide](../pricing/evaluation-and-licensing.md)

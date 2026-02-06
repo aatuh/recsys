@@ -1,3 +1,9 @@
+---
+tags:
+  - project
+  - reference
+---
+
 # Glossary
 
 A small shared vocabulary used throughout the suite docs.
@@ -46,10 +52,24 @@ best?”
 
 An event that records what items were shown (and in what order) for a single recommendation request.
 
+## Exposure log
+
+The stream/file of exposure events written by `recsys-service` (typically JSONL). This is an input to `recsys-eval` and
+one of the main audit artifacts for “what was shown”.
+
+See: [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)
+
 ## Outcome
 
 An event that records what the user did after an exposure (click, conversion, etc.). Outcomes are attributed to exposures
 by `request_id`.
+
+## Outcome log
+
+The stream of outcome events emitted by your product (clicks, conversions, etc.) and joined to exposures by
+`request_id`.
+
+See: [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)
 
 ## Assignment
 

@@ -43,6 +43,54 @@ Notes:
 - If you want a domain-specific mental model, start with the cookbooks:
   - [`how-to/integration-cookbooks/index.md`](integration-cookbooks/index.md)
 
+## Minimal integration example (one surface)
+
+This is the smallest pattern that supports evaluation and troubleshooting.
+
+### 1) Serve (request)
+
+Generate one `request_id` per rendered list, then call recommend:
+
+```bash
+curl -fsS http://localhost:8000/v1/recommend \
+  -H 'Content-Type: application/json' \
+  -H 'X-Request-Id: req-1' \
+  -H 'X-Dev-User-Id: dev-user-1' \
+  -H 'X-Dev-Org-Id: demo' \
+  -H 'X-Org-Id: demo' \
+  -d '{"surface":"home","k":10,"user":{"user_id":"u_1","session_id":"s_1"}}'
+```
+
+Capture `meta.request_id` (or the header value you supplied) and propagate it to both exposures and outcomes.
+
+### 2) Log exposures (what was shown)
+
+Emit one exposure record per rendered list (schema: `exposure.v1`):
+
+```json
+{
+  "request_id": "req-1",
+  "items": [
+    { "item_id": "item_1", "rank": 1 }
+  ],
+  "context": { "tenant_id": "demo", "surface": "home" }
+}
+```
+
+### 3) Log outcomes (what the user did)
+
+Emit one outcome record per action you measure (schema: `outcome.v1`):
+
+```json
+{
+  "request_id": "req-1",
+  "item_id": "item_1",
+  "event_type": "click"
+}
+```
+
+For the canonical schemas and required fields, see: [`reference/data-contracts/index.md`](../reference/data-contracts/index.md)
+
 ## Verify
 
 Validate one request shape:
@@ -68,9 +116,13 @@ Then call recommend and ensure you capture `meta.request_id` (or supply `X-Reque
   - `X-Org-Id` (tenant scope enforced by middleware)
 - In JWT mode, a bearer token with a tenant claim is sufficient (see `AUTH_TENANT_CLAIMS`).
 - To use a single header locally, set `DEV_AUTH_TENANT_HEADER=X-Org-Id`.
+- Auth and tenancy reference: [`reference/auth-and-tenancy.md`](../reference/auth-and-tenancy.md)
 
 ## Read next
 
 - Exposure logging & attribution: [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)
+- Minimum instrumentation spec (what to log for credible eval): [`reference/minimum-instrumentation.md`](../reference/minimum-instrumentation.md)
 - Admin bootstrap (tenant + config + rules): [`reference/api/admin.md`](../reference/api/admin.md)
+- Auth & tenancy: [`reference/auth-and-tenancy.md`](../reference/auth-and-tenancy.md)
+- Integration checklist: [`how-to/integration-checklist.md`](integration-checklist.md)
 - Integration cookbooks: [`how-to/integration-cookbooks/index.md`](integration-cookbooks/index.md)

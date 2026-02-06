@@ -21,15 +21,22 @@ Look at logs for one of:
 
 ## 3) Useful commands
 
+Re-run one day:
+
 ```bash
-# Re-run one day
 ./bin/recsys-pipelines run --config configs/env/local.json --tenant demo \
   --surface home --start 2026-01-01 --end 2026-01-01
+```
 
-# Check manifest
+Check manifest:
+
+```bash
 cat .out/registry/current/demo/home/manifest.json
+```
 
-# Inspect canonical files
+Inspect canonical files:
+
+```bash
 find .out/canonical -type f | sort
 ```
 

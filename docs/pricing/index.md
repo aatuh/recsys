@@ -11,9 +11,13 @@ RecSys is an auditable recommendation system suite with deterministic ranking an
 
 [Start evaluation](../evaluate/index.md){ .md-button .md-button--primary }
 [Read licensing](../licensing/index.md){ .md-button }
+[Buyer guide](evaluation-and-licensing.md){ .md-button }
 [Contact](#contact){ .md-button }
 
 All prices below are **EUR, excl. VAT**.
+
+Pilot plans commonly take **2–6 weeks** ([Pilot plan](../start-here/pilot-plan.md)), while the commercial evaluation
+license term is **30 days** (unless extended in writing): [Evaluation license](../licensing/eval_license.md).
 
 ## Plans (commercial)
 
@@ -59,10 +63,10 @@ All prices below are **EUR, excl. VAT**.
 
 ## Details and legal terms
 
-- Full pricing and definitions: [`licensing/pricing.md`](../licensing/pricing.md)
-- Commercial use & how to buy: [`licensing/commercial.md`](../licensing/commercial.md)
-- Order form template: [`licensing/order_form.md`](../licensing/order_form.md)
-- Evaluation terms: [`licensing/eval_license.md`](../licensing/eval_license.md)
+- Legal pricing definitions (order forms): [Pricing definitions](../licensing/pricing.md)
+- Commercial use & how to buy: [Commercial use](../licensing/commercial.md)
+- Order form template: [Order form template](../licensing/order_form.md)
+- Evaluation terms: [Evaluation terms](../licensing/eval_license.md)
 
 ## Contact
 

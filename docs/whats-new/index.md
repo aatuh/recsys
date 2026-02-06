@@ -1,3 +1,9 @@
+---
+tags:
+  - overview
+  - project
+---
+
 # What’s new
 
 Release notes and updates for the RecSys suite and its documentation.

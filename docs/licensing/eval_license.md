@@ -1,3 +1,10 @@
+---
+tags:
+  - licensing
+  - evaluation
+  - business
+---
+
 # RecSys Evaluation License Terms
 
 **Last updated:** 2026-02-01  
@@ -78,6 +85,9 @@ Unless Vendor gives written permission, Licensee must not publish benchmark resu
 
 The Evaluation Term begins on the date Licensee first accesses the Evaluation Materials and lasts **30 days**, unless
 extended in writing by Vendor.
+
+> Practical note: Our pilot plan is commonly **2–6 weeks**. If you expect your evaluation to exceed 30 days, request an
+> extension in writing before the Evaluation Term expires.
 
 Upon expiration or termination, Licensee must stop use and destroy all Evaluation Materials in its possession,
 including license files/keys and any copied commercial artifacts, except that Licensee may retain evaluation results

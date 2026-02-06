@@ -13,6 +13,13 @@ The engine can blend multiple signals:
 A typical configuration exposes blending weights (often referred to as `BlendAlpha`, `BlendBeta`, `BlendGamma`) to
 control each signal's contribution.
 
+See also: **[Ranking & constraints reference](ranking-reference.md)** (implemented signals, knobs, determinism notes).
+
+## Cold start and sparsity
+
+For how to handle new users, new items, and new surfaces (including what works in DB-only mode), see:
+[Cold start strategies](../explanation/cold-start-strategies.md).
+
 ## Rules and constraints
 
 After scoring, the engine can apply:

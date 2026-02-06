@@ -21,6 +21,7 @@ suite**.
 ## Scope: what the suite is (and is not)
 
 - The RecSys suite is typically **self-hosted**: you run the infrastructure and own the data.
+- The suite does not require raw PII: use **pseudonymous stable identifiers**.
 - The suite does not attempt to be a full privacy/compliance program. You still need org-level policies for:
   - data classification and retention
   - access control and auditing

@@ -1,3 +1,10 @@
+---
+tags:
+  - licensing
+  - commercial
+  - business
+---
+
 # RecSys Commercial License Agreement
 
 **Version:** `1.0`  

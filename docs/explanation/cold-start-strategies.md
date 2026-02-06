@@ -39,6 +39,69 @@ Cold start usually means “we don’t have a strong signal yet”. In this suit
 - **Rule pins can inject items** that were not in the candidate pool (useful for curated cold-start defaults).
 - `segment` defaults to `default` when omitted. Segments are used to scope rules and to slice evaluation.
 
+## Mapping: scenario → approach → what you need
+
+!!! note "Out-of-the-box vs extra artifacts"
+    In DB-only mode, cold start is mostly handled by **popularity + rules**. Co-visitation and similarity require
+    additional stores/artifacts (often produced by `recsys-pipelines` or your own jobs).
+
+### New user / guest (no history)
+
+Recommended:
+
+- Popularity fallback + curated defaults (pin/boost rules) scoped by `segment`.
+
+Requires:
+
+- Seeded `item_popularity_daily` for the surface namespace.
+- Rules for `segment=guest` / `segment=new_user` (pins/boosts/blocks).
+
+### Sparse-history user (few events)
+
+Recommended:
+
+- Treat as cold start until you have enough events; use the fallback ladder and keep personalization conservative.
+
+Requires:
+
+- Enough joined exposure/outcome history to build a stable user profile.
+
+### New item (no interactions yet)
+
+Recommended:
+
+- Seed a small popularity prior and/or pin/boost during launch so the item can be discovered.
+
+Requires:
+
+- Item in the catalog and tags (if you use tag constraints).
+- Optional: a few `item_popularity_daily` rows to give it an initial score.
+
+### New surface (namespace)
+
+Recommended:
+
+- Seed popularity for the new surface namespace; add segment defaults for guest/new_user cohorts.
+
+Requires:
+
+- Surface configured in admin.
+- Seeded `item_popularity_daily` (and `item_tags` if constraints rely on tags).
+
+### Anchor-based surfaces (PDP “similar items”, contextual widgets)
+
+Recommended:
+
+- Always send `anchors.item_ids` and use co-visitation/similarity signals when available.
+
+Requires:
+
+- An anchor item ID in the request (you already have this on PDP).
+- Co-occurrence / embedding / collaborative stores (see the ranking reference for what each signal needs).
+
+If you need a precise catalog of what’s implemented and what each signal requires, see:
+[Ranking & constraints reference](../recsys-algo/ranking-reference.md).
+
 ## Strategy 1: Catalog-only (curated defaults via rules)
 
 If you have a catalog but not enough interaction data yet, start with a curated “starter set”:

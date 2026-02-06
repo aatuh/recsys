@@ -1,21 +1,19 @@
-
 # Glossary
 
-**Artifact**
-: A precomputed data product used by the online recommender, such as popularity
-  lists or item neighbors.
+This page defines `recsys-pipelines`-specific terms.
+
+For shared suite terminology, use the suite glossary:
+
+- Artifact: [`project/glossary.md#artifact`](../../project/glossary.md#artifact)
+- Manifest: [`project/glossary.md#manifest`](../../project/glossary.md#manifest)
+- Tenant: [`project/glossary.md#tenant`](../../project/glossary.md#tenant)
+- Surface: [`project/glossary.md#surface`](../../project/glossary.md#surface)
+- Segment: [`project/glossary.md#segment`](../../project/glossary.md#segment)
+
+## Pipeline-specific terms
 
 **Canonical events**
 : Events stored in a normalized format that the rest of the pipeline relies on.
-
-**Tenant**
-: A logical customer or environment namespace.
-
-**Surface**
-: A recommendation placement (e.g. "home", "checkout").
-
-**Segment**
-: Optional sub-grouping within a surface (e.g. "new_users").
 
 **Window**
 : A time range that a job processes. In v1, windows are daily UTC buckets.
@@ -34,10 +32,6 @@
 
 **Backfill**
 : Re-processing a historical range of windows (see `how-to/run-backfill.md`).
-
-**Manifest**
-: A small JSON document that points to the current artifact URIs for a
-  (tenant, surface).
 
 **Current manifest pointer**
 : The mutable "what is live right now" location for a `(tenant, surface)`

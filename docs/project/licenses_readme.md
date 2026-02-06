@@ -1,3 +1,9 @@
+---
+tags:
+  - project
+  - licensing
+---
+
 # License Directory Notes
 
 This repository uses multiple licenses.

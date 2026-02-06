@@ -1,3 +1,10 @@
+---
+tags:
+  - licensing
+  - commercial
+  - business
+---
+
 # Commercial Use & Licensing
 
 This page explains how to purchase and use a **commercial license** for parts of this repository that are otherwise
@@ -36,13 +43,16 @@ A typical commercial purchase includes:
 - Security and patch releases according to the purchased tier
 - Optional support terms (if purchased)
 
-See [`pricing.md`](pricing.md) for tier definitions.
+See:
+
+- Pricing overview (commercial plans): [`pricing/index.md`](../pricing/index.md)
+- Legal pricing definitions (order forms): [`licensing/pricing.md`](pricing.md)
 
 ## How to buy
 
 Recommended low-friction flow:
 
-1. Choose a tier in [`pricing.md`](pricing.md)
+1. Choose a plan in [`pricing/index.md`](../pricing/index.md)
 2. Request a commercial license (public or private inquiry)
 3. Receive:
 

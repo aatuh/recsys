@@ -16,14 +16,30 @@ RecSys is an auditable recommendation system suite with deterministic ranking an
 [Start evaluation](evaluate/index.md){ .md-button .md-button--primary }
 [Developer hub](developers/index.md){ .md-button }
 
+## Who this is for
+
+- Developers integrating the suite into an application
+- Buyers and stakeholders evaluating RecSys as a product
+- SREs and on-call engineers operating RecSys in production
+
+## What you will get
+
+- Role-based entry points (developer, business, ops, recommendation engineer)
+- Canonical docs for evaluation, pricing/licensing, and the security pack
+- The “happy path” plus runbooks for common failures
+
 ## Choose your path
 
 <div class="grid cards" markdown>
 
 - **[I’m a developer](developers/index.md)**  
   Run locally, integrate one surface, produce the first eval report.
-- **[I’m evaluating for business](business/index.md)**  
+- **[I’m evaluating for business](for-businesses/index.md)**  
   Pilot plan, success metrics, trust center, pricing.
+- **[I’m operating RecSys](operations/index.md)**  
+  Production readiness, runbooks, failure modes, and rollback levers.
+- **[I’m a recommendation engineer](recsys-eval/docs/index.md)**  
+  Evaluation workflows, metrics, and “ship/hold/rollback” decisions.
 
 </div>
 
@@ -44,6 +60,8 @@ You can access this documentation in several ways:
 
 - **[Start here](start-here/index.md)**  
   Role-based entry points and the recommended reading order.
+- **[Quickstart (10 minutes)](tutorials/quickstart.md)**  
+  Fastest path to a non-empty `POST /v1/recommend` + an exposure log.
 - **[Run end-to-end locally](tutorials/local-end-to-end.md)**  
   20–30 min tutorial to run the full loop on your laptop.
 - **[Integrate into your app](how-to/integrate-recsys-service.md)**  
@@ -71,6 +89,8 @@ If you're evaluating RecSys as a product, start with these:
   A practical 2–6 week plan with deliverables and exit criteria.
 - **[ROI and risk model](start-here/roi-and-risk-model.md)**  
   A template for lift measurement, guardrails, and ownership boundaries.
+- **[Evaluation, pricing, and licensing (buyer guide)](pricing/evaluation-and-licensing.md)**  
+  A single page that ties together the evaluation path, pricing, and licensing.
 - **[Security, privacy, compliance](start-here/security-privacy-compliance.md)**  
   What we store, what we log, and how to run this safely.
 - **[Operational reliability & rollback](start-here/operational-reliability-and-rollback.md)**  

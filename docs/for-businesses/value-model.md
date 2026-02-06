@@ -27,10 +27,10 @@ A simple framing:
 
 For the full checklist (including risks and mitigations), use:
 
-- ROI and risk model: [`start-here/roi-and-risk-model.md`](../start-here/roi-and-risk-model.md)
+- ROI and risk model: [ROI and risk model](../start-here/roi-and-risk-model.md)
 
-## Read next
+## Next steps
 
-- Success metrics (KPIs + guardrails): [`for-businesses/success-metrics.md`](success-metrics.md)
-- Pilot plan (2–6 weeks): [`start-here/pilot-plan.md`](../start-here/pilot-plan.md)
-- Evidence (what outputs look like): [`for-businesses/evidence.md`](evidence.md)
+- Success metrics (KPIs + guardrails): [Success metrics](success-metrics.md)
+- Pilot plan (2–6 weeks): [Pilot plan](../start-here/pilot-plan.md)
+- Evaluation, pricing, and licensing (buyer guide): [Buyer guide](../pricing/evaluation-and-licensing.md)

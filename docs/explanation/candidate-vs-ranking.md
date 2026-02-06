@@ -77,7 +77,7 @@ You can influence blending per request:
 - `weights.emb`: “similarity” contribution (a bucket for non-pop/non-cooc signals)
 
 If you omit `weights`, the service uses its configured defaults (see `RECSYS_ALGO_*` config in
-[`reference/config/recsys-service.md`](../reference/config/recsys-service.md)).
+[`recsys-algo/ranking-reference.md`](../recsys-algo/ranking-reference.md)).
 
 ## Controls: constraints and rules (order matters)
 

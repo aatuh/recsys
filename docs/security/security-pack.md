@@ -11,31 +11,50 @@ This page is a **self-serve index** of the documents security and procurement te
 
 Tip: use your browser’s **Print → Save as PDF** to produce a single-file “pack” for review.
 
+## Forward to security (copy/paste)
+
+- Security, privacy, compliance overview:
+  [Security, privacy, compliance](../start-here/security-privacy-compliance.md)
+- Production readiness checklist:
+  [Production readiness checklist](../operations/production-readiness-checklist.md)
+- Known limitations and non-goals:
+  [Known limitations](../start-here/known-limitations.md)
+- Buyer guide (evaluation + pricing + licensing):
+  [Evaluation, pricing, and licensing](../pricing/evaluation-and-licensing.md)
+- Support model: [Support](../project/support.md)
+- Vulnerability reporting: [Security policy](../project/security.md)
+
 ## Core security docs
 
-- Trust center (this section): [`security/index.md`](index.md)
-- Security, privacy, compliance overview: [`start-here/security-privacy-compliance.md`](../start-here/security-privacy-compliance.md)
-- Vulnerability reporting: [`project/security.md`](../project/security.md)
+- Trust center (this section): [Trust center overview](index.md)
+- Security, privacy, compliance overview:
+  [Security, privacy, compliance](../start-here/security-privacy-compliance.md)
+- Vulnerability reporting: [Security policy](../project/security.md)
 
 ## Reliability and operational safety
 
-- Production readiness checklist: [`operations/production-readiness-checklist.md`](../operations/production-readiness-checklist.md)
-- Operational reliability & rollback: [`start-here/operational-reliability-and-rollback.md`](../start-here/operational-reliability-and-rollback.md)
-- Operations hub + runbooks: [`operations/index.md`](../operations/index.md)
+- Production readiness checklist:
+  [Production readiness checklist](../operations/production-readiness-checklist.md)
+- Operational reliability & rollback:
+  [Operational reliability & rollback](../start-here/operational-reliability-and-rollback.md)
+- Operations hub + runbooks: [Operations](../operations/index.md)
 
 ## Data handling and auditability
 
-- Exposure logging & attribution: [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)
-- Data contracts (schemas + examples): [`reference/data-contracts/index.md`](../reference/data-contracts/index.md)
-- Audit logging (admin actions): [`reference/api/admin.md`](../reference/api/admin.md)
+- Exposure logging & attribution:
+  [Exposure logging & attribution](../explanation/exposure-logging-and-attribution.md)
+- Data contracts (schemas + examples): [Data contracts](../reference/data-contracts/index.md)
+- Audit logging (admin actions): [Admin API](../reference/api/admin.md)
 
 ## Licensing and commercial terms
 
-- Licensing overview: [`licensing/index.md`](../licensing/index.md)
-- Pricing: [`pricing/index.md`](../pricing/index.md)
-- Commercial use & how to buy: [`licensing/commercial.md`](../licensing/commercial.md)
-- Order form template: [`licensing/order_form.md`](../licensing/order_form.md)
+- Licensing overview: [Licensing](../licensing/index.md)
+- Pricing: [Pricing](../pricing/index.md)
+- Buyer guide (evaluation + pricing + licensing):
+  [Evaluation, pricing, and licensing](../pricing/evaluation-and-licensing.md)
+- Commercial use & how to buy: [Commercial use](../licensing/commercial.md)
+- Order form template: [Order form template](../licensing/order_form.md)
 
 ## Support and escalation
 
-- Support model: [`project/support.md`](../project/support.md)
+- Support model: [Support](../project/support.md)

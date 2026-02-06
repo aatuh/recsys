@@ -31,6 +31,6 @@ Wedge statement (use verbatim):
 
 ## Where to use this
 
-- Homepage (`docs/index.md`), hub pages (`docs/developers/index.md`, `docs/business/index.md`)
+- Homepage (`docs/index.md`), hub pages (`docs/developers/index.md`, `docs/for-businesses/index.md`)
 - Pricing and evaluation pages (`docs/pricing/index.md`, `docs/evaluate/index.md`)
 - README (`README.md`)

@@ -14,6 +14,8 @@ Use this section when you need **precise contracts** (API, config, schemas) rath
 
 - **[API reference](api/api-reference.md)**  
   Endpoints, auth, examples, and error semantics.
+- **[Auth & tenancy](auth-and-tenancy.md)**  
+  JWT/API keys vs dev headers, and how tenant scope is determined.
 - **[Config](config/index.md)**  
   Suite and module configuration options.
 - **[Data contracts](data-contracts/index.md)**  

@@ -27,6 +27,7 @@ tags:
   - Join key: `request_id` (exposures ↔ outcomes ↔ assignments).
   - Details + examples: [`Eval events`](eval-events.md)
   - Join semantics: [`Event join logic`](join-logic.md)
+  - Minimum instrumentation spec: [`Minimum instrumentation`](../minimum-instrumentation.md)
 
 - **Serving logs (what the service emitted)**
   - Purpose: auditable “what was served” record.

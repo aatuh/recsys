@@ -1,3 +1,9 @@
+---
+tags:
+  - project
+  - docs
+---
+
 # Documentation style guide
 
 This repository follows the following structure:
@@ -29,9 +35,24 @@ Module docs may have their own style guides and can deviate when that improves c
 - Prefer relative links inside `/docs`.
 - Avoid linking to repository paths that do not exist in the rendered MkDocs site.
 
-## Tags (optional but recommended)
+## Voice and tone
+
+- Prefer **clear, concrete claims** over hype ("what is included", "what is not included").
+- Write in **second person** for tutorials/how-tos ("you will", "run", "verify").
+- Prefer **active voice** ("The service writes an exposure log", not "An exposure log is written").
+- Use **imperative verbs** in steps ("Run", "Verify", "Copy").
+- Define unfamiliar terms once, then link to the canonical definition (glossary or canonical page).
+
+## Tags policy
 
 This docs site uses Material for MkDocs **tags** for role- and topic-based browsing.
+
+Tags are:
+
+- **Required** for suite-level narrative pages under `docs/` (tutorials, how-to guides, explanations, hub pages,
+  business/procurement docs).
+- **Optional** for deep reference pages and module docs, especially when another style guide already applies
+  (see "Scope" above).
 
 Add tags as YAML front matter at the top of a page:
 
@@ -71,20 +92,20 @@ Use these templates for **suite-level docs** under `docs/` (as opposed to module
 - Who this is for
 - What you will get
 - Prereqs (tools + access)
-- Steps (numbered, copy/paste)
+- Steps (numbered; each step has action + command + expected outcome)
 - Verify (expected output shape)
 - Troubleshooting (common failures)
-- Read next (links)
+- Next steps (3 links)
 
 ### How-to guides
 
 - Who this is for (optional but recommended)
 - Goal / outcomes (what you will achieve)
 - Prereqs
-- Steps
+- Steps (each step has action + command + expected outcome)
 - Verify
 - Pitfalls / gotchas
-- Read next
+- Next steps (3 links)
 
 ### Explanations
 
@@ -92,7 +113,7 @@ Use these templates for **suite-level docs** under `docs/` (as opposed to module
 - What you will get
 - Concepts and data flow (diagram if helpful)
 - Failure modes and recovery notes
-- Read next
+- Next steps (3 links)
 
 ### Reference
 
@@ -100,7 +121,7 @@ Use these templates for **suite-level docs** under `docs/` (as opposed to module
 - What you will get
 - Definitions / contracts / options (be precise)
 - Examples (when it prevents ambiguity)
-- Read next (optional)
+- Next steps (optional)
 
 ### Runbooks
 
@@ -132,7 +153,7 @@ Use these skeletons for new suite-level pages. Keep headings consistent so reade
 
 ## Troubleshooting
 
-## Read next
+## Next steps
 ```
 
 ### How-to skeleton
@@ -152,7 +173,7 @@ Use these skeletons for new suite-level pages. Keep headings consistent so reade
 
 ## Pitfalls
 
-## Read next
+## Next steps
 ```
 
 ### Explanation skeleton
@@ -168,7 +189,7 @@ Use these skeletons for new suite-level pages. Keep headings consistent so reade
 
 ## Failure modes and recovery
 
-## Read next
+## Next steps
 ```
 
 ### Reference skeleton
@@ -184,7 +205,7 @@ Use these skeletons for new suite-level pages. Keep headings consistent so reade
 
 ## Examples
 
-## Read next
+## Next steps
 ```
 
 ## Markdown conventions
@@ -192,12 +213,37 @@ Use these skeletons for new suite-level pages. Keep headings consistent so reade
 - Use fenced code blocks with language hints.
 - Use admonitions for warnings and important notes.
 - Keep line length readable (wrap long paragraphs).
+- If you need a collapsible/accordion section that contains fenced code, prefer `<details markdown="1">`.
+  Some markdown linters treat fences inside collapsible admonitions (`???`) as indented code blocks.
+
+## Enforcement (what CI checks)
+
+These are the checks we run on docs changes:
+
+- `make mdlint`: markdownlint rules (including "one H1 per page")
+- `make docs-check`: internal link check, spell check, and a strict MkDocs build
 
 ## Glossary linking
 
 - Add new suite terms to [`glossary.md`](glossary.md) (so we don’t define the same thing in five places).
 - On first mention in a page, link glossary terms to the relevant entry (for example: `glossary.md#manifest`).
 - Avoid over-linking: link once per page/section unless repetition prevents scanning.
+
+## Canonical pages (avoid duplication)
+
+When a concept is used across multiple pages (pricing, licensing, security posture, core definitions), use a single
+canonical page and link to it elsewhere.
+
+Rules:
+
+- Put the full definition/decision tree on the canonical page.
+- Other pages may include a short summary, then link to the canonical page.
+- Avoid copy/pasting plan details, license rules, or “security posture” claims across multiple pages.
+
+Example:
+
+- Pricing plan details live on `docs/pricing/index.md`. Other pages should link there instead of repeating the plan
+  table.
 
 ## Naming
 

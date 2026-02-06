@@ -1,3 +1,9 @@
+---
+tags:
+  - project
+  - security
+---
+
 # Security Policy
 
 ## Reporting a vulnerability

@@ -1,3 +1,10 @@
+---
+tags:
+  - licensing
+  - commercial
+  - business
+---
+
 # Order Form (Template) — RecSys Commercial License
 
 **Order Form ID:** `OF-YYYY-NNN`  

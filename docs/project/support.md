@@ -1,3 +1,9 @@
+---
+tags:
+  - project
+  - support
+---
+
 # Support
 
 This project supports **self-serve adoption**. We keep support lightweight and mostly asynchronous.
@@ -25,6 +31,21 @@ Typical support channels include:
 
 - Support is **async-first**
 - Calls are only by exception and must be pre-agreed and time-boxed
+
+## Support expectations by plan (typical)
+
+Support terms are defined in your agreement. This table summarizes the typical differences between tiers:
+
+| Plan | Response expectations | Channels | Escalation |
+| --- | --- | --- | --- |
+| Commercial Evaluation | Best-effort async (no SLA) | Email / private issues (provided during eval) | By exception |
+| Starter | Best-effort async (no SLA) | Support email / private issues | By exception |
+| Growth | Typically within 2 business days (async) | Support email / private issues | By exception |
+| Enterprise | Custom (can include SLA/premium support) | Custom | Defined in agreement |
+
+Notes:
+
+- Premium support/SLA (8×5 or 24×7) is an optional add-on for Growth/Enterprise (see `pricing/index.md`).
 
 ## What we can help with
 

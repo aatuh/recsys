@@ -1,3 +1,10 @@
+---
+tags:
+  - licensing
+  - business
+  - overview
+---
+
 # Licensing
 
 This repository is a **multi-license** codebase. Different directories are licensed under different terms.
@@ -63,7 +70,8 @@ We offer a commercial license as an alternative set of terms for parts of this r
 See:
 
 - [`commercial.md`](commercial.md) (overview, what you get, and how to buy)
-- [`pricing.md`](pricing.md) (tiers)
+- Pricing overview (commercial plans): [`pricing/index.md`](../pricing/index.md)
+- Legal pricing definitions (order forms): [`licensing/pricing.md`](pricing.md)
 
 ## Third-party dependencies
 

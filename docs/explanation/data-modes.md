@@ -6,10 +6,28 @@ tags:
   - developer
 ---
 
-# Data modes: DB-only vs object store
+# Data modes: DB-only vs artifact/manifest
 
-The service supports **DB-only mode** and **artifact/manifest mode**. DB-only
-is the default; artifact mode is opt-in via config.
+## Who this is for
+
+- Developers choosing the simplest mode for a pilot
+- Operators deciding how to ship/rollback signals safely
+
+## What you will get
+
+- A clear comparison of DB-only vs artifact/manifest mode
+- What you need to run in each mode (at a high level)
+- The common failure modes when a mode is misconfigured
+
+## Overview
+
+The service supports **DB-only mode** and **artifact/manifest mode**:
+
+- **DB-only mode**: read signals directly from Postgres tables.
+- **Artifact/manifest mode**: read versioned signal blobs from object storage via a manifest pointer.
+
+DB-only is the code default. The local Docker Compose environment enables artifact mode by default to support the demo
+pipeline flow.
 
 ## DB-only mode (current, recommended for MVP)
 
@@ -33,9 +51,9 @@ rollback, but the **service must be configured to read artifacts**.
 Enable artifact mode:
 
 - `RECSYS_ARTIFACT_MODE_ENABLED=true`
-- `RECSYS_ARTIFACT_MANIFEST_TEMPLATE` (e.g. `s3://recsys/registry/current/{tenant}/{surface}/manifest.json`,
-
-  or `file:///data/registry/current/{tenant}/{surface}/manifest.json`)
+- `RECSYS_ARTIFACT_MANIFEST_TEMPLATE` (for example:
+  `s3://recsys/registry/current/{tenant}/{surface}/manifest.json` or
+  `file:///data/registry/current/{tenant}/{surface}/manifest.json`)
 
 Notes:
 
@@ -43,15 +61,24 @@ Notes:
 - `{surface}` maps to the request surface (namespace).
 - Tags and constraints still read from Postgres (`item_tags`), even in artifact mode.
 
+!!! warning
+    If artifact mode is enabled but the manifest pointer is missing/stale (or the object store is unreachable), serving
+    can degrade to empty/partial results. See: [`operations/failure-modes.md`](../operations/failure-modes.md).
+
 ## Recommendation
 
 - Use **DB-only** for MVP and local testing (default today).
-- Use **object store + manifest** for production-scale artifacts once the
-
-  pipelines are producing artifacts and the service is configured to read them.
+- Use **artifact/manifest** for production-scale artifacts once pipelines are producing artifacts and the service is
+  configured to read them.
 
 ## Which mode is active?
 
 The service runs in **DB-only mode by default**. When
 `RECSYS_ARTIFACT_MODE_ENABLED=true`, the service reads popularity/co-visitation
 from the artifact manifest and uses Postgres for tag metadata.
+
+## Read next
+
+- Minimum components by goal: [`start-here/minimum-components-by-goal.md`](../start-here/minimum-components-by-goal.md)
+- Tutorial (DB-only loop): [`tutorials/local-end-to-end.md`](../tutorials/local-end-to-end.md)
+- Tutorial (artifact/manifest mode): [`tutorials/production-like-run.md`](../tutorials/production-like-run.md)

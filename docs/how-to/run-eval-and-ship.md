@@ -118,5 +118,6 @@ See:
 
 ## Read next
 
+- Decision playbook (ship / hold / rollback): [`recsys-eval/docs/decision-playbook.md`](../recsys-eval/docs/decision-playbook.md)
 - Experimentation model: [`explanation/experimentation-model.md`](../explanation/experimentation-model.md)
 - Exposure logging and attribution: [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)

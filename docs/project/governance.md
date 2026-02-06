@@ -1,3 +1,9 @@
+---
+tags:
+  - project
+  - governance
+---
+
 # Governance
 
 ## Maintainers

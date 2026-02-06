@@ -10,8 +10,15 @@ tags:
 
 # Tutorial: local end-to-end (service → logging → eval)
 
-Goal: serve non-empty recommendations locally, emit an eval-compatible exposure log, and generate a `recsys-eval`
-report.
+## Who this is for
+
+- Developers who want to prove the full loop locally (serve → log → eval)
+
+## What you will get
+
+- A running `recsys-service` in DB-only mode (popularity baseline)
+- An eval-compatible exposure log file
+- A sample `recsys-eval` report you can share internally
 
 This tutorial uses **DB-only mode** (fastest way to prove the loop locally). Artifact/manifest mode with pipelines is
 linked at the end.
@@ -23,7 +30,7 @@ linked at the end.
 - POSIX shell
 - Go toolchain (to build `recsys-eval`)
 
-## Expected outcome
+## Verify (expected outcome)
 
 - `POST /v1/recommend` returns a non-empty list for tenant `demo` and surface `home`
 - A local exposure log file exists (eval schema)
@@ -50,12 +57,20 @@ Verify:
 curl -fsS http://localhost:8000/healthz >/dev/null
 ```
 
+Expected:
+
+- `make dev` exits 0 and starts the local stack.
+- The health check exits 0.
+
 ## 2) Configure local dev for a runnable tutorial
 
 This tutorial uses dev headers for auth and disables admin RBAC roles so you can call admin endpoints without JWT
 claims.
 
-Edit `api/.env` and set:
+Apply these settings in `api/.env`:
+
+<details markdown="1" open>
+<summary>Tutorial env settings (copy/paste)</summary>
 
 ```bash
 # DB-only mode (no artifact manifest)
@@ -78,11 +93,23 @@ AUTH_OPERATOR_ROLE=
 AUTH_ADMIN_ROLE=
 ```
 
+</details>
+
 Restart the service:
 
 ```bash
 docker compose up -d --force-recreate api
 ```
+
+Verify:
+
+```bash
+curl -fsS http://localhost:8000/healthz >/dev/null
+```
+
+Expected:
+
+- The health check exits 0 after the restart.
 
 ## 3) Bootstrap a demo tenant (Postgres)
 
@@ -95,6 +122,10 @@ values ('demo', 'Demo Tenant')
 on conflict (external_id) do nothing;
 SQL
 ```
+
+Expected:
+
+- The `psql` command exits 0.
 
 ## 4) Create minimal tenant config and rules (admin API)
 
@@ -148,6 +179,10 @@ curl -fsS -X PUT http://localhost:8000/v1/admin/tenants/demo/rules \
   -d @/tmp/demo_rules.json
 ```
 
+Expected:
+
+- Both admin `PUT` calls exit 0.
+
 ## 5) Seed minimal DB-only signals (tags + popularity)
 
 Seed `item_tags` and `item_popularity_daily` for surface `home`:
@@ -185,6 +220,10 @@ on conflict (tenant_id, namespace, item_id, day)
 do update set score = excluded.score;
 SQL
 ```
+
+Expected:
+
+- The `psql` command exits 0.
 
 ## 6) Call `/v1/recommend` and verify non-empty output
 
@@ -225,6 +264,11 @@ If you get an empty list, check:
 - you inserted rows into `item_popularity_daily` for `namespace='home'`
 - you are calling the API with `surface=home`
 
+Expected:
+
+- The response has a non-empty `items` list.
+- `item_3` appears first (pinned rule).
+
 ## 7) Extract the exposure log and create a tiny outcome log
 
 Copy the exposure file out of the container:
@@ -247,6 +291,10 @@ cat > /tmp/outcomes.jsonl <<JSONL
 {"request_id":"req-1","user_id":"${EXPOSURE_USER_ID}","item_id":"item_3","event_type":"click","ts":"${OUTCOME_TS}"}
 JSONL
 ```
+
+Expected:
+
+- `/tmp/exposures.jsonl` and `/tmp/outcomes.jsonl` both exist and are non-empty.
 
 ## 8) Run `recsys-eval` on the logs
 
@@ -309,6 +357,11 @@ You should see an “Offline Metrics” table with values like:
 | hitrate@5 | 1.000000 |
 | precision@5 | 0.333333 |
 ```
+
+Expected:
+
+- Both `recsys-eval ... validate ...` commands exit 0.
+- `/tmp/recsys_eval_report.md` exists and is non-empty.
 
 ## 9) (Optional) Run pipelines once (produces a manifest)
 
@@ -380,9 +433,8 @@ docker compose run --rm --entrypoint sh minio-init -c \
 - Pipelines cannot connect to MinIO
   - Ensure `curl -fsS http://localhost:9000/minio/health/ready` succeeds.
 
-## Next: pipelines + artifact/manifest mode (production-like)
+## Next steps
 
 - Production-like suite tutorial: [`tutorials/production-like-run.md`](production-like-run.md)
-- Pipelines local quickstart: [`recsys-pipelines/docs/tutorials/local-quickstart.md`](../recsys-pipelines/docs/tutorials/local-quickstart.md)
-- How to operate pipelines: [`how-to/operate-pipelines.md`](../how-to/operate-pipelines.md)
-- Background: [`explanation/data-modes.md`](../explanation/data-modes.md)
+- Integrate the serving API into your app: [`how-to/integrate-recsys-service.md`](../how-to/integrate-recsys-service.md)
+- Operate pipelines: [`how-to/operate-pipelines.md`](../how-to/operate-pipelines.md)

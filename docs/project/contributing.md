@@ -1,3 +1,9 @@
+---
+tags:
+  - project
+  - contributing
+---
+
 # Contributing
 
 Thanks for your interest in contributing!

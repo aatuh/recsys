@@ -60,6 +60,11 @@ Capture:
 - p50/p95/p99 latency
 - error rate (non-2xx + timeouts)
 
+!!! note
+    If you see a lot of `429` responses locally, you may be hitting the dev stack’s safety rate limit. Either lower
+    `CONCURRENCY`/`REQUESTS` or use the benchmark setup in
+    [`operations/baseline-benchmarks.md`](baseline-benchmarks.md).
+
 ## 3) Record sizing data
 
 Use this table as a **living record**. Fill with measured results from your
@@ -90,5 +95,6 @@ Re-run the load test after:
 
 ## Read next
 
+- Baseline benchmarks (anchor numbers): [`operations/baseline-benchmarks.md`](baseline-benchmarks.md)
 - Production readiness checklist: [`operations/production-readiness-checklist.md`](production-readiness-checklist.md)
 - Backpressure and limits: [`reference/config/recsys-service.md`](../reference/config/recsys-service.md)

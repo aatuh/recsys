@@ -1,3 +1,9 @@
+---
+tags:
+  - project
+  - docs
+---
+
 # Docs per release policy
 
 ## Who this is for

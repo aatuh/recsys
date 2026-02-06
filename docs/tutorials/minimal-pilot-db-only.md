@@ -61,8 +61,8 @@ The fastest approach is to backfill a small set of top items (for one surface) a
 4. Run evaluation on real logs early:
    - Validate schemas and compute join rates.
 
-## Read next
+## Next steps
 
-- Pilot plan: [`start-here/pilot-plan.md`](../start-here/pilot-plan.md)
 - Integrate service: [`how-to/integrate-recsys-service.md`](../how-to/integrate-recsys-service.md)
-- Data contracts hub: [`reference/data-contracts/index.md`](../reference/data-contracts/index.md)
+- Define success metrics and exit criteria: [`for-businesses/success-metrics.md`](../for-businesses/success-metrics.md)
+- Evaluation, pricing, and licensing (buyer guide): [`pricing/evaluation-and-licensing.md`](../pricing/evaluation-and-licensing.md)
