@@ -19,6 +19,9 @@ This section is for **running RecSys in production**: performance, readiness, an
 - Failure-mode diagnosis and safe remediations (with runbook links)
 - The first pages to open when the service is not ready or recommendations go empty
 
+--8<-- "_snippets/key-terms.list.snippet"
+--8<-- "_snippets/key-terms.defs.one-up.snippet"
+
 ## Quick paths
 
 <div class="grid cards" markdown>

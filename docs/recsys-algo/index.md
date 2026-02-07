@@ -5,6 +5,9 @@ Deterministic recommendation engine with **explainable scoring**, optional perso
 This module is the **ranking core** of the suite. It consumes candidate sets (popularity, co-visitation,
 similarity, etc.), applies constraints/rules, and produces a ranked list with optional explain/trace details.
 
+If you are here as a recommendation engineer, start with:
+[RecSys engineering: start here](../start-here/receng.md)
+
 ## Start here
 
 - **Concepts:** [`concepts.md`](concepts.md)

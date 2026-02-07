@@ -36,6 +36,9 @@ This pilot does not answer “how good is personalization”. It answers “is t
 - A way to generate or propagate a stable `request_id` per rendered list
 - A pseudonymous `user_id` or `session_id` you can use consistently
 
+--8<-- "_snippets/key-terms.list.snippet"
+--8<-- "_snippets/key-terms.defs.one-up.snippet"
+
 ## Minimal data you need (DB-only signals)
 
 Populate these Postgres tables for your tenant:
@@ -81,5 +84,5 @@ See:
 ## Read next
 
 - Integrate service: [`how-to/integrate-recsys-service.md`](../how-to/integrate-recsys-service.md)
-- Define success metrics and exit criteria: [`for-businesses/success-metrics.md`](../for-businesses/success-metrics.md)
-- Evaluation, pricing, and licensing (buyer guide): [`pricing/evaluation-and-licensing.md`](../pricing/evaluation-and-licensing.md)
+- Minimum instrumentation spec: [`reference/minimum-instrumentation.md`](../reference/minimum-instrumentation.md)
+- Exposure logging & attribution: [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)

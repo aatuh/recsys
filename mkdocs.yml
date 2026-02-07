@@ -99,6 +99,9 @@ markdown_extensions:
   - toc:
       permalink: true
   - pymdownx.details
+  - pymdownx.snippets:
+      base_path: docs
+      check_paths: true
   - pymdownx.highlight
   - pymdownx.inlinehilite
   - pymdownx.superfences:
@@ -121,19 +124,6 @@ extra_javascript:
   - javascripts/swagger-iframe-autosize.js
 
 nav:
-  - Developers:
-      - Developer hub: developers/index.md
-      - Quickstart (10 minutes): tutorials/quickstart.md
-      - Local end-to-end: tutorials/local-end-to-end.md
-      - Production-like run: tutorials/production-like-run.md
-      - Integrate serving API: how-to/integrate-recsys-service.md
-      - Integration spec: developers/integration-spec.md
-      - Integration checklist: how-to/integration-checklist.md
-      - Minimum instrumentation spec: reference/minimum-instrumentation.md
-      - API examples: reference/api/examples.md
-      - recsys-service config: reference/config/recsys-service.md
-      - Run eval & ship decisions: how-to/run-eval-and-ship.md
-
   - Businesses:
       - for-businesses/index.md
       - Buyer journey (5 minutes): for-businesses/buyer-journey.md
@@ -193,6 +183,7 @@ nav:
               - Online A/B in production: recsys-eval/docs/workflows/online-ab-in-production.md
               - Decision playbook (ship/hold/rollback): recsys-eval/docs/decision-playbook.md
               - Default evaluation pack (recommended): recsys-eval/docs/default-evaluation-pack.md
+              - Default quality gate contract: recsys-eval/docs/default-quality-gate.md
               - Interpretation cheat sheet: recsys-eval/docs/workflows/interpretation-cheat-sheet.md
           - Architecture: recsys-eval/docs/architecture.md
           - CI gates: recsys-eval/docs/ci_gates.md
@@ -263,14 +254,17 @@ nav:
               - Template: recsys-pipelines/docs/adr/template.md
 
   - Start:
+      - Home: index.md
       - Start here: start-here/index.md
-      - Docs home: index.md
       - Developers: developers/index.md
+      - RecSys engineering (start here): start-here/receng.md
       - Docs map: start-here/docs-map.md
       - What is RecSys?: start-here/what-is-recsys.md
       - FAQ: start-here/faq.md
       - Known limitations: start-here/known-limitations.md
       - Repo layout & module paths: start-here/repo-layout.md
+      - Choose your data mode: start-here/choose-data-mode.md
+      - Deployment shapes: start-here/deployment-shapes.md
       - Minimum components by goal: start-here/minimum-components-by-goal.md
       - Security/privacy/compliance: start-here/security-privacy-compliance.md
 
@@ -284,6 +278,7 @@ nav:
 
   - How-to:
       - how-to/index.md
+      - First surface end-to-end: how-to/first-surface-end-to-end.md
       - Integrate serving API: how-to/integrate-recsys-service.md
       - Integration spec: developers/integration-spec.md
       - Integration checklist: how-to/integration-checklist.md

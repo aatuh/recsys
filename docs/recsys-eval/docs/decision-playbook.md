@@ -99,6 +99,7 @@ If you suspect underpowering or a slice-specific mismatch, **HOLD** only long en
 ## Read next
 
 - Suite how-to: [`how-to/run-eval-and-ship.md`](../../how-to/run-eval-and-ship.md)
+- Default quality gate contract (thresholds + overrides): [`default-quality-gate.md`](default-quality-gate.md)
 - Offline gates: [`recsys-eval/docs/workflows/offline-gate-in-ci.md`](workflows/offline-gate-in-ci.md)
 - Interpreting results: [`recsys-eval/docs/interpreting_results.md`](interpreting_results.md)
 - Failure modes & diagnostics: [`operations/failure-modes.md`](../../operations/failure-modes.md)

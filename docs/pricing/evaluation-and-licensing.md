@@ -23,6 +23,18 @@ tags:
 - links to canonical pricing definitions and licensing terms
 - a practical checklist for procurement/security review
 
+!!! warning "Risk & limitations (read before evaluating)"
+    RecSys is built for **operational predictability** (deterministic serving, auditable logs, versioned rollback).
+
+    Before you commit to a pilot, confirm these boundaries match your expectations:
+
+    - This is not a managed service; you run it in your own infrastructure.
+    - Some setup is still manual today (for example: tenant bootstrap is DB-only).
+    - Some connectors are scaffolded (for example: Kafka ingestion is not implemented yet).
+
+    Canonical list: [Known limitations](../start-here/known-limitations.md) and
+    [Capability matrix](../explanation/capability-matrix.md).
+
 ## The evaluation path (recommended)
 
 1. **Run a pilot on one surface**
@@ -59,7 +71,8 @@ This is not legal advice. If licensing affects your business, involve counsel.
 1. Are you only using `recsys-eval/**`?
    - Yes → it is Apache-2.0 (commercial license not needed; comply with Apache-2.0 conditions).
    - No → continue.
-2. Are you deploying or offering network access to the serving stack (`api/**`, `recsys-algo/**`, `recsys-pipelines/**`)?
+2. Are you deploying or offering network access to the serving stack
+   (`api/**`, `recsys-algo/**`, `recsys-pipelines/**`)?
    - Yes → AGPLv3 applies unless you have commercial terms.
    - No → your obligations depend on how you use/distribute the code.
 3. Can you comply with AGPLv3 terms for your deployment (including source-offer obligations for modifications)?
@@ -77,6 +90,31 @@ See the canonical decision tree and file-level rules: [Licensing](../licensing/i
 - **Enterprise**: multi-region HA, OEM/resale, regulated environments, or custom terms.
 
 Canonical plan definitions and prices: [Pricing](index.md).
+
+## Support and maintenance
+
+This section is a buyer-facing summary. Your agreement controls if anything here differs.
+
+**Channels (typical):**
+
+- Community (free): GitHub Issues and Discussions (no response-time guarantees)
+- Commercial: private support email and/or private issue tracker (provided upon agreement)
+
+**Response expectations (typical):**
+
+| Plan | Response expectations (typical) |
+| --- | --- |
+| Commercial Evaluation | Best-effort async (no SLA) |
+| Starter | Best-effort async (no SLA) |
+| Growth | Typically within 2 business days (async) |
+| Enterprise | Custom (can include SLA/premium support) |
+
+**Updates and patch releases:**
+
+- Commercial plans include access to updates. Security/patch expectations are defined in your tier/agreement.
+- Premium support/SLA (8×5 or 24×7) is an optional add-on for Growth/Enterprise.
+
+Full details: [Support](../project/support.md).
 
 ## How to procure (fast path)
 

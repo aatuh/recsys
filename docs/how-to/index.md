@@ -18,10 +18,15 @@ tags:
 - Goal-oriented steps (prereqs → steps → verify)
 - Operational runbooks for common failure modes
 
+--8<-- "_snippets/key-terms.list.snippet"
+--8<-- "_snippets/key-terms.defs.one-up.snippet"
+
 ## Common tasks
 
 <div class="grid cards" markdown>
 
+- **[First surface end-to-end](first-surface-end-to-end.md)**  
+  One stitched path: choose mode → integrate API → instrument → run first eval.
 - **[Integrate serving API](integrate-recsys-service.md)**  
   Tenancy, auth, request/response, and production integration notes.
 - **[Integration checklist](integration-checklist.md)**  

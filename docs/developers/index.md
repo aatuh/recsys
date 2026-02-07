@@ -21,11 +21,8 @@ RecSys is an auditable recommendation system suite with deterministic ranking an
 - A minimal “first integration” checklist (one surface + logging + first eval report)
 - Links to the canonical API, contracts, and on-call runbooks
 
-!!! info "Key terms"
-    - **[Tenant](../project/glossary.md#tenant)**: a configuration + data isolation boundary (usually one organization).
-    - **[Surface](../project/glossary.md#surface)**: where recommendations are shown (home, PDP, cart, ...).
-    - **[Request ID](../project/glossary.md#request-id)**: the join key that ties together responses, exposures, and outcomes.
-    - **[Exposure log](../project/glossary.md#exposure-log)**: what was shown (audit trail + evaluation input).
+--8<-- "_snippets/key-terms.list.snippet"
+--8<-- "_snippets/key-terms.defs.one-up.snippet"
 
 ## Quick paths
 
@@ -35,8 +32,10 @@ RecSys is an auditable recommendation system suite with deterministic ranking an
   Fastest path to a non-empty `POST /v1/recommend` + an exposure log.
 - **[Run end-to-end locally](../tutorials/local-end-to-end.md)**  
   20–30 min tutorial to run the full loop on your laptop.
-- **[Minimum components by goal](../start-here/minimum-components-by-goal.md)**  
-  Decide DB-only vs artifact/manifest mode and what you need to run.
+- **[Choose your data mode](../start-here/choose-data-mode.md)**  
+  Decide DB-only vs artifact/manifest mode and jump to the right tutorial.
+- **[First surface end-to-end](../how-to/first-surface-end-to-end.md)**  
+  One stitched path: choose mode → integrate API → instrument → run first eval.
 - **[Integrate the API](../how-to/integrate-recsys-service.md)**  
   Auth, tenancy, contracts, and copy/paste examples.
 - **[Integration checklist](../how-to/integration-checklist.md)**  
@@ -82,11 +81,14 @@ Quick sanity check:
 
 ## Need guided help?
 
-- RecSys Copilot (Custom GPT): [`chatgpt.com/g/.../recsys-copilot`](https://chatgpt.com/g/g-68c82a5c7704819185d0ff929b6fff11-recsys-copilot)
+- RecSys Copilot (Custom GPT):
+  [`chatgpt.com/g/.../recsys-copilot`](https://chatgpt.com/g/g-68c82a5c7704819185d0ff929b6fff11-recsys-copilot)
 
 ## Read next
 
-- Exposure logging & attribution: [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)
-- Candidate vs ranking: [`explanation/candidate-vs-ranking.md`](../explanation/candidate-vs-ranking.md)
-- Ranking reference (signals, knobs, determinism): [`recsys-algo/ranking-reference.md`](../recsys-algo/ranking-reference.md)
-- Security, privacy, compliance: [`start-here/security-privacy-compliance.md`](../start-here/security-privacy-compliance.md)
+- Exposure logging & attribution:
+  [Exposure logging & attribution](../explanation/exposure-logging-and-attribution.md)
+- Candidate vs ranking: [Candidate vs ranking](../explanation/candidate-vs-ranking.md)
+- Ranking reference (signals, knobs, determinism): [Ranking reference](../recsys-algo/ranking-reference.md)
+- Security, privacy, compliance:
+  [Security/privacy/compliance](../start-here/security-privacy-compliance.md)

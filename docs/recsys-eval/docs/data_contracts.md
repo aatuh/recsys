@@ -48,10 +48,12 @@ Minimal example (illustrative, not exhaustive):
 
 {
   "request_id": "req_123",
-  "tenant": "demo",
-  "surface": "home",
   "user_id": "u_42",
-  "timestamp": "2026-01-27T12:00:00Z",
+  "ts": "2026-01-27T12:00:00Z",
+  "context": {
+    "tenant_id": "demo",
+    "surface": "home"
+  },
   "items": [
     {"item_id": "A", "rank": 1},
     {"item_id": "B", "rank": 2}
@@ -80,9 +82,10 @@ Minimal example:
 
 {
   "request_id": "req_123",
-  "event": "click",
+  "user_id": "u_42",
   "item_id": "B",
-  "timestamp": "2026-01-27T12:00:05Z"
+  "event_type": "click",
+  "ts": "2026-01-27T12:00:05Z"
 }
 
 ```
@@ -102,9 +105,11 @@ Minimal example:
 ```json
 
 {
-  "request_id": "req_123",
   "experiment_id": "exp_home_rank_v3",
-  "variant": "control"
+  "variant": "control",
+  "request_id": "req_123",
+  "user_id": "u_42",
+  "ts": "2026-01-27T12:00:00Z"
 }
 
 ```
@@ -127,8 +132,8 @@ In reports, look for:
 
 - match rate: how many exposures have outcomes
 - duplicate request_id rates
-- timestamp anomalies
-- missing tenant/surface fields (kills segmentation)
+- ts anomalies
+- missing segmentation context keys (for example: `tenant_id`, `surface`)
 
 If joins look wrong, stop and fix instrumentation. Do not "tune metrics".
 

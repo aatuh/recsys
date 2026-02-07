@@ -19,6 +19,12 @@ tags:
 - The join key (`request_id`) and the invariants you must enforce
 - Common pitfalls that cause low join-rate or misleading results
 
+## Used by
+
+- First surface end-to-end: [`how-to/first-surface-end-to-end.md`](../how-to/first-surface-end-to-end.md)
+- Integration checklist: [`how-to/integration-checklist.md`](../how-to/integration-checklist.md)
+- Run eval and ship decisions: [`how-to/run-eval-and-ship.md`](../how-to/run-eval-and-ship.md)
+
 ## Core invariants (do not compromise)
 
 1. **`request_id` is unique per rendered list.**

@@ -18,6 +18,39 @@ tags:
 - A skimmable checklist of the exact artifacts to review
 - Role-based sections (Security/Legal/IT/Finance) with canonical links only
 
+## Trust map (claims → evidence → limits)
+
+Use this as a fast “why trust this?” map. Each claim links to evidence you can inspect, plus the boundary conditions.
+
+- Deterministic serving (same inputs + versions)
+  - Evidence: [How it works](../explanation/how-it-works.md), [Ranking reference](../recsys-algo/ranking-reference.md),
+    [Tutorial: local end-to-end](../tutorials/local-end-to-end.md)
+  - Limits: determinism assumes identical inputs/config/rules/artifacts and versions; experiments can intentionally
+    change outputs.
+
+- Auditable measurement loop (exposures ↔ outcomes join by `request_id`)
+  - Evidence: [Evidence examples](evidence.md), [Minimum instrumentation](../reference/minimum-instrumentation.md),
+    [Join logic](../reference/data-contracts/join-logic.md)
+  - Limits: if `request_id` is missing/unstable, join-rate collapses and KPIs become untrustworthy; do not log raw PII.
+
+- Safe ship/rollback levers (config/rules + manifest pointer)
+  - Evidence: [Operational reliability & rollback](../start-here/operational-reliability-and-rollback.md),
+    [Tutorial: production-like run](../tutorials/production-like-run.md),
+    [Stale manifest (runbook)](../operations/runbooks/stale-manifest.md)
+  - Limits: artifact/manifest mode depends on pipelines freshness and artifact availability; practice rollback before
+    production.
+
+- Operational readiness (runbooks + checklists)
+  - Evidence: [Production readiness checklist](../operations/production-readiness-checklist.md),
+    [Failure modes](../operations/failure-modes.md)
+  - Limits: you must define SLOs/alerts and validate performance with your data and deployment shape.
+
+- Security and privacy posture (auth/tenancy + data handling)
+  - Evidence: [Security pack](../security/security-pack.md),
+    [Security, privacy, compliance](../start-here/security-privacy-compliance.md)
+  - Limits: security requires correct configuration (auth, tenancy scope, retention, secrets); no managed hosting is
+    implied by this repo.
+
 ## Security
 
 - Security pack (canonical): [Security pack](../security/security-pack.md)
@@ -38,7 +71,8 @@ tags:
 - Operations hub: [Operations](../operations/index.md)
 - Baseline benchmarks (performance anchors): [Baseline benchmarks](../operations/baseline-benchmarks.md)
 - Failure modes and diagnostics: [Failure modes](../operations/failure-modes.md)
-- Rollback story (ship/hold/rollback levers): [Operational reliability & rollback](../start-here/operational-reliability-and-rollback.md)
+- Rollback story (ship/hold/rollback levers):
+  [Operational reliability & rollback](../start-here/operational-reliability-and-rollback.md)
 - Deployment guide: [Deploy with Helm](../how-to/deploy-helm.md)
 
 ## Finance / Procurement
@@ -50,8 +84,10 @@ tags:
 ## Procurement checklist (Definition of Done)
 
 - [ ] We identified one recommendation surface for the pilot.
-- [ ] We can measure impact credibly (instrumentation + join-rate sanity): [Minimum instrumentation](../reference/minimum-instrumentation.md)
-- [ ] We reviewed known limitations and confirmed fit for our current stage: [Known limitations](../start-here/known-limitations.md)
+- [ ] We can measure impact credibly (instrumentation + join-rate sanity):
+  [Minimum instrumentation](../reference/minimum-instrumentation.md)
+- [ ] We reviewed known limitations and confirmed fit for our current stage:
+  [Known limitations](../start-here/known-limitations.md)
 - [ ] Security reviewed the security pack and data posture: [Security pack](../security/security-pack.md)
 - [ ] Legal reviewed licensing obligations and the order form terms:
   [Licensing](../licensing/index.md) and [Order form template](../licensing/order_form.md)

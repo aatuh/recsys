@@ -10,14 +10,18 @@ tags:
 This site documents the **RecSys suite**: a production-ready set of modules for building, shipping, and operating a
 recommendation system.
 
+!!! info "Docs home"
+    If you want the docs overview and role-based entry points, start at
+    [Home](../index.md).
+
 ## Quick paths
 
 <div class="grid cards" markdown>
 
 - **[Quickstart (10 minutes)](../tutorials/quickstart.md)**  
   Fastest path to a non-empty `POST /v1/recommend` + an exposure log.
-- **[Minimum components by goal](minimum-components-by-goal.md)**  
-  Decide DB-only vs artifact/manifest mode and what you need to run.
+- **[Choose your data mode](choose-data-mode.md)**  
+  Decide DB-only vs artifact/manifest mode and jump to the right tutorial.
 - **[Evaluation, pricing, and licensing (buyer guide)](../pricing/evaluation-and-licensing.md)**  
   Recommended evaluation path + procurement-ready links.
 
@@ -35,12 +39,16 @@ recommendation system.
 - Role-based entry points (lead dev, recsys engineer, stakeholder, SRE)
 - Links to the canonical contracts, API, and operational runbooks
 
+--8<-- "_snippets/key-terms.list.snippet"
+--8<-- "_snippets/key-terms.defs.one-up.snippet"
+
 ## Recommended path
 
 1. **Run the suite locally end-to-end**
    - Tutorial: [`tutorials/local-end-to-end.md`](../tutorials/local-end-to-end.md)
    - If you want the fastest possible first success: [`tutorials/quickstart.md`](../tutorials/quickstart.md)
-   - Optional: production-like artifacts + ship/rollback: [`tutorials/production-like-run.md`](../tutorials/production-like-run.md)
+   - Optional: production-like artifacts + ship/rollback:
+     [`tutorials/production-like-run.md`](../tutorials/production-like-run.md)
 
 2. **Understand the architecture and data flow**
    - Diagram: [`start-here/diagrams/suite-context.md`](diagrams/suite-context.md)
@@ -60,6 +68,7 @@ recommendation system.
 
 - Suite architecture and contracts:
   - [`explanation/suite-architecture.md`](../explanation/suite-architecture.md)
+  - Deployment shapes: [`start-here/deployment-shapes.md`](deployment-shapes.md)
   - [`reference/data-contracts/index.md`](../reference/data-contracts/index.md)
   - [`reference/config/index.md`](../reference/config/index.md)
   - [`reference/api/openapi.yaml`](../reference/api/openapi.yaml)
@@ -67,6 +76,8 @@ recommendation system.
 
 ### Recommendation engineer / ML engineer
 
+- Curated reading order:
+  - [`start-here/receng.md`](receng.md)
 - Ranking core:
   - [`recsys-algo/index.md`](../recsys-algo/index.md)
 - Pipelines outputs:
@@ -95,10 +106,10 @@ recommendation system.
   - [`operations/runbooks/empty-recs.md`](../operations/runbooks/empty-recs.md)
   - [`operations/runbooks/rollback-config-rules.md`](../operations/runbooks/rollback-config-rules.md)
   - Security overview: [`start-here/security-privacy-compliance.md`](security-privacy-compliance.md)
-  - [`recsys-pipelines/docs/operations/runbooks/pipeline-failed.md`](../recsys-pipelines/docs/operations/runbooks/pipeline-failed.md)
-  - [`recsys-pipelines/docs/operations/runbooks/validation-failed.md`](../recsys-pipelines/docs/operations/runbooks/validation-failed.md)
-  - [`recsys-pipelines/docs/operations/runbooks/limit-exceeded.md`](../recsys-pipelines/docs/operations/runbooks/limit-exceeded.md)
-  - [`recsys-pipelines/docs/operations/runbooks/stale-artifacts.md`](../recsys-pipelines/docs/operations/runbooks/stale-artifacts.md)
+  - Pipelines runbook: [Pipeline failed](../recsys-pipelines/docs/operations/runbooks/pipeline-failed.md)
+  - Pipelines runbook: [Validation failed](../recsys-pipelines/docs/operations/runbooks/validation-failed.md)
+  - Pipelines runbook: [Limit exceeded](../recsys-pipelines/docs/operations/runbooks/limit-exceeded.md)
+  - Pipelines runbook: [Stale artifacts](../recsys-pipelines/docs/operations/runbooks/stale-artifacts.md)
 
 ## Read next
 

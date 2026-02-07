@@ -12,6 +12,7 @@ This section contains **deep, component-level documentation**. If you’re new,
 start with:
 
 - Start here: [`start-here/index.md`](../start-here/index.md)
+- RecSys engineering (reading order): [`start-here/receng.md`](../start-here/receng.md)
 - Tutorials: [`tutorials/index.md`](../tutorials/index.md)
 
 ## Suite modules

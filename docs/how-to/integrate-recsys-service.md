@@ -122,7 +122,4 @@ Then call recommend and ensure you capture `meta.request_id` (or supply `X-Reque
 
 - Exposure logging & attribution: [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)
 - Minimum instrumentation spec (what to log for credible eval): [`reference/minimum-instrumentation.md`](../reference/minimum-instrumentation.md)
-- Admin bootstrap (tenant + config + rules): [`reference/api/admin.md`](../reference/api/admin.md)
-- Auth & tenancy: [`reference/auth-and-tenancy.md`](../reference/auth-and-tenancy.md)
 - Integration checklist: [`how-to/integration-checklist.md`](integration-checklist.md)
-- Integration cookbooks: [`how-to/integration-cookbooks/index.md`](integration-cookbooks/index.md)

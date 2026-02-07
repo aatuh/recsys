@@ -135,8 +135,6 @@ curl -fsS http://localhost:8000/v1/recommend \
 
 ## Read next
 
-- Integrate service: [`how-to/integrate-recsys-service.md`](integrate-recsys-service.md)
-- Quickstart tutorial: [`tutorials/quickstart.md`](../tutorials/quickstart.md)
-- Data contracts: [`reference/data-contracts/index.md`](../reference/data-contracts/index.md)
-- Failure modes & diagnostics: [`operations/failure-modes.md`](../operations/failure-modes.md)
-- Run eval and ship: [`how-to/run-eval-and-ship.md`](run-eval-and-ship.md)
+- Run eval and ship decisions: [`how-to/run-eval-and-ship.md`](run-eval-and-ship.md)
+- Data contracts (schemas + examples): [`reference/data-contracts/index.md`](../reference/data-contracts/index.md)
+- Exposure logging & attribution: [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)

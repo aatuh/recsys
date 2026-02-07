@@ -151,7 +151,8 @@ paragraph and link to the canonical buyer guide, then go straight into the conte
 
 Use these skeletons for new suite-level pages. Keep headings consistent so readers can scan quickly.
 
-### Tutorial skeleton
+<details markdown="1">
+<summary>Tutorial skeleton</summary>
 
 ```md
 # Title
@@ -171,7 +172,10 @@ Use these skeletons for new suite-level pages. Keep headings consistent so reade
 ## Read next
 ```
 
-### How-to skeleton
+</details>
+
+<details markdown="1">
+<summary>How-to skeleton</summary>
 
 ```md
 # How-to: Title
@@ -191,7 +195,10 @@ Use these skeletons for new suite-level pages. Keep headings consistent so reade
 ## Read next
 ```
 
-### Explanation skeleton
+</details>
+
+<details markdown="1">
+<summary>Explanation skeleton</summary>
 
 ```md
 # Title
@@ -207,7 +214,10 @@ Use these skeletons for new suite-level pages. Keep headings consistent so reade
 ## Read next
 ```
 
-### Reference skeleton
+</details>
+
+<details markdown="1">
+<summary>Reference skeleton</summary>
 
 ```md
 # Title
@@ -222,6 +232,8 @@ Use these skeletons for new suite-level pages. Keep headings consistent so reade
 
 ## Read next
 ```
+
+</details>
 
 ## Markdown conventions
 

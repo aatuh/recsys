@@ -20,6 +20,12 @@ tags:
 - JSONL examples you can copy/paste
 - Guidance to avoid validation failures
 
+## Used by
+
+- Minimum instrumentation spec: [`reference/minimum-instrumentation.md`](../minimum-instrumentation.md)
+- Integration checklist: [`how-to/integration-checklist.md`](../../how-to/integration-checklist.md)
+- Run eval and ship decisions: [`how-to/run-eval-and-ship.md`](../../how-to/run-eval-and-ship.md)
+
 `recsys-eval validate` uses strict JSON schemas with
 `additionalProperties: false`. If your JSONL includes extra keys or misses
 required fields, validation fails even if `recsys-eval run` produced a report.

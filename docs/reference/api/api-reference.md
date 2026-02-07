@@ -27,6 +27,14 @@ This page is the **integration hub** for `recsys-service`:
 - A minimal request/response example you can run locally
 - Pointers to the canonical schema, examples, and error semantics
 
+## Used by
+
+- Quickstart (10 minutes): [`tutorials/quickstart.md`](../../tutorials/quickstart.md)
+- Integrate serving API: [`how-to/integrate-recsys-service.md`](../../how-to/integrate-recsys-service.md)
+- First surface end-to-end: [`how-to/first-surface-end-to-end.md`](../../how-to/first-surface-end-to-end.md)
+- Integration spec (headers/tenancy): [`developers/integration-spec.md`](../../developers/integration-spec.md)
+- Integration checklist: [`how-to/integration-checklist.md`](../../how-to/integration-checklist.md)
+
 ## Base URL and versioning
 
 - All API endpoints are under `/v1`.

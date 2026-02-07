@@ -17,6 +17,9 @@ tags:
 - A full end-to-end loop (serve → log → evaluate → ship/rollback)
 - A production-like run you can mirror in staging
 
+--8<-- "_snippets/key-terms.list.snippet"
+--8<-- "_snippets/key-terms.defs.one-up.snippet"
+
 ## Choose a tutorial
 
 <div class="grid cards" markdown>

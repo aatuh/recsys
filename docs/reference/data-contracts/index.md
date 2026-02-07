@@ -20,6 +20,12 @@ tags:
 - Minimal examples you can copy/paste
 - Where the canonical schemas live and how they are versioned
 
+## Used by
+
+- Integration checklist: [`how-to/integration-checklist.md`](../../how-to/integration-checklist.md)
+- First surface end-to-end: [`how-to/first-surface-end-to-end.md`](../../how-to/first-surface-end-to-end.md)
+- Run eval and ship decisions: [`how-to/run-eval-and-ship.md`](../../how-to/run-eval-and-ship.md)
+
 ## Overview: three contract families
 
 - **Evaluation events (for `recsys-eval`)**

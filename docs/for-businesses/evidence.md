@@ -35,6 +35,13 @@ What this evidence **does not** prove by itself:
 - Absolute performance/latency guarantees (use baseline anchor numbers as a starting point):
   [Baseline benchmarks](../operations/baseline-benchmarks.md)
 
+## Trust map (what to verify next)
+
+This page shows example artifacts. For a complete “claims → evidence → limits” map (what to trust, and where it can
+break), see:
+
+- Procurement pack: [Procurement pack](procurement-pack.md)
+
 ## The artifacts that matter
 
 ### 1) Serving output (what users see)

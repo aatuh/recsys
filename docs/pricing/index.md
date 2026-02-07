@@ -64,6 +64,8 @@ license term is **30 days** (unless extended in writing): [Evaluation license](.
 - A signed license grant (or equivalent commercial entitlement artifact)
 - Credentials/instructions to pull signed commercial images from the private registry (if applicable)
 - A recommended evaluation workflow and ship/rollback runbooks
+- Support and maintenance summary (channels + expectations):
+  [Buyer guide](evaluation-and-licensing.md#support-and-maintenance) and [Support](../project/support.md)
 
 ## Details and legal terms
 

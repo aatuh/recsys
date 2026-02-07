@@ -18,6 +18,9 @@ tags:
 - The minimum requirements to run a credible pilot (data + people)
 - The trust story: security, operations, rollback, and how decisions are audited
 
+--8<-- "_snippets/key-terms.list.snippet"
+--8<-- "_snippets/key-terms.defs.one-up.snippet"
+
 ## Buyer journey (2 minutes)
 
 Prefer a single shareable page:

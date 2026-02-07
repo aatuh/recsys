@@ -32,6 +32,9 @@ RecSys is an auditable recommendation system suite with deterministic ranking an
 - A recommended 2–6 week plan and exit criteria
 - Links to the exact docs you will run during the evaluation
 
+--8<-- "_snippets/key-terms.list.snippet"
+--8<-- "_snippets/key-terms.defs.one-up.snippet"
+
 ## What “evaluation” means here
 
 An evaluation is successful when you can answer these questions with evidence:

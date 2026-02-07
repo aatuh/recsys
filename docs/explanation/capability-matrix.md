@@ -32,6 +32,26 @@ tags:
 | Operations | Runbooks, failure modes, readiness checklist | “Set-and-forget” operations | Ops hub: [`operations/index.md`](../operations/index.md) |
 | Multi-tenancy | Tenant-scoped config, rules, and data isolation | Auto-provisioning tenants via an admin create-tenant API | Known limitations: [`start-here/known-limitations.md`](../start-here/known-limitations.md) |
 
+## ML scope (modeling boundaries)
+
+RecSys includes deterministic “building blocks” you can combine, operate, and evaluate.
+
+Included in this repo:
+
+- Deterministic ranking logic (blending, rules, constraints) with pluggable stores/signals.
+- Offline computation of baseline artifacts (for example: popularity, co-occurrence, implicit feedback, content-based).
+- Evaluation workflows and decision artifacts (ship/hold/rollback), with an auditable exposure→outcome trail.
+
+Not included by default:
+
+- End-to-end learned-to-rank training or automated hyperparameter tuning for your domain.
+- A managed feature store / real-time feature computation platform.
+- A hosted experimentation platform (feature flags, traffic splitting, dashboards).
+
+If you want learned models, treat training as **external** and publish the resulting signals (scores/embeddings) into
+stores/artifacts that the deterministic serving layer can consume. Extension guide:
+[`how-to/add-signal-end-to-end.md`](../how-to/add-signal-end-to-end.md).
+
 ## Notes
 
 - The suite is designed for **operational predictability first**: deterministic serving, clear audit artifacts, and

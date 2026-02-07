@@ -18,6 +18,11 @@ tags:
 - A quick catalog of the most important fields (what they mean and why they matter)
 - Pointers to the strict schemas and JSONL examples
 
+## Used by
+
+- Minimum instrumentation spec: [`reference/minimum-instrumentation.md`](../minimum-instrumentation.md)
+- Integration checklist: [`how-to/integration-checklist.md`](../../how-to/integration-checklist.md)
+
 ## Reference
 
 The canonical strict schemas and JSONL examples live here:

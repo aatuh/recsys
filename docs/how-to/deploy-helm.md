@@ -75,6 +75,6 @@ kubectl logs deploy/recsys-api
 
 ## Read next
 
-- Operational invariants (pipelines safety model): [`explanation/pipelines-operational-invariants.md`](../explanation/pipelines-operational-invariants.md)
-- Artifacts and manifest lifecycle: [`explanation/artifacts-and-manifest-lifecycle.md`](../explanation/artifacts-and-manifest-lifecycle.md)
 - Production readiness checklist: [`operations/production-readiness-checklist.md`](../operations/production-readiness-checklist.md)
+- Config reference (recsys-service): [`reference/config/recsys-service.md`](../reference/config/recsys-service.md)
+- Artifacts and manifest lifecycle: [`explanation/artifacts-and-manifest-lifecycle.md`](../explanation/artifacts-and-manifest-lifecycle.md)

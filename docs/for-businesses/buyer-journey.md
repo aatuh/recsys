@@ -18,6 +18,19 @@ tags:
 - Proof artifacts you can inspect (no calls required)
 - Links to pricing, licensing, and procurement artifacts
 
+!!! warning "Risk & limitations (read before you invest time)"
+    RecSys is optimized for **deterministic, auditable operation**. It is not a managed service and it does not try to
+    be an end-to-end “auto-ML recommender platform”.
+
+    Common “surprises” to check early:
+
+    - You run it in your own infrastructure (runbooks and checklists are included).
+    - Some setup is still manual today (for example: tenant bootstrap is DB-only).
+    - Some connectors are scaffolded (for example: Kafka ingestion is not implemented yet).
+
+    Full list: [Known limitations](../start-here/known-limitations.md) and
+    [Capability matrix](../explanation/capability-matrix.md).
+
 ## The 5-minute path (recommended order)
 
 1. **Understand what RecSys is**

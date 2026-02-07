@@ -43,6 +43,9 @@ curl --version
 go version
 ```
 
+--8<-- "_snippets/key-terms.list.snippet"
+--8<-- "_snippets/key-terms.defs.one-up.snippet"
+
 ## Verify (expected outcome)
 
 - `recsys-service` loads the manifest from object storage (log line: `artifact manifest loaded`)
@@ -292,6 +295,6 @@ Expected:
 
 ## Read next
 
-- Operate pipelines: [`how-to/operate-pipelines.md`](../how-to/operate-pipelines.md)
-- Run evaluation and make ship decisions: [`how-to/run-eval-and-ship.md`](../how-to/run-eval-and-ship.md)
 - Deploy with Helm: [`how-to/deploy-helm.md`](../how-to/deploy-helm.md)
+- Config reference (recsys-service): [`reference/config/recsys-service.md`](../reference/config/recsys-service.md)
+- Artifacts and manifest lifecycle: [`explanation/artifacts-and-manifest-lifecycle.md`](../explanation/artifacts-and-manifest-lifecycle.md)

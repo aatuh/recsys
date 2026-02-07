@@ -12,6 +12,12 @@
 - The invariants your logging must satisfy for valid attribution
 - A checklist to debug low join rates
 
+## Used by
+
+- Minimum instrumentation spec: [`reference/minimum-instrumentation.md`](../minimum-instrumentation.md)
+- Decision playbook (ship/hold/rollback): [`recsys-eval/docs/decision-playbook.md`](../../recsys-eval/docs/decision-playbook.md)
+- Run eval and ship decisions: [`how-to/run-eval-and-ship.md`](../../how-to/run-eval-and-ship.md)
+
 ## Mental model
 
 Think of each recommendation response as a “case”:

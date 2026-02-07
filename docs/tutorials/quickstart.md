@@ -26,8 +26,9 @@ tags:
 > - Choose **artifact/manifest mode** when you want atomic publish and rollback (pipelines produce artifacts and a
 >   manifest pointer drives serving).
 >
-> See: [`explanation/data-modes.md`](../explanation/data-modes.md). For an artifact-mode walkthrough, jump to
-> [`tutorials/production-like-run.md`](production-like-run.md).
+> See: [Choose your data mode](../start-here/choose-data-mode.md) (decision guide) and
+> [Data modes](../explanation/data-modes.md) (details). For an artifact-mode walkthrough, jump to
+> [Production-like run](production-like-run.md).
 
 ## Prereqs
 
@@ -45,11 +46,8 @@ make --version
 curl --version
 ```
 
-!!! info "Key terms (2 minutes)"
-    - **[Tenant](../project/glossary.md#tenant)**: a configuration + data isolation boundary (usually one organization).
-    - **[Surface](../project/glossary.md#surface)**: where recommendations are shown (home, PDP, cart, ...).
-    - **[Request ID](../project/glossary.md#request-id)**: the join key that ties together responses, exposures, and outcomes.
-    - **[Exposure log](../project/glossary.md#exposure-log)**: what was shown (audit trail + evaluation input).
+--8<-- "_snippets/key-terms.list.snippet"
+--8<-- "_snippets/key-terms.defs.one-up.snippet"
 
 ## 1) Start Postgres + `recsys-service` (DB-only mode)
 
@@ -123,13 +121,7 @@ Expected:
 
 Insert a tenant row:
 
-```bash
-docker exec -i recsys-db psql -U recsys-db -d recsys-db <<'SQL'
-insert into tenants (external_id, name)
-values ('demo', 'Demo Tenant')
-on conflict (external_id) do nothing;
-SQL
-```
+--8<-- "_snippets/demo-tenant-insert.snippet"
 
 Upsert a minimal config:
 
@@ -260,5 +252,5 @@ Expected:
 ## Read next
 
 - Integrate into an app: [`how-to/integrate-recsys-service.md`](../how-to/integrate-recsys-service.md)
-- Full walkthrough (serving → logging → eval): [`tutorials/local-end-to-end.md`](local-end-to-end.md)
 - API reference (Swagger UI + OpenAPI spec): [`reference/api/api-reference.md`](../reference/api/api-reference.md)
+- Exposure logging & attribution: [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)

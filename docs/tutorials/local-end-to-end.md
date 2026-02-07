@@ -28,8 +28,9 @@ tags:
 > - Choose **artifact/manifest mode** when you want pipelines to publish versioned artifacts and use the manifest as
 >   a ship/rollback lever.
 >
-> See: [`explanation/data-modes.md`](../explanation/data-modes.md). For artifact mode end-to-end, follow
-> [`tutorials/production-like-run.md`](production-like-run.md).
+> See: [Choose your data mode](../start-here/choose-data-mode.md) (decision guide) and
+> [Data modes](../explanation/data-modes.md) (details). For artifact mode end-to-end, follow
+> [Production-like run](production-like-run.md).
 
 ## Prereqs
 
@@ -49,6 +50,9 @@ curl --version
 python3 --version
 go version
 ```
+
+--8<-- "_snippets/key-terms.list.snippet"
+--8<-- "_snippets/key-terms.defs.one-up.snippet"
 
 ## Verify (expected outcome)
 
@@ -135,13 +139,7 @@ Expected:
 
 Insert a tenant row:
 
-```bash
-docker exec -i recsys-db psql -U recsys-db -d recsys-db <<'SQL'
-insert into tenants (external_id, name)
-values ('demo', 'Demo Tenant')
-on conflict (external_id) do nothing;
-SQL
-```
+--8<-- "_snippets/demo-tenant-insert.snippet"
 
 Expected:
 
@@ -300,7 +298,9 @@ docker compose cp api:/app/tmp/exposures.eval.jsonl /tmp/exposures.jsonl
 Extract the hashed `user_id` from the exposure file (this is what `recsys-service` logs for eval format):
 
 ```bash
-EXPOSURE_USER_ID="$(python3 -c 'import json; print(json.loads(open(\"/tmp/exposures.jsonl\").readline())[\"user_id\"])')"
+EXPOSURE_USER_ID="$(
+  python3 -c 'import json; print(json.loads(open("/tmp/exposures.jsonl").readline())["user_id"])'
+)"
 ```
 
 Create a minimal outcome log that joins by `request_id` (and matches the exposure `user_id`):
@@ -457,10 +457,10 @@ docker compose run --rm --entrypoint sh minio-init -c \
 
 - Service not ready: [`operations/runbooks/service-not-ready.md`](../operations/runbooks/service-not-ready.md)
 - Empty recs: [`operations/runbooks/empty-recs.md`](../operations/runbooks/empty-recs.md)
-- Database migration issues: [`operations/runbooks/db-migration-issues.md`](../operations/runbooks/db-migration-issues.md)
+- Database migration issues: [Database migration issues](../operations/runbooks/db-migration-issues.md)
 
 ## Read next
 
-- Production-like suite tutorial: [`tutorials/production-like-run.md`](production-like-run.md)
-- Integrate the serving API into your app: [`how-to/integrate-recsys-service.md`](../how-to/integrate-recsys-service.md)
-- Operate pipelines: [`how-to/operate-pipelines.md`](../how-to/operate-pipelines.md)
+- First surface end-to-end: [`how-to/first-surface-end-to-end.md`](../how-to/first-surface-end-to-end.md)
+- Minimum instrumentation spec: [`reference/minimum-instrumentation.md`](../reference/minimum-instrumentation.md)
+- Exposure logging & attribution: [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)

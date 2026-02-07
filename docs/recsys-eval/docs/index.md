@@ -1,5 +1,8 @@
 # Index
 
+If you are approaching the suite as a recommendation engineer, start with:
+[RecSys engineering: start here](../../start-here/receng.md)
+
 If you are new:
 
 - [`RecSys Eval Overview`](../overview.md)
@@ -18,6 +21,7 @@ If you need to interpret results:
 If you run this in CI or ops:
 
 - [`CI Gates`](ci_gates.md)
+- [`Default quality gate contract`](default-quality-gate.md)
 - [`Scaling`](scaling.md)
 - [`Runbooks`](runbooks.md)
 - [`Troubleshooting`](troubleshooting.md)

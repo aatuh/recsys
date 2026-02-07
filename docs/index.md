@@ -13,6 +13,10 @@ into an application, and operate it safely.
 
 RecSys is an auditable recommendation system suite with deterministic ranking and versioned ship/rollback.
 
+!!! info "New here?"
+    For the recommended onboarding path and reading order, start at
+    [Start here](start-here/index.md).
+
 [Run quickstart (10 minutes)](tutorials/quickstart.md){ .md-button .md-button--primary }
 [Start evaluation](evaluate/index.md){ .md-button }
 [Developer hub](developers/index.md){ .md-button }
@@ -28,6 +32,9 @@ RecSys is an auditable recommendation system suite with deterministic ranking an
 - Role-based entry points (developer, business, ops, recommendation engineer)
 - Canonical docs for evaluation, pricing/licensing, and the security pack
 - The “happy path” plus runbooks for common failures
+
+--8<-- "_snippets/key-terms.list.snippet"
+--8<-- "_snippets/key-terms.defs.root.snippet"
 
 ## Outcomes you should expect
 

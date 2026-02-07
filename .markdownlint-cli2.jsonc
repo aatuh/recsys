@@ -16,5 +16,10 @@
     },
     "MD041": { "level": 1 },
   },
-  "globs": ["**/*.md", "!**/.*/**", "!**/node_modules/**"],
+  "globs": [
+    "**/*.md",
+    "!**/.*/**",
+    "!**/node_modules/**",
+    "!docs/_snippets/**",
+  ],
 }
