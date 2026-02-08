@@ -86,7 +86,7 @@ CACHE_ENABLED ?= false
 test: ## Run tests
 	@echo "🧪 Running tests. Pattern: '$(TEST_PATTERN)'  Flags: '$(FLAGS)'  Pkg: '$(PKG)' Fast: ${FAST}"
 	@RECSYS_API_ENV_FILE=./api/.env.test $(DOCKER_COMPOSE) up -d db api
-	@$(DOCKER_COMPOSE) run --no-deps --rm \
+	@$(DOCKER_COMPOSE) run --build --no-deps --rm \
 		-e TEST_PATTERN='$(TEST_PATTERN)' \
 		-e FLAGS='$(FLAGS)' \
 		-e PKG='$(PKG)' \
@@ -100,7 +100,7 @@ test: ## Run tests
 test-cached: ## Run tests with caching enabled
 	@echo "🧪 Running cached tests. Pattern: '$(TEST_PATTERN)'  Flags: '$(FLAGS)'  Pkg: '$(PKG)' Fast: ${FAST} Cache TTL: '$(CACHE_TTL)'"
 	@RECSYS_API_ENV_FILE=./api/.env.test $(DOCKER_COMPOSE) up -d db api
-	@$(DOCKER_COMPOSE) run --no-deps --rm \
+	@$(DOCKER_COMPOSE) run --build --no-deps --rm \
 		-e TEST_PATTERN='$(TEST_PATTERN)' \
 		-e FLAGS='$(FLAGS)' \
 		-e PKG='$(PKG)' \

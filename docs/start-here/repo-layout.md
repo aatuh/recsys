@@ -46,9 +46,9 @@ Each module is versioned independently. Tags are module-prefixed, for example:
 - `recsys-pipelines/v0.2.0`
 - `recsys-algo/v0.2.0`
 
-## Developing locally (no `go.work` required)
+## Developing locally
 
-There is no repo-level `go.work` today. The recommended workflow is:
+The recommended workflow is:
 
 - run builds/tests from within each module directory (e.g., `cd recsys-eval && make test`)
 - use Docker Compose for the service when you want the full local stack (`make dev`)

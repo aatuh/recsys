@@ -1,8 +1,0 @@
-go 1.25.1
-
-use (
-	.
-	../api-svc
-	../api-toolkit
-	../api-toolkit/contrib
-)

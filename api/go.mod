@@ -1,6 +1,6 @@
 module github.com/aatuh/recsys-suite/api
 
-go 1.25.1
+go 1.25.7
 
 require (
 	github.com/aatuh/api-toolkit/contrib/v2 v2.0.1

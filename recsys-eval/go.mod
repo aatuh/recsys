@@ -1,6 +1,6 @@
 module github.com/aatuh/recsys-suite/recsys-eval
 
-go 1.25.1
+go 1.25.7
 
 require (
 	github.com/jackc/pgx/v5 v5.5.5
