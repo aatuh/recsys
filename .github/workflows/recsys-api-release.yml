@@ -51,6 +51,13 @@ jobs:
           go install github.com/anchore/syft/cmd/syft@latest
           syft "$IMAGE" -o spdx-json=sbom.spdx.json
 
+      - name: Ensure GitHub release exists
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 || \
+            gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes "Automated release for $GITHUB_REF_NAME"
+
       - name: Upload SBOM to release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

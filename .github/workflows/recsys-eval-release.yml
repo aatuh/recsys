@@ -30,7 +30,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          go install github.com/goreleaser/goreleaser@latest
+          go install github.com/goreleaser/goreleaser/v2@latest
           goreleaser release --clean
 
       - name: Generate SBOM
