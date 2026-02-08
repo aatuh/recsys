@@ -16,6 +16,11 @@ on:
 jobs:
   api:
     runs-on: ubuntu-latest
+    env:
+      REGISTRY_HOST: ${{ secrets.REGISTRY_HOST }}
+      REGISTRY_REPO: ${{ secrets.REGISTRY_REPO }}
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
     defaults:
       run:
         working-directory: api
@@ -67,12 +72,12 @@ jobs:
         run: docker build -t recsys-service:ci -f Dockerfile .
 
       - name: Login to registry
-        if: ${{ secrets.REGISTRY_HOST != '' && secrets.REGISTRY_USERNAME != '' && secrets.REGISTRY_PASSWORD != '' }}
-        run: echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login "${{ secrets.REGISTRY_HOST }}" -u "${{ secrets.REGISTRY_USERNAME }}" --password-stdin
+        if: ${{ env.REGISTRY_HOST != '' && env.REGISTRY_USERNAME != '' && env.REGISTRY_PASSWORD != '' }}
+        run: echo "${REGISTRY_PASSWORD}" | docker login "${REGISTRY_HOST}" -u "${REGISTRY_USERNAME}" --password-stdin
 
       - name: Push container image
-        if: ${{ secrets.REGISTRY_HOST != '' && secrets.REGISTRY_REPO != '' && secrets.REGISTRY_USERNAME != '' && secrets.REGISTRY_PASSWORD != '' }}
+        if: ${{ env.REGISTRY_HOST != '' && env.REGISTRY_REPO != '' && env.REGISTRY_USERNAME != '' && env.REGISTRY_PASSWORD != '' }}
         run: |
-          IMAGE="${{ secrets.REGISTRY_HOST }}/${{ secrets.REGISTRY_REPO }}/recsys-service:${{ github.sha }}"
+          IMAGE="${REGISTRY_HOST}/${REGISTRY_REPO}/recsys-service:${{ github.sha }}"
           docker tag recsys-service:ci "$IMAGE"
           docker push "$IMAGE"

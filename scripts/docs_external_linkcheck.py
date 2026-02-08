@@ -39,8 +39,15 @@ SKIP_HOSTS = {
     "0.0.0.0",
     "minio",  # docker compose hostname used in tutorials
     "recsys-svc",  # docker compose hostname used in tests/tutorials
+    "your_recsys_host",  # placeholder host used in integration examples
     "example.com",  # placeholder host used in docs examples
 }
+
+SKIP_HOST_SUFFIXES = (
+    ".example.com",  # placeholder subdomains (e.g. auth.example.com)
+    ".example.org",
+    ".example.net",
+)
 
 USER_AGENT = "recsys-docs-linkcheck/1.0"
 TIMEOUT_SECS = 15
@@ -61,7 +68,7 @@ def canonical_url(raw: str) -> str | None:
 
 def should_skip(url: str) -> bool:
     host = (urlparse(url).hostname or "").lower()
-    return host in SKIP_HOSTS
+    return host in SKIP_HOSTS or host.endswith(SKIP_HOST_SUFFIXES)
 
 
 def fetch_status(url: str) -> int | None:

@@ -158,6 +158,7 @@ docs-build: ## Build MkDocs site (strict)
 
 
 docs-check: ## Check docs internal links + strict MkDocs build
-	@python3 scripts/docs_linkcheck.py
+	python3 scripts/docs_linkcheck.py
+	python3 scripts/docs_external_linkcheck.py
 	$(MAKE) codespell
 	$(MAKE) docs-build
