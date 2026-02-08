@@ -86,6 +86,11 @@ CACHE_ENABLED ?= false
 test: ## Run tests
 	@echo "🧪 Running tests. Pattern: '$(TEST_PATTERN)'  Flags: '$(FLAGS)'  Pkg: '$(PKG)' Fast: ${FAST}"
 	@RECSYS_API_ENV_FILE=./api/.env.test $(DOCKER_COMPOSE) up -d db api
+	@$(DOCKER_COMPOSE) exec -T api sh -c 'dir_arg=""; \
+		if [ -n "$$MIGRATIONS_DIR" ] && [ "$$MIGRATIONS_DIR" != "-" ]; then \
+			dir_arg="-dir $$MIGRATIONS_DIR"; \
+		fi; \
+		GOTMPDIR=/app/tmp TMPDIR=/app/tmp go run ./cmd/migrate $$dir_arg up'
 	@$(DOCKER_COMPOSE) run --build --no-deps --rm \
 		-e TEST_PATTERN='$(TEST_PATTERN)' \
 		-e FLAGS='$(FLAGS)' \
@@ -100,6 +105,11 @@ test: ## Run tests
 test-cached: ## Run tests with caching enabled
 	@echo "🧪 Running cached tests. Pattern: '$(TEST_PATTERN)'  Flags: '$(FLAGS)'  Pkg: '$(PKG)' Fast: ${FAST} Cache TTL: '$(CACHE_TTL)'"
 	@RECSYS_API_ENV_FILE=./api/.env.test $(DOCKER_COMPOSE) up -d db api
+	@$(DOCKER_COMPOSE) exec -T api sh -c 'dir_arg=""; \
+		if [ -n "$$MIGRATIONS_DIR" ] && [ "$$MIGRATIONS_DIR" != "-" ]; then \
+			dir_arg="-dir $$MIGRATIONS_DIR"; \
+		fi; \
+		GOTMPDIR=/app/tmp TMPDIR=/app/tmp go run ./cmd/migrate $$dir_arg up'
 	@$(DOCKER_COMPOSE) run --build --no-deps --rm \
 		-e TEST_PATTERN='$(TEST_PATTERN)' \
 		-e FLAGS='$(FLAGS)' \
