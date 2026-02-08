@@ -1,10 +1,12 @@
 ---
+diataxis: reference
 tags:
   - project
   - docs
 ---
-
 # Docs versioning
+This page is the canonical reference for Docs versioning.
+
 
 ## Who this is for
 
@@ -69,5 +71,5 @@ mike serve
 
 ## Read next
 
-- Docs update policy: [`project/docs-per-release.md`](docs-per-release.md)
-- What’s new: [`whats-new/index.md`](../whats-new/index.md)
+- Docs update policy: [Docs per release policy](docs-per-release.md)
+- What’s new: [What’s new](../whats-new/index.md)

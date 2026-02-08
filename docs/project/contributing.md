@@ -1,9 +1,9 @@
 ---
+diataxis: how-to
 tags:
   - project
   - contributing
 ---
-
 # Contributing
 
 Thanks for your interest in contributing!
@@ -57,3 +57,11 @@ Your commits should include a `Signed-off-by:` line.
 - Prefer small, focused PRs
 - Add tests for bug fixes and new behavior
 - Update docs when behavior changes
+
+## Read next
+
+- Docs style guide: [Docs style guide](docs-style.md)
+- Documentation quality gates: [Documentation quality gates](docs-quality-gates.md)
+- Docs templates: [Docs templates](docs-templates.md)
+- Run docs locally: [How-to: run the docs locally](../how-to/run-docs-locally.md)
+- Contribute to docs: [How-to: contribute to the docs](../how-to/contribute-docs.md)

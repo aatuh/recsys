@@ -1,4 +1,13 @@
+---
+diataxis: explanation
+tags:
+  - recsys-eval
+  - security
+  - privacy
+---
 # Security and privacy notes
+This page explains Security and privacy notes and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -28,6 +37,6 @@ They can leak model behavior and business logic if exposed carelessly.
 
 ## Read next
 
-- Suite security overview: [`start-here/security-privacy-compliance.md`](../../start-here/security-privacy-compliance.md)
-- Integration logging plan: [`recsys-eval/docs/integration.md`](integration.md)
-- Data contracts: [`recsys-eval/docs/data_contracts.md`](data_contracts.md)
+- Suite security overview: [Security, privacy, and compliance (overview)](../../start-here/security-privacy-compliance.md)
+- Integration logging plan: [Integration: how to produce the inputs](integration.md)
+- Data contracts: [Data contracts: what inputs look like](data_contracts.md)

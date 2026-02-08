@@ -1,12 +1,14 @@
 ---
+diataxis: how-to
 tags:
   - how-to
   - deployment
   - ops
   - recsys-service
 ---
-
 # Deploy with Helm (production-ish)
+This guide shows how to deploy with Helm (production-ish) in a reliable, repeatable way.
+
 
 ## Who this is for
 
@@ -75,6 +77,6 @@ kubectl logs deploy/recsys-api
 
 ## Read next
 
-- Production readiness checklist: [`operations/production-readiness-checklist.md`](../operations/production-readiness-checklist.md)
-- Config reference (recsys-service): [`reference/config/recsys-service.md`](../reference/config/recsys-service.md)
-- Artifacts and manifest lifecycle: [`explanation/artifacts-and-manifest-lifecycle.md`](../explanation/artifacts-and-manifest-lifecycle.md)
+- Operational invariants (pipelines safety model): [Pipelines operational invariants (safety model)](../explanation/pipelines-operational-invariants.md)
+- Artifacts and manifest lifecycle: [Artifacts and manifest lifecycle (pipelines → service)](../explanation/artifacts-and-manifest-lifecycle.md)
+- Production readiness checklist: [Production readiness checklist (RecSys suite)](../operations/production-readiness-checklist.md)

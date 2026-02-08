@@ -1,11 +1,13 @@
 ---
+diataxis: how-to
 tags:
   - quickstart
   - evaluation
   - business
 ---
-
 # Pilot plan (2–6 weeks)
+This guide shows how to pilot plan (2–6 weeks) in a reliable, repeatable way.
+
 
 ## Who this is for
 
@@ -35,7 +37,7 @@ You need the ability to produce:
 - outcome logs (what the user did)
 - stable IDs for joins (a `request_id`, plus a pseudonymous `user_id` or session identifier)
 
-See: [`reference/data-contracts/index.md`](../reference/data-contracts/index.md)
+See: [Data contracts](../reference/data-contracts/index.md)
 
 ## Fast path: pilot in 2–4 weeks
 
@@ -122,8 +124,8 @@ Exit criteria:
 
 ## Read next
 
-- Stakeholder overview: [`start-here/what-is-recsys.md`](what-is-recsys.md)
-- Responsibilities (RACI): [`start-here/responsibilities.md`](responsibilities.md)
-- Security and privacy overview: [`start-here/security-privacy-compliance.md`](security-privacy-compliance.md)
-- Local end-to-end tutorial: [`tutorials/local-end-to-end.md`](../tutorials/local-end-to-end.md)
-- Production readiness checklist: [`operations/production-readiness-checklist.md`](../operations/production-readiness-checklist.md)
+- Stakeholder overview: [What the RecSys suite is (stakeholder overview)](what-is-recsys.md)
+- Responsibilities (RACI): [Responsibilities (RACI): who owns what](responsibilities.md)
+- Security and privacy overview: [Security, privacy, and compliance (overview)](security-privacy-compliance.md)
+- Local end-to-end tutorial: [local end-to-end (service → logging → eval)](../tutorials/local-end-to-end.md)
+- Production readiness checklist: [Production readiness checklist (RecSys suite)](../operations/production-readiness-checklist.md)

@@ -1,9 +1,9 @@
 ---
+diataxis: reference
 tags:
   - project
   - licensing
 ---
-
 # License Directory Notes
 
 This repository uses multiple licenses.
@@ -16,3 +16,8 @@ Recommended best practice (REUSE/SPDX style):
 <!-- REUSE-IgnoreEnd -->
 
 Current split: See `docs/licensing/index.md` for the human-readable guide.
+
+## Read next
+
+- Project hub: [Project](index.md)
+- Contributing: [Contributing](contributing.md)

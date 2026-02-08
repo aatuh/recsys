@@ -1,12 +1,14 @@
 ---
+diataxis: reference
 tags:
   - overview
   - quickstart
   - developer
   - ops
 ---
-
 # Minimum components by goal
+This page is the canonical reference for Minimum components by goal.
+
 
 ## Who this is for
 
@@ -34,6 +36,6 @@ Notes:
 
 ## Read next
 
-- Auth & tenancy: [`reference/auth-and-tenancy.md`](../reference/auth-and-tenancy.md)
-- Data modes: [`explanation/data-modes.md`](../explanation/data-modes.md)
-- Integrate into an app: [`how-to/integrate-recsys-service.md`](../how-to/integrate-recsys-service.md)
+- Auth & tenancy: [Auth and tenancy reference](../reference/auth-and-tenancy.md)
+- Data modes: [Data modes: DB-only vs artifact/manifest](../explanation/data-modes.md)
+- Integrate into an app: [How-to: integrate recsys-service into an application](../how-to/integrate-recsys-service.md)

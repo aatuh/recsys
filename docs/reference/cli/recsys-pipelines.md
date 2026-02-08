@@ -1,4 +1,5 @@
 ---
+diataxis: reference
 tags:
   - reference
   - cli
@@ -6,8 +7,9 @@ tags:
   - developer
   - ops
 ---
-
 # CLI: recsys-pipelines
+This page is the canonical reference for CLI: recsys-pipelines.
+
 
 ## Who this is for
 
@@ -95,6 +97,6 @@ Prints the CLI version.
 
 ## Read next
 
-- Artifact mode workflow: [`tutorials/production-like-run.md`](../../tutorials/production-like-run.md)
-- Operate pipelines: [`how-to/operate-pipelines.md`](../../how-to/operate-pipelines.md)
-- Runbooks (pipeline failed): [`recsys-pipelines/docs/operations/runbooks/pipeline-failed.md`](../../recsys-pipelines/docs/operations/runbooks/pipeline-failed.md)
+- Artifact mode workflow: [production-like run (pipelines → object store → ship/rollback)](../../tutorials/production-like-run.md)
+- Operate pipelines: [How-to: operate recsys-pipelines](../../how-to/operate-pipelines.md)
+- Runbooks (pipeline failed): [Runbook: Pipeline failed](../../recsys-pipelines/docs/operations/runbooks/pipeline-failed.md)

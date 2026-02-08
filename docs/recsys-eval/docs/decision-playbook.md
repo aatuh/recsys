@@ -1,12 +1,14 @@
 ---
+diataxis: explanation
 tags:
   - how-to
   - evaluation
   - business
   - recsys-eval
 ---
-
 # Decision playbook: ship / hold / rollback
+This page explains Decision playbook: ship / hold / rollback and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -98,9 +100,8 @@ If you suspect underpowering or a slice-specific mismatch, **HOLD** only long en
 
 ## Read next
 
-- Suite how-to: [`how-to/run-eval-and-ship.md`](../../how-to/run-eval-and-ship.md)
-- Default quality gate contract (thresholds + overrides): [`default-quality-gate.md`](default-quality-gate.md)
-- Offline gates: [`recsys-eval/docs/workflows/offline-gate-in-ci.md`](workflows/offline-gate-in-ci.md)
-- Interpreting results: [`recsys-eval/docs/interpreting_results.md`](interpreting_results.md)
-- Failure modes & diagnostics: [`operations/failure-modes.md`](../../operations/failure-modes.md)
-- Operations runbooks: [`operations/index.md`](../../operations/index.md)
+- Suite how-to: [How-to: run evaluation and make ship decisions](../../how-to/run-eval-and-ship.md)
+- Offline gates: [Workflow: Offline gate in CI](workflows/offline-gate-in-ci.md)
+- Interpreting results: [Interpreting results: how to go from report to decision](interpreting_results.md)
+- Failure modes & diagnostics: [Failure modes & diagnostics (baseline)](../../operations/failure-modes.md)
+- Operations runbooks: [Operations](../../operations/index.md)

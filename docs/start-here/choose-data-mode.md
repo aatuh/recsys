@@ -1,81 +1,63 @@
 ---
+diataxis: how-to
 tags:
-  - overview
-  - developer
-  - ops
-  - artifacts
+  - start-here
+  - serving
+  - pipelines
+  - artifact-mode
+  - db-only
 ---
+# Choose your data mode
+This guide shows how to choose your data mode in a reliable, repeatable way.
 
-# Choose your data mode (DB-only vs artifact/manifest)
 
 ## Who this is for
 
-- Lead developers choosing a serving mode for a pilot or first integration
-- Operators deciding how you will ship and roll back offline signals
+- Lead developers and platform engineers deciding how to integrate and operate RecSys.
 
 ## What you will get
 
-- A decision guide (when to choose each mode)
-- The exact tutorial to follow next
-- A quick “how to confirm it’s active” checklist
+- A simple decision rule for choosing **DB-only** vs **artifact/manifest** mode
+- The operational tradeoffs (rollback, freshness, complexity)
 
-## The decision (in 60 seconds)
+## The two modes
 
-Start with **DB-only mode** unless you already run offline pipelines + object storage and you need an atomic
-ship/rollback lever.
+### DB-only mode
 
-Choose **artifact/manifest mode** when you need to publish versioned signals (popularity/co-vis/embeddings) and ship
-or roll back by swapping a manifest pointer.
+Use DB-only mode when you want:
 
-## Comparison
+- Fastest time-to-first-success (few moving parts)
+- A simple integration pilot (API + tenancy + exposure logging)
+- Manual or external control of data updates
 
-| Mode | Choose this when | Main tradeoff |
-| --- | --- | --- |
-| DB-only | Fastest path to first success | Signals live in Postgres; no atomic ship/rollback lever |
-| Artifact/manifest | Versioned artifacts + ship/rollback by pointer | More moving parts (pipelines + object store) |
+You provide signals by writing directly into the serving DB tables.
 
-## Start here (exact tutorials)
+Start with: [Quickstart (10 minutes)](../tutorials/quickstart.md)
 
-- DB-only mode:
-  - [Quickstart (10 minutes)](../tutorials/quickstart.md)
-  - [Local end-to-end](../tutorials/local-end-to-end.md)
-- Artifact/manifest mode:
-  - [Production-like run](../tutorials/production-like-run.md)
+### Artifact/manifest mode
 
-For the minimal runnable stacks by goal, see:
+Use artifact/manifest mode when you want:
 
-- [Minimum components by goal](minimum-components-by-goal.md)
+- Atomic publish + rollback of signals
+- Clear separation of “build” vs “serve”
+- A production-like operating model (pipelines produce artifacts, the manifest pointer drives serving)
 
-## Minimum configuration knobs
+Start with: [production-like run (pipelines → object store → ship/rollback)](../tutorials/production-like-run.md)
 
-- DB-only mode (default):
-  - `RECSYS_ARTIFACT_MODE_ENABLED=false`
-- Artifact/manifest mode:
-  - `RECSYS_ARTIFACT_MODE_ENABLED=true`
-  - `RECSYS_ARTIFACT_MANIFEST_TEMPLATE=...` (points at your “current manifest” convention)
+## Decision rule (one screen)
 
-## How to confirm which mode is active
+Choose **DB-only** if:
 
-- Check the running environment:
+- You’re piloting integration and do not need automated daily refresh yet
+- You can tolerate manual/semi-manual data updates during the pilot
 
-  ```bash
-  docker compose exec -T api sh -c 'printenv | grep -E "^RECSYS_ARTIFACT_MODE_ENABLED="'
-  ```
+Choose **artifact/manifest** if:
 
-- If artifact/manifest mode is enabled, confirm the service actually loads a manifest:
-
-  ```bash
-  docker compose logs --tail 200 api | grep -i "artifact manifest loaded"
-  ```
-
-If artifact mode is enabled but the manifest is missing or stale, serving can degrade to empty/partial results. See:
-
-- [Failure modes & diagnostics](../operations/failure-modes.md)
-- Runbook: [Stale manifest](../operations/runbooks/stale-manifest.md)
+- You need safe ship/rollback and repeatable daily refresh from day 1
+- You want evaluation + releases to move through a controlled publish pipeline
 
 ## Read next
 
-- Data modes (details): [Data modes](../explanation/data-modes.md)
-- Production readiness checklist:
-  [Production readiness checklist](../operations/production-readiness-checklist.md)
-- Operate pipelines (artifact mode): [How-to: operate recsys-pipelines](../how-to/operate-pipelines.md)
+- Data modes in depth: [Data modes: DB-only vs artifact/manifest](../explanation/data-modes.md)
+- Operational reliability: [Operational reliability and rollback](operational-reliability-and-rollback.md)
+- Pilot plan: [Pilot plan (2–6 weeks)](pilot-plan.md)

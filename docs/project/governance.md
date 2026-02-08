@@ -1,10 +1,12 @@
 ---
+diataxis: explanation
 tags:
   - project
   - governance
 ---
-
 # Governance
+This page explains Governance and how it fits into the RecSys suite.
+
 
 ## Maintainers
 
@@ -30,3 +32,8 @@ We may invite contributors to become maintainers based on:
 - sustained high-quality contributions
 - good judgment and communication
 - alignment with project goals
+
+## Read next
+
+- Project hub: [Project](index.md)
+- Contributing: [Contributing](contributing.md)

@@ -1,12 +1,14 @@
 ---
+diataxis: tutorial
 tags:
   - tutorial
   - quickstart
   - developer
   - recsys-service
 ---
-
 # Tutorial: minimal pilot mode (DB-only, popularity baseline)
+In this tutorial you will follow a guided walkthrough and verify a working result.
+
 
 ## Who this is for
 
@@ -36,9 +38,6 @@ This pilot does not answer “how good is personalization”. It answers “is t
 - A way to generate or propagate a stable `request_id` per rendered list
 - A pseudonymous `user_id` or `session_id` you can use consistently
 
---8<-- "_snippets/key-terms.list.snippet"
---8<-- "_snippets/key-terms.defs.one-up.snippet"
-
 ## Minimal data you need (DB-only signals)
 
 Populate these Postgres tables for your tenant:
@@ -51,7 +50,7 @@ The fastest approach is to backfill a small set of top items (for one surface) a
 ## Steps (recommended)
 
 1. Run the runnable local tutorial once (proves the loop end-to-end):
-   - [`tutorials/local-end-to-end.md`](local-end-to-end.md)
+   - [local end-to-end (service → logging → eval)](local-end-to-end.md)
 
 2. Replace the seed SQL with your own data loading:
    - Load `item_tags` from your catalog.
@@ -72,17 +71,17 @@ The fastest approach is to backfill a small set of top items (for one surface) a
 
 See:
 
-- Integration checklist: [`how-to/integration-checklist.md`](../how-to/integration-checklist.md)
-- Minimum instrumentation spec: [`reference/minimum-instrumentation.md`](../reference/minimum-instrumentation.md)
+- Integration checklist: [How-to: Integration checklist (one surface)](../how-to/integration-checklist.md)
+- Minimum instrumentation spec: [Minimum instrumentation spec (for credible evaluation)](../reference/minimum-instrumentation.md)
 
 ## Troubleshooting (runbooks)
 
-- Service not ready: [`operations/runbooks/service-not-ready.md`](../operations/runbooks/service-not-ready.md)
-- Empty recs: [`operations/runbooks/empty-recs.md`](../operations/runbooks/empty-recs.md)
-- Database migration issues: [`operations/runbooks/db-migration-issues.md`](../operations/runbooks/db-migration-issues.md)
+- Service not ready: [Runbook: Service not ready](../operations/runbooks/service-not-ready.md)
+- Empty recs: [Runbook: Empty recs](../operations/runbooks/empty-recs.md)
+- Database migration issues: [Runbook: Database migration issues](../operations/runbooks/db-migration-issues.md)
 
 ## Read next
 
-- Integrate service: [`how-to/integrate-recsys-service.md`](../how-to/integrate-recsys-service.md)
-- Minimum instrumentation spec: [`reference/minimum-instrumentation.md`](../reference/minimum-instrumentation.md)
-- Exposure logging & attribution: [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)
+- Integrate service: [How-to: integrate recsys-service into an application](../how-to/integrate-recsys-service.md)
+- Define success metrics and exit criteria: [Success metrics (KPIs, guardrails, and exit criteria)](../for-businesses/success-metrics.md)
+- Evaluation, pricing, and licensing (buyer guide): [Evaluation, pricing, and licensing (buyer guide)](../pricing/evaluation-and-licensing.md)

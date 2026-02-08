@@ -1,5 +1,11 @@
-
+---
+diataxis: explanation
+tags:
+  - recsys-pipelines
+---
 # Learning path: Product / PM
+This page explains Learning path: Product / PM and how it fits into the RecSys suite.
+
 
 ## What you care about
 
@@ -35,7 +41,7 @@
 
 ## Read next
 
-- Start here: [`start-here.md`](../start-here.md)
-- Artifacts and versioning: [`explanation/artifacts-and-versioning.md`](../explanation/artifacts-and-versioning.md)
-- SLOs and freshness: [`operations/slos-and-freshness.md`](../operations/slos-and-freshness.md)
-- Roll back artifacts safely: [`how-to/rollback-safely.md`](../how-to/rollback-safely.md)
+- Start here: [Start here](../start-here.md)
+- Artifacts and versioning: [Artifacts and versioning](../explanation/artifacts-and-versioning.md)
+- SLOs and freshness: [SLOs and freshness](../operations/slos-and-freshness.md)
+- Roll back artifacts safely: [How-to: Roll back artifacts safely](../how-to/rollback-safely.md)

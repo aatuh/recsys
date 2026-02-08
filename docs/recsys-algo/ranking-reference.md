@@ -1,4 +1,11 @@
+---
+diataxis: reference
+tags:
+  - recsys-algo
+---
 # Ranking & constraints reference
+This page is the canonical reference for Ranking & constraints reference.
+
 
 ## Who this is for
 
@@ -12,8 +19,8 @@
 - Determinism guarantees and the common ways determinism can be broken
 
 !!! info "Evaluation scope"
-    Capability boundaries: [`explanation/capability-matrix.md`](../explanation/capability-matrix.md). Non-goals:
-    [`start-here/known-limitations.md`](../start-here/known-limitations.md).
+    Capability boundaries: [Capability matrix (scope and non-scope)](../explanation/capability-matrix.md). Non-goals:
+    [Known limitations and non-goals (current)](../start-here/known-limitations.md).
 
 ## Pipeline order (what runs when)
 
@@ -29,10 +36,10 @@ At a high level, `recsys-algo` runs this sequence:
 8. **Post-ranking diversity** (optional): MMR re-ranking + brand/category caps.
 9. **Response**: sort by score, tie-break by `item_id`, attach reasons/explain blocks when requested.
 
-Formal scoring spec: [`recsys-algo/scoring-model.md`](scoring-model.md)
+Formal scoring spec: [Scoring model specification (recsys-algo)](scoring-model.md)
 
 If you need the serving-layer view (what happens in `recsys-service` before/after the algorithm), read:
-[`explanation/candidate-vs-ranking.md`](../explanation/candidate-vs-ranking.md).
+[Candidate generation vs ranking](../explanation/candidate-vs-ranking.md).
 
 ## Algorithm modes (baseline strategy)
 
@@ -193,6 +200,6 @@ Typical first checks:
 
 ## Read next
 
-- Store ports (what each signal needs): [`recsys-algo/store-ports.md`](store-ports.md)
-- Candidate vs ranking (serving-layer mental model): [`explanation/candidate-vs-ranking.md`](../explanation/candidate-vs-ranking.md)
-- Integration checklist: [`how-to/integration-checklist.md`](../how-to/integration-checklist.md)
+- Store ports (what each signal needs): [Store ports](store-ports.md)
+- Candidate vs ranking (serving-layer mental model): [Candidate generation vs ranking](../explanation/candidate-vs-ranking.md)
+- Integration checklist: [How-to: Integration checklist (one surface)](../how-to/integration-checklist.md)

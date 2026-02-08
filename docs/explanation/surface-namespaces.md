@@ -1,11 +1,11 @@
 ---
+diataxis: explanation
 tags:
   - explanation
   - config
   - developer
   - recsys-service
 ---
-
 # Surface namespaces
 
 The service treats **surface** as a first-class scoping key. In practice this
@@ -40,3 +40,7 @@ Note on similar-items:
 - API request: `surface=home`
 - Signals stored under: `namespace=home`
 - Optional fallback: `namespace=default` if `home` has no rows
+
+## Read next
+
+- Explanation index: [RecSys suite documentation](../index.md)

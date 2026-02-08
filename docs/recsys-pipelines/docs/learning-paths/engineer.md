@@ -1,5 +1,11 @@
-
+---
+diataxis: explanation
+tags:
+  - recsys-pipelines
+---
 # Learning path: Engineers
+This page explains Learning path: Engineers and how it fits into the RecSys suite.
+
 
 ## Goals
 
@@ -25,7 +31,7 @@
 
 ## Read next
 
-- Start here: [`start-here.md`](../start-here.md)
-- Local quickstart: [`tutorials/local-quickstart.md`](../tutorials/local-quickstart.md)
-- Add artifact type: [`how-to/add-artifact-type.md`](../how-to/add-artifact-type.md)
-- Developer workflow: [`contributing/dev-workflow.md`](../contributing/dev-workflow.md)
+- Start here: [Start here](../start-here.md)
+- Local quickstart: [Run locally (filesystem mode)](../tutorials/local-quickstart.md)
+- Add artifact type: [How-to: Add a new artifact type](../how-to/add-artifact-type.md)
+- Developer workflow: [Developer workflow](../contributing/dev-workflow.md)

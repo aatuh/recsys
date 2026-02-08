@@ -1,5 +1,11 @@
-
+---
+diataxis: explanation
+tags:
+  - recsys-pipelines
+---
 # Learning path: SRE / On-call
+This page explains Learning path: SRE / On-call and how it fits into the RecSys suite.
+
 
 ## Goals
 
@@ -24,7 +30,7 @@
 
 ## Read next
 
-- Start here: [`start-here.md`](../start-here.md)
-- Operate pipelines daily: [`how-to/operate-daily.md`](../how-to/operate-daily.md)
-- Pipeline failed runbook: [`operations/runbooks/pipeline-failed.md`](../operations/runbooks/pipeline-failed.md)
-- Roll back artifacts safely: [`how-to/rollback-safely.md`](../how-to/rollback-safely.md)
+- Start here: [Start here](../start-here.md)
+- Operate pipelines daily: [How-to: Operate pipelines daily](../how-to/operate-daily.md)
+- Pipeline failed runbook: [Runbook: Pipeline failed](../operations/runbooks/pipeline-failed.md)
+- Roll back artifacts safely: [How-to: Roll back artifacts safely](../how-to/rollback-safely.md)

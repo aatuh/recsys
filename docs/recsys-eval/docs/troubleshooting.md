@@ -1,4 +1,11 @@
+---
+diataxis: explanation
+tags:
+  - recsys-eval
+---
 # Troubleshooting: symptom -> cause -> fix
+This page explains Troubleshooting: symptom -> cause -> fix and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -64,8 +71,8 @@ Fix:
 
 ## Read next
 
-- Interpretation cheat sheet: [`recsys-eval/docs/workflows/interpretation-cheat-sheet.md`](workflows/interpretation-cheat-sheet.md)
-- Runbooks: [`recsys-eval/docs/runbooks.md`](runbooks.md)
-- Data contracts: [`recsys-eval/docs/data_contracts.md`](data_contracts.md)
-- Integration: [`recsys-eval/docs/integration.md`](integration.md)
-- Interpreting results: [`recsys-eval/docs/interpreting_results.md`](interpreting_results.md)
+- Interpretation cheat sheet: [Interpretation cheat sheet (recsys-eval)](workflows/interpretation-cheat-sheet.md)
+- Runbooks: [Runbooks: operating recsys-eval](runbooks.md)
+- Data contracts: [Data contracts: what inputs look like](data_contracts.md)
+- Integration: [Integration: how to produce the inputs](integration.md)
+- Interpreting results: [Interpreting results: how to go from report to decision](interpreting_results.md)

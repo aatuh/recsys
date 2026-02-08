@@ -1,4 +1,11 @@
+---
+diataxis: explanation
+tags:
+  - recsys-eval
+---
 # CI gates: using recsys-eval in automation
+This page explains CI gates: using recsys-eval in automation and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -73,7 +80,7 @@ Do not confuse the two. Use both.
 
 ## Read next
 
-- Offline gate workflow: [`recsys-eval/docs/workflows/offline-gate-in-ci.md`](workflows/offline-gate-in-ci.md)
-- Metrics: [`recsys-eval/docs/metrics.md`](metrics.md)
-- Troubleshooting: [`recsys-eval/docs/troubleshooting.md`](troubleshooting.md)
-- Suite workflow: [`how-to/run-eval-and-ship.md`](../../how-to/run-eval-and-ship.md)
+- Offline gate workflow: [Workflow: Offline gate in CI](workflows/offline-gate-in-ci.md)
+- Metrics: [Metrics: what we measure and why](metrics.md)
+- Troubleshooting: [Troubleshooting: symptom -> cause -> fix](troubleshooting.md)
+- Suite workflow: [How-to: run evaluation and make ship decisions](../../how-to/run-eval-and-ship.md)

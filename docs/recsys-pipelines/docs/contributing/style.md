@@ -1,5 +1,11 @@
-
+---
+diataxis: explanation
+tags:
+  - recsys-pipelines
+---
 # Style guide
+This page explains Style guide and how it fits into the RecSys suite.
+
 
 - Keep comments ASCII.
 - Prefer small focused packages.
@@ -14,6 +20,6 @@ Documentation:
 
 ## Read next
 
-- Developer workflow: [`contributing/dev-workflow.md`](dev-workflow.md)
-- Documentation approach: [`explanation/documentation-approach.md`](../explanation/documentation-approach.md)
-- Start here: [`start-here.md`](../start-here.md)
+- Developer workflow: [Developer workflow](dev-workflow.md)
+- Documentation approach: [Documentation approach](../explanation/documentation-approach.md)
+- Start here: [Start here](../start-here.md)

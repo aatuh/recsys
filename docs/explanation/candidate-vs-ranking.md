@@ -1,12 +1,14 @@
 ---
+diataxis: explanation
 tags:
   - explanation
   - ml
   - developer
   - recsys-algo
 ---
-
 # Candidate generation vs ranking
+This page explains Candidate generation vs ranking and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -70,35 +72,28 @@ Ranking answers: “Which of these candidates are best for this request?”
 
 ### Signal weights (`weights`)
 
-You can influence blending per request:
+RecSys supports request-time tuning via a **`weights`** object. Use it for safe, reversible changes (ship/rollback) without retraining or redeploying.
 
-- `weights.pop`: popularity contribution
-- `weights.cooc`: co-visitation contribution
-- `weights.emb`: “similarity” contribution (a bucket for non-pop/non-cooc signals)
+If you want the field-by-field contract, see:
 
-If you omit `weights`, the service uses its configured defaults (see `RECSYS_ALGO_*` config in
-[`recsys-algo/ranking-reference.md`](../recsys-algo/ranking-reference.md)).
+- Reference: [Recommend request fields](../reference/api/recommend-request.md)
 
 ## Controls: constraints and rules (order matters)
 
-After the algorithm produces ranked items, the service applies controls in this order:
+After the algorithm produces ranked items, the service applies **controls** (policy and filtering) in a predictable order.
 
-1. **Rule pins**: pinned items are moved to the top.
-   - Pin rules can **inject** items that were not in the candidate pool.
-   - If injection happens, you will see `RULE_PIN_INJECTED`.
-2. **Post-ranking constraints** (when tag data is available):
-   - `constraints.forbidden_tags`
-   - `constraints.max_per_tag`
-   - If filtering happens, you will see `CONSTRAINTS_FILTERED`.
-3. **Candidate allow-list**:
-   - `candidates.include_ids` is applied as a final allow-list filter.
-   - If it removes some results, you will see `CANDIDATES_INCLUDE_FILTERED`.
-   - If it removes everything, you will see `CANDIDATES_INCLUDE_EMPTY`.
+Typical controls:
 
-Additionally:
+1. **Pins** (move specific items to the top)
+2. **Constraints** (tag-based filtering/limits)
+3. **Candidate allow/deny lists**
 
-- `candidates.exclude_ids` is treated as a strict exclusion and removes those items from consideration.
-- `constraints.required_tags` is used to require at least one tag match (for example: require a category tag).
+Why it matters: controls can change the final list even if the underlying ranking stays the same.
+
+Field reference:
+
+- Reference: [Recommend request fields](../reference/api/recommend-request.md)
+- Rules (admin/control plane): [Admin API + local bootstrap (recsys-service)](../reference/api/admin.md)
 
 ## Worked example: request → candidates → output
 
@@ -148,10 +143,10 @@ If the allow-list contains items that never appear, you will likely end up with 
   - `options.include_reasons=true` for per-item `reasons[]`
   - `options.explain=summary` or `options.explain=full` for structured `explain.signals`
 - If you get empty results in production, follow the runbook:
-  [`operations/runbooks/empty-recs.md`](../operations/runbooks/empty-recs.md)
+  [Runbook: Empty recs](../operations/runbooks/empty-recs.md)
 
 ## Read next
 
-- Exposure logging (to measure impact): [`explanation/exposure-logging-and-attribution.md`](exposure-logging-and-attribution.md)
-- Surface namespaces (avoid mismatches): [`explanation/surface-namespaces.md`](surface-namespaces.md)
-- Data modes (DB-only vs artifact/manifest): [`explanation/data-modes.md`](data-modes.md)
+- Exposure logging (to measure impact): [Exposure logging and attribution](exposure-logging-and-attribution.md)
+- Surface namespaces (avoid mismatches): [Surface namespaces](surface-namespaces.md)
+- Data modes (DB-only vs artifact/manifest): [Data modes: DB-only vs artifact/manifest](data-modes.md)

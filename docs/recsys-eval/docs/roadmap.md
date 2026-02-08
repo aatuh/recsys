@@ -1,3 +1,8 @@
+---
+diataxis: explanation
+tags:
+  - recsys-eval
+---
 # Roadmap (high level)
 
 This doc is intentionally short. It exists to set expectations.
@@ -27,6 +32,6 @@ This doc is intentionally short. It exists to set expectations.
 
 ## Read next
 
-- Overview: [`recsys-eval/overview.md`](../overview.md)
-- Workflows: [`recsys-eval/docs/index.md`](index.md)
-- Architecture: [`recsys-eval/docs/architecture.md`](architecture.md)
+- Overview: [recsys-eval](../overview.md)
+- Workflows: [recsys-eval docs](index.md)
+- Architecture: [Architecture: how the code is organized and how to extend it](architecture.md)

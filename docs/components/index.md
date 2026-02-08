@@ -1,19 +1,18 @@
 ---
+diataxis: explanation
 tags:
   - components
   - overview
   - developer
   - ops
 ---
-
 # Components
 
 This section contains **deep, component-level documentation**. If you’re new,
 start with:
 
-- Start here: [`start-here/index.md`](../start-here/index.md)
-- RecSys engineering (reading order): [`start-here/receng.md`](../start-here/receng.md)
-- Tutorials: [`tutorials/index.md`](../tutorials/index.md)
+- Start here: [Start here](../start-here/index.md)
+- Tutorials: [Tutorials](../tutorials/index.md)
 
 ## Suite modules
 
@@ -30,7 +29,17 @@ start with:
 
 </div>
 
+!!! info "Layering and contracts"
+    The suite is intentionally layered to keep ownership boundaries clear:
+
+    - `recsys-algo` is the ranking core (no HTTP, no DB).
+    - `recsys-service` is serving + tenancy + rules/config.
+    - `recsys-pipelines` produces versioned artifacts and a manifest (optional in DB-only mode).
+    - `recsys-eval` consumes logs to produce evaluation reports.
+
+    If you're choosing an integration shape, start with: [Choose your data mode](../start-here/choose-data-mode.md)
+
 ## Read next
 
-- API reference: [`reference/api/api-reference.md`](../reference/api/api-reference.md)
-- How it works (mental model): [`explanation/how-it-works.md`](../explanation/how-it-works.md)
+- API reference: [API Reference](../reference/api/api-reference.md)
+- How it works (mental model): [How it works: architecture and data flow](../explanation/how-it-works.md)

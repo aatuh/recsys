@@ -1,5 +1,11 @@
-
+---
+diataxis: reference
+tags:
+  - recsys-pipelines
+---
 # CLI reference
+This page is the canonical reference for CLI reference.
+
 
 ## recsys-pipelines
 
@@ -64,7 +70,7 @@ job_content_sim \
 
 ## Read next
 
-- Start here: [`start-here.md`](../start-here.md)
-- Config reference: [`reference/config.md`](config.md)
-- Debug failures: [`how-to/debug-failures.md`](../how-to/debug-failures.md)
-- Exit codes: [`reference/exit-codes.md`](exit-codes.md)
+- Start here: [Start here](../start-here.md)
+- Config reference: [Config reference](config.md)
+- Debug failures: [How-to: Debug a failed pipeline run](../how-to/debug-failures.md)
+- Exit codes: [Exit codes](exit-codes.md)

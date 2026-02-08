@@ -1,4 +1,5 @@
 ---
+diataxis: how-to
 tags:
   - how-to
   - ops
@@ -6,8 +7,9 @@ tags:
   - artifacts
   - recsys-pipelines
 ---
-
 # How-to: Roll back artifacts safely
+This guide shows how to how-to: Roll back artifacts safely in a reliable, repeatable way.
+
 
 ## Who this is for
 
@@ -20,10 +22,10 @@ Roll back the “current” manifest pointer to a known-good version with a clea
 
 ## Quick paths
 
-- Roll back the manifest: [`how-to/rollback-manifest.md`](rollback-manifest.md)
-- Artifacts and versioning (concepts): [`explanation/artifacts-and-versioning.md`](../explanation/artifacts-and-versioning.md)
-- Output layout (where pointers live): [`reference/output-layout.md`](../reference/output-layout.md)
-- Stale artifacts runbook: [`operations/runbooks/stale-artifacts.md`](../operations/runbooks/stale-artifacts.md)
+- Roll back the manifest: [How-to: Roll back to a previous artifact version](rollback-manifest.md)
+- Artifacts and versioning (concepts): [Artifacts and versioning](../explanation/artifacts-and-versioning.md)
+- Output layout (where pointers live): [Output layout (local filesystem)](../reference/output-layout.md)
+- Stale artifacts runbook: [Runbook: Stale artifacts](../operations/runbooks/stale-artifacts.md)
 
 ## Safety checklist
 
@@ -33,14 +35,15 @@ Roll back the “current” manifest pointer to a known-good version with a clea
 
 1. Roll back the manifest pointer
 
-- Use the canonical flow: [`how-to/rollback-manifest.md`](rollback-manifest.md)
+- Use the canonical flow: [How-to: Roll back to a previous artifact version](rollback-manifest.md)
 
 1. Verify the rollback
 
 - Confirm “current” points to the expected version:
-  [`reference/output-layout.md`](../reference/output-layout.md)
+  [Output layout (local filesystem)](../reference/output-layout.md)
 
 ## Read next
 
-- Operate daily: [`how-to/operate-daily.md`](operate-daily.md)
-- Pipeline failed runbook: [`operations/runbooks/pipeline-failed.md`](../operations/runbooks/pipeline-failed.md)
+- Artifacts and manifest lifecycle: [Artifacts and manifest lifecycle](../../../explanation/artifacts-and-manifest-lifecycle.md)
+- Runbook: stale manifest: [Runbook: Stale manifest](../../../operations/runbooks/stale-manifest.md)
+- Pipelines operations index: [Operations (recsys-pipelines)](../operations/slos-and-freshness.md)

@@ -1,4 +1,5 @@
 ---
+diataxis: tutorial
 tags:
   - tutorial
   - ops
@@ -6,8 +7,9 @@ tags:
   - recsys-service
   - recsys-pipelines
 ---
-
 # Tutorial: production-like run (pipelines → object store → ship/rollback)
+In this tutorial you will follow a guided walkthrough and verify a working result.
+
 
 ## Who this is for
 
@@ -42,9 +44,6 @@ make --version
 curl --version
 go version
 ```
-
---8<-- "_snippets/key-terms.list.snippet"
---8<-- "_snippets/key-terms.defs.one-up.snippet"
 
 ## Verify (expected outcome)
 
@@ -289,12 +288,12 @@ Expected:
 
 ## Troubleshooting (runbooks)
 
-- Service not ready: [`operations/runbooks/service-not-ready.md`](../operations/runbooks/service-not-ready.md)
-- Empty recs: [`operations/runbooks/empty-recs.md`](../operations/runbooks/empty-recs.md)
-- Stale manifest: [`operations/runbooks/stale-manifest.md`](../operations/runbooks/stale-manifest.md)
+- Service not ready: [Runbook: Service not ready](../operations/runbooks/service-not-ready.md)
+- Empty recs: [Runbook: Empty recs](../operations/runbooks/empty-recs.md)
+- Stale manifest: [Runbook: Stale manifest (artifact mode)](../operations/runbooks/stale-manifest.md)
 
 ## Read next
 
-- Deploy with Helm: [`how-to/deploy-helm.md`](../how-to/deploy-helm.md)
-- Config reference (recsys-service): [`reference/config/recsys-service.md`](../reference/config/recsys-service.md)
-- Artifacts and manifest lifecycle: [`explanation/artifacts-and-manifest-lifecycle.md`](../explanation/artifacts-and-manifest-lifecycle.md)
+- Operate pipelines: [How-to: operate recsys-pipelines](../how-to/operate-pipelines.md)
+- Run evaluation and make ship decisions: [How-to: run evaluation and make ship decisions](../how-to/run-eval-and-ship.md)
+- Deploy with Helm: [Deploy with Helm (production-ish)](../how-to/deploy-helm.md)

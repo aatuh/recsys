@@ -1,11 +1,13 @@
 ---
+diataxis: how-to
 tags:
   - runbook
   - ops
   - recsys-service
 ---
-
 # Runbook: Service not ready
+This guide shows how to runbook: Service not ready in a reliable, repeatable way.
+
 
 ## Symptoms
 
@@ -98,3 +100,9 @@ Readiness only covers baseline dependencies. If `/readyz` is `200` but:
 - `/v1/recommend` returns empty → see [Runbook: Empty recs](empty-recs.md)
 - you are in artifact/manifest mode and requests fail → verify `RECSYS_ARTIFACT_*` config and manifest publishing (see
   [Data modes](../../explanation/data-modes.md))
+
+## Read next
+
+- Failure modes & diagnostics: [Failure modes & diagnostics](../failure-modes.md)
+- Database migration issues: [Runbook: Database migration issues](db-migration-issues.md)
+- Operations index: [Operations](../index.md)

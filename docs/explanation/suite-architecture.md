@@ -1,12 +1,19 @@
 ---
+diataxis: explanation
 tags:
   - explanation
   - architecture
   - overview
   - developer
 ---
-
 # Suite architecture
+This page explains Suite architecture and how it fits into the RecSys suite.
+
+
+!!! info "Canonical architecture flow"
+    The canonical end-to-end flow is described in [How it works](how-it-works.md).
+    This page focuses on component boundaries and operational levers.
+
 
 ## Who this is for
 
@@ -40,7 +47,7 @@ flowchart LR
   V --> D[(Report + ship/rollback decision)]
 ```
 
-See also: [`start-here/diagrams/suite-context.md`](../start-here/diagrams/suite-context.md)
+See also: [Suite Context](../start-here/diagrams/suite-context.md)
 
 ## Components and responsibilities
 
@@ -67,8 +74,8 @@ Writes:
 
 Start here:
 
-- Admin/bootstrap: [`reference/api/admin.md`](../reference/api/admin.md)
-- Config reference: [`reference/config/recsys-service.md`](../reference/config/recsys-service.md)
+- Admin/bootstrap: [Admin API + local bootstrap (recsys-service)](../reference/api/admin.md)
+- Config reference: [recsys-service configuration](../reference/config/recsys-service.md)
 
 ### recsys-algo (ranking core)
 
@@ -93,8 +100,8 @@ Responsibilities:
 
 Start here:
 
-- [`recsys-pipelines/docs/start-here.md`](../recsys-pipelines/docs/start-here.md)
-- Artifact lifecycle: [`recsys-pipelines/docs/explanation/artifacts-and-versioning.md`](../recsys-pipelines/docs/explanation/artifacts-and-versioning.md)
+- [Start here](../recsys-pipelines/docs/start-here.md)
+- Artifact lifecycle: [Artifacts and versioning](../recsys-pipelines/docs/explanation/artifacts-and-versioning.md)
 
 ### recsys-eval (evaluation + decision support)
 
@@ -106,8 +113,8 @@ Responsibilities:
 
 Start here:
 
-- Overview: [`recsys-eval/overview.md`](../recsys-eval/overview.md)
-- Interpreting results: [`recsys-eval/docs/interpreting_results.md`](../recsys-eval/docs/interpreting_results.md)
+- Overview: [recsys-eval](../recsys-eval/overview.md)
+- Interpreting results: [Interpreting results: how to go from report to decision](../recsys-eval/docs/interpreting_results.md)
 
 ## The key identifiers (how the system joins up)
 
@@ -119,8 +126,8 @@ Start here:
 
 Related:
 
-- Namespacing: [`explanation/surface-namespaces.md`](surface-namespaces.md)
-- Logging: [`explanation/exposure-logging-and-attribution.md`](exposure-logging-and-attribution.md)
+- Namespacing: [Surface namespaces](surface-namespaces.md)
+- Logging: [Exposure logging and attribution](exposure-logging-and-attribution.md)
 
 ## Data modes: DB-only vs artifact/manifest
 
@@ -132,7 +139,7 @@ There are two supported serving modes:
 
 This tradeoff is explained here:
 
-- [`explanation/data-modes.md`](data-modes.md)
+- [Data modes: DB-only vs artifact/manifest](data-modes.md)
 
 ## Ship and rollback: what changes in production
 
@@ -145,7 +152,7 @@ Common production levers:
 
    See:
 
-   - [`reference/api/admin.md`](../reference/api/admin.md)
+   - [Admin API + local bootstrap (recsys-service)](../reference/api/admin.md)
 
 2) **Artifacts / manifest pointer**
 
@@ -154,8 +161,8 @@ Common production levers:
 
    See:
 
-   - Pipelines rollback: [`recsys-pipelines/docs/how-to/rollback-manifest.md`](../recsys-pipelines/docs/how-to/rollback-manifest.md)
-   - Suite runbook (service): [`operations/runbooks/rollback-config-rules.md`](../operations/runbooks/rollback-config-rules.md)
+   - Pipelines rollback: [How-to: Roll back to a previous artifact version](../recsys-pipelines/docs/how-to/rollback-manifest.md)
+   - Suite runbook (service): [Runbook: Roll back config/rules](../operations/runbooks/rollback-config-rules.md)
 
 ## Common failure modes (and where to look)
 
@@ -166,17 +173,17 @@ Common production levers:
 
 See:
 
-- [`operations/runbooks/empty-recs.md`](../operations/runbooks/empty-recs.md)
-- [`explanation/surface-namespaces.md`](surface-namespaces.md)
+- [Runbook: Empty recs](../operations/runbooks/empty-recs.md)
+- [Surface namespaces](surface-namespaces.md)
 
 - **Forbidden / tenant scope errors**
   - tenant headers missing or mismatched
 
 See:
 
-- [`how-to/integrate-recsys-service.md`](../how-to/integrate-recsys-service.md)
+- [How-to: integrate recsys-service into an application](../how-to/integrate-recsys-service.md)
 
 ## Read next
 
-- Tutorial: [`tutorials/local-end-to-end.md`](../tutorials/local-end-to-end.md)
-- How-to: [`how-to/run-eval-and-ship.md`](../how-to/run-eval-and-ship.md)
+- Tutorial: [local end-to-end (service → logging → eval)](../tutorials/local-end-to-end.md)
+- How-to: [How-to: run evaluation and make ship decisions](../how-to/run-eval-and-ship.md)

@@ -1,4 +1,5 @@
 ---
+diataxis: reference
 tags:
   - reference
   - config
@@ -6,8 +7,9 @@ tags:
   - developer
   - ops
 ---
-
 # recsys-service configuration
+This page is the canonical reference for recsys-service configuration.
+
 
 ## Who this is for
 
@@ -59,7 +61,7 @@ tags:
 Notes:
 
 - Claim keys can be dotted (for example: `realm_access.roles`).
-- When multiple tenant sources are present, they must match (see: [`reference/auth-and-tenancy.md`](../auth-and-tenancy.md)).
+- When multiple tenant sources are present, they must match (see: [Auth and tenancy reference](../auth-and-tenancy.md)).
 
 ### JWT auth (production)
 
@@ -186,7 +188,7 @@ Note: Tags and constraints are still read from Postgres even in artifact mode.
 ### recsys-algo defaults (ranking knobs)
 
 These env vars set the default ranking behavior. See also:
-[`recsys-algo/ranking-reference.md`](../../recsys-algo/ranking-reference.md).
+[Ranking & constraints reference](../../recsys-algo/ranking-reference.md).
 
 | Env var | Default | Meaning |
 | --- | --- | --- |
@@ -269,6 +271,6 @@ JWT_AUDIENCE=recsys
 
 ## Read next
 
-- Auth and tenancy rules: [`reference/auth-and-tenancy.md`](../auth-and-tenancy.md)
-- Artifact vs DB-only modes: [`explanation/data-modes.md`](../../explanation/data-modes.md)
-- Ranking knobs: [`recsys-algo/ranking-reference.md`](../../recsys-algo/ranking-reference.md)
+- Auth and tenancy rules: [Auth and tenancy reference](../auth-and-tenancy.md)
+- Artifact vs DB-only modes: [Data modes: DB-only vs artifact/manifest](../../explanation/data-modes.md)
+- Ranking knobs: [Ranking & constraints reference](../../recsys-algo/ranking-reference.md)

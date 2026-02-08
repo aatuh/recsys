@@ -1,9 +1,9 @@
 ---
+diataxis: reference
 tags:
   - project
   - reference
 ---
-
 # Glossary
 
 A small shared vocabulary used throughout the suite docs.
@@ -18,7 +18,7 @@ by `recsys-service`.
 A deployment mode where `recsys-pipelines` publishes versioned artifacts and a mutable “current manifest pointer”, and
 `recsys-service` reads the current manifest and fetches referenced blobs.
 
-See: [`explanation/data-modes.md`](../explanation/data-modes.md)
+See: [Data modes: DB-only vs artifact/manifest](../explanation/data-modes.md)
 
 ## DB-only mode
 
@@ -27,7 +27,7 @@ A deployment mode where the service reads signals directly from Postgres tables 
 DB-only mode is useful for early pilots because it minimizes moving parts, but it trades off offline reproducibility
 and versioned “ship/rollback” via manifests.
 
-See: [`explanation/data-modes.md`](../explanation/data-modes.md)
+See: [Data modes: DB-only vs artifact/manifest](../explanation/data-modes.md)
 
 ## Manifest
 
@@ -57,7 +57,7 @@ An event that records what items were shown (and in what order) for a single rec
 The stream/file of exposure events written by `recsys-service` (typically JSONL). This is an input to `recsys-eval` and
 one of the main audit artifacts for “what was shown”.
 
-See: [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)
+See: [Exposure logging and attribution](../explanation/exposure-logging-and-attribution.md)
 
 ## Outcome
 
@@ -69,7 +69,7 @@ by `request_id`.
 The stream of outcome events emitted by your product (clicks, conversions, etc.) and joined to exposures by
 `request_id`.
 
-See: [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)
+See: [Exposure logging and attribution](../explanation/exposure-logging-and-attribution.md)
 
 ## Assignment
 
@@ -116,3 +116,50 @@ An organization boundary for configuration and data isolation.
 
 The Docker Compose container name used in this repo for the `recsys-service` API. In docs and architecture discussions,
 prefer the module name `recsys-service`.
+
+
+## Canonical events
+
+Events stored in a normalized format that the rest of the pipeline relies on.
+
+## Window
+
+A time range that a job processes. In v1, windows are daily UTC buckets.
+
+## Version
+
+A deterministic identifier (SHA-256 hex) of an artifact payload excluding volatile build metadata.
+
+## Checkpoint
+
+A small state file that records the latest successfully processed window so incremental runs can skip work already done.
+
+## Incremental run
+
+A run mode that processes only new windows since the last checkpoint.
+
+## Backfill
+
+Re-processing a historical range of windows.
+
+## Current manifest pointer
+
+The mutable “what is live right now” location for a `(tenant, surface)` manifest.
+
+## Registry
+
+Storage for artifact records and current manifests.
+
+## Object store
+
+Storage for artifact blobs. In local mode, this is the filesystem.
+
+## Idempotent
+
+Safe to run multiple times without changing the result.
+
+
+## Read next
+
+- Project hub: [Project](index.md)
+- Contributing: [Contributing](contributing.md)

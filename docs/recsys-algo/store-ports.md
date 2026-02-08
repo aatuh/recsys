@@ -1,3 +1,8 @@
+---
+diataxis: explanation
+tags:
+  - recsys-algo
+---
 # Store ports
 
 `recsys-algo` follows a **ports-and-adapters** style:
@@ -35,5 +40,5 @@ To disable a feature at runtime (even if the port exists), return `model.ErrFeat
 
 ## Read next
 
-- End-to-end extension guide: [`how-to/add-signal-end-to-end.md`](../how-to/add-signal-end-to-end.md)
-- Ranking & constraints reference: [`recsys-algo/ranking-reference.md`](ranking-reference.md)
+- End-to-end extension guide: [How-to: add a new signal end-to-end](../how-to/add-signal-end-to-end.md)
+- Ranking & constraints reference: [Ranking & constraints reference](ranking-reference.md)

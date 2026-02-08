@@ -1,5 +1,11 @@
-
+---
+diataxis: explanation
+tags:
+  - recsys-pipelines
+---
 # Validation and guardrails
+This page explains Validation and guardrails and how it fits into the RecSys suite.
+
 
 ## Validation gate
 
@@ -35,8 +41,8 @@ Operational guidance: `operations/runbooks/limit-exceeded.md`.
 
 ## Read next
 
-- Limit exceeded runbook: [`operations/runbooks/limit-exceeded.md`](../operations/runbooks/limit-exceeded.md)
-- Config reference (limits and inputs): [`reference/config.md`](../reference/config.md)
-- Debug failures: [`how-to/debug-failures.md`](../how-to/debug-failures.md)
-- Operate pipelines daily: [`how-to/operate-daily.md`](../how-to/operate-daily.md)
-- Glossary: [`glossary.md`](../glossary.md)
+- Limit exceeded runbook: [Runbook: Limit exceeded](../operations/runbooks/limit-exceeded.md)
+- Config reference (limits and inputs): [Config reference](../reference/config.md)
+- Debug failures: [How-to: Debug a failed pipeline run](../how-to/debug-failures.md)
+- Operate pipelines daily: [How-to: Operate pipelines daily](../how-to/operate-daily.md)
+- Glossary: [Glossary](../glossary.md)

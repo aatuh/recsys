@@ -1,4 +1,12 @@
+---
+diataxis: explanation
+tags:
+  - recsys-eval
+  - runbook
+---
 # Runbooks: operating recsys-eval
+This page explains Runbooks: operating recsys-eval and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -102,7 +110,7 @@ Fix:
 
 ## Read next
 
-- Troubleshooting: [`recsys-eval/docs/troubleshooting.md`](troubleshooting.md)
-- Online A/B workflow: [`recsys-eval/docs/workflows/online-ab-in-production.md`](workflows/online-ab-in-production.md)
-- CI gates: [`recsys-eval/docs/ci_gates.md`](ci_gates.md)
-- Metrics: [`recsys-eval/docs/metrics.md`](metrics.md)
+- Troubleshooting: [Troubleshooting: symptom -> cause -> fix](troubleshooting.md)
+- Online A/B workflow: [Workflow: Online A/B analysis in production](workflows/online-ab-in-production.md)
+- CI gates: [CI gates: using recsys-eval in automation](ci_gates.md)
+- Metrics: [Metrics: what we measure and why](metrics.md)

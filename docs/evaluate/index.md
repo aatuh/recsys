@@ -1,11 +1,11 @@
 ---
+diataxis: explanation
 tags:
   - overview
   - evaluation
   - business
   - developer
 ---
-
 # Start an evaluation
 
 RecSys is an auditable recommendation system suite with deterministic ranking and versioned ship/rollback.
@@ -18,8 +18,8 @@ RecSys is an auditable recommendation system suite with deterministic ranking an
 [Message on LinkedIn][recsys_linkedin]{ .md-button }
 
 !!! info "Scope check (read before piloting)"
-    Capability boundaries: [`explanation/capability-matrix.md`](../explanation/capability-matrix.md). Non-goals:
-    [`start-here/known-limitations.md`](../start-here/known-limitations.md).
+    Capability boundaries: [Capability matrix (scope and non-scope)](../explanation/capability-matrix.md). Non-goals:
+    [Known limitations and non-goals (current)](../start-here/known-limitations.md).
 
 ## Who this is for
 
@@ -31,9 +31,6 @@ RecSys is an auditable recommendation system suite with deterministic ranking an
 - The minimum “credible pilot” instrumentation checklist
 - A recommended 2–6 week plan and exit criteria
 - Links to the exact docs you will run during the evaluation
-
---8<-- "_snippets/key-terms.list.snippet"
---8<-- "_snippets/key-terms.defs.one-up.snippet"
 
 ## What “evaluation” means here
 
@@ -59,19 +56,19 @@ An evaluation is successful when you can answer these questions with evidence:
 
 See:
 
-- Data contracts (schemas + examples): [`reference/data-contracts/index.md`](../reference/data-contracts/index.md)
-- Exposure logging & attribution: [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)
+- Data contracts (schemas + examples): [Data contracts](../reference/data-contracts/index.md)
+- Exposure logging & attribution: [Exposure logging and attribution](../explanation/exposure-logging-and-attribution.md)
 
 [Start evaluation (commercial)][commercial_eval]{ .md-button .md-button--primary }
 [Message on LinkedIn][recsys_linkedin]{ .md-button }
 
 ## Read next
 
-- Pilot plan (2–6 weeks): [`start-here/pilot-plan.md`](../start-here/pilot-plan.md)
-- Procurement pack (Security/Legal/IT/Finance): [`for-businesses/procurement-pack.md`](../for-businesses/procurement-pack.md)
-- How-to run eval and ship decisions: [`how-to/run-eval-and-ship.md`](../how-to/run-eval-and-ship.md)
-- Default evaluation pack (recommended): [`recsys-eval/docs/default-evaluation-pack.md`](../recsys-eval/docs/default-evaluation-pack.md)
-- Operational reliability & rollback: [`start-here/operational-reliability-and-rollback.md`](../start-here/operational-reliability-and-rollback.md)
+- Pilot plan (2–6 weeks): [Pilot plan (2–6 weeks)](../start-here/pilot-plan.md)
+- Procurement pack (Security/Legal/IT/Finance): [Procurement pack (Security, Legal, IT, Finance)](../for-businesses/procurement-pack.md)
+- How-to run eval and ship decisions: [How-to: run evaluation and make ship decisions](../how-to/run-eval-and-ship.md)
+- Default evaluation pack (recommended): [Default evaluation pack (recommended)](../recsys-eval/docs/default-evaluation-pack.md)
+- Operational reliability & rollback: [Operational reliability and rollback](../start-here/operational-reliability-and-rollback.md)
 
 [commercial_eval]: mailto:contact@recsys.app?subject=RecSys%20Commercial%20Evaluation
 [recsys_linkedin]: https://www.linkedin.com/showcase/recsys-suite

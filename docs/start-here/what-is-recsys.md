@@ -1,10 +1,12 @@
 ---
+diataxis: explanation
 tags:
   - overview
   - business
 ---
-
 # What the RecSys suite is (stakeholder overview)
+This page explains What the RecSys suite is (stakeholder overview) and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -79,7 +81,7 @@ Strongly recommended for evaluation:
 - A `request_id` you can propagate from serving → outcomes so evaluation can join correctly
 - Exposure logs (the ranked list you showed, with ranks)
 
-See: [`reference/data-contracts/index.md`](../reference/data-contracts/index.md)
+See: [Data contracts](../reference/data-contracts/index.md)
 
 ## Timeline: pilot → production (typical)
 
@@ -102,8 +104,8 @@ Every company’s data readiness differs, but a realistic plan is:
 
 ## Read next
 
-- Start here (engineers): [`start-here/index.md`](index.md)
-- Pilot plan: [`start-here/pilot-plan.md`](pilot-plan.md)
-- Local end-to-end tutorial: [`tutorials/local-end-to-end.md`](../tutorials/local-end-to-end.md)
-- Capability matrix (scope and non-scope): [`explanation/capability-matrix.md`](../explanation/capability-matrix.md)
-- Known limitations: [`start-here/known-limitations.md`](known-limitations.md)
+- Start here (engineers): [Start here](index.md)
+- Pilot plan: [Pilot plan (2–6 weeks)](pilot-plan.md)
+- Local end-to-end tutorial: [local end-to-end (service → logging → eval)](../tutorials/local-end-to-end.md)
+- Capability matrix (scope and non-scope): [Capability matrix (scope and non-scope)](../explanation/capability-matrix.md)
+- Known limitations: [Known limitations and non-goals (current)](known-limitations.md)

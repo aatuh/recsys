@@ -1,4 +1,12 @@
+---
+diataxis: explanation
+tags:
+  - recsys-eval
+  - integration
+---
 # Integration: how to produce the inputs
+This page explains Integration: how to produce the inputs and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -20,13 +28,12 @@ Clicks without exposures are not evaluatable.
 At recommendation time (serving):
 
 - request_id: unique per recommendation request
-- user_id (or session_id): pseudonymized and stable
-- ts: ISO-8601 timestamp (string)
-- items: the ranked list (item_id + rank)
-- context: segmentation keys as strings (for example: tenant_id, surface, device, locale)
-- optional: latency_ms (number) and error (boolean)
-- optional (as context keys): model_version, config_version, algo_version
-- optional (as context keys for deeper analysis): per-item scores/reasons (if you have them)
+- tenant, surface: required for segmentation
+- user_id or session_id: pseudonymized
+- timestamp (ISO-8601)
+- the ranked list of items (item_id + rank)
+- optional: latency_ms, model_version, config_version, algo_version
+- optional for deeper analysis: per-item scores and reasons (if you have them)
 
 Minimal JSONL exposure record:
 
@@ -34,12 +41,10 @@ Minimal JSONL exposure record:
 
 {
   "request_id": "req_123",
+  "tenant": "demo",
+  "surface": "home",
   "user_id": "u_hash_...",
-  "ts": "2026-01-27T12:00:00Z",
-  "context": {
-    "tenant_id": "demo",
-    "surface": "home"
-  },
+  "timestamp": "2026-01-27T12:00:00Z",
   "items": [{"item_id": "A", "rank": 1}]
 }
 
@@ -50,10 +55,9 @@ Minimal JSONL exposure record:
 After exposure, when the user acts:
 
 - request_id (same one)
-- user_id (same one)
-- event_type: click or conversion
+- event type: click, purchase, etc.
 - item_id (the item clicked/converted)
-- ts
+- timestamp
 
 If you have revenue or value, log it. If you do not, do not invent it.
 
@@ -67,10 +71,8 @@ When you run an experiment:
 Minimum:
 
 - request_id
-- user_id
 - experiment_id
 - variant
-- ts
 
 ## OPE logging (advanced)
 
@@ -115,7 +117,7 @@ production logs look like that, you will struggle later.
 
 ## Read next
 
-- Data contracts: [`recsys-eval/docs/data_contracts.md`](data_contracts.md)
-- Online A/B workflow: [`recsys-eval/docs/workflows/online-ab-in-production.md`](workflows/online-ab-in-production.md)
-- Troubleshooting joins and SRM: [`recsys-eval/docs/troubleshooting.md`](troubleshooting.md)
-- Security & privacy: [`recsys-eval/docs/security_privacy.md`](security_privacy.md)
+- Data contracts: [Data contracts: what inputs look like](data_contracts.md)
+- Online A/B workflow: [Workflow: Online A/B analysis in production](workflows/online-ab-in-production.md)
+- Troubleshooting joins and SRM: [Troubleshooting: symptom -> cause -> fix](troubleshooting.md)
+- Security & privacy: [Security and privacy notes](security_privacy.md)

@@ -1,10 +1,12 @@
 ---
+diataxis: explanation
 tags:
   - business
   - ops
 ---
-
 # Responsibilities (RACI): who owns what
+This page explains Responsibilities (RACI): who owns what and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -71,7 +73,7 @@ reads the manifest pointer.
 
 ## Read next
 
-- Pilot plan: [`start-here/pilot-plan.md`](pilot-plan.md)
-- Security and privacy overview: [`start-here/security-privacy-compliance.md`](security-privacy-compliance.md)
-- Local end-to-end tutorial: [`tutorials/local-end-to-end.md`](../tutorials/local-end-to-end.md)
-- Production readiness checklist: [`operations/production-readiness-checklist.md`](../operations/production-readiness-checklist.md)
+- Pilot plan: [Pilot plan (2–6 weeks)](pilot-plan.md)
+- Security and privacy overview: [Security, privacy, and compliance (overview)](security-privacy-compliance.md)
+- Local end-to-end tutorial: [local end-to-end (service → logging → eval)](../tutorials/local-end-to-end.md)
+- Production readiness checklist: [Production readiness checklist (RecSys suite)](../operations/production-readiness-checklist.md)

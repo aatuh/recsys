@@ -1,11 +1,13 @@
 ---
+diataxis: explanation
 tags:
   - ops
   - troubleshooting
   - evaluation
 ---
-
 # Failure modes & diagnostics (baseline)
+This page explains Failure modes & diagnostics (baseline) and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -48,10 +50,10 @@ tags:
   - propagate `request_id` from recommend → render → outcome event
   - add an automated integration test that asserts “same `request_id` everywhere”
 - **Prevention**
-  - enforce the invariants in: [`reference/minimum-instrumentation.md`](../reference/minimum-instrumentation.md)
+  - enforce the invariants in: [Minimum instrumentation spec (for credible evaluation)](../reference/minimum-instrumentation.md)
   - keep `request_id` generation in one place (shared middleware/client)
 
-See: [`reference/data-contracts/join-logic.md`](../reference/data-contracts/join-logic.md)
+See: [Event join logic (exposures ↔ outcomes ↔ assignments)](../reference/data-contracts/join-logic.md)
 
 ### 2) Empty recommendations
 
@@ -67,9 +69,9 @@ See: [`reference/data-contracts/join-logic.md`](../reference/data-contracts/join
   - confirm tenant + surface config exists (admin bootstrap)
   - if DB-only: verify seed tables contain data for the namespace
 - **Fix**
-  - follow the runbook: [`operations/runbooks/empty-recs.md`](runbooks/empty-recs.md)
+  - follow the runbook: [Runbook: Empty recs](runbooks/empty-recs.md)
 - **Prevention**
-  - integration checklist (one surface): [`how-to/integration-checklist.md`](../how-to/integration-checklist.md)
+  - integration checklist (one surface): [How-to: Integration checklist (one surface)](../how-to/integration-checklist.md)
 
 ### 3) Stale manifest / stale artifacts (artifact mode)
 
@@ -85,7 +87,7 @@ See: [`reference/data-contracts/join-logic.md`](../reference/data-contracts/join
   - check pipeline job logs for publish steps
   - confirm the service can read the manifest path and objects
 - **Fix**
-  - follow the runbook: [`operations/runbooks/stale-manifest.md`](runbooks/stale-manifest.md)
+  - follow the runbook: [Runbook: Stale manifest (artifact mode)](runbooks/stale-manifest.md)
 - **Prevention**
   - add a “ship verification” step: publish → invalidate cache → smoke test one request
 
@@ -121,10 +123,10 @@ See: [`reference/data-contracts/join-logic.md`](../reference/data-contracts/join
   - reduce fanout, enable caching, tune backpressure
   - roll back the manifest/config while you investigate
 - **Prevention**
-  - keep a repeatable capacity baseline: [`operations/performance-and-capacity.md`](performance-and-capacity.md)
+  - keep a repeatable capacity baseline: [Performance and capacity guide](performance-and-capacity.md)
 
 ## Read next
 
-- Decision playbook (ship/hold/rollback): [`recsys-eval/docs/decision-playbook.md`](../recsys-eval/docs/decision-playbook.md)
-- Operations runbooks: [`operations/index.md`](index.md)
-- Minimum instrumentation spec: [`reference/minimum-instrumentation.md`](../reference/minimum-instrumentation.md)
+- Decision playbook (ship/hold/rollback): [Decision playbook: ship / hold / rollback](../recsys-eval/docs/decision-playbook.md)
+- Operations runbooks: [Operations](index.md)
+- Minimum instrumentation spec: [Minimum instrumentation spec (for credible evaluation)](../reference/minimum-instrumentation.md)

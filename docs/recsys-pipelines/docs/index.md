@@ -1,4 +1,11 @@
-# Index
+---
+diataxis: explanation
+tags:
+  - recsys-pipelines
+  - pipelines
+  - artifacts
+---
+# recsys-pipelines docs
 
 Welcome! This documentation explains **what this system is**, **who it is
 for**, and **how to run and operate it**.
@@ -8,15 +15,15 @@ and co-occurrence) from raw exposure events.
 
 ## Start here
 
-- If you are new: **Start Here**: [`start-here.md`](start-here.md)
-- If you want to run it now: [`tutorials/local-quickstart.md`](tutorials/local-quickstart.md)
+- If you are new: **Start Here**: [Start here](start-here.md)
+- If you want to run it now: [Run locally (filesystem mode)](tutorials/local-quickstart.md)
 
 ## Choose your path
 
-- Product / PM: [`learning-paths/product.md`](learning-paths/product.md)
-- Engineers: [`learning-paths/engineer.md`](learning-paths/engineer.md)
-- Data Engineering / Analytics: [`learning-paths/data-engineer.md`](learning-paths/data-engineer.md)
-- SRE / Platform: [`learning-paths/sre-oncall.md`](learning-paths/sre-oncall.md)
+- Product / PM: [Learning path: Product / PM](learning-paths/product.md)
+- Engineers: [Learning path: Engineers](learning-paths/engineer.md)
+- Data Engineering / Analytics: [Learning path: Data Engineering](learning-paths/data-engineer.md)
+- SRE / Platform: [Learning path: SRE / On-call](learning-paths/sre-oncall.md)
 
 ## Docs map
 
@@ -25,11 +32,11 @@ and co-occurrence) from raw exposure events.
 - **Explanation**: concepts and reasoning
 - **Reference**: exact contracts and CLI/config details
 
-See [`explanation/documentation-approach.md`](explanation/documentation-approach.md).
+See [Documentation approach](explanation/documentation-approach.md).
 
 ## Read next
 
-- Start here: [`start-here.md`](start-here.md)
-- Local quickstart: [`tutorials/local-quickstart.md`](tutorials/local-quickstart.md)
-- Operate pipelines daily: [`how-to/operate-daily.md`](how-to/operate-daily.md)
-- Config reference: [`reference/config.md`](reference/config.md)
+- Start here: [Start here](start-here.md)
+- Local quickstart: [Run locally (filesystem mode)](tutorials/local-quickstart.md)
+- Operate pipelines daily: [How-to: Operate pipelines daily](how-to/operate-daily.md)
+- Config reference: [Config reference](reference/config.md)

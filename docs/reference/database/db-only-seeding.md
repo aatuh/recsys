@@ -1,12 +1,14 @@
 ---
+diataxis: reference
 tags:
   - reference
   - database
   - developer
   - recsys-service
 ---
-
 # DB-only signals: seed examples
+This page is the canonical reference for DB-only signals: seed examples.
+
 
 ## Who this is for
 
@@ -98,3 +100,8 @@ If `/v1/similar` returns empty:
 
 - ensure co-vis rows exist **for the same surface** (namespace)
 - ensure the anchor item exists in `item_covisit_daily`
+
+## Read next
+
+- Database reference: [Database reference](index.md)
+- Migrations: [Migrations (safe upgrade)](migrations.md)

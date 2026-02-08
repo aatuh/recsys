@@ -1,12 +1,14 @@
 ---
+diataxis: explanation
 tags:
   - how-to
   - evaluation
   - business
   - recsys-eval
 ---
-
 # Workflow: Online A/B analysis in production
+This page explains Workflow: Online A/B analysis in production and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -27,8 +29,8 @@ Measure impact from live traffic and decide **ship / hold / rollback** using exp
 
 Start here if anything is unclear:
 
-- Integration logging plan: [`recsys-eval/docs/integration.md`](../integration.md)
-- Data contracts: [`recsys-eval/docs/data_contracts.md`](../data_contracts.md)
+- Integration logging plan: [Integration: how to produce the inputs](../integration.md)
+- Data contracts: [Data contracts: what inputs look like](../data_contracts.md)
 
 ## Workflow steps
 
@@ -53,7 +55,7 @@ recsys-eval run \
 
 ## Read next
 
-- Interpretation cheat sheet: [`recsys-eval/docs/workflows/interpretation-cheat-sheet.md`](interpretation-cheat-sheet.md)
-- Interpreting results (deep dive): [`recsys-eval/docs/interpreting_results.md`](../interpreting_results.md)
-- Metrics: [`recsys-eval/docs/metrics.md`](../metrics.md)
-- Troubleshooting (joins, SRM, anomalies): [`recsys-eval/docs/troubleshooting.md`](../troubleshooting.md)
+- Interpretation cheat sheet: [Interpretation cheat sheet (recsys-eval)](interpretation-cheat-sheet.md)
+- Interpreting results (deep dive): [Interpreting results: how to go from report to decision](../interpreting_results.md)
+- Metrics: [Metrics: what we measure and why](../metrics.md)
+- Troubleshooting (joins, SRM, anomalies): [Troubleshooting: symptom -> cause -> fix](../troubleshooting.md)

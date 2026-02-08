@@ -1,3 +1,8 @@
+---
+diataxis: explanation
+tags:
+  - recsys-pipelines
+---
 # recsys-pipelines
 
 Filesystem-first pipelines that build **versioned recommendation artifacts**
@@ -93,3 +98,8 @@ See `docs/contributing/dev-workflow.md`.
 ## Releases
 
 Tag releases with the module prefix, e.g. `recsys-pipelines/v0.2.0`.
+
+## Read next
+
+- Start here: [Start here](../start-here/index.md)
+- Quickstart (10 minutes): [Quickstart (10 minutes)](../tutorials/quickstart.md)

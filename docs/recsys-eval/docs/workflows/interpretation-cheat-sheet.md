@@ -1,17 +1,19 @@
 ---
+diataxis: explanation
 tags:
   - reference
   - evaluation
   - business
   - recsys-eval
 ---
-
 # Interpretation cheat sheet (recsys-eval)
+This page explains Interpretation cheat sheet (recsys-eval) and how it fits into the RecSys suite.
+
 
 ## Before trusting any metric
 
 - **Validate schemas** (extra/missing fields can break joins):
-  [`recsys-eval/docs/data_contracts.md`](../data_contracts.md)
+  [Data contracts: what inputs look like](../data_contracts.md)
 - **Check join integrity**:
   - low match rate usually means broken instrumentation, not a “bad model”
   - fix logging before debating metric moves
@@ -35,6 +37,6 @@ Ask “is the move real, safe, and attributable?” in this order:
 
 ## Read next
 
-- Interpreting results: [`recsys-eval/docs/interpreting_results.md`](../interpreting_results.md)
-- Runbooks (common failure modes): [`recsys-eval/docs/runbooks.md`](../runbooks.md)
-- Troubleshooting: [`recsys-eval/docs/troubleshooting.md`](../troubleshooting.md)
+- Interpreting results: [Interpreting results: how to go from report to decision](../interpreting_results.md)
+- Runbooks (common failure modes): [Runbooks: operating recsys-eval](../runbooks.md)
+- Troubleshooting: [Troubleshooting: symptom -> cause -> fix](../troubleshooting.md)

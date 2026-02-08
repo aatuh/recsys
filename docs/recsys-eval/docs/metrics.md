@@ -1,4 +1,11 @@
+---
+diataxis: explanation
+tags:
+  - recsys-eval
+---
 # Metrics: what we measure and why
+This page explains Metrics: what we measure and why and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -128,7 +135,7 @@ Add more only after you can run the basics reliably.
 
 ## Read next
 
-- Interpretation cheat sheet: [`recsys-eval/docs/workflows/interpretation-cheat-sheet.md`](workflows/interpretation-cheat-sheet.md)
-- Interpreting results: [`recsys-eval/docs/interpreting_results.md`](interpreting_results.md)
-- Concepts: [`recsys-eval/docs/concepts.md`](concepts.md)
-- Offline gate in CI: [`recsys-eval/docs/workflows/offline-gate-in-ci.md`](workflows/offline-gate-in-ci.md)
+- Interpretation cheat sheet: [Interpretation cheat sheet (recsys-eval)](workflows/interpretation-cheat-sheet.md)
+- Interpreting results: [Interpreting results: how to go from report to decision](interpreting_results.md)
+- Concepts: [Concepts: how to understand recsys-eval](concepts.md)
+- Offline gate in CI: [Workflow: Offline gate in CI](workflows/offline-gate-in-ci.md)

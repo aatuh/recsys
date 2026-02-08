@@ -1,10 +1,10 @@
 ---
+diataxis: reference
 tags:
   - licensing
   - commercial
   - business
 ---
-
 # RecSys Commercial License Agreement
 
 **Version:** `1.0`  
@@ -12,11 +12,18 @@ tags:
 
 This Commercial License Agreement ("Agreement") is between:
 
-- **Vendor:** `VENDOR_LEGAL_NAME`, `ADDRESS` ("Vendor"), and  
+- **Vendor:** `PakkaSys`, `Espoo, Finland` ("Vendor"), and  
 - **Customer:** `CUSTOMER_LEGAL_NAME`, `ADDRESS` ("Customer")
 
 This Agreement provides the general terms for Customer’s commercial use of the Software. **Specific scope,
 fees, and entitlements are set out in one or more Order Forms** that reference this Agreement.
+
+## Document controls
+
+- Owner: RecSys maintainers (`contact@recsys.app`)
+- Last legal/doc review: 2026-02-08
+- Next review due: 2026-05-08
+- Order of precedence: signed Order Form > this Agreement > referenced attachments/policies
 
 ---
 
@@ -91,7 +98,7 @@ Components.
 
 ## 6. Delivery; Updates
 
-6.1. Vendor will provide Commercial Artifacts via `DELIVERY_METHOD` (e.g., private container registry).  
+6.1. Vendor will provide Commercial Artifacts via software repository.  
 6.2. Updates, if included, are provided during the Term as specified in the Order Form.
 
 ---
@@ -167,8 +174,8 @@ Customer will comply with applicable laws, including export/sanctions laws, wher
 
 ## 15. Governing Law; Venue
 
-This Agreement is governed by the laws of `GOVERNING_LAW_JURISDICTION`, excluding conflict-of-law rules.
-Exclusive venue: `VENUE`.
+This Agreement is governed by the laws of Finland, excluding conflict-of-law rules.
+Exclusive venue: Helsinki District Court (Helsingin käräjäoikeus).
 
 ---
 
@@ -185,3 +192,8 @@ Name/Title: ________________________
 
 **Customer:** ______________________  Date: __________  
 Name/Title: ________________________
+
+## Read next
+
+- Pricing: [Pricing](../pricing/index.md)
+- Evaluation and licensing: [Evaluation, pricing, and licensing (buyer guide)](../pricing/evaluation-and-licensing.md)

@@ -1,10 +1,12 @@
 ---
+diataxis: reference
 tags:
   - project
   - docs
 ---
-
 # Docs per release policy
+This page is the canonical reference for Docs per release policy.
+
 
 ## Who this is for
 
@@ -19,7 +21,7 @@ tags:
 ## Policy
 
 - Doc changes ship with product changes.
-- The canonical API spec lives in [`reference/api/openapi.yaml`](../reference/api/openapi.yaml).
+- The canonical API spec lives in [OpenAPI spec (YAML)](../reference/api/openapi.yaml).
 - Tutorials must remain runnable (see the tutorial smoke test workflow).
 
 ## Checklists (by change type)
@@ -29,33 +31,33 @@ tags:
 - Update `docs/reference/api/openapi.yaml`.
 - Regenerate derived API artifacts: `cd api && make codegen`.
 - Update examples and troubleshooting pages if behavior changed:
-  - [`reference/api/examples.md`](../reference/api/examples.md)
-  - [`reference/api/errors.md`](../reference/api/errors.md)
+  - [API examples (HTTP files)](../reference/api/examples.md)
+  - [Error handling & troubleshooting API calls](../reference/api/errors.md)
 - Add an entry to “What’s new” for customer-visible changes:
-  - [`whats-new/index.md`](../whats-new/index.md)
+  - [What’s new](../whats-new/index.md)
 
 ### Config changes
 
 - Update the config reference:
-  - [`reference/config/index.md`](../reference/config/index.md)
+  - [Configuration reference](../reference/config/index.md)
   - module-specific pages under `reference/config/`
 - If a setting changes defaults or semantics, add a note to “What’s new”.
 
 ### Data contract changes (exposures/outcomes/manifests)
 
 - Update:
-  - [`reference/data-contracts/index.md`](../reference/data-contracts/index.md)
+  - [Data contracts](../reference/data-contracts/index.md)
   - schema files under `reference/data-contracts/` (and examples)
 - Update join/explanation docs if attribution logic changes:
-  - [`reference/data-contracts/join-logic.md`](../reference/data-contracts/join-logic.md)
-  - [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)
+  - [Event join logic (exposures ↔ outcomes ↔ assignments)](../reference/data-contracts/join-logic.md)
+  - [Exposure logging and attribution](../explanation/exposure-logging-and-attribution.md)
 
 ### Operational behavior changes
 
 - Update runbooks for new failure modes or changes in remediation:
   - `docs/operations/runbooks/*`
 - Update capacity guidance if perf characteristics changed:
-  - [`operations/performance-and-capacity.md`](../operations/performance-and-capacity.md)
+  - [Performance and capacity guide](../operations/performance-and-capacity.md)
 
 ## Verification (required)
 
@@ -73,4 +75,4 @@ bash scripts/tutorial_smoke_test.sh
 
 ## Read next
 
-- Docs versioning: [`project/docs-versioning.md`](docs-versioning.md)
+- Docs versioning: [Docs versioning](docs-versioning.md)

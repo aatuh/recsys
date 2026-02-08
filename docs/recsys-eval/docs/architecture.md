@@ -1,4 +1,11 @@
+---
+diataxis: explanation
+tags:
+  - recsys-eval
+---
 # Architecture: how the code is organized and how to extend it
+This page explains Architecture: how the code is organized and how to extend it and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -39,7 +46,7 @@ If you keep domain pure, tests become easy and reliability improves.
 1) Implement the metric in internal/domain/metrics/...
 2) Add it to the registry (internal/domain/metrics/registry.go)
 3) Add tests with toy inputs and known outputs
-4) Document it in [`metrics.md`](metrics.md)
+4) Document it in [Metrics: what we measure and why](metrics.md)
 
 ## Add a new datasource
 
@@ -62,7 +69,7 @@ This keeps the system testable and change-friendly.
 
 ## Read next
 
-- Workflows (practical entry points): [`recsys-eval/docs/index.md`](index.md)
-- Offline gate in CI: [`recsys-eval/docs/workflows/offline-gate-in-ci.md`](workflows/offline-gate-in-ci.md)
-- Integration logging plan: [`recsys-eval/docs/integration.md`](integration.md)
-- Concepts: [`recsys-eval/docs/concepts.md`](concepts.md)
+- Workflows (practical entry points): [recsys-eval docs](index.md)
+- Offline gate in CI: [Workflow: Offline gate in CI](workflows/offline-gate-in-ci.md)
+- Integration logging plan: [Integration: how to produce the inputs](integration.md)
+- Concepts: [Concepts: how to understand recsys-eval](concepts.md)

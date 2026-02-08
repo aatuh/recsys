@@ -1,4 +1,11 @@
+---
+diataxis: explanation
+tags:
+  - recsys-eval
+---
 # Interpreting results: how to go from report to decision
+This page explains Interpreting results: how to go from report to decision and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -100,7 +107,7 @@ Treat the report as a navigation tool, not a trophy.
 
 ## Read next
 
-- Interpretation cheat sheet: [`recsys-eval/docs/workflows/interpretation-cheat-sheet.md`](workflows/interpretation-cheat-sheet.md)
-- Metrics: [`recsys-eval/docs/metrics.md`](metrics.md)
-- Runbooks: [`recsys-eval/docs/runbooks.md`](runbooks.md)
-- Online A/B workflow: [`recsys-eval/docs/workflows/online-ab-in-production.md`](workflows/online-ab-in-production.md)
+- Interpretation cheat sheet: [Interpretation cheat sheet (recsys-eval)](workflows/interpretation-cheat-sheet.md)
+- Metrics: [Metrics: what we measure and why](metrics.md)
+- Runbooks: [Runbooks: operating recsys-eval](runbooks.md)
+- Online A/B workflow: [Workflow: Online A/B analysis in production](workflows/online-ab-in-production.md)

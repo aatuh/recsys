@@ -1,5 +1,11 @@
-
+---
+diataxis: explanation
+tags:
+  - recsys-pipelines
+---
 # Developer workflow
+This page explains Developer workflow and how it fits into the RecSys suite.
+
 
 ## Local commands
 
@@ -27,7 +33,7 @@ Docs live under `docs/` and follow Diataxis framework.
 
 ## Read next
 
-- Contributing style guide: [`contributing/style.md`](style.md)
-- Releasing: [`contributing/releasing.md`](releasing.md)
-- Architecture overview: [`explanation/architecture.md`](../explanation/architecture.md)
-- Start here: [`start-here.md`](../start-here.md)
+- Contributing style guide: [Style guide](style.md)
+- Releasing: [Releasing](releasing.md)
+- Architecture overview: [Architecture](../explanation/architecture.md)
+- Start here: [Start here](../start-here.md)

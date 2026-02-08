@@ -1,5 +1,11 @@
-
+---
+diataxis: explanation
+tags:
+  - recsys-pipelines
+---
 # Artifacts and versioning
+This page explains Artifacts and versioning and how it fits into the RecSys suite.
+
 
 ## What is an artifact?
 
@@ -37,9 +43,9 @@ See `how-to/rollback-manifest.md`.
 
 ## Read next
 
-- Start here: [`start-here.md`](../start-here.md)
-- Suite how-to (signal end-to-end): [`how-to/add-signal-end-to-end.md`](../../../how-to/add-signal-end-to-end.md)
-- Roll back artifacts safely: [`how-to/rollback-safely.md`](../how-to/rollback-safely.md)
-- Output layout (where manifests and records live): [`reference/output-layout.md`](../reference/output-layout.md)
-- Stale artifacts runbook: [`operations/runbooks/stale-artifacts.md`](../operations/runbooks/stale-artifacts.md)
-- Glossary: [`glossary.md`](../glossary.md)
+- Start here: [Start here](../start-here.md)
+- Suite how-to (signal end-to-end): [How-to: add a new signal end-to-end](../../../how-to/add-signal-end-to-end.md)
+- Roll back artifacts safely: [How-to: Roll back artifacts safely](../how-to/rollback-safely.md)
+- Output layout (where manifests and records live): [Output layout (local filesystem)](../reference/output-layout.md)
+- Stale artifacts runbook: [Runbook: Stale artifacts](../operations/runbooks/stale-artifacts.md)
+- Glossary: [Glossary](../glossary.md)

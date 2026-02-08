@@ -1,4 +1,11 @@
+---
+diataxis: explanation
+tags:
+  - recsys-eval
+---
 # Interleaving: fast ranker comparison on the same traffic
+This page explains Interleaving: fast ranker comparison on the same traffic and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -45,7 +52,7 @@ configs/examples/dataset.interleaving.jsonl.yaml
 
 ## Read next
 
-- Concepts: [`recsys-eval/docs/concepts.md`](concepts.md)
-- Metrics: [`recsys-eval/docs/metrics.md`](metrics.md)
-- Interpreting results: [`recsys-eval/docs/interpreting_results.md`](interpreting_results.md)
-- Data contracts: [`recsys-eval/docs/data_contracts.md`](data_contracts.md)
+- Concepts: [Concepts: how to understand recsys-eval](concepts.md)
+- Metrics: [Metrics: what we measure and why](metrics.md)
+- Interpreting results: [Interpreting results: how to go from report to decision](interpreting_results.md)
+- Data contracts: [Data contracts: what inputs look like](data_contracts.md)

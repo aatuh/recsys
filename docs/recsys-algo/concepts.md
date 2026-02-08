@@ -1,3 +1,8 @@
+---
+diataxis: explanation
+tags:
+  - recsys-algo
+---
 # Concepts
 
 `recsys-algo` is built for **determinism, explainability, and safe operational behavior**.
@@ -36,3 +41,9 @@ For debugging, audits, and safer rollouts, responses can include:
 - **Trace data** (low-level diagnostics suitable for audit logs)
 
 Use explain/trace only when you need it — it can increase payload size and computation.
+
+## Read next
+
+- Start here: [Start here](../start-here/index.md)
+- recsys-algo hub: [recsys-algo](index.md)
+- Quickstart (10 minutes): [Quickstart (10 minutes)](../tutorials/quickstart.md)

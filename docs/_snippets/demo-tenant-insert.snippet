@@ -1,7 +1,0 @@
-```bash
-docker exec -i recsys-db psql -U recsys-db -d recsys-db <<'SQL'
-insert into tenants (external_id, name)
-values ('demo', 'Demo Tenant')
-on conflict (external_id) do nothing;
-SQL
-```

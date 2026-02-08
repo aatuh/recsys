@@ -1,20 +1,29 @@
 ---
+diataxis: reference
 tags:
   - licensing
   - evaluation
   - business
 ---
-
 # RecSys Evaluation License Terms
 
 **Last updated:** 2026-02-01  
-**Vendor:** RecSys ("Vendor")  
+**Vendor:** PakkaSys, Espoo, Finland ("Vendor")  
 **Licensee:** The individual or entity downloading, installing, accessing, or using the Evaluation Materials
 ("Licensee")
 
 > NOTE: This document is a lightweight evaluation agreement intended to enable internal evaluation. For production use
-> under commercial terms, see `COMMERCIAL.md` and the Commercial License Agreement/Order Form templates under
-> `commercial/`.
+> under commercial terms, see [Commercial Use & Licensing](commercial.md),
+> [RecSys Commercial License Agreement](commercial_license.md), and
+> [Order Form (Template)](order_form.md).
+
+---
+
+## Document controls
+
+- Owner: RecSys maintainers (`contact@recsys.app`)
+- Last legal/doc review: 2026-02-08
+- Next review due: 2026-05-08
 
 ---
 
@@ -77,7 +86,6 @@ Licensee remains responsible for contractor compliance.
 ### 4.5 Benchmark publication (optional)
 
 Unless Vendor gives written permission, Licensee must not publish benchmark results of the Evaluation Materials.  
-(If you want "maximum openness", delete this section.)
 
 ---
 
@@ -154,11 +162,16 @@ must comply with Section 5 (stop use and destroy Evaluation Materials).
 
 ## 13. Governing Law
 
-These terms are governed by the laws of `GOVERNING_LAW_JURISDICTION`, excluding conflict-of-law rules. The parties
-agree to the exclusive venue of `VENUE`.
+These terms are governed by the laws of Finland, excluding conflict-of-law rules. The parties
+agree to the exclusive venue of Helsinki District Court (Helsingin käräjäoikeus).
 
 ---
 
 ## 14. Contact
 
-Vendor contact for evaluation questions: `CONTACT_EMAIL`
+Vendor contact for evaluation questions: `contact@recsys.app`
+
+## Read next
+
+- Pricing: [Pricing](../pricing/index.md)
+- Evaluation and licensing: [Evaluation, pricing, and licensing (buyer guide)](../pricing/evaluation-and-licensing.md)

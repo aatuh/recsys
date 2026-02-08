@@ -1,4 +1,8 @@
-
+---
+diataxis: reference
+tags:
+  - recsys-pipelines
+---
 # Output layout (local filesystem)
 
 With default local config, outputs go under `.out/`.
@@ -35,7 +39,7 @@ Version records:
 
 ## Read next
 
-- Start here: [`start-here.md`](../start-here.md)
-- Operate pipelines daily: [`how-to/operate-daily.md`](../how-to/operate-daily.md)
-- Artifacts and versioning: [`explanation/artifacts-and-versioning.md`](../explanation/artifacts-and-versioning.md)
-- Roll back the manifest: [`how-to/rollback-manifest.md`](../how-to/rollback-manifest.md)
+- Start here: [Start here](../start-here.md)
+- Operate pipelines daily: [How-to: Operate pipelines daily](../how-to/operate-daily.md)
+- Artifacts and versioning: [Artifacts and versioning](../explanation/artifacts-and-versioning.md)
+- Roll back the manifest: [How-to: Roll back to a previous artifact version](../how-to/rollback-manifest.md)

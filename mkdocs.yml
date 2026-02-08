@@ -86,6 +86,8 @@ plugins:
   - redirects:
       redirect_maps:
         business/index.md: for-businesses/index.md
+        start-here/receng.md: recsys-engineering/index.md
+        developers/integration-spec.md: reference/integration-spec.md
   - minify:
       minify_html: true
   - glightbox
@@ -99,9 +101,6 @@ markdown_extensions:
   - toc:
       permalink: true
   - pymdownx.details
-  - pymdownx.snippets:
-      base_path: docs
-      check_paths: true
   - pymdownx.highlight
   - pymdownx.inlinehilite
   - pymdownx.superfences:
@@ -124,33 +123,149 @@ extra_javascript:
   - javascripts/swagger-iframe-autosize.js
 
 nav:
-  - Businesses:
+  - Home: index.md
+
+  - Start here:
+      - Start here: start-here/index.md
+      - What is RecSys?: start-here/what-is-recsys.md
+      - Choose data mode: start-here/choose-data-mode.md
+      - Minimum components by goal: start-here/minimum-components-by-goal.md
+      - Pilot plan: start-here/pilot-plan.md
+      - Pilot deployment options: start-here/pilot-deployment-options.md
+      - Responsibilities (RACI): start-here/responsibilities.md
+      - Security, privacy, compliance: start-here/security-privacy-compliance.md
+      - Operational reliability & rollback: start-here/operational-reliability-and-rollback.md
+      - Known limitations: start-here/known-limitations.md
+      - FAQ: start-here/faq.md
+      - Docs map: start-here/docs-map.md
+      - Repo layout: start-here/repo-layout.md
+      - Customer onboarding checklist: start-here/customer-onboarding-checklist.md
+      - ROI and risk model: start-here/roi-and-risk-model.md
+
+
+  - Personas:
+      - Lead developer: personas/lead-developer.md
+      - Business representative: personas/business-representative.md
+    #   - Technical writer: personas/technical-writer.md
+      - SRE / on-call: operations/index.md
+      - Recommendation systems expert: personas/recommendation-systems-expert.md
+  - Tutorials:
+      - tutorials/index.md
+      - Quickstart (minimal): tutorials/quickstart-minimal.md
+      - Quickstart (full validation): tutorials/quickstart.md
+      - Local end-to-end (20–30 minutes): tutorials/local-end-to-end.md
+      - Production-like run (artifact/manifest): tutorials/production-like-run.md
+      - Minimal pilot (DB-only): tutorials/minimal-pilot-db-only.md
+      - Verify determinism: tutorials/verify-determinism.md
+      - Verify joinability: tutorials/verify-joinability.md
+      - Datasets: tutorials/datasets/index.md
+
+  - How-to guides:
+      - how-to/index.md
+      - Integrate recsys-service: how-to/integrate-recsys-service.md
+      - Minimum pilot setup (one surface): how-to/pilot-minimum-setup.md
+      - Minimal integration (one surface): how-to/minimal-integration.md
+      - Integration checklist: how-to/integration-checklist.md
+      - Troubleshooting for integrators: how-to/troubleshooting-integration.md
+      - Add a signal end-to-end: how-to/add-signal-end-to-end.md
+      - Run eval and make ship decisions: how-to/run-eval-and-ship.md
+      - Validate logging and joinability: how-to/validate-logging.md
+      - Tune ranking safely: how-to/tune-ranking.md
+      - Operate pipelines: how-to/operate-pipelines.md
+      - Deploy with Helm: how-to/deploy-helm.md
+      - Run docs locally: how-to/run-docs-locally.md
+      - Contribute to docs: how-to/contribute-docs.md
+      - Integration cookbooks: how-to/integration-cookbooks/index.md
+
+  - Reference:
+      - reference/index.md
+      - Auth and tenancy: reference/auth-and-tenancy.md
+      - Minimum instrumentation spec: reference/minimum-instrumentation.md
+      - Integration spec: reference/integration-spec.md
+      - API:
+          - OpenAPI / Swagger UI: reference/api/api-reference.md
+          - Recommend request fields: reference/api/recommend-request.md
+          - Examples: reference/api/examples.md
+          - Errors: reference/api/errors.md
+          - Admin API: reference/api/admin.md
+          - Compatibility policy: reference/api/compatibility-policy.md
+      - Data contracts:
+          - Overview: reference/data-contracts/index.md
+          - Field catalog: reference/data-contracts/field-catalog.md
+          - Join logic: reference/data-contracts/join-logic.md
+          - Events (eval): reference/data-contracts/eval-events.md
+          - Exposure/outcome/assignment schemas: reference/data-contracts/exposure-outcome-assignment.md
+      - Config:
+          - reference/config/index.md
+          - recsys-service: reference/config/recsys-service.md
+          - recsys-eval: reference/config/recsys-eval.md
+          - recsys-pipelines: reference/config/recsys-pipelines.md
+      - CLI:
+          - reference/cli/index.md
+          - recsys-eval: reference/cli/recsys-eval.md
+          - recsys-pipelines: reference/cli/recsys-pipelines.md
+      - Database:
+          - reference/database/index.md
+          - Schema: reference/database/schema.md
+          - Migrations: reference/database/migrations.md
+          - DB-only seeding: reference/database/db-only-seeding.md
+
+  - Explanation:
+      - explanation/index.md
+      - How it works: explanation/how-it-works.md
+      - Suite architecture: explanation/suite-architecture.md
+      - Candidate vs ranking: explanation/candidate-vs-ranking.md
+      - Data modes: explanation/data-modes.md
+      - Surface namespaces: explanation/surface-namespaces.md
+      - Exposure logging & attribution: explanation/exposure-logging-and-attribution.md
+      - Evaluation modes: explanation/evaluation-modes.md
+      - Evaluation validity: explanation/eval-validity.md
+      - Evaluation reasoning and pitfalls: explanation/evaluation-reasoning.md
+      - Interpreting metrics and reports: explanation/metric-interpretation.md
+      - Guarantees & non-goals: explanation/guarantees-and-non-goals.md
+      - Limitations and risks: explanation/limitations-and-risks.md
+      - Ethics & fairness: explanation/ethics-and-fairness.md
+      - Customization map: explanation/customization-map.md
+      - Experimentation model: explanation/experimentation-model.md
+      - Cold start strategies: explanation/cold-start-strategies.md
+      - Capability matrix: explanation/capability-matrix.md
+      - Pipelines operational invariants: explanation/pipelines-operational-invariants.md
+      - Artifacts and manifest lifecycle: explanation/artifacts-and-manifest-lifecycle.md
+
+  - For businesses:
       - for-businesses/index.md
+      - Executive summary: for-businesses/executive-summary.md
       - Buyer journey (5 minutes): for-businesses/buyer-journey.md
-      - Procurement pack: for-businesses/procurement-pack.md
+      - Self-serve procurement: for-businesses/self-serve-procurement.md
       - Use cases: for-businesses/use-cases.md
       - Success metrics: for-businesses/success-metrics.md
       - Value model (ROI): for-businesses/value-model.md
+      - TCO & effort: for-businesses/tco-and-effort.md
+      - Benchmarks & methodology: for-businesses/benchmarks.md
+      - Alternatives & build vs buy: for-businesses/alternatives.md
       - Evidence: for-businesses/evidence.md
+      - Procurement pack: for-businesses/procurement-pack.md
+      - Procurement checklist: for-businesses/procurement-checklist.md
+      - Decision readiness matrix: for-businesses/decision-readiness.md
       - Start an evaluation: evaluate/index.md
-      - Pilot plan (2–6 weeks): start-here/pilot-plan.md
-      - ROI and risk model: start-here/roi-and-risk-model.md
-      - Operational reliability & rollback: start-here/operational-reliability-and-rollback.md
-      - Responsibilities (RACI): start-here/responsibilities.md
-      - Customer onboarding checklist: start-here/customer-onboarding-checklist.md
       - Pricing:
           - pricing/index.md
           - Buyer guide: pricing/evaluation-and-licensing.md
       - Licensing:
           - licensing/index.md
-          - Pricing definitions: licensing/pricing.md
-          - Evaluation license: licensing/eval_license.md
           - Commercial use: licensing/commercial.md
+          - Evaluation license: licensing/eval_license.md
           - Commercial license: licensing/commercial_license.md
           - Order form: licensing/order_form.md
+          - Pricing definitions: licensing/pricing.md
       - Trust center:
-          - Overview: security/index.md
+          - security/index.md
           - Security pack: security/security-pack.md
+          - Security posture snapshot: security/posture-snapshot.md
+          - Commercial procurement artifacts: security/commercial-procurement-artifacts.md
+          - DPA and SCC terms: security/dpa-and-scc.md
+          - Subprocessors and distribution details: security/subprocessors.md
+          - SLA and support schedule: security/sla-schedule.md
 
   - Operations:
       - operations/index.md
@@ -165,7 +280,7 @@ nav:
           - Rollback config rules: operations/runbooks/rollback-config-rules.md
           - Service not ready: operations/runbooks/service-not-ready.md
 
-  - RecSys engineering:
+  - Components:
       - components/index.md
       - recsys-algo:
           - recsys-algo/index.md
@@ -182,24 +297,23 @@ nav:
               - Offline gate in CI: recsys-eval/docs/workflows/offline-gate-in-ci.md
               - Online A/B in production: recsys-eval/docs/workflows/online-ab-in-production.md
               - Decision playbook (ship/hold/rollback): recsys-eval/docs/decision-playbook.md
-              - Default evaluation pack (recommended): recsys-eval/docs/default-evaluation-pack.md
-              - Default quality gate contract: recsys-eval/docs/default-quality-gate.md
+              - Default evaluation pack: recsys-eval/docs/default-evaluation-pack.md
               - Interpretation cheat sheet: recsys-eval/docs/workflows/interpretation-cheat-sheet.md
-          - Architecture: recsys-eval/docs/architecture.md
-          - CI gates: recsys-eval/docs/ci_gates.md
           - Concepts: recsys-eval/docs/concepts.md
           - Data contracts: recsys-eval/docs/data_contracts.md
           - Integration: recsys-eval/docs/integration.md
-          - Interleaving: recsys-eval/docs/interleaving.md
-          - Interpreting results: recsys-eval/docs/interpreting_results.md
           - Metrics: recsys-eval/docs/metrics.md
+          - Interpreting results: recsys-eval/docs/interpreting_results.md
           - OPE: recsys-eval/docs/ope.md
-          - Roadmap: recsys-eval/docs/roadmap.md
-          - Runbooks: recsys-eval/docs/runbooks.md
+          - Interleaving: recsys-eval/docs/interleaving.md
+          - Architecture: recsys-eval/docs/architecture.md
+          - CI gates: recsys-eval/docs/ci_gates.md
           - Scaling: recsys-eval/docs/scaling.md
-          - Security & privacy: recsys-eval/docs/security_privacy.md
-          - Style: recsys-eval/docs/style.md
+          - Runbooks: recsys-eval/docs/runbooks.md
           - Troubleshooting: recsys-eval/docs/troubleshooting.md
+          - Security & privacy: recsys-eval/docs/security_privacy.md
+          - Style guide: recsys-eval/docs/style.md
+          - Roadmap: recsys-eval/docs/roadmap.md
       - recsys-pipelines:
           - recsys-pipelines/docs/index.md
           - Overview: recsys-pipelines/overview.md
@@ -245,111 +359,32 @@ nav:
                   - Validation failed: recsys-pipelines/docs/operations/runbooks/validation-failed.md
                   - Limit exceeded: recsys-pipelines/docs/operations/runbooks/limit-exceeded.md
                   - Stale artifacts: recsys-pipelines/docs/operations/runbooks/stale-artifacts.md
+
           - Contributing:
               - Dev workflow: recsys-pipelines/docs/contributing/dev-workflow.md
               - Style guide: recsys-pipelines/docs/contributing/style.md
               - Releasing: recsys-pipelines/docs/contributing/releasing.md
-          - ADRs:
-              - ADR index: recsys-pipelines/docs/adr/README.md
-              - Template: recsys-pipelines/docs/adr/template.md
-
-  - Start:
-      - Home: index.md
-      - Start here: start-here/index.md
-      - Developers: developers/index.md
-      - RecSys engineering (start here): start-here/receng.md
-      - Docs map: start-here/docs-map.md
-      - What is RecSys?: start-here/what-is-recsys.md
-      - FAQ: start-here/faq.md
-      - Known limitations: start-here/known-limitations.md
-      - Repo layout & module paths: start-here/repo-layout.md
-      - Choose your data mode: start-here/choose-data-mode.md
-      - Deployment shapes: start-here/deployment-shapes.md
-      - Minimum components by goal: start-here/minimum-components-by-goal.md
-      - Security/privacy/compliance: start-here/security-privacy-compliance.md
-
-  - Tutorials:
-      - tutorials/index.md
-      - Quickstart (10 minutes): tutorials/quickstart.md
-      - Local end-to-end: tutorials/local-end-to-end.md
-      - Production-like run: tutorials/production-like-run.md
-      - Minimal pilot (DB-only): tutorials/minimal-pilot-db-only.md
-      - Tiny dataset: tutorials/datasets/tiny/README.md
-
-  - How-to:
-      - how-to/index.md
-      - First surface end-to-end: how-to/first-surface-end-to-end.md
-      - Integrate serving API: how-to/integrate-recsys-service.md
-      - Integration spec: developers/integration-spec.md
-      - Integration checklist: how-to/integration-checklist.md
-      - Integration cookbooks:
-          - how-to/integration-cookbooks/index.md
-          - Webshop: how-to/integration-cookbooks/webshop.md
-          - Content feed: how-to/integration-cookbooks/content-feed.md
-          - Event bus: how-to/integration-cookbooks/event-bus.md
-      - Operate pipelines: how-to/operate-pipelines.md
-      - Add a signal end-to-end: how-to/add-signal-end-to-end.md
-      - Run eval & ship decisions: how-to/run-eval-and-ship.md
-      - Deploy with Helm: how-to/deploy-helm.md
-
-  - Reference:
-      - reference/index.md
-      - Auth & tenancy: reference/auth-and-tenancy.md
-      - API:
-          - reference/api/api-reference.md
-          - Examples: reference/api/examples.md
-          - Errors & troubleshooting: reference/api/errors.md
-          - Admin & bootstrap: reference/api/admin.md
-      - Data contracts:
-          - reference/data-contracts/index.md
-          - Minimum instrumentation: reference/minimum-instrumentation.md
-          - Eval events: reference/data-contracts/eval-events.md
-          - Event join logic: reference/data-contracts/join-logic.md
-          - Field catalog: reference/data-contracts/field-catalog.md
-      - Config:
-          - reference/config/index.md
-          - recsys-service: reference/config/recsys-service.md
-          - recsys-eval: reference/config/recsys-eval.md
-          - recsys-pipelines: reference/config/recsys-pipelines.md
-      - Database:
-          - reference/database/index.md
-          - Schema: reference/database/schema.md
-          - Migrations: reference/database/migrations.md
-          - DB-only seeding: reference/database/db-only-seeding.md
-      - CLI:
-          - reference/cli/index.md
-          - recsys-eval: reference/cli/recsys-eval.md
-          - recsys-pipelines: reference/cli/recsys-pipelines.md
-
-  - Explanation:
-      - explanation/index.md
-      - How it works: explanation/how-it-works.md
-      - Capability matrix: explanation/capability-matrix.md
-      - Suite architecture: explanation/suite-architecture.md
-      - Data modes: explanation/data-modes.md
-      - Exposure logging & attribution: explanation/exposure-logging-and-attribution.md
-      - Candidate vs ranking: explanation/candidate-vs-ranking.md
-      - Experimentation model: explanation/experimentation-model.md
-      - More concepts:
-          - Cold start strategies: explanation/cold-start-strategies.md
-          - Artifacts & manifest lifecycle: explanation/artifacts-and-manifest-lifecycle.md
-          - Pipelines operational invariants: explanation/pipelines-operational-invariants.md
-          - Surface namespaces: explanation/surface-namespaces.md
-      - Diagrams:
-          - Suite context diagram: start-here/diagrams/suite-context.md
 
   - Project:
       - project/index.md
-      - What's new: whats-new/index.md
-      - Support: project/support.md
-      - Security: project/security.md
       - Glossary: project/glossary.md
-      - Docs style guide: project/docs-style.md
       - Message map: project/message-map.md
-      - Docs versioning: project/docs-versioning.md
-      - Docs per release: project/docs-per-release.md
+      - Support model: project/support.md
+      - Security policy: project/security.md
       - Governance: project/governance.md
       - Contributing: project/contributing.md
-      - Code of Conduct: project/code_of_conduct.md
-      - License Directory Notes: project/licenses_readme.md
-      - Tags: tags.md
+      - Code of conduct: project/code_of_conduct.md
+      - Docs style guide: project/docs-style.md
+      - Documentation quality gates: project/docs-quality-gates.md
+      - Persona journey tests and scoring rubric: project/persona-journey-tests.md
+      - Linking and naming style reference: project/linking-style.md
+      - Canonical content map: project/canonical-map.md
+      - Docs templates: project/docs-templates.md
+      - Docs per release policy: project/docs-per-release.md
+      - Docs versioning: project/docs-versioning.md
+      - Licenses readme: project/licenses_readme.md
+
+  - What's new:
+      - whats-new/index.md
+
+  - Tags: tags.md

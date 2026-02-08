@@ -1,4 +1,5 @@
 ---
+diataxis: explanation
 tags:
   - explanation
   - artifacts
@@ -7,8 +8,9 @@ tags:
   - recsys-pipelines
   - recsys-service
 ---
-
 # Artifacts and manifest lifecycle (pipelines → service)
+This page explains Artifacts and manifest lifecycle (pipelines → service) and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -108,6 +110,6 @@ Operationally:
 
 ## Read next
 
-- Tutorial (ship + rollback): [`tutorials/production-like-run.md`](../tutorials/production-like-run.md)
-- Data modes (DB-only vs artifact/manifest): [`explanation/data-modes.md`](data-modes.md)
-- Pipelines rollback guide: [`recsys-pipelines/docs/how-to/rollback-manifest.md`](../recsys-pipelines/docs/how-to/rollback-manifest.md)
+- Tutorial (ship + rollback): [production-like run (pipelines → object store → ship/rollback)](../tutorials/production-like-run.md)
+- Data modes (DB-only vs artifact/manifest): [Data modes: DB-only vs artifact/manifest](data-modes.md)
+- Pipelines rollback guide: [How-to: Roll back to a previous artifact version](../recsys-pipelines/docs/how-to/rollback-manifest.md)

@@ -1,4 +1,8 @@
-
+---
+diataxis: how-to
+tags:
+  - recsys-pipelines
+---
 # How-to: Add a new artifact type
 
 This repo uses ports/adapters and a workflow pipeline.
@@ -37,8 +41,8 @@ This repo uses ports/adapters and a workflow pipeline.
 
 ## Read next
 
-- Suite how-to (signal end-to-end): [`how-to/add-signal-end-to-end.md`](../../../how-to/add-signal-end-to-end.md)
-- Start here: [`start-here.md`](../start-here.md)
-- Artifacts and versioning: [`explanation/artifacts-and-versioning.md`](../explanation/artifacts-and-versioning.md)
-- Artifact schemas: [`reference/schemas-artifacts.md`](../reference/schemas-artifacts.md)
-- Output layout: [`reference/output-layout.md`](../reference/output-layout.md)
+- Suite how-to (signal end-to-end): [How-to: add a new signal end-to-end](../../../how-to/add-signal-end-to-end.md)
+- Start here: [Start here](../start-here.md)
+- Artifacts and versioning: [Artifacts and versioning](../explanation/artifacts-and-versioning.md)
+- Artifact schemas: [Artifact schemas](../reference/schemas-artifacts.md)
+- Output layout: [Output layout (local filesystem)](../reference/output-layout.md)

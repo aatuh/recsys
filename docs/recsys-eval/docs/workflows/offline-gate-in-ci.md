@@ -1,12 +1,14 @@
 ---
+diataxis: explanation
 tags:
   - how-to
   - evaluation
   - ops
   - recsys-eval
 ---
-
 # Workflow: Offline gate in CI
+This page explains Workflow: Offline gate in CI and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -53,7 +55,7 @@ recsys-eval run \
 
 ## Read next
 
-- CI gates (details + exit codes): [`recsys-eval/docs/ci_gates.md`](../ci_gates.md)
-- Metrics reference: [`recsys-eval/docs/metrics.md`](../metrics.md)
-- Interpreting results: [`recsys-eval/docs/interpreting_results.md`](../interpreting_results.md)
-- Suite workflow: [`how-to/run-eval-and-ship.md`](../../../how-to/run-eval-and-ship.md)
+- CI gates (details + exit codes): [CI gates: using recsys-eval in automation](../ci_gates.md)
+- Metrics reference: [Metrics: what we measure and why](../metrics.md)
+- Interpreting results: [Interpreting results: how to go from report to decision](../interpreting_results.md)
+- Suite workflow: [How-to: run evaluation and make ship decisions](../../../how-to/run-eval-and-ship.md)

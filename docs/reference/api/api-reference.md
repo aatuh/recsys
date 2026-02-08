@@ -1,20 +1,20 @@
 ---
+diataxis: reference
 tags:
   - reference
   - api
   - developer
   - recsys-service
 ---
-
 # API Reference
 
 This page is the **integration hub** for `recsys-service`:
 
-- Full schema: [`openapi.yaml`](openapi.yaml)
-- Practical examples: [`examples.md`](examples.md)
-- Error handling & troubleshooting: [`errors.md`](errors.md)
-- Admin/control-plane + local bootstrap: [`admin.md`](admin.md)
-- Auth & tenancy: [`reference/auth-and-tenancy.md`](../auth-and-tenancy.md)
+- Full schema: [OpenAPI spec (YAML)](openapi.yaml)
+- Practical examples: [API examples (HTTP files)](examples.md)
+- Error handling & troubleshooting: [Error handling & troubleshooting API calls](errors.md)
+- Admin/control-plane + local bootstrap: [Admin API + local bootstrap (recsys-service)](admin.md)
+- Auth & tenancy: [Auth and tenancy reference](../auth-and-tenancy.md)
 
 ## Who this is for
 
@@ -26,14 +26,6 @@ This page is the **integration hub** for `recsys-service`:
 - The base URL and versioning conventions
 - A minimal request/response example you can run locally
 - Pointers to the canonical schema, examples, and error semantics
-
-## Used by
-
-- Quickstart (10 minutes): [`tutorials/quickstart.md`](../../tutorials/quickstart.md)
-- Integrate serving API: [`how-to/integrate-recsys-service.md`](../../how-to/integrate-recsys-service.md)
-- First surface end-to-end: [`how-to/first-surface-end-to-end.md`](../../how-to/first-surface-end-to-end.md)
-- Integration spec (headers/tenancy): [`developers/integration-spec.md`](../../developers/integration-spec.md)
-- Integration checklist: [`how-to/integration-checklist.md`](../../how-to/integration-checklist.md)
 
 ## Base URL and versioning
 
@@ -50,8 +42,8 @@ The service supports:
 - `Authorization: Bearer <token>` (JWT)
 - `X-API-Key: <key>` (API keys)
 
-Local development can also use dev headers (see [`admin.md`](admin.md)).
-For details (headers, claims, roles), see: [`reference/auth-and-tenancy.md`](../auth-and-tenancy.md).
+Local development can also use dev headers (see [Admin API + local bootstrap (recsys-service)](admin.md)).
+For details (headers, claims, roles), see: [Auth and tenancy reference](../auth-and-tenancy.md).
 
 Tenant scope:
 
@@ -62,7 +54,7 @@ Tenant scope:
 
 If you want the fastest path to a non-empty response, start with:
 
-- Tutorial: [`tutorials/quickstart.md`](../../tutorials/quickstart.md)
+- Tutorial: [Quickstart (10 minutes)](../../tutorials/quickstart.md)
 
 Example request (local dev headers):
 
@@ -121,3 +113,8 @@ Common status codes you should handle:
 ## Swagger UI
 
 <swagger-ui src="./openapi.yaml"/>
+
+## Read next
+
+- API examples: [API examples (HTTP files)](examples.md)
+- Errors: [Error handling & troubleshooting API calls](errors.md)

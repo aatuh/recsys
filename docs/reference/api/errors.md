@@ -1,4 +1,12 @@
+---
+diataxis: reference
+tags:
+  - reference
+  - api
+---
 # Error handling & troubleshooting API calls
+This page is the canonical reference for Error handling & troubleshooting API calls.
+
 
 ## Who this is for
 
@@ -44,8 +52,8 @@ server log line.
 - **401/403**: authentication/authorization/tenant scope failure
   - Check auth headers, tenant header (`X-Org-Id`), and role requirements for admin endpoints.
 - **404** (admin endpoints): tenant not found
-  - Tenant creation is DB-only today; see [`reference/api/admin.md`](admin.md) and
-    [`start-here/known-limitations.md`](../../start-here/known-limitations.md).
+  - Tenant creation is DB-only today; see [Admin API + local bootstrap (recsys-service)](admin.md) and
+    [Known limitations and non-goals (current)](../../start-here/known-limitations.md).
 - **409** (admin `PUT`): optimistic concurrency conflict
   - Fetch the latest resource, take its ETag, and retry with `If-Match`.
 - **422**: validation failure (semantically invalid request)
@@ -70,7 +78,7 @@ What to do first:
 1. Call `POST /v1/recommend/validate` with the same payload to surface normalization and warnings.
 2. Confirm tenant scope (JWT claims or `X-Org-Id` header).
 3. If you see empty results, use the “empty recs” runbook:
-   [`operations/runbooks/empty-recs.md`](../../operations/runbooks/empty-recs.md)
+   [Runbook: Empty recs](../../operations/runbooks/empty-recs.md)
 
 ### `POST /v1/recommend/validate`
 
@@ -92,7 +100,7 @@ Common pitfalls:
 - `409` on `PUT`: you updated with a stale version; retry with the latest `If-Match`
 - `404`: tenant does not exist (bootstrap is DB-first today)
 
-See: [`reference/api/admin.md`](admin.md)
+See: [Admin API + local bootstrap (recsys-service)](admin.md)
 
 ### Health endpoints (`GET /healthz`, `GET /readyz`)
 
@@ -100,4 +108,10 @@ See: [`reference/api/admin.md`](admin.md)
 - `/readyz` is a readiness probe (are dependencies reachable?)
 
 If `/readyz` returns `503`, use the “service not ready” runbook:
-[`operations/runbooks/service-not-ready.md`](../../operations/runbooks/service-not-ready.md)
+[Runbook: Service not ready](../../operations/runbooks/service-not-ready.md)
+
+## Read next
+
+- API reference: [API Reference](api-reference.md)
+- Admin API: [Admin API + local bootstrap (recsys-service)](admin.md)
+- Auth and tenancy: [Auth and tenancy reference](../auth-and-tenancy.md)

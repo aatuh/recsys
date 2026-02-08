@@ -1,4 +1,12 @@
+---
+diataxis: reference
+tags:
+  - reference
+  - data-contracts
+---
 # Event join logic (exposures ↔ outcomes ↔ assignments)
+This page is the canonical reference for Event join logic (exposures ↔ outcomes ↔ assignments).
+
 
 ## Who this is for
 
@@ -11,12 +19,6 @@
 - The exact join key used by `recsys-eval`
 - The invariants your logging must satisfy for valid attribution
 - A checklist to debug low join rates
-
-## Used by
-
-- Minimum instrumentation spec: [`reference/minimum-instrumentation.md`](../minimum-instrumentation.md)
-- Decision playbook (ship/hold/rollback): [`recsys-eval/docs/decision-playbook.md`](../../recsys-eval/docs/decision-playbook.md)
-- Run eval and ship decisions: [`how-to/run-eval-and-ship.md`](../../how-to/run-eval-and-ship.md)
 
 ## Mental model
 
@@ -109,6 +111,6 @@ group by surface;
 
 ## Read next
 
-- Data contracts hub: [`index.md`](index.md)
-- Exposure logging and attribution: [`explanation/exposure-logging-and-attribution.md`](../../explanation/exposure-logging-and-attribution.md)
-- Eval events schemas: [`eval-events.md`](eval-events.md)
+- Data contracts hub: [Data contracts](index.md)
+- Exposure logging and attribution: [Exposure logging and attribution](../../explanation/exposure-logging-and-attribution.md)
+- Eval events schemas: [recsys-eval event schemas (v1)](eval-events.md)

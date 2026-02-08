@@ -1,5 +1,12 @@
-
+---
+diataxis: how-to
+tags:
+  - recsys-pipelines
+  - runbook
+---
 # Runbook: Stale artifacts
+This guide shows how to runbook: Stale artifacts in a reliable, repeatable way.
+
 
 ## Symptoms
 
@@ -21,7 +28,7 @@ See `how-to/run-backfill.md`.
 
 ## Read next
 
-- SLOs and freshness: [`operations/slos-and-freshness.md`](../slos-and-freshness.md)
-- Schedule pipelines: [`how-to/schedule-pipelines.md`](../../how-to/schedule-pipelines.md)
-- Pipeline failed runbook: [`operations/runbooks/pipeline-failed.md`](pipeline-failed.md)
-- Roll back artifacts safely: [`how-to/rollback-safely.md`](../../how-to/rollback-safely.md)
+- SLOs and freshness: [SLOs and freshness](../slos-and-freshness.md)
+- Schedule pipelines: [How-to: Schedule pipelines with CronJob](../../how-to/schedule-pipelines.md)
+- Pipeline failed runbook: [Runbook: Pipeline failed](pipeline-failed.md)
+- Roll back artifacts safely: [How-to: Roll back artifacts safely](../../how-to/rollback-safely.md)

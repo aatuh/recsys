@@ -1,4 +1,8 @@
-
+---
+diataxis: explanation
+tags:
+  - recsys-pipelines
+---
 # Releasing
 
 This repo includes a `CHANGELOG.md` and uses tags for releases.
@@ -16,7 +20,7 @@ make build
 
 ## Read next
 
-- Developer workflow: [`contributing/dev-workflow.md`](dev-workflow.md)
-- ADR index: [`adr/README.md`](../adr/README.md)
-- Pipelines docs index: [`docs/index.md`](../index.md)
-- Start here: [`start-here.md`](../start-here.md)
+- Developer workflow: [Developer workflow](dev-workflow.md)
+- ADR index: [Architecture Decision Records (ADR)](../adr/README.md)
+- Pipelines docs index: [recsys-pipelines docs](../index.md)
+- Start here: [Start here](../start-here.md)

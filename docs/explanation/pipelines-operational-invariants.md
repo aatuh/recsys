@@ -1,12 +1,14 @@
 ---
+diataxis: explanation
 tags:
   - explanation
   - ops
   - pipelines
   - recsys-pipelines
 ---
-
 # Pipelines operational invariants (safety model)
+This page explains Pipelines operational invariants (safety model) and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -71,6 +73,6 @@ Operational consequence: rollback is fast and does not require re-computing arti
 
 ## Read next
 
-- Artifacts + manifest lifecycle: [`explanation/artifacts-and-manifest-lifecycle.md`](artifacts-and-manifest-lifecycle.md)
-- Pipelines output layout (registry paths): [`recsys-pipelines/docs/reference/output-layout.md`](../recsys-pipelines/docs/reference/output-layout.md)
-- Roll back the manifest: [`recsys-pipelines/docs/how-to/rollback-manifest.md`](../recsys-pipelines/docs/how-to/rollback-manifest.md)
+- Artifacts + manifest lifecycle: [Artifacts and manifest lifecycle (pipelines → service)](artifacts-and-manifest-lifecycle.md)
+- Pipelines output layout (registry paths): [Output layout (local filesystem)](../recsys-pipelines/docs/reference/output-layout.md)
+- Roll back the manifest: [How-to: Roll back to a previous artifact version](../recsys-pipelines/docs/how-to/rollback-manifest.md)

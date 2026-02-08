@@ -1,10 +1,12 @@
 ---
+diataxis: explanation
 tags:
   - overview
   - business
 ---
-
 # For businesses (buyers and stakeholders)
+Buyer-first entry point: outcomes, evaluation evidence, and procurement-ready artifacts.
+
 
 ## Who this is for
 
@@ -18,15 +20,15 @@ tags:
 - The minimum requirements to run a credible pilot (data + people)
 - The trust story: security, operations, rollback, and how decisions are audited
 
---8<-- "_snippets/key-terms.list.snippet"
---8<-- "_snippets/key-terms.defs.one-up.snippet"
-
 ## Buyer journey (2 minutes)
 
 Prefer a single shareable page:
 
 - Buyer journey (5-minute path): [Buyer journey](buyer-journey.md)
+- Self-serve procurement (minimum requests): [Self-serve procurement](self-serve-procurement.md)
 - Procurement pack (Security/Legal/IT/Finance): [Procurement pack](procurement-pack.md)
+- Procurement checklist (Definition of Done): [Procurement checklist](procurement-checklist.md)
+- Final go/no-go review: [Decision readiness matrix](decision-readiness.md)
 
 1. [What is RecSys?](../start-here/what-is-recsys.md) — outcomes, positioning, and where it fits.
 2. [Pilot plan (2–6 weeks)](../start-here/pilot-plan.md) — timeline, deliverables, and exit criteria.
@@ -41,8 +43,8 @@ Prefer a single shareable page:
 
 - **[Evidence (example logs + report excerpt)](evidence.md)**  
   What “good outputs” look like (response, exposure log, joined outcomes, report snippet).
-- **[Baseline benchmarks](../operations/baseline-benchmarks.md)**  
-  Reproducible “anchor numbers” and a template to record your own runs.
+- **[Benchmarks methodology](benchmarks.md)**  
+  How to run comparable benchmarks and record results. See also: [Baseline benchmarks](../operations/baseline-benchmarks.md).
 - **[Security pack](../security/security-pack.md)**  
   The artifacts a security review expects (posture, logging, and data handling).
 - **[Known limitations](../start-here/known-limitations.md)**  
@@ -54,16 +56,27 @@ Prefer a single shareable page:
 
 <div class="grid cards" markdown>
 
+- **[Executive summary](executive-summary.md)**  
+  One-page overview: outcomes, scope, requirements, and next steps.
+
 - **[Buyer journey (5-minute path)](buyer-journey.md)**  
   The recommended “what to read, in order” path you can forward to stakeholders.
 - **[Procurement pack](procurement-pack.md)**  
   Role-based checklist (Security/Legal/IT/Finance) with canonical links only.
+- **[Self-serve procurement](self-serve-procurement.md)**  
+  The shortest path for Commercial Evaluation/Starter/Growth procurement.
+- **[Decision readiness matrix](decision-readiness.md)**  
+  One-page go/no-go matrix for legal, security, support, pricing, and fit.
 - **[What is RecSys?](../start-here/what-is-recsys.md)**  
   What you get, where it fits, and what outcomes to expect.
 - **[Pilot plan (2–6 weeks)](../start-here/pilot-plan.md)**  
   Timeline, deliverables, and exit criteria (includes a fast 2–4 week path).
 - **[ROI and risk model](../start-here/roi-and-risk-model.md)**  
   A simple template for lift measurement, guardrails, and ownership boundaries.
+- **[TCO & effort](tco-and-effort.md)**  
+  Work package breakdown and planning checklist.
+- **[Alternatives & build vs buy](alternatives.md)**  
+  Decision framework and fit boundaries.
 - **[Operational reliability & rollback](../start-here/operational-reliability-and-rollback.md)**  
   What can be rolled back, how fast, and what “healthy” means in production.
 - **[Security, privacy, compliance](../start-here/security-privacy-compliance.md)**  
@@ -97,3 +110,5 @@ Start here:
 - Use cases (what to start with): [Use cases](use-cases.md)
 - Success metrics (KPIs + guardrails): [Success metrics](success-metrics.md)
 - Evaluation, pricing, and licensing (buyer guide): [Buyer guide](../pricing/evaluation-and-licensing.md)
+- One-request procurement path: [Self-serve procurement](self-serve-procurement.md)
+- Final review before purchase: [Decision readiness matrix](decision-readiness.md)

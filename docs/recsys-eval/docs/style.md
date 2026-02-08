@@ -1,49 +1,30 @@
-# Documentation style guide
+---
+diataxis: reference
+tags:
+  - recsys-eval
+  - docs
+  - reference
+---
+# Docs style (recsys-eval)
 
-This documentation is written to be:
+This module follows the **suite-wide** documentation style guide.
 
-- human-friendly
-- practical and runnable
-- honest about uncertainty
-- consistent across files
+- Canonical guide: [Documentation style guide](../../project/docs-style.md)
 
-## Voice
+## Module-specific conventions
 
-- Use "you" and "we".
-- Prefer concrete examples over theory.
-- Define terms the first time they appear.
-- Avoid jargon unless it buys precision.
+Keep module-specific conventions short and avoid duplicating suite rules.
 
-## Structure
+### Terminology (used throughout recsys-eval)
 
-Every doc starts with:
-
-- Who this is for
-- What you will get
-
-Every doc contains:
-
-- Examples (commands or JSON)
-- Common pitfalls
-
-## Line width and typography
-
-- Keep lines reasonably short (about 80-100 chars).
-- Use plain ASCII characters in code and examples.
-
-## Terminology
-
-Use these consistently:
-
-- "exposure": what was shown (ranked list)
-- "outcome": what the user did after exposure
-- "assignment": experiment bucket (control vs candidate)
-- "segment": a slice like tenant+surface+device
-- "guardrail": a metric that must not regress
-
-Generated: 2026-01-27
+- **exposure**: what was shown (ranked list)
+- **outcome**: what the user did after exposure
+- **assignment**: experiment bucket (control vs candidate)
+- **segment**: a slice like tenant+surface+device
+- **guardrail**: a metric that must not regress
 
 ## Read next
 
-- Suite docs style guide: [`project/docs-style.md`](../../project/docs-style.md)
-- recsys-eval docs index: [`recsys-eval/docs/index.md`](index.md)
+- recsys-eval docs index: [recsys-eval docs](index.md)
+- Docs quality gates: [Documentation quality gates](../../project/docs-quality-gates.md)
+- Glossary (suite): [Glossary](../../project/glossary.md)

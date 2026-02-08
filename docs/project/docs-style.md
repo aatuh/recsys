@@ -1,9 +1,9 @@
 ---
+diataxis: reference
 tags:
   - project
   - docs
 ---
-
 # Documentation style guide
 
 This repository follows the following structure:
@@ -15,18 +15,17 @@ This repository follows the following structure:
 
 ## Scope
 
-These rules apply to **suite-level docs** under `docs/` (the MkDocs site).
+This is the **canonical** style guide for the entire RecSys documentation set rendered by MkDocs:
 
-Module docs may have their own style guides and can deviate when that improves clarity:
+- suite-level docs under `docs/`
+- module docs included in the same site (for example `docs/recsys-eval/docs/` and `docs/recsys-pipelines/docs/`)
 
-- `docs/recsys-eval/docs/` (see `docs/recsys-eval/docs/style.md`)
-- `docs/recsys-pipelines/docs/` (see `docs/recsys-pipelines/docs/contributing/style.md`)
-- `docs/recsys-algo/`
+If a module needs a module-specific convention, document it **briefly** on the module page and link back here. Avoid duplicating rules.
 
 ## Writing rules
 
 - Prefer short sections and explicit headings.
-- Use consistent terminology (see [`glossary.md`](glossary.md)).
+- Use consistent terminology (see [Glossary](glossary.md)).
 - Use consistent product naming and capitalization (see "Naming" below).
 - Always include:
   - prerequisites
@@ -34,6 +33,17 @@ Module docs may have their own style guides and can deviate when that improves c
   - examples and sample outputs (when applicable)
 - Prefer relative links inside `/docs`.
 - Avoid linking to repository paths that do not exist in the rendered MkDocs site.
+
+
+## Page skeleton
+
+For narrative pages (tutorials, how-to guides, explanations, and persona hubs):
+
+- Start with **Who this is for** and **What you will get**.
+- Keep the intro short (2–5 sentences).
+- Use headings that read like decisions or actions.
+- Prefer lists over long paragraphs.
+- Add callouts when a mistake is costly (privacy, production, irreversible changes).
 
 ## Voice and tone
 
@@ -51,8 +61,7 @@ Tags are:
 
 - **Required** for suite-level narrative pages under `docs/` (tutorials, how-to guides, explanations, hub pages,
   business/procurement docs).
-- **Optional** for deep reference pages and module docs, especially when another style guide already applies
-  (see "Scope" above).
+- **Optional** for deep reference pages and module docs.
 
 Add tags as YAML front matter at the top of a page:
 
@@ -149,10 +158,11 @@ paragraph and link to the canonical buyer guide, then go straight into the conte
 
 ## Copy/paste templates
 
+For a ready-to-copy set of templates, see: [Docs templates](docs-templates.md)
+
 Use these skeletons for new suite-level pages. Keep headings consistent so readers can scan quickly.
 
-<details markdown="1">
-<summary>Tutorial skeleton</summary>
+### Tutorial skeleton
 
 ```md
 # Title
@@ -172,10 +182,7 @@ Use these skeletons for new suite-level pages. Keep headings consistent so reade
 ## Read next
 ```
 
-</details>
-
-<details markdown="1">
-<summary>How-to skeleton</summary>
+### How-to skeleton
 
 ```md
 # How-to: Title
@@ -195,10 +202,7 @@ Use these skeletons for new suite-level pages. Keep headings consistent so reade
 ## Read next
 ```
 
-</details>
-
-<details markdown="1">
-<summary>Explanation skeleton</summary>
+### Explanation skeleton
 
 ```md
 # Title
@@ -214,10 +218,7 @@ Use these skeletons for new suite-level pages. Keep headings consistent so reade
 ## Read next
 ```
 
-</details>
-
-<details markdown="1">
-<summary>Reference skeleton</summary>
+### Reference skeleton
 
 ```md
 # Title
@@ -232,8 +233,6 @@ Use these skeletons for new suite-level pages. Keep headings consistent so reade
 
 ## Read next
 ```
-
-</details>
 
 ## Markdown conventions
 
@@ -254,7 +253,7 @@ These are the checks we run on docs changes:
 
 ## Glossary linking
 
-- Add new suite terms to [`glossary.md`](glossary.md) (so we don’t define the same thing in five places).
+- Add new suite terms to [Glossary](glossary.md) (so we don’t define the same thing in five places).
 - On first mention in a page, link glossary terms to the relevant entry (for example: `glossary.md#manifest`).
 - Avoid over-linking: link once per page/section unless repetition prevents scanning.
 
@@ -262,6 +261,8 @@ These are the checks we run on docs changes:
 
 When a concept is used across multiple pages (pricing, licensing, security posture, core definitions), use a single
 canonical page and link to it elsewhere.
+
+See: [Canonical content map](canonical-map.md).
 
 Rules:
 
@@ -295,7 +296,56 @@ Use this as a PR checklist when changing the HTTP API or its docs.
   - at least one success example
   - the common errors for that endpoint (e.g. 400/401/403/404/409/429)
 - Errors are consistent: use Problem Details (RFC 7807) and document new problem types in
-  [`reference/api/errors.md`](../reference/api/errors.md).
+  [Error handling & troubleshooting API calls](../reference/api/errors.md).
 - Auth expectations are explicit: what headers/claims are required (dev headers vs JWT).
-- The “happy path” is copy/paste runnable: examples in [`reference/api/examples.md`](../reference/api/examples.md)
+- The “happy path” is copy/paste runnable: examples in [API examples (HTTP files)](../reference/api/examples.md)
   match the schema and response shapes in OpenAPI.
+
+## Tag taxonomy
+
+Tags are for discovery and filtering. Prefer **few and consistent** tags.
+
+Recommended stable tags:
+
+- **Diátaxis**: `tutorial`, `how-to`, `reference`, `explanation`
+- **Personas**: `developer`, `business`, `ops`, `recsys-engineering`, `technical-writer`
+- **Modules**: `recsys-algo`, `recsys-eval`, `recsys-pipelines`, `recsys-service`
+- **Topics**: `integration`, `security`, `privacy`, `pricing`, `runbook`, `checklist`, `api`, `database`
+
+Rules:
+
+- Keep tags lowercase and hyphenated.
+- Avoid synonyms (`ops` vs `operations`): pick one and stick to it.
+- Prefer tagging a page rather than duplicating content.
+
+## Docs QA checklist
+
+Before merging documentation changes, ensure:
+
+- [ ] One clear H1 per page
+- [ ] No truncated link labels (avoid `...` in visible text)
+- [ ] Links are relative (within docs) and not broken
+- [ ] Code blocks have language fences where applicable
+- [ ] Every tutorial has:
+  - [ ] prerequisites
+  - [ ] steps
+  - [ ] definition of done
+  - [ ] troubleshooting or failure matrix
+- [ ] Every page has tags and a “Read next” section (unless explicitly exempted)
+
+## No truncation and link hygiene
+
+- Do not use truncated labels like `chatgpt.com/g/...` in visible link text.
+- Prefer descriptive labels (e.g., “Recsys Copilot”) and keep full URLs only in the link target.
+
+## Docs contribution workflow
+
+When contributing docs:
+
+1. Update the relevant Markdown page(s).
+2. Run a local build (or CI) to catch broken links.
+3. Ensure the nav still makes sense (no page-hunting).
+4. Add or update “Read next” links to keep journeys cohesive.
+
+See: [Contributing](contributing.md)
+

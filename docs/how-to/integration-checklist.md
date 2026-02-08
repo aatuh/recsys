@@ -1,4 +1,5 @@
 ---
+diataxis: how-to
 tags:
   - how-to
   - integration
@@ -6,8 +7,9 @@ tags:
   - evaluation
   - security
 ---
-
 # How-to: Integration checklist (one surface)
+This guide shows how to how-to: Integration checklist (one surface) in a reliable, repeatable way.
+
 
 ## Who this is for
 
@@ -25,7 +27,7 @@ produce a first report.
 
 !!! info "Canonical spec"
     For the request/response + logging contract (headers, tenant scope, `request_id` rules), see:
-    [`developers/integration-spec.md`](../developers/integration-spec.md).
+    [Integration spec (one surface)](../reference/integration-spec.md).
 
 ## Checklist
 
@@ -40,7 +42,7 @@ produce a first report.
 - [ ] Production: disable dev headers (`DEV_AUTH_ENABLED=false`) and use JWT and/or API keys.
 - [ ] Tenant scope comes from trusted auth claims (`AUTH_TENANT_CLAIMS`) or a trusted gateway (no “user-supplied” tenant).
 
-Reference: [`reference/auth-and-tenancy.md`](../reference/auth-and-tenancy.md)
+Reference: [Auth and tenancy reference](../reference/auth-and-tenancy.md)
 
 ### 3) Request contract (recommend)
 
@@ -61,14 +63,14 @@ Reference: [`reference/auth-and-tenancy.md`](../reference/auth-and-tenancy.md)
 - [ ] Ensure every record includes `tenant_id` and `surface` (in context fields or top-level fields, depending on schema).
 - [ ] Validate logs against schemas before computing metrics.
 
-Reference: [`reference/data-contracts/index.md`](../reference/data-contracts/index.md)
+Reference: [Data contracts](../reference/data-contracts/index.md)
 
 ### 6) Evaluation readiness
 
 - [ ] Join-rate is not near-zero (broken joins invalidate metrics).
 - [ ] You can produce at least one report that compares baseline vs candidate.
 
-Start here: [`how-to/run-eval-and-ship.md`](run-eval-and-ship.md)
+Start here: [How-to: run evaluation and make ship decisions](run-eval-and-ship.md)
 
 ### 7) Operational behavior (minimum)
 
@@ -76,7 +78,7 @@ Start here: [`how-to/run-eval-and-ship.md`](run-eval-and-ship.md)
 - [ ] Decide retry behavior to avoid double-counting downstream events.
 - [ ] Practice one rollback drill (config/rules and/or manifest pointer).
 
-Start here: [`start-here/operational-reliability-and-rollback.md`](../start-here/operational-reliability-and-rollback.md)
+Start here: [Operational reliability and rollback](../start-here/operational-reliability-and-rollback.md)
 
 ## Minimal integration example (copy/paste)
 
@@ -135,6 +137,8 @@ curl -fsS http://localhost:8000/v1/recommend \
 
 ## Read next
 
-- Run eval and ship decisions: [`how-to/run-eval-and-ship.md`](run-eval-and-ship.md)
-- Data contracts (schemas + examples): [`reference/data-contracts/index.md`](../reference/data-contracts/index.md)
-- Exposure logging & attribution: [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)
+- Integrate service: [How-to: integrate recsys-service into an application](integrate-recsys-service.md)
+- Quickstart tutorial: [Quickstart (10 minutes)](../tutorials/quickstart.md)
+- Data contracts: [Data contracts](../reference/data-contracts/index.md)
+- Failure modes & diagnostics: [Failure modes & diagnostics (baseline)](../operations/failure-modes.md)
+- Run eval and ship: [How-to: run evaluation and make ship decisions](run-eval-and-ship.md)

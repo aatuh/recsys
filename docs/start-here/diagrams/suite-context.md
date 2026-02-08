@@ -1,11 +1,13 @@
 ---
+diataxis: explanation
 tags:
   - explanation
   - architecture
   - overview
 ---
-
 # Suite Context
+This page explains Suite Context and how it fits into the RecSys suite.
+
 
 ```mermaid
 flowchart LR
@@ -22,3 +24,7 @@ flowchart LR
   V --> D[Decision]
   D --> S
 ```
+
+## Read next
+
+- Start here: [Start here](../index.md)

@@ -1,12 +1,14 @@
 ---
+diataxis: how-to
 tags:
   - how-to
   - integration
   - developer
   - recsys-service
 ---
-
 # Cookbook: integrate with a content feed
+This guide shows how to cookbook: integrate with a content feed in a reliable, repeatable way.
+
 
 ## Who this is for
 
@@ -77,5 +79,6 @@ metric trends become incomparable).
 
 ## Read next
 
-- Exposure logging & attribution: [`explanation/exposure-logging-and-attribution.md`](../../explanation/exposure-logging-and-attribution.md)
-- Event join logic: [`reference/data-contracts/join-logic.md`](../../reference/data-contracts/join-logic.md)
+- Exposure logging & attribution: [Exposure logging and attribution](../../explanation/exposure-logging-and-attribution.md)
+- Event join logic: [Event join logic (exposures ↔ outcomes ↔ assignments)](../../reference/data-contracts/join-logic.md)
+- Run evaluation and decide ship/hold/rollback: [How-to: run evaluation and make ship decisions](../run-eval-and-ship.md)

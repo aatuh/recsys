@@ -1,12 +1,14 @@
 ---
+diataxis: reference
 tags:
   - reference
   - data-contracts
   - developer
   - evaluation
 ---
-
 # Field catalog (evaluation events)
+This page is the canonical reference for Field catalog (evaluation events).
+
 
 ## Who this is for
 
@@ -18,16 +20,11 @@ tags:
 - A quick catalog of the most important fields (what they mean and why they matter)
 - Pointers to the strict schemas and JSONL examples
 
-## Used by
-
-- Minimum instrumentation spec: [`reference/minimum-instrumentation.md`](../minimum-instrumentation.md)
-- Integration checklist: [`how-to/integration-checklist.md`](../../how-to/integration-checklist.md)
-
 ## Reference
 
 The canonical strict schemas and JSONL examples live here:
 
-- [`reference/data-contracts/eval-events.md`](eval-events.md)
+- [recsys-eval event schemas (v1)](eval-events.md)
 
 ### `exposure.v1` (what was shown)
 
@@ -89,6 +86,6 @@ Minimal `exposure.v1` line:
 
 ## Read next
 
-- Strict schemas and examples: [`reference/data-contracts/eval-events.md`](eval-events.md)
-- Join rules and join-rate debugging: [`reference/data-contracts/join-logic.md`](join-logic.md)
-- Minimum instrumentation (practical checklist): [`reference/minimum-instrumentation.md`](../minimum-instrumentation.md)
+- Strict schemas and examples: [recsys-eval event schemas (v1)](eval-events.md)
+- Join rules and join-rate debugging: [Event join logic (exposures ↔ outcomes ↔ assignments)](join-logic.md)
+- Minimum instrumentation (practical checklist): [Minimum instrumentation spec (for credible evaluation)](../minimum-instrumentation.md)

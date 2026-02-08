@@ -1,11 +1,13 @@
 ---
+diataxis: reference
 tags:
   - reference
   - data-contracts
   - developer
 ---
-
 # Data contracts
+This page is the canonical reference for Data contracts.
+
 
 ## Who this is for
 
@@ -20,12 +22,6 @@ tags:
 - Minimal examples you can copy/paste
 - Where the canonical schemas live and how they are versioned
 
-## Used by
-
-- Integration checklist: [`how-to/integration-checklist.md`](../../how-to/integration-checklist.md)
-- First surface end-to-end: [`how-to/first-surface-end-to-end.md`](../../how-to/first-surface-end-to-end.md)
-- Run eval and ship decisions: [`how-to/run-eval-and-ship.md`](../../how-to/run-eval-and-ship.md)
-
 ## Overview: three contract families
 
 - **Evaluation events (for `recsys-eval`)**
@@ -37,12 +33,12 @@ tags:
 
 - **Serving logs (what the service emitted)**
   - Purpose: auditable “what was served” record.
-  - Canonical schema: [`exposures.schema.json`](exposures.schema.json)
+  - Canonical schema: [Exposure schema (JSON)](exposures.schema.json)
 
 - **Pipelines + artifacts (what pipelines consume/publish)**
   - Purpose: convert interactions into versioned artifacts and a manifest pointer.
-  - Interaction schema: [`interactions.schema.json`](interactions.schema.json)
-  - Manifest schema: [`artifacts/manifest.schema.json`](artifacts/manifest.schema.json)
+  - Interaction schema: [Interactions schema (JSON)](interactions.schema.json)
+  - Manifest schema: [Manifest schema (JSON)](artifacts/manifest.schema.json)
 
 ## Evaluation events (recsys-eval): what you must be able to produce
 
@@ -76,7 +72,7 @@ Tip: `recsys-service` can emit eval-compatible exposures directly. See “Servic
 This event shape is useful for auditability, debugging, and building derived datasets. It is **not** the same as the
 `recsys-eval` exposure schema (which is stricter and optimized for evaluation).
 
-Canonical schema: [`exposures.schema.json`](exposures.schema.json)
+Canonical schema: [Exposure schema (JSON)](exposures.schema.json)
 
 Minimal example:
 
@@ -96,7 +92,7 @@ Minimal example:
 
 This is the minimal “something happened” record used by pipelines.
 
-Canonical schema: [`interactions.schema.json`](interactions.schema.json)
+Canonical schema: [Interactions schema (JSON)](interactions.schema.json)
 
 Minimal example:
 
@@ -118,7 +114,7 @@ If you need reliable evaluation joins, produce `outcome.v1` for `recsys-eval` (i
 In artifact/manifest mode, pipelines publish artifacts and update a manifest pointer. The service reads the current
 manifest and fetches referenced blobs.
 
-Canonical schema: [`artifacts/manifest.schema.json`](artifacts/manifest.schema.json)
+Canonical schema: [Manifest schema (JSON)](artifacts/manifest.schema.json)
 
 Minimal example:
 
@@ -143,6 +139,6 @@ Minimal example:
 
 ## Read next
 
-- Exposure logging and attribution: [`explanation/exposure-logging-and-attribution.md`](../../explanation/exposure-logging-and-attribution.md)
-- How shipping/rollback ties to contracts: [`explanation/suite-architecture.md`](../../explanation/suite-architecture.md)
-- Data modes (DB-only vs artifact/manifest): [`explanation/data-modes.md`](../../explanation/data-modes.md)
+- Exposure logging and attribution: [Exposure logging and attribution](../../explanation/exposure-logging-and-attribution.md)
+- How shipping/rollback ties to contracts: [Suite architecture](../../explanation/suite-architecture.md)
+- Data modes (DB-only vs artifact/manifest): [Data modes: DB-only vs artifact/manifest](../../explanation/data-modes.md)

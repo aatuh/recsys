@@ -1,27 +1,23 @@
 ---
+diataxis: explanation
 tags:
   - quickstart
   - business
   - developer
 ---
-
 # Start here
 
 This site documents the **RecSys suite**: a production-ready set of modules for building, shipping, and operating a
 recommendation system.
 
-!!! info "Docs home"
-    If you want the docs overview and role-based entry points, start at
-    [Home](../index.md).
-
 ## Quick paths
 
 <div class="grid cards" markdown>
 
-- **[Quickstart (10 minutes)](../tutorials/quickstart.md)**  
+- **[Quickstart (minimal)](../tutorials/quickstart-minimal.md)**  
   Fastest path to a non-empty `POST /v1/recommend` + an exposure log.
-- **[Choose your data mode](choose-data-mode.md)**  
-  Decide DB-only vs artifact/manifest mode and jump to the right tutorial.
+- **[Minimum components by goal](minimum-components-by-goal.md)**  
+  Decide DB-only vs artifact/manifest mode and what you need to run.
 - **[Evaluation, pricing, and licensing (buyer guide)](../pricing/evaluation-and-licensing.md)**  
   Recommended evaluation path + procurement-ready links.
 
@@ -39,80 +35,75 @@ recommendation system.
 - Role-based entry points (lead dev, recsys engineer, stakeholder, SRE)
 - Links to the canonical contracts, API, and operational runbooks
 
---8<-- "_snippets/key-terms.list.snippet"
---8<-- "_snippets/key-terms.defs.one-up.snippet"
-
 ## Recommended path
 
 1. **Run the suite locally end-to-end**
-   - Tutorial: [`tutorials/local-end-to-end.md`](../tutorials/local-end-to-end.md)
-   - If you want the fastest possible first success: [`tutorials/quickstart.md`](../tutorials/quickstart.md)
-   - Optional: production-like artifacts + ship/rollback:
-     [`tutorials/production-like-run.md`](../tutorials/production-like-run.md)
+   - Tutorial: [local end-to-end (service → logging → eval)](../tutorials/local-end-to-end.md)
+   - If you want the fastest possible first success: [Quickstart (minimal)](../tutorials/quickstart-minimal.md)
+   - Optional: production-like artifacts + ship/rollback: [production-like run (pipelines → object store → ship/rollback)](../tutorials/production-like-run.md)
 
 2. **Understand the architecture and data flow**
-   - Diagram: [`start-here/diagrams/suite-context.md`](diagrams/suite-context.md)
-   - One-page mental model: [`explanation/how-it-works.md`](../explanation/how-it-works.md)
-   - Explanation: [`explanation/suite-architecture.md`](../explanation/suite-architecture.md)
-   - Repo layout: [`start-here/repo-layout.md`](repo-layout.md)
-   - Known limitations: [`start-here/known-limitations.md`](known-limitations.md)
+   - Diagram: [Suite Context](diagrams/suite-context.md)
+   - One-page mental model: [How it works: architecture and data flow](../explanation/how-it-works.md)
+   - Explanation: [Suite architecture](../explanation/suite-architecture.md)
+   - Repo layout: [Repo layout and Go module paths](repo-layout.md)
+   - Known limitations: [Known limitations and non-goals (current)](known-limitations.md)
 
 3. **Integrate, operate, and validate**
-   - Integrate the API: [`how-to/integrate-recsys-service.md`](../how-to/integrate-recsys-service.md)
-   - Operate pipelines: [`how-to/operate-pipelines.md`](../how-to/operate-pipelines.md)
-   - Run evaluation and ship decisions: [`how-to/run-eval-and-ship.md`](../how-to/run-eval-and-ship.md)
+   - Integrate the API: [How-to: integrate recsys-service into an application](../how-to/integrate-recsys-service.md)
+   - Operate pipelines: [How-to: operate recsys-pipelines](../how-to/operate-pipelines.md)
+   - Run evaluation and ship decisions: [How-to: run evaluation and make ship decisions](../how-to/run-eval-and-ship.md)
 
 ## Role-based entry points
 
 ### Lead developer / platform engineer
 
 - Suite architecture and contracts:
-  - [`explanation/suite-architecture.md`](../explanation/suite-architecture.md)
-  - Deployment shapes: [`start-here/deployment-shapes.md`](deployment-shapes.md)
-  - [`reference/data-contracts/index.md`](../reference/data-contracts/index.md)
-  - [`reference/config/index.md`](../reference/config/index.md)
-  - [`reference/api/openapi.yaml`](../reference/api/openapi.yaml)
-  - Security overview: [`start-here/security-privacy-compliance.md`](security-privacy-compliance.md)
+  - [Suite architecture](../explanation/suite-architecture.md)
+  - [Data contracts](../reference/data-contracts/index.md)
+  - [Configuration reference](../reference/config/index.md)
+  - [OpenAPI spec (YAML)](../reference/api/openapi.yaml)
+  - Security overview: [Security, privacy, and compliance (overview)](security-privacy-compliance.md)
 
 ### Recommendation engineer / ML engineer
 
-- Curated reading order:
-  - [`start-here/receng.md`](receng.md)
+Start here: [RecSys engineering hub](../recsys-engineering/index.md)
+
 - Ranking core:
-  - [`recsys-algo/index.md`](../recsys-algo/index.md)
+  - [recsys-algo](../recsys-algo/index.md)
 - Pipelines outputs:
-  - [`recsys-pipelines/docs/reference/output-layout.md`](../recsys-pipelines/docs/reference/output-layout.md)
+  - [Output layout (local filesystem)](../recsys-pipelines/docs/reference/output-layout.md)
 
 ### Product / business stakeholder
 
 - What the suite is and what it takes to pilot:
-  - [`start-here/what-is-recsys.md`](what-is-recsys.md)
-  - [`start-here/pilot-plan.md`](pilot-plan.md)
-  - [`start-here/roi-and-risk-model.md`](roi-and-risk-model.md)
-  - [`start-here/responsibilities.md`](responsibilities.md)
-  - [`start-here/operational-reliability-and-rollback.md`](operational-reliability-and-rollback.md)
-  - Security and privacy overview: [`start-here/security-privacy-compliance.md`](security-privacy-compliance.md)
-  - Licensing and pricing: [`licensing/index.md`](../licensing/index.md)
-  - Support model: [`project/support.md`](../project/support.md)
+  - [What the RecSys suite is (stakeholder overview)](what-is-recsys.md)
+  - [Pilot plan (2–6 weeks)](pilot-plan.md)
+  - [ROI and risk model](roi-and-risk-model.md)
+  - [Responsibilities (RACI): who owns what](responsibilities.md)
+  - [Operational reliability and rollback](operational-reliability-and-rollback.md)
+  - Security and privacy overview: [Security, privacy, and compliance (overview)](security-privacy-compliance.md)
+  - Licensing and pricing: [Licensing](../licensing/index.md)
+  - Support model: [Support](../project/support.md)
 
 - What to expect from evaluation and decisions:
-  - [`recsys-eval/docs/interpreting_results.md`](../recsys-eval/docs/interpreting_results.md)
-  - [`recsys-eval/docs/metrics.md`](../recsys-eval/docs/metrics.md)
+  - [Interpreting results: how to go from report to decision](../recsys-eval/docs/interpreting_results.md)
+  - [Metrics: what we measure and why](../recsys-eval/docs/metrics.md)
 
 ### SRE / on-call
 
 - Operational runbooks:
-  - [`operations/runbooks/service-not-ready.md`](../operations/runbooks/service-not-ready.md)
-  - [`operations/runbooks/empty-recs.md`](../operations/runbooks/empty-recs.md)
-  - [`operations/runbooks/rollback-config-rules.md`](../operations/runbooks/rollback-config-rules.md)
-  - Security overview: [`start-here/security-privacy-compliance.md`](security-privacy-compliance.md)
-  - Pipelines runbook: [Pipeline failed](../recsys-pipelines/docs/operations/runbooks/pipeline-failed.md)
-  - Pipelines runbook: [Validation failed](../recsys-pipelines/docs/operations/runbooks/validation-failed.md)
-  - Pipelines runbook: [Limit exceeded](../recsys-pipelines/docs/operations/runbooks/limit-exceeded.md)
-  - Pipelines runbook: [Stale artifacts](../recsys-pipelines/docs/operations/runbooks/stale-artifacts.md)
+  - [Runbook: Service not ready](../operations/runbooks/service-not-ready.md)
+  - [Runbook: Empty recs](../operations/runbooks/empty-recs.md)
+  - [Runbook: Roll back config/rules](../operations/runbooks/rollback-config-rules.md)
+  - Security overview: [Security, privacy, and compliance (overview)](security-privacy-compliance.md)
+  - [Runbook: Pipeline failed](../recsys-pipelines/docs/operations/runbooks/pipeline-failed.md)
+  - [Runbook: Validation failed](../recsys-pipelines/docs/operations/runbooks/validation-failed.md)
+  - [Runbook: Limit exceeded](../recsys-pipelines/docs/operations/runbooks/limit-exceeded.md)
+  - [Runbook: Stale artifacts](../recsys-pipelines/docs/operations/runbooks/stale-artifacts.md)
 
 ## Read next
 
-- Local end-to-end tutorial: [`tutorials/local-end-to-end.md`](../tutorials/local-end-to-end.md)
-- Stakeholder overview: [`start-here/what-is-recsys.md`](what-is-recsys.md)
-- Suite architecture: [`explanation/suite-architecture.md`](../explanation/suite-architecture.md)
+- Local end-to-end tutorial: [local end-to-end (service → logging → eval)](../tutorials/local-end-to-end.md)
+- Stakeholder overview: [What the RecSys suite is (stakeholder overview)](what-is-recsys.md)
+- Suite architecture: [Suite architecture](../explanation/suite-architecture.md)

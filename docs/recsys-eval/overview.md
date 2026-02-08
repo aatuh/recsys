@@ -1,3 +1,10 @@
+---
+diataxis: explanation
+tags:
+  - recsys-eval
+  - evaluation
+  - overview
+---
 # recsys-eval
 
 recsys-eval turns recommendation logs into reports that tell you whether a

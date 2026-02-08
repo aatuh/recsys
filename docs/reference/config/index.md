@@ -1,11 +1,13 @@
 ---
+diataxis: reference
 tags:
   - reference
   - config
   - developer
 ---
-
 # Configuration reference
+This page is the canonical reference for Configuration reference.
+
 
 ## Who this is for
 
@@ -22,8 +24,8 @@ tags:
 - [`recsys-service`](recsys-service.md)
 - [`recsys-eval`](recsys-eval.md)
 - [`recsys-pipelines`](recsys-pipelines.md)
-- Helm deployment (how values map to config): [`how-to/deploy-helm.md`](../../how-to/deploy-helm.md)
+- Helm deployment (how values map to config): [Deploy with Helm (production-ish)](../../how-to/deploy-helm.md)
 
 ## Read next
 
-- Local end-to-end tutorial (a known-good baseline): [`tutorials/local-end-to-end.md`](../../tutorials/local-end-to-end.md)
+- Local end-to-end tutorial (a known-good baseline): [local end-to-end (service → logging → eval)](../../tutorials/local-end-to-end.md)

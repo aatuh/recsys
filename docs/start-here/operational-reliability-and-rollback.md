@@ -1,12 +1,14 @@
 ---
+diataxis: explanation
 tags:
   - overview
   - business
   - ops
   - rollback
 ---
-
 # Operational reliability and rollback
+This page explains Operational reliability and rollback and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -46,7 +48,7 @@ When to use:
 
 How:
 
-- Use the config/rules rollback runbook: [`operations/runbooks/rollback-config-rules.md`](../operations/runbooks/rollback-config-rules.md)
+- Use the config/rules rollback runbook: [Runbook: Roll back config/rules](../operations/runbooks/rollback-config-rules.md)
 
 ### 2) Artifact/manifest rollback (pipelines layer)
 
@@ -57,8 +59,8 @@ When to use:
 
 How:
 
-- Roll back artifacts safely: [`recsys-pipelines/docs/how-to/rollback-safely.md`](../recsys-pipelines/docs/how-to/rollback-safely.md)
-- Roll back the manifest pointer: [`recsys-pipelines/docs/how-to/rollback-manifest.md`](../recsys-pipelines/docs/how-to/rollback-manifest.md)
+- Roll back artifacts safely: [How-to: Roll back artifacts safely](../recsys-pipelines/docs/how-to/rollback-safely.md)
+- Roll back the manifest pointer: [How-to: Roll back to a previous artifact version](../recsys-pipelines/docs/how-to/rollback-manifest.md)
 
 ### 3) “Stop shipping” (hold changes)
 
@@ -69,28 +71,28 @@ When to use:
 
 How:
 
-- Follow the evaluation workflow: [`how-to/run-eval-and-ship.md`](../how-to/run-eval-and-ship.md)
+- Follow the evaluation workflow: [How-to: run evaluation and make ship decisions](../how-to/run-eval-and-ship.md)
 - Use `recsys-eval` troubleshooting when metrics don’t make sense:
-  [`recsys-eval/docs/troubleshooting.md`](../recsys-eval/docs/troubleshooting.md)
+  [Troubleshooting: symptom -> cause -> fix](../recsys-eval/docs/troubleshooting.md)
 
 ## First incident checklist (start here under pressure)
 
 Pick the symptom that best matches what you see:
 
 - **Service is up, but recommendations are empty**
-  - Runbook: [`operations/runbooks/empty-recs.md`](../operations/runbooks/empty-recs.md)
+  - Runbook: [Runbook: Empty recs](../operations/runbooks/empty-recs.md)
 - **Service is up, but data looks stale**
-  - Runbook: [`operations/runbooks/stale-manifest.md`](../operations/runbooks/stale-manifest.md)
-  - Pipelines runbook: [`recsys-pipelines/docs/operations/runbooks/stale-artifacts.md`](../recsys-pipelines/docs/operations/runbooks/stale-artifacts.md)
+  - Runbook: [Runbook: Stale manifest (artifact mode)](../operations/runbooks/stale-manifest.md)
+  - Pipelines runbook: [Runbook: Stale artifacts](../recsys-pipelines/docs/operations/runbooks/stale-artifacts.md)
 - **Pipelines run failed**
-  - Runbook: [`recsys-pipelines/docs/operations/runbooks/pipeline-failed.md`](../recsys-pipelines/docs/operations/runbooks/pipeline-failed.md)
+  - Runbook: [Runbook: Pipeline failed](../recsys-pipelines/docs/operations/runbooks/pipeline-failed.md)
 - **Evaluation report looks wrong (joins low, SRM warning, impossible lift)**
-  - Start with: [`recsys-eval/docs/interpreting_results.md`](../recsys-eval/docs/interpreting_results.md)
-  - Then: [`recsys-eval/docs/troubleshooting.md`](../recsys-eval/docs/troubleshooting.md)
+  - Start with: [Interpreting results: how to go from report to decision](../recsys-eval/docs/interpreting_results.md)
+  - Then: [Troubleshooting: symptom -> cause -> fix](../recsys-eval/docs/troubleshooting.md)
 
 ## Read next
 
-- Production readiness checklist: [`operations/production-readiness-checklist.md`](../operations/production-readiness-checklist.md)
-- Rollback config/rules runbook: [`operations/runbooks/rollback-config-rules.md`](../operations/runbooks/rollback-config-rules.md)
-- Pipelines rollback: [`recsys-pipelines/docs/how-to/rollback-safely.md`](../recsys-pipelines/docs/how-to/rollback-safely.md)
-- Interpreting eval results: [`recsys-eval/docs/interpreting_results.md`](../recsys-eval/docs/interpreting_results.md)
+- Production readiness checklist: [Production readiness checklist (RecSys suite)](../operations/production-readiness-checklist.md)
+- Rollback config/rules runbook: [Runbook: Roll back config/rules](../operations/runbooks/rollback-config-rules.md)
+- Pipelines rollback: [How-to: Roll back artifacts safely](../recsys-pipelines/docs/how-to/rollback-safely.md)
+- Interpreting eval results: [Interpreting results: how to go from report to decision](../recsys-eval/docs/interpreting_results.md)

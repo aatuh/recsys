@@ -1,9 +1,9 @@
 ---
+diataxis: explanation
 tags:
   - ops
   - overview
 ---
-
 # Operations
 
 This section is for **running RecSys in production**: performance, readiness, and on-call runbooks.
@@ -18,9 +18,6 @@ This section is for **running RecSys in production**: performance, readiness, an
 - A production readiness checklist and baseline benchmarks
 - Failure-mode diagnosis and safe remediations (with runbook links)
 - The first pages to open when the service is not ready or recommendations go empty
-
---8<-- "_snippets/key-terms.list.snippet"
---8<-- "_snippets/key-terms.defs.one-up.snippet"
 
 ## Quick paths
 
@@ -45,6 +42,6 @@ This section is for **running RecSys in production**: performance, readiness, an
 
 ## Read next
 
-- Production readiness checklist: [`operations/production-readiness-checklist.md`](production-readiness-checklist.md)
-- Failure modes & diagnostics (with runbooks): [`operations/failure-modes.md`](failure-modes.md)
-- Pipelines SLOs and freshness: [`recsys-pipelines/docs/operations/slos-and-freshness.md`](../recsys-pipelines/docs/operations/slos-and-freshness.md)
+- Production readiness checklist: [Production readiness checklist (RecSys suite)](production-readiness-checklist.md)
+- Failure modes & diagnostics (with runbooks): [Failure modes & diagnostics (baseline)](failure-modes.md)
+- Pipelines SLOs and freshness: [SLOs and freshness](../recsys-pipelines/docs/operations/slos-and-freshness.md)

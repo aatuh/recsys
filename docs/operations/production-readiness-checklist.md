@@ -1,11 +1,13 @@
 ---
+diataxis: how-to
 tags:
   - ops
   - checklist
   - security
 ---
-
 # Production readiness checklist (RecSys suite)
+This guide shows how to production readiness checklist (RecSys suite) in a reliable, repeatable way.
+
 
 ## Who this is for
 
@@ -93,7 +95,7 @@ See: [Database migrations](../reference/database/migrations.md)
 - [ ] Runbooks exist and have been exercised at least once:
   - [ ] [Service not ready](runbooks/service-not-ready.md)
   - [ ] [Empty recs](runbooks/empty-recs.md)
-  - [ ] [Roll back config/rules](runbooks/rollback-config-rules.md)
+  - [ ] [Runbook: Roll back config/rules](runbooks/rollback-config-rules.md)
 
 ## 6) Performance and capacity
 
@@ -115,4 +117,15 @@ See: [Performance and capacity](performance-and-capacity.md)
   - [ ] `meta.config_version`, `meta.rules_version`, `meta.algo_version` in responses
 - [ ] Document gates and criteria for shipping.
 
-See: [Run eval and ship](../how-to/run-eval-and-ship.md)
+See:
+
+- [Run eval and ship](../how-to/run-eval-and-ship.md)
+- [Deploy with Helm](../how-to/deploy-helm.md)
+- [Operate pipelines](../how-to/operate-pipelines.md)
+- [Operational reliability & rollback](../start-here/operational-reliability-and-rollback.md)
+
+## Read next
+
+- Operations hub: [Operations](index.md)
+- Baseline benchmarks: [Baseline benchmarks (anchor numbers)](baseline-benchmarks.md)
+- Failure modes and runbooks: [Failure modes & diagnostics (baseline)](failure-modes.md)

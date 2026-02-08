@@ -1,11 +1,13 @@
 ---
+diataxis: how-to
 tags:
   - runbook
   - ops
   - recsys-service
 ---
-
 # Runbook: Empty recs
+This guide shows how to runbook: Empty recs in a reliable, repeatable way.
+
 
 ## Symptoms
 
@@ -135,3 +137,9 @@ curl -fsS "$BASE_URL/v1/recommend" \
   -H "X-Org-Id: $TENANT_ID" \
   -d '{"surface":"home","k":5,"user":{"user_id":"debug-user-1"},"constraints":null,"candidates":null}'
 ```
+
+## Read next
+
+- Failure modes & diagnostics: [Failure modes & diagnostics](../failure-modes.md)
+- Rollback levers: [Runbook: Roll back config/rules](rollback-config-rules.md)
+- Operations index: [Operations](../index.md)

@@ -1,4 +1,11 @@
+---
+diataxis: explanation
+tags:
+  - recsys-eval
+---
 # Scaling: large datasets and performance
+This page explains Scaling: large datasets and performance and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -62,6 +69,6 @@ When in doubt, reduce scope, confirm correctness, then scale up.
 
 ## Read next
 
-- CI gates: [`recsys-eval/docs/ci_gates.md`](ci_gates.md)
-- Troubleshooting: [`recsys-eval/docs/troubleshooting.md`](troubleshooting.md)
-- Architecture: [`recsys-eval/docs/architecture.md`](architecture.md)
+- CI gates: [CI gates: using recsys-eval in automation](ci_gates.md)
+- Troubleshooting: [Troubleshooting: symptom -> cause -> fix](troubleshooting.md)
+- Architecture: [Architecture: how the code is organized and how to extend it](architecture.md)

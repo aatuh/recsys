@@ -1,10 +1,12 @@
 ---
+diataxis: explanation
 tags:
   - overview
   - business
 ---
-
 # Use cases (where to start)
+This page explains Use cases (where to start) and how it fits into the RecSys suite.
+
 
 ## Who this is for
 

@@ -1,4 +1,5 @@
 ---
+diataxis: explanation
 tags:
   - explanation
   - evaluation
@@ -7,8 +8,9 @@ tags:
   - recsys-service
   - recsys-eval
 ---
-
 # Exposure logging and attribution
+This page explains Exposure logging and attribution and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -59,65 +61,18 @@ The join key is `request_id`. Your product must carry it from the recommend call
 
 ## What to log (minimum viable)
 
-You need two streams, plus an optional third:
+At minimum you need:
 
-1. **Exposure**: what items you showed and in what order (ranked list)
-2. **Outcome**: what the user did (click, conversion, etc.)
-3. **Assignment** (optional): what experiment variant this request/user was in
+1. **Exposure** (ranked list you showed)
+2. **Outcome** (click/conversion you observed)
+3. **Assignment** (optional, for A/B testing)
 
-For evaluation, all joins are driven by `request_id`.
+All joins are driven by **`request_id`**.
 
-### Exposure (recsys-eval: `exposure.v1`)
+Field-level contract (schemas + examples):
 
-Required fields:
-
-- `request_id`: join key (stable per recommendation request)
-- `user_id`: stable, pseudonymous identifier (do not log raw PII)
-- `ts`: RFC3339 timestamp
-- `items[]`: array of `{ item_id, rank }` (rank is 1-based)
-
-Strongly recommended context keys:
-
-- `tenant_id`, `surface`, `segment`
-- `algo_version`, `config_version`, `rules_version` (for auditability)
-
-Example (JSONL; one object per line):
-
-```json
-{"request_id":"req-1","user_id":"u_hash_1","ts":"2026-02-05T10:00:00Z","items":[{"item_id":"item_1","rank":1},{"item_id":"item_2","rank":2}],"context":{"tenant_id":"demo","surface":"home","segment":"default"}}
-```
-
-### Outcome (recsys-eval: `outcome.v1`)
-
-Required fields:
-
-- `request_id`: must match the exposure’s `request_id`
-- `user_id`: should match the exposure’s `user_id` (recommended for sanity checks and downstream analytics)
-- `item_id`: item that was clicked/converted
-- `event_type`: `click` or `conversion`
-- `ts`: RFC3339 timestamp
-
-Example:
-
-```json
-{"request_id":"req-1","user_id":"u_hash_1","item_id":"item_2","event_type":"click","ts":"2026-02-05T10:00:03Z"}
-```
-
-### Assignment (recsys-eval: `assignment.v1`, optional)
-
-If you run A/B tests, log assignments so analysis can segment by variant.
-
-Required fields:
-
-- `experiment_id`, `variant`, `request_id`, `user_id`, `ts`
-
-Example:
-
-```json
-{"experiment_id":"exp-1","variant":"A","request_id":"req-1","user_id":"u_hash_1","ts":"2026-02-05T10:00:00Z","context":{"tenant_id":"demo","surface":"home"}}
-```
-
-See full schemas and examples: [`reference/data-contracts/eval-events.md`](../reference/data-contracts/eval-events.md)
+- Reference: [Exposure, outcome, and assignment schemas](../reference/data-contracts/exposure-outcome-assignment.md)
+- Reference: [Event join logic (exposures ↔ outcomes ↔ assignments)](../reference/data-contracts/join-logic.md)
 
 ## Getting `request_id` right (attribution correctness)
 
@@ -155,7 +110,7 @@ EXPOSURE_LOG_PATH=/app/tmp/exposures.eval.jsonl
 
 Config reference:
 
-- [`reference/config/recsys-service.md`](../reference/config/recsys-service.md)
+- [recsys-service configuration](../reference/config/recsys-service.md)
 
 ### Privacy: stable pseudonymous IDs
 
@@ -202,12 +157,12 @@ Once your exposure/outcome logs validate and join, run an offline evaluation and
 Start with the default pack:
 
 - [`recsys-eval` default evaluation pack (recommended)](../recsys-eval/docs/default-evaluation-pack.md)
-- Run eval and make ship/hold/rollback decisions: [`how-to/run-eval-and-ship.md`](../how-to/run-eval-and-ship.md)
+- Run eval and make ship/hold/rollback decisions: [How-to: run evaluation and make ship decisions](../how-to/run-eval-and-ship.md)
 
 ## Read next
 
-- Data contracts hub: [`reference/data-contracts/index.md`](../reference/data-contracts/index.md)
-- Event join logic: [`reference/data-contracts/join-logic.md`](../reference/data-contracts/join-logic.md)
-- Experimentation model (A/B, interleaving, OPE): [`explanation/experimentation-model.md`](experimentation-model.md)
-- Candidate vs ranking: [`explanation/candidate-vs-ranking.md`](candidate-vs-ranking.md)
-- Run eval and ship: [`how-to/run-eval-and-ship.md`](../how-to/run-eval-and-ship.md)
+- Data contracts hub: [Data contracts](../reference/data-contracts/index.md)
+- Event join logic: [Event join logic (exposures ↔ outcomes ↔ assignments)](../reference/data-contracts/join-logic.md)
+- Experimentation model (A/B, interleaving, OPE): [Experimentation model (A/B, interleaving, OPE)](experimentation-model.md)
+- Candidate vs ranking: [Candidate generation vs ranking](candidate-vs-ranking.md)
+- Run eval and ship: [How-to: run evaluation and make ship decisions](../how-to/run-eval-and-ship.md)

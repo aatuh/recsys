@@ -1,12 +1,14 @@
 ---
+diataxis: how-to
 tags:
   - how-to
   - ops
   - artifacts
   - recsys-pipelines
 ---
-
 # How-to: operate recsys-pipelines
+This guide shows how to how-to: operate recsys-pipelines in a reliable, repeatable way.
+
 
 ## Who this is for
 
@@ -95,6 +97,6 @@ RECSYS_ARTIFACT_S3_USE_SSL=false
 
 ## Read next
 
-- Operational invariants (pipelines safety model): [`explanation/pipelines-operational-invariants.md`](../explanation/pipelines-operational-invariants.md)
-- Artifacts and manifest lifecycle: [`explanation/artifacts-and-manifest-lifecycle.md`](../explanation/artifacts-and-manifest-lifecycle.md)
-- Pipelines SLOs and freshness: [`recsys-pipelines/docs/operations/slos-and-freshness.md`](../recsys-pipelines/docs/operations/slos-and-freshness.md)
+- Operational invariants (pipelines safety model): [Pipelines operational invariants (safety model)](../explanation/pipelines-operational-invariants.md)
+- Artifacts and manifest lifecycle: [Artifacts and manifest lifecycle (pipelines → service)](../explanation/artifacts-and-manifest-lifecycle.md)
+- Pipelines SLOs and freshness: [SLOs and freshness](../recsys-pipelines/docs/operations/slos-and-freshness.md)

@@ -1,11 +1,13 @@
 ---
+diataxis: tutorial
 tags:
   - tutorials
   - overview
   - developer
 ---
-
 # Tutorials
+In this tutorial you will follow a guided walkthrough and verify a working result.
+
 
 ## Who this is for
 
@@ -16,9 +18,6 @@ tags:
 - Local “first success” (hello recommendations)
 - A full end-to-end loop (serve → log → evaluate → ship/rollback)
 - A production-like run you can mirror in staging
-
---8<-- "_snippets/key-terms.list.snippet"
---8<-- "_snippets/key-terms.defs.one-up.snippet"
 
 ## Choose a tutorial
 
@@ -33,10 +32,15 @@ tags:
 - **[Minimal pilot (DB-only)](minimal-pilot-db-only.md)**  
   A reduced setup for early integration and stakeholder demos.
 
+- **[Verify determinism](verify-determinism.md)**  
+  Prove stable ranking output for identical inputs.
+- **[Verify joinability](verify-joinability.md)**  
+  Prove exposures and outcomes can be joined for evaluation.
+
 </div>
 
 ## Read next
 
-- Quickstart (10 minutes): [`tutorials/quickstart.md`](quickstart.md)
-- Local end-to-end tutorial: [`tutorials/local-end-to-end.md`](local-end-to-end.md)
-- Integrate the serving API into your app: [`how-to/integrate-recsys-service.md`](../how-to/integrate-recsys-service.md)
+- Quickstart (10 minutes): [Quickstart (10 minutes)](quickstart.md)
+- Local end-to-end tutorial: [local end-to-end (service → logging → eval)](local-end-to-end.md)
+- Integrate the serving API into your app: [How-to: integrate recsys-service into an application](../how-to/integrate-recsys-service.md)

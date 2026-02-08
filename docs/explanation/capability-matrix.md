@@ -1,4 +1,5 @@
 ---
+diataxis: explanation
 tags:
   - explanation
   - overview
@@ -6,8 +7,9 @@ tags:
   - developer
   - ml
 ---
-
 # Capability matrix (scope and non-scope)
+This page explains Capability matrix (scope and non-scope) and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -23,44 +25,24 @@ tags:
 
 | Area | What’s included (this repo) | What’s intentionally not included (by default) | Where to read more |
 | --- | --- | --- | --- |
-| Serving API | `POST /v1/recommend`, tenancy/auth, limits, caching | Managed hosting | API reference: [`reference/api/api-reference.md`](../reference/api/api-reference.md) |
-| Determinism | Deterministic ranking for the same inputs + versions | KPI lift guarantees | Determinism contract: [`explanation/how-it-works.md`](how-it-works.md) |
-| Ranking control | Rules (pin/exclude), constraints, stable ordering | “Black-box” end-to-end models in the serving stack | Ranking reference: [`recsys-algo/ranking-reference.md`](../recsys-algo/ranking-reference.md) |
-| Data modes | DB-only start + artifact/manifest mode for versioned ship/rollback | Implicit “auto-sync” of manifests without an explicit publish step | Data modes: [`explanation/data-modes.md`](data-modes.md) |
-| Audit trail | Exposure logging + join by `request_id` | Logging raw PII as a requirement | Attribution: [`explanation/exposure-logging-and-attribution.md`](exposure-logging-and-attribution.md) |
-| Evaluation | Offline and online evaluation workflows; ship/hold/rollback decisions | “One metric to rule them all” defaults for every domain | Workflow: [`how-to/run-eval-and-ship.md`](../how-to/run-eval-and-ship.md) |
-| Operations | Runbooks, failure modes, readiness checklist | “Set-and-forget” operations | Ops hub: [`operations/index.md`](../operations/index.md) |
-| Multi-tenancy | Tenant-scoped config, rules, and data isolation | Auto-provisioning tenants via an admin create-tenant API | Known limitations: [`start-here/known-limitations.md`](../start-here/known-limitations.md) |
-
-## ML scope (modeling boundaries)
-
-RecSys includes deterministic “building blocks” you can combine, operate, and evaluate.
-
-Included in this repo:
-
-- Deterministic ranking logic (blending, rules, constraints) with pluggable stores/signals.
-- Offline computation of baseline artifacts (for example: popularity, co-occurrence, implicit feedback, content-based).
-- Evaluation workflows and decision artifacts (ship/hold/rollback), with an auditable exposure→outcome trail.
-
-Not included by default:
-
-- End-to-end learned-to-rank training or automated hyperparameter tuning for your domain.
-- A managed feature store / real-time feature computation platform.
-- A hosted experimentation platform (feature flags, traffic splitting, dashboards).
-
-If you want learned models, treat training as **external** and publish the resulting signals (scores/embeddings) into
-stores/artifacts that the deterministic serving layer can consume. Extension guide:
-[`how-to/add-signal-end-to-end.md`](../how-to/add-signal-end-to-end.md).
+| Serving API | `POST /v1/recommend`, tenancy/auth, limits, caching | Managed hosting | API reference: [API Reference](../reference/api/api-reference.md) |
+| Determinism | Deterministic ranking for the same inputs + versions | KPI lift guarantees | Determinism contract: [How it works: architecture and data flow](how-it-works.md) |
+| Ranking control | Rules (pin/exclude), constraints, stable ordering | “Black-box” end-to-end models in the serving stack | Ranking reference: [Ranking & constraints reference](../recsys-algo/ranking-reference.md) |
+| Data modes | DB-only start + artifact/manifest mode for versioned ship/rollback | Implicit “auto-sync” of manifests without an explicit publish step | Data modes: [Data modes: DB-only vs artifact/manifest](data-modes.md) |
+| Audit trail | Exposure logging + join by `request_id` | Logging raw PII as a requirement | Attribution: [Exposure logging and attribution](exposure-logging-and-attribution.md) |
+| Evaluation | Offline and online evaluation workflows; ship/hold/rollback decisions | “One metric to rule them all” defaults for every domain | Workflow: [How-to: run evaluation and make ship decisions](../how-to/run-eval-and-ship.md) |
+| Operations | Runbooks, failure modes, readiness checklist | “Set-and-forget” operations | Ops hub: [Operations](../operations/index.md) |
+| Multi-tenancy | Tenant-scoped config, rules, and data isolation | Auto-provisioning tenants via an admin create-tenant API | Known limitations: [Known limitations and non-goals (current)](../start-here/known-limitations.md) |
 
 ## Notes
 
 - The suite is designed for **operational predictability first**: deterministic serving, clear audit artifacts, and
   explicit rollback levers.
 - If you need a single “no-surprises” list of limitations and non-goals, start here:
-  [`start-here/known-limitations.md`](../start-here/known-limitations.md)
+  [Known limitations and non-goals (current)](../start-here/known-limitations.md)
 
 ## Read next
 
-- Stakeholder overview: [`start-here/what-is-recsys.md`](../start-here/what-is-recsys.md)
-- Architecture and data flow: [`explanation/how-it-works.md`](how-it-works.md)
-- Known limitations: [`start-here/known-limitations.md`](../start-here/known-limitations.md)
+- Stakeholder overview: [What the RecSys suite is (stakeholder overview)](../start-here/what-is-recsys.md)
+- Architecture and data flow: [How it works: architecture and data flow](how-it-works.md)
+- Known limitations: [Known limitations and non-goals (current)](../start-here/known-limitations.md)

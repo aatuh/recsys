@@ -1,4 +1,8 @@
-
+---
+diataxis: how-to
+tags:
+  - recsys-pipelines
+---
 # How-to: Run a backfill safely
 
 Backfills re-run the pipeline for a date range. This repo uses **daily UTC
@@ -33,8 +37,8 @@ Run jobs for the same date range and publish last.
 
 ## Read next
 
-- Backfill safely: [`how-to/backfill-safely.md`](backfill-safely.md)
-- Windows and backfills (concepts): [`explanation/windows-and-backfills.md`](../explanation/windows-and-backfills.md)
-- Validation and guardrails: [`explanation/validation-and-guardrails.md`](../explanation/validation-and-guardrails.md)
-- Output layout: [`reference/output-layout.md`](../reference/output-layout.md)
-- Limit exceeded runbook: [`operations/runbooks/limit-exceeded.md`](../operations/runbooks/limit-exceeded.md)
+- Backfill safely: [How-to: Backfill pipelines safely](backfill-safely.md)
+- Windows and backfills (concepts): [Windows and backfills](../explanation/windows-and-backfills.md)
+- Validation and guardrails: [Validation and guardrails](../explanation/validation-and-guardrails.md)
+- Output layout: [Output layout (local filesystem)](../reference/output-layout.md)
+- Limit exceeded runbook: [Runbook: Limit exceeded](../operations/runbooks/limit-exceeded.md)

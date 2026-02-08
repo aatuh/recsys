@@ -1,10 +1,12 @@
 ---
+diataxis: explanation
 tags:
   - explanation
   - overview
 ---
-
 # Explanation
+This page explains Explanation and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -33,5 +35,5 @@ tags:
 
 ## Read next
 
-- Tutorials: [`tutorials/index.md`](../tutorials/index.md)
-- Reference: [`reference/index.md`](../reference/index.md)
+- Tutorials: [Tutorials](../tutorials/index.md)
+- Reference: [Reference](../reference/index.md)

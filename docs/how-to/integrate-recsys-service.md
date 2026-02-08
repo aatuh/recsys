@@ -1,4 +1,5 @@
 ---
+diataxis: how-to
 tags:
   - how-to
   - integration
@@ -6,8 +7,9 @@ tags:
   - developer
   - recsys-service
 ---
-
 # How-to: integrate recsys-service into an application
+This guide shows how to how-to: integrate recsys-service into an application in a reliable, repeatable way.
+
 
 ## Who this is for
 
@@ -41,11 +43,26 @@ Notes:
 
   see `reference/api/admin.md`.
 - If you want a domain-specific mental model, start with the cookbooks:
-  - [`how-to/integration-cookbooks/index.md`](integration-cookbooks/index.md)
+  - [Integration cookbooks (map RecSys to your domain)](integration-cookbooks/index.md)
 
 ## Minimal integration example (one surface)
 
 This is the smallest pattern that supports evaluation and troubleshooting.
+
+### Language-agnostic pseudocode (request_id propagation)
+
+```text
+requestId = newRequestId()
+resp = POST /v1/recommend(tenant, surface, user, requestId)
+render(resp.items)
+logExposure(requestId, tenant, surface, itemsShown)
+
+onUserAction(itemId, eventType):
+  logOutcome(requestId, itemId, eventType)
+```
+
+The one rule that unlocks evaluation and debugging is: **the same `request_id` must flow through recommend → exposure → outcome**.
+
 
 ### 1) Serve (request)
 
@@ -89,7 +106,7 @@ Emit one outcome record per action you measure (schema: `outcome.v1`):
 }
 ```
 
-For the canonical schemas and required fields, see: [`reference/data-contracts/index.md`](../reference/data-contracts/index.md)
+For the canonical schemas and required fields, see: [Data contracts](../reference/data-contracts/index.md)
 
 ## Verify
 
@@ -116,10 +133,18 @@ Then call recommend and ensure you capture `meta.request_id` (or supply `X-Reque
   - `X-Org-Id` (tenant scope enforced by middleware)
 - In JWT mode, a bearer token with a tenant claim is sufficient (see `AUTH_TENANT_CLAIMS`).
 - To use a single header locally, set `DEV_AUTH_TENANT_HEADER=X-Org-Id`.
-- Auth and tenancy reference: [`reference/auth-and-tenancy.md`](../reference/auth-and-tenancy.md)
+- Auth and tenancy reference: [Auth and tenancy reference](../reference/auth-and-tenancy.md)
+
+## Troubleshooting
+
+If something looks wrong (empty lists, auth issues, logs not joining), use:
+
+- [Troubleshooting for integrators](troubleshooting-integration.md)
 
 ## Read next
 
-- Exposure logging & attribution: [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)
-- Minimum instrumentation spec (what to log for credible eval): [`reference/minimum-instrumentation.md`](../reference/minimum-instrumentation.md)
-- Integration checklist: [`how-to/integration-checklist.md`](integration-checklist.md)
+- Integration checklist: [How-to: Integration checklist (one surface)](integration-checklist.md)
+- Troubleshoot empty lists, auth, or join issues: [How-to: troubleshooting for integrators](troubleshooting-integration.md)
+- Exposure logging & attribution: [Exposure logging and attribution](../explanation/exposure-logging-and-attribution.md)
+- Minimum instrumentation spec (what to log for credible eval): [Minimum instrumentation spec (for credible evaluation)](../reference/minimum-instrumentation.md)
+- Auth & tenancy: [Auth and tenancy reference](../reference/auth-and-tenancy.md)

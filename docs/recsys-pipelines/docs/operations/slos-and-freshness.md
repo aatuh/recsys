@@ -1,5 +1,11 @@
-
+---
+diataxis: explanation
+tags:
+  - recsys-pipelines
+---
 # SLOs and freshness
+This page explains SLOs and freshness and how it fits into the RecSys suite.
+
 
 ## Freshness definition
 
@@ -34,7 +40,7 @@ At minimum:
 
 ## Read next
 
-- Operate pipelines daily: [`how-to/operate-daily.md`](../how-to/operate-daily.md)
-- Schedule pipelines: [`how-to/schedule-pipelines.md`](../how-to/schedule-pipelines.md)
-- Stale artifacts runbook: [`operations/runbooks/stale-artifacts.md`](runbooks/stale-artifacts.md)
-- Pipeline failed runbook: [`operations/runbooks/pipeline-failed.md`](runbooks/pipeline-failed.md)
+- Operate pipelines daily: [How-to: Operate pipelines daily](../how-to/operate-daily.md)
+- Schedule pipelines: [How-to: Schedule pipelines with CronJob](../how-to/schedule-pipelines.md)
+- Stale artifacts runbook: [Runbook: Stale artifacts](runbooks/stale-artifacts.md)
+- Pipeline failed runbook: [Runbook: Pipeline failed](runbooks/pipeline-failed.md)

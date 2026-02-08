@@ -1,10 +1,10 @@
 ---
+diataxis: reference
 tags:
   - reference
   - project
   - developer
 ---
-
 # Repo layout and Go module paths
 
 This repository is hosted at `github.com/aatuh/recsys`, but the Go module import paths currently use the
@@ -57,5 +57,5 @@ The `api/` module uses `replace` directives for local development (for example, 
 
 ## Read next
 
-- Suite architecture (what runs where): [`explanation/suite-architecture.md`](../explanation/suite-architecture.md)
-- Local end-to-end tutorial: [`tutorials/local-end-to-end.md`](../tutorials/local-end-to-end.md)
+- Suite architecture (what runs where): [Suite architecture](../explanation/suite-architecture.md)
+- Local end-to-end tutorial: [local end-to-end (service → logging → eval)](../tutorials/local-end-to-end.md)

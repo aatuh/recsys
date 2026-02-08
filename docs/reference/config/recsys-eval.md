@@ -1,4 +1,5 @@
 ---
+diataxis: reference
 tags:
   - reference
   - config
@@ -6,8 +7,9 @@ tags:
   - developer
   - ml
 ---
-
 # recsys-eval configuration
+This page is the canonical reference for recsys-eval configuration.
+
 
 ## Who this is for
 
@@ -129,6 +131,6 @@ experiment:
 
 ## Read next
 
-- CLI usage and exit codes: [`reference/cli/recsys-eval.md`](../cli/recsys-eval.md)
-- How-to run eval and ship decisions: [`how-to/run-eval-and-ship.md`](../../how-to/run-eval-and-ship.md)
-- Default evaluation pack: [`recsys-eval/docs/default-evaluation-pack.md`](../../recsys-eval/docs/default-evaluation-pack.md)
+- CLI usage and exit codes: [CLI: recsys-eval](../cli/recsys-eval.md)
+- How-to run eval and ship decisions: [How-to: run evaluation and make ship decisions](../../how-to/run-eval-and-ship.md)
+- Default evaluation pack: [Default evaluation pack (recommended)](../../recsys-eval/docs/default-evaluation-pack.md)

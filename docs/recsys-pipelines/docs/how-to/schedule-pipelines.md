@@ -1,3 +1,8 @@
+---
+diataxis: how-to
+tags:
+  - recsys-pipelines
+---
 # How-to: Schedule pipelines with CronJob
 
 This project ships CLI jobs; schedule them with Kubernetes CronJobs or system cron.
@@ -43,8 +48,8 @@ Use `--incremental` for daily runs and `--start/--end` for backfills.
 
 ## Read next
 
-- Operate pipelines daily: [`how-to/operate-daily.md`](operate-daily.md)
-- Run incremental: [`how-to/run-incremental.md`](run-incremental.md)
-- SLOs and freshness: [`operations/slos-and-freshness.md`](../operations/slos-and-freshness.md)
-- Pipeline failed runbook: [`operations/runbooks/pipeline-failed.md`](../operations/runbooks/pipeline-failed.md)
-- Config reference: [`reference/config.md`](../reference/config.md)
+- Operate pipelines daily: [How-to: Operate pipelines daily](operate-daily.md)
+- Run incremental: [How-to: Run incremental pipelines](run-incremental.md)
+- SLOs and freshness: [SLOs and freshness](../operations/slos-and-freshness.md)
+- Pipeline failed runbook: [Runbook: Pipeline failed](../operations/runbooks/pipeline-failed.md)
+- Config reference: [Config reference](../reference/config.md)

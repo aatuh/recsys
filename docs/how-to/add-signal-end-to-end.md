@@ -1,12 +1,14 @@
 ---
+diataxis: how-to
 tags:
   - how-to
   - developer
   - recsys-engineering
   - pipelines
 ---
-
 # How-to: add a new signal end-to-end
+This guide shows how to how-to: add a new signal end-to-end in a reliable, repeatable way.
+
 
 ## Who this is for
 
@@ -25,9 +27,9 @@ tags:
 
 ## Prereqs
 
-- You can run a production-like setup locally: [`tutorials/production-like-run.md`](../tutorials/production-like-run.md)
-- You understand the current ranking pipeline order: [`recsys-algo/ranking-reference.md`](../recsys-algo/ranking-reference.md)
-- You have the minimum instrumentation in place for evaluation: [`reference/minimum-instrumentation.md`](../reference/minimum-instrumentation.md)
+- You can run a production-like setup locally: [production-like run (pipelines → object store → ship/rollback)](../tutorials/production-like-run.md)
+- You understand the current ranking pipeline order: [Ranking & constraints reference](../recsys-algo/ranking-reference.md)
+- You have the minimum instrumentation in place for evaluation: [Minimum instrumentation spec (for credible evaluation)](../reference/minimum-instrumentation.md)
 
 ## Step 0: classify your signal (so you change the right layer)
 
@@ -47,7 +49,7 @@ In `recsys-algo`, scoring currently has:
 - a similarity bucket (`embedding` / `collaborative` / `content` / `session`)
 - an optional personalization multiplier
 
-See the formal spec: [`recsys-algo/scoring-model.md`](../recsys-algo/scoring-model.md)
+See the formal spec: [Scoring model specification (recsys-algo)](../recsys-algo/scoring-model.md)
 
 ## Step 1: define (or reuse) the store port in `recsys-algo`
 
@@ -62,13 +64,13 @@ If your signal is already represented by an existing port, reuse it. Otherwise:
 
 Tip: when a capability is not available, return `model.ErrFeatureUnavailable` and keep serving using other signals.
 
-See: [`recsys-algo/store-ports.md`](../recsys-algo/store-ports.md)
+See: [Store ports](../recsys-algo/store-ports.md)
 
 ## Step 2: add an artifact type + compute pipeline (recsys-pipelines)
 
 If the signal is computed offline, add it as a new artifact type.
 
-Follow the module guide: [`recsys-pipelines/docs/how-to/add-artifact-type.md`](../recsys-pipelines/docs/how-to/add-artifact-type.md)
+Follow the module guide: [How-to: Add a new artifact type](../recsys-pipelines/docs/how-to/add-artifact-type.md)
 
 In practice, you will touch (at least) these areas:
 
@@ -89,7 +91,7 @@ Non-negotiables:
 - Bounded runtime and memory use
 - Manifest pointer updated last (two-phase publish)
 
-Background: [`recsys-pipelines/docs/explanation/artifacts-and-versioning.md`](../recsys-pipelines/docs/explanation/artifacts-and-versioning.md)
+Background: [Artifacts and versioning](../recsys-pipelines/docs/explanation/artifacts-and-versioning.md)
 
 ## Step 3: publish and verify the manifest contains your artifact
 
@@ -109,8 +111,8 @@ find /tmp/recsys-pipelines -maxdepth 5 -type f | head
 
 The current manifest is the contract between pipelines and the service. See:
 
-- Output layout: [`recsys-pipelines/docs/reference/output-layout.md`](../recsys-pipelines/docs/reference/output-layout.md)
-- Manifest schema: [`reference/data-contracts/artifacts/manifest.schema.json`](../reference/data-contracts/artifacts/manifest.schema.json)
+- Output layout: [Output layout (local filesystem)](../recsys-pipelines/docs/reference/output-layout.md)
+- Manifest schema: [Manifest schema (JSON)](../reference/data-contracts/artifacts/manifest.schema.json)
 
 ## Step 4: make `recsys-service` consume the artifact
 
@@ -169,8 +171,8 @@ recsys-eval run --dataset dataset.yml --config eval.yml
 
 1. Use the report to decide ship/hold/rollback:
 
-- Suite workflow: [`how-to/run-eval-and-ship.md`](run-eval-and-ship.md)
-- Decision playbook: [`recsys-eval/docs/decision-playbook.md`](../recsys-eval/docs/decision-playbook.md)
+- Suite workflow: [How-to: run evaluation and make ship decisions](run-eval-and-ship.md)
+- Decision playbook: [Decision playbook: ship / hold / rollback](../recsys-eval/docs/decision-playbook.md)
 
 ## Rollback options (use at least one)
 
@@ -180,8 +182,8 @@ recsys-eval run --dataset dataset.yml --config eval.yml
 
 See:
 
-- Roll back the manifest safely: [`recsys-pipelines/docs/how-to/rollback-manifest.md`](../recsys-pipelines/docs/how-to/rollback-manifest.md)
-- Roll back artifacts safely: [`recsys-pipelines/docs/how-to/rollback-safely.md`](../recsys-pipelines/docs/how-to/rollback-safely.md)
+- Roll back the manifest safely: [How-to: Roll back to a previous artifact version](../recsys-pipelines/docs/how-to/rollback-manifest.md)
+- Roll back artifacts safely: [How-to: Roll back artifacts safely](../recsys-pipelines/docs/how-to/rollback-safely.md)
 
 ## Common failure modes (and what to check first)
 
@@ -189,14 +191,14 @@ See:
   store port is not wired.
 - **Serving returns “empty recs”:** the new signal might have filtered candidates too aggressively or caps blocked all
   remaining items.
-  - Runbook: [`operations/runbooks/empty-recs.md`](../operations/runbooks/empty-recs.md)
+  - Runbook: [Runbook: Empty recs](../operations/runbooks/empty-recs.md)
 - **Pipelines publish fails:** validator rejects artifact or version recompute mismatch; manifest should remain on the
   previous version (safe failure).
 - **Non-deterministic ordering:** unstable iteration order over maps or missing tie-break sorting in a store backend.
-  - Determinism notes: [`recsys-algo/ranking-reference.md`](../recsys-algo/ranking-reference.md)
+  - Determinism notes: [Ranking & constraints reference](../recsys-algo/ranking-reference.md)
 
 ## Read next
 
-- Store ports reference: [`recsys-algo/store-ports.md`](../recsys-algo/store-ports.md)
-- Pipelines artifact extension: [`recsys-pipelines/docs/how-to/add-artifact-type.md`](../recsys-pipelines/docs/how-to/add-artifact-type.md)
-- Artifacts and versioning: [`recsys-pipelines/docs/explanation/artifacts-and-versioning.md`](../recsys-pipelines/docs/explanation/artifacts-and-versioning.md)
+- Store ports reference: [Store ports](../recsys-algo/store-ports.md)
+- Pipelines artifact extension: [How-to: Add a new artifact type](../recsys-pipelines/docs/how-to/add-artifact-type.md)
+- Artifacts and versioning: [Artifacts and versioning](../recsys-pipelines/docs/explanation/artifacts-and-versioning.md)

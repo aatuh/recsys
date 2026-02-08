@@ -1,12 +1,14 @@
 ---
+diataxis: how-to
 tags:
   - runbook
   - ops
   - artifacts
   - recsys-service
 ---
-
 # Runbook: Stale manifest (artifact mode)
+This guide shows how to runbook: Stale manifest (artifact mode) in a reliable, repeatable way.
+
 
 ## Symptoms
 
@@ -78,7 +80,7 @@ curl -fsS -X POST "$BASE_URL/v1/admin/tenants/${TENANT_ID}/cache/invalidate" \
 
 - Manifest pointer not updated
   - Check pipeline scheduler health and recent pipeline runs.
-  - See pipelines runbook: [`recsys-pipelines/docs/operations/runbooks/stale-artifacts.md`](../../recsys-pipelines/docs/operations/runbooks/stale-artifacts.md)
+  - See pipelines runbook: [Runbook: Stale artifacts](../../recsys-pipelines/docs/operations/runbooks/stale-artifacts.md)
 - TTLs are too long for your workflow
   - Tune `RECSYS_ARTIFACT_MANIFEST_TTL` and `RECSYS_ARTIFACT_CACHE_TTL`.
 - Object store connectivity problems
@@ -91,6 +93,6 @@ curl -fsS -X POST "$BASE_URL/v1/admin/tenants/${TENANT_ID}/cache/invalidate" \
 
 ## Read next
 
-- Artifacts and manifest lifecycle: [`explanation/artifacts-and-manifest-lifecycle.md`](../../explanation/artifacts-and-manifest-lifecycle.md)
-- Data modes: [`explanation/data-modes.md`](../../explanation/data-modes.md)
-- Pipelines rollback guide: [`recsys-pipelines/docs/how-to/rollback-manifest.md`](../../recsys-pipelines/docs/how-to/rollback-manifest.md)
+- Artifacts and manifest lifecycle: [Artifacts and manifest lifecycle (pipelines → service)](../../explanation/artifacts-and-manifest-lifecycle.md)
+- Data modes: [Data modes: DB-only vs artifact/manifest](../../explanation/data-modes.md)
+- Pipelines rollback guide: [How-to: Roll back to a previous artifact version](../../recsys-pipelines/docs/how-to/rollback-manifest.md)

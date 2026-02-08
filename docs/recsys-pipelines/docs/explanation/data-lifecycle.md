@@ -1,5 +1,11 @@
-
+---
+diataxis: explanation
+tags:
+  - recsys-pipelines
+---
 # Data lifecycle
+This page explains Data lifecycle and how it fits into the RecSys suite.
+
 
 ## Stages
 
@@ -44,8 +50,8 @@ Validation prevents "bad data" from reaching serving.
 
 ## Read next
 
-- Start here: [`start-here.md`](../start-here.md)
-- Validation and guardrails: [`explanation/validation-and-guardrails.md`](validation-and-guardrails.md)
-- Run incremental: [`how-to/run-incremental.md`](../how-to/run-incremental.md)
-- Validation failed runbook: [`operations/runbooks/validation-failed.md`](../operations/runbooks/validation-failed.md)
-- Glossary: [`glossary.md`](../glossary.md)
+- Start here: [Start here](../start-here.md)
+- Validation and guardrails: [Validation and guardrails](validation-and-guardrails.md)
+- Run incremental: [How-to: Run incremental pipelines](../how-to/run-incremental.md)
+- Validation failed runbook: [Runbook: Validation failed](../operations/runbooks/validation-failed.md)
+- Glossary: [Glossary](../glossary.md)

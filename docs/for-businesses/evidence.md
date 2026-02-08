@@ -1,11 +1,13 @@
 ---
+diataxis: explanation
 tags:
   - overview
   - business
   - evaluation
 ---
-
 # Evidence (what “good outputs” look like)
+Concrete examples of the artifacts a credible pilot should produce (logs, reports, and audit records).
+
 
 ## Who this is for
 
@@ -16,6 +18,20 @@ tags:
 
 - The three concrete artifacts produced in a credible pilot
 - Where they come from in this repo (so you can reproduce them)
+
+## What you will receive (deliverables)
+
+If you follow the recommended pilot path, you should be able to produce:
+
+- **A shareable evaluation report** (JSON + optional Markdown/HTML summary)
+- **An evidence kit** (sample recommendation response, exposure/outcome samples, join-rate checks)
+- **A written ship/hold/rollback decision** linked to the artifacts
+- **A reproducibility record** (commands, versions, and where artifacts are stored)
+
+Where to start:
+
+- Suite workflow: [Run eval and ship](../how-to/run-eval-and-ship.md)
+- Recommended outputs bundle: [Evidence kit template](#evidence-kit-template-copypaste)
 
 ## Evidence ladder (how to interpret)
 
@@ -34,13 +50,6 @@ What this evidence **does not** prove by itself:
   [Production readiness checklist](../operations/production-readiness-checklist.md)
 - Absolute performance/latency guarantees (use baseline anchor numbers as a starting point):
   [Baseline benchmarks](../operations/baseline-benchmarks.md)
-
-## Trust map (what to verify next)
-
-This page shows example artifacts. For a complete “claims → evidence → limits” map (what to trust, and where it can
-break), see:
-
-- Procurement pack: [Procurement pack](procurement-pack.md)
 
 ## The artifacts that matter
 
@@ -177,6 +186,49 @@ This gives you:
 - eval-compatible exposure logs
 - a minimal outcome log
 - a sample evaluation report
+
+
+## Evidence kit template (copy/paste)
+
+Use this template as the “bundle” you share internally for decision-making and procurement.
+
+### 1) Context
+
+- **Product / domain:** …
+- **Surface:** `…`
+- **Population:** …
+- **Time window:** …
+- **Primary KPI:** …
+- **Guardrails:** …
+
+### 2) What changed
+
+- **Candidate vs baseline description:** …
+- **Config/rules/algo versions:** …
+- **Data mode:** DB-only / artifact-manifest
+
+### 3) Proof artifacts (links)
+
+- **Serving proof** (sample response with `request_id`): …
+- **Exposure log sample** (JSONL line + schema version): …
+- **Outcome log sample** (JSONL line + schema version): …
+- **Join-rate report** (exposures ↔ outcomes by `request_id`): …
+- **Evaluation report** (JSON + executive summary): …
+
+### 4) Decision
+
+- **Decision:** ship / hold / rollback
+- **Reasoning (1–5 bullets):**
+  - …
+- **Risks / follow-ups:**
+  - …
+
+### 5) Reproducibility
+
+- Commit SHA / tag: …
+- Commands / pipeline run IDs: …
+- Where artifacts are stored (paths, retention): …
+
 
 ## Read next
 

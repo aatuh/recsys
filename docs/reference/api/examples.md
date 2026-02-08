@@ -1,12 +1,14 @@
 ---
+diataxis: reference
 tags:
   - reference
   - api
   - developer
   - recsys-service
 ---
-
 # API examples (HTTP files)
+This page is the canonical reference for API examples (HTTP files).
+
 
 ## Who this is for
 
@@ -62,7 +64,7 @@ Notes:
 
 These endpoints are for **operators** (bootstrap + config management).
 
-See also: [`admin.md`](admin.md).
+See also: [Admin API + local bootstrap (recsys-service)](admin.md).
 
 ```http
 ### Get config (admin)
@@ -115,3 +117,8 @@ Notes:
 - Admin endpoints require elevated scope (viewer/operator/admin roles in JWT mode).
 - `If-Match` enables optimistic concurrency using the current `ETag`/version value.
 - Cache invalidation is safe to run after updates to reduce “stale config” confusion during incidents.
+
+## Read next
+
+- API reference: [API Reference](api-reference.md)
+- Errors: [Error handling & troubleshooting API calls](errors.md)

@@ -1,11 +1,13 @@
 ---
+diataxis: explanation
 tags:
   - security
   - business
   - ops
 ---
-
 # Security, privacy, and compliance (overview)
+This page explains Security, privacy, and compliance (overview) and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -99,7 +101,7 @@ Enable per-tenant rate limiting in production and monitor throttling:
 
 ## Read next
 
-- Responsibilities (RACI): [`start-here/responsibilities.md`](responsibilities.md)
-- Production readiness checklist: [`operations/production-readiness-checklist.md`](../operations/production-readiness-checklist.md)
-- Exposure logging and attribution: [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)
-- Security policy (reporting vulnerabilities): [`project/security.md`](../project/security.md)
+- Responsibilities (RACI): [Responsibilities (RACI): who owns what](responsibilities.md)
+- Production readiness checklist: [Production readiness checklist (RecSys suite)](../operations/production-readiness-checklist.md)
+- Exposure logging and attribution: [Exposure logging and attribution](../explanation/exposure-logging-and-attribution.md)
+- Security policy (reporting vulnerabilities): [Security Policy](../project/security.md)

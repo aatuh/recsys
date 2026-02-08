@@ -1,5 +1,12 @@
-
+---
+diataxis: how-to
+tags:
+  - recsys-pipelines
+  - runbook
+---
 # Runbook: Limit exceeded
+This guide shows how to runbook: Limit exceeded in a reliable, repeatable way.
+
 
 ## Symptoms
 
@@ -25,7 +32,7 @@ See `reference/config.md` and `explanation/validation-and-guardrails.md`.
 
 ## Read next
 
-- Config reference (limits): [`reference/config.md`](../../reference/config.md)
-- Validation and guardrails: [`explanation/validation-and-guardrails.md`](../../explanation/validation-and-guardrails.md)
-- Debug failures: [`how-to/debug-failures.md`](../../how-to/debug-failures.md)
-- Operate pipelines daily: [`how-to/operate-daily.md`](../../how-to/operate-daily.md)
+- Config reference (limits): [Config reference](../../reference/config.md)
+- Validation and guardrails: [Validation and guardrails](../../explanation/validation-and-guardrails.md)
+- Debug failures: [How-to: Debug a failed pipeline run](../../how-to/debug-failures.md)
+- Operate pipelines daily: [How-to: Operate pipelines daily](../../how-to/operate-daily.md)

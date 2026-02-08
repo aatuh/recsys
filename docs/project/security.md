@@ -1,10 +1,12 @@
 ---
+diataxis: explanation
 tags:
   - project
   - security
 ---
-
 # Security Policy
+This page explains Security Policy and how it fits into the RecSys suite.
+
 
 ## Reporting a vulnerability
 
@@ -41,3 +43,8 @@ We follow coordinated disclosure:
 - Keep secrets out of images; use environment variables or a secrets manager
 - Restrict network access; prefer private networking for internal deployments
 - Monitor logs and metrics for anomalous traffic
+
+## Read next
+
+- Project hub: [Project](index.md)
+- Contributing: [Contributing](contributing.md)

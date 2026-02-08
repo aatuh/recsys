@@ -1,3 +1,8 @@
+---
+diataxis: how-to
+tags:
+  - recsys-pipelines
+---
 # How-to: Run incremental pipelines
 
 Incremental runs use a checkpoint so you can process only new days.
@@ -34,8 +39,8 @@ After each successful day, the checkpoint is updated automatically.
 
 ## Read next
 
-- Operate pipelines daily: [`how-to/operate-daily.md`](operate-daily.md)
-- Schedule pipelines: [`how-to/schedule-pipelines.md`](schedule-pipelines.md)
-- SLOs and freshness: [`operations/slos-and-freshness.md`](../operations/slos-and-freshness.md)
-- Output layout: [`reference/output-layout.md`](../reference/output-layout.md)
-- Config reference: [`reference/config.md`](../reference/config.md)
+- Operate pipelines daily: [How-to: Operate pipelines daily](operate-daily.md)
+- Schedule pipelines: [How-to: Schedule pipelines with CronJob](schedule-pipelines.md)
+- SLOs and freshness: [SLOs and freshness](../operations/slos-and-freshness.md)
+- Output layout: [Output layout (local filesystem)](../reference/output-layout.md)
+- Config reference: [Config reference](../reference/config.md)

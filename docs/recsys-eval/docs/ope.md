@@ -1,4 +1,11 @@
+---
+diataxis: explanation
+tags:
+  - recsys-eval
+---
 # Off-policy evaluation (OPE): powerful and easy to misuse
+This page explains Off-policy evaluation (OPE): powerful and easy to misuse and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -73,7 +80,7 @@ Do not use OPE when:
 
 ## Read next
 
-- Concepts: [`recsys-eval/docs/concepts.md`](concepts.md)
-- Data contracts: [`recsys-eval/docs/data_contracts.md`](data_contracts.md)
-- Interpreting results: [`recsys-eval/docs/interpreting_results.md`](interpreting_results.md)
-- Security & privacy: [`recsys-eval/docs/security_privacy.md`](security_privacy.md)
+- Concepts: [Concepts: how to understand recsys-eval](concepts.md)
+- Data contracts: [Data contracts: what inputs look like](data_contracts.md)
+- Interpreting results: [Interpreting results: how to go from report to decision](interpreting_results.md)
+- Security & privacy: [Security and privacy notes](security_privacy.md)

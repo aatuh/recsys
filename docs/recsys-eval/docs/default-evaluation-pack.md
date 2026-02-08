@@ -1,4 +1,11 @@
+---
+diataxis: explanation
+tags:
+  - recsys-eval
+---
 # Default evaluation pack (recommended)
+This page explains Default evaluation pack (recommended) and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -30,8 +37,8 @@ Example (validate inputs):
 
 See:
 
-- Decision playbook: [`recsys-eval/docs/decision-playbook.md`](decision-playbook.md)
-- Suite workflow: [`how-to/run-eval-and-ship.md`](../../how-to/run-eval-and-ship.md)
+- Decision playbook: [Decision playbook: ship / hold / rollback](decision-playbook.md)
+- Suite workflow: [How-to: run evaluation and make ship decisions](../../how-to/run-eval-and-ship.md)
 
 ### Default offline metrics (regression gate)
 
@@ -44,8 +51,8 @@ Start with `k=5` or `k=10` and keep it stable across runs.
 
 Read more:
 
-- Metrics reference: [`recsys-eval/docs/metrics.md`](metrics.md)
-- Offline gate workflow: [`recsys-eval/docs/workflows/offline-gate-in-ci.md`](workflows/offline-gate-in-ci.md)
+- Metrics reference: [Metrics: what we measure and why](metrics.md)
+- Offline gate workflow: [Workflow: Offline gate in CI](workflows/offline-gate-in-ci.md)
 
 ## Week 3: measure impact (online experiments)
 
@@ -62,8 +69,8 @@ Once logging and joins are trustworthy, prefer online experiments for KPI lift.
 
 Read more:
 
-- Online A/B workflow: [`recsys-eval/docs/workflows/online-ab-in-production.md`](workflows/online-ab-in-production.md)
-- Interpreting results: [`recsys-eval/docs/interpreting_results.md`](interpreting_results.md)
+- Online A/B workflow: [Workflow: Online A/B analysis in production](workflows/online-ab-in-production.md)
+- Interpreting results: [Interpreting results: how to go from report to decision](interpreting_results.md)
 
 ## Slice keys (keep it boring)
 
@@ -82,6 +89,6 @@ Add one more slice only if you will act on it (device, locale, segment).
 
 ## Read next
 
-- Decision thresholds and what-to-do branches: [`recsys-eval/docs/decision-playbook.md`](decision-playbook.md)
-- Suite how-to (runnable commands): [`how-to/run-eval-and-ship.md`](../../how-to/run-eval-and-ship.md)
-- Minimum instrumentation spec: [`reference/minimum-instrumentation.md`](../../reference/minimum-instrumentation.md)
+- Decision thresholds and what-to-do branches: [Decision playbook: ship / hold / rollback](decision-playbook.md)
+- Suite how-to (runnable commands): [How-to: run evaluation and make ship decisions](../../how-to/run-eval-and-ship.md)
+- Minimum instrumentation spec: [Minimum instrumentation spec (for credible evaluation)](../../reference/minimum-instrumentation.md)

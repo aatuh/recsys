@@ -1,5 +1,11 @@
-
+---
+diataxis: reference
+tags:
+  - recsys-pipelines
+---
 # Event schemas
+This page is the canonical reference for Event schemas.
+
 
 ## ExposureEventV1
 
@@ -30,7 +36,7 @@ See also: `testdata/events/`.
 
 ## Read next
 
-- Start here: [`start-here.md`](../start-here.md)
-- Add event field: [`how-to/add-event-field.md`](../how-to/add-event-field.md)
-- Data lifecycle: [`explanation/data-lifecycle.md`](../explanation/data-lifecycle.md)
-- Run a backfill: [`how-to/run-backfill.md`](../how-to/run-backfill.md)
+- Start here: [Start here](../start-here.md)
+- Add event field: [How-to: Add a new field to exposure events](../how-to/add-event-field.md)
+- Data lifecycle: [Data lifecycle](../explanation/data-lifecycle.md)
+- Run a backfill: [How-to: Run a backfill safely](../how-to/run-backfill.md)

@@ -1,11 +1,11 @@
 ---
+diataxis: explanation
 tags:
   - overview
   - security
   - business
   - ops
 ---
-
 # Trust center
 
 RecSys is an auditable recommendation system suite with deterministic ranking and versioned ship/rollback.
@@ -15,6 +15,11 @@ RecSys is an auditable recommendation system suite with deterministic ranking an
 Start review async by sending this short list:
 
 - Security pack (print to PDF): [Security pack](security-pack.md)
+- Security posture snapshot (one-page summary): [Security posture snapshot](posture-snapshot.md)
+- Commercial procurement artifacts: [Commercial procurement artifacts](commercial-procurement-artifacts.md)
+- DPA/SCC baseline: [DPA and SCC terms](dpa-and-scc.md)
+- Subprocessor/distribution disclosure: [Subprocessors and distribution details](subprocessors.md)
+- Standard support schedule: [SLA and support schedule](sla-schedule.md)
 - Security, privacy, compliance overview: [Security, privacy, compliance](../start-here/security-privacy-compliance.md)
 - Production readiness checklist: [Production readiness checklist](../operations/production-readiness-checklist.md)
 - Known limitations and non-goals: [Known limitations](../start-here/known-limitations.md)
@@ -52,6 +57,16 @@ Data ownership stance (short):
   How to report security issues.
 - **[Security pack (index)](security-pack.md)**  
   Print-friendly list of security/procurement docs.
+- **[Security posture snapshot](posture-snapshot.md)**  
+  Dated one-page baseline for security questionnaires.
+- **[Commercial procurement artifacts](commercial-procurement-artifacts.md)**  
+  What is public vs Enterprise-custom during procurement.
+- **[DPA and SCC terms](dpa-and-scc.md)**  
+  Default contractual privacy/transfer terms for self-serve plans.
+- **[Subprocessors and distribution details](subprocessors.md)**  
+  Default processing and delivery disclosure model.
+- **[SLA and support schedule](sla-schedule.md)**  
+  Standard support schedule for self-serve plans.
 
 </div>
 

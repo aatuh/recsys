@@ -1,4 +1,5 @@
 ---
+diataxis: explanation
 tags:
   - explanation
   - evaluation
@@ -6,8 +7,9 @@ tags:
   - business
   - recsys-eval
 ---
-
 # Experimentation model (A/B, interleaving, OPE)
+This page explains Experimentation model (A/B, interleaving, OPE) and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -32,7 +34,7 @@ Every evaluation mode in this suite is built on the same foundation:
 
 If exposures or `request_id` are missing, everything else becomes guesswork.
 
-See: [`explanation/exposure-logging-and-attribution.md`](exposure-logging-and-attribution.md)
+See: [Exposure logging and attribution](exposure-logging-and-attribution.md)
 
 ## Choosing a mode (what to use when)
 
@@ -63,7 +65,7 @@ Mode-specific:
 - **Interleaving**: rank lists (`ranklist.v1`) for ranker A and ranker B (same `request_id` join key)
 - **OPE**: propensities on each exposed item (`propensity` fields on exposure items)
 
-Full schemas: [`reference/data-contracts/eval-events.md`](../reference/data-contracts/eval-events.md)
+Full schemas: [recsys-eval event schemas (v1)](../reference/data-contracts/eval-events.md)
 
 ## Experiment metadata in `recsys-service`
 
@@ -134,7 +136,7 @@ You have two good options:
 
 - **Broken joins** (missing/mismatched `request_id`)
   - Symptom: low join rate, unstable metrics.
-  - Fix: follow the join rules in [`reference/data-contracts/join-logic.md`](../reference/data-contracts/join-logic.md).
+  - Fix: follow the join rules in [Event join logic (exposures ↔ outcomes ↔ assignments)](../reference/data-contracts/join-logic.md).
 - **SRM (sample ratio mismatch)**
   - Symptom: recsys-eval report warns that buckets are imbalanced.
   - Fix: ensure deterministic assignment and stable subject IDs; avoid platform-specific bucketing bugs.
@@ -144,7 +146,7 @@ You have two good options:
 
 ## Read next
 
-- Run eval and ship (suite workflow): [`how-to/run-eval-and-ship.md`](../how-to/run-eval-and-ship.md)
-- recsys-eval concepts (modes and pitfalls): [`recsys-eval/docs/concepts.md`](../recsys-eval/docs/concepts.md)
-- recsys-eval interleaving and OPE: [`recsys-eval/docs/interleaving.md`](../recsys-eval/docs/interleaving.md),
-  [`recsys-eval/docs/ope.md`](../recsys-eval/docs/ope.md)
+- Run eval and ship (suite workflow): [How-to: run evaluation and make ship decisions](../how-to/run-eval-and-ship.md)
+- recsys-eval concepts (modes and pitfalls): [Concepts: how to understand recsys-eval](../recsys-eval/docs/concepts.md)
+- recsys-eval interleaving and OPE: [Interleaving: fast ranker comparison on the same traffic](../recsys-eval/docs/interleaving.md),
+  [Off-policy evaluation (OPE): powerful and easy to misuse](../recsys-eval/docs/ope.md)

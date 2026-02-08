@@ -1,12 +1,14 @@
 ---
+diataxis: reference
 tags:
   - overview
   - quickstart
   - business
   - developer
 ---
-
 # FAQ (for stakeholders)
+This page is the canonical reference for FAQ (for stakeholders).
+
 
 ## Who this is for
 
@@ -93,7 +95,7 @@ not log raw PII), and you can configure retention policies for logs.
 
 ## Read next
 
-- Stakeholder overview: [`start-here/what-is-recsys.md`](what-is-recsys.md)
-- Pilot plan (4–6 weeks): [`start-here/pilot-plan.md`](pilot-plan.md)
-- Security, privacy, compliance: [`start-here/security-privacy-compliance.md`](security-privacy-compliance.md)
-- Experimentation model: [`explanation/experimentation-model.md`](../explanation/experimentation-model.md)
+- Stakeholder overview: [What the RecSys suite is (stakeholder overview)](what-is-recsys.md)
+- Pilot plan (4–6 weeks): [Pilot plan (2–6 weeks)](pilot-plan.md)
+- Security, privacy, compliance: [Security, privacy, and compliance (overview)](security-privacy-compliance.md)
+- Experimentation model: [Experimentation model (A/B, interleaving, OPE)](../explanation/experimentation-model.md)

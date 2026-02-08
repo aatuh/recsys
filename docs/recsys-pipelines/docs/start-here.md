@@ -1,12 +1,14 @@
 ---
+diataxis: explanation
 tags:
   - overview
   - ops
   - developer
   - recsys-pipelines
 ---
-
 # Start here
+This page explains Start here and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -120,17 +122,17 @@ Publish (atomic):
 
 ## What you should do next
 
-- Run locally: [`tutorials/local-quickstart.md`](tutorials/local-quickstart.md)
-- Understand artifacts: [`explanation/artifacts-and-versioning.md`](explanation/artifacts-and-versioning.md)
-- Learn operations: [`operations/slos-and-freshness.md`](operations/slos-and-freshness.md)
+- Run locally: [Run locally (filesystem mode)](tutorials/local-quickstart.md)
+- Understand artifacts: [Artifacts and versioning](explanation/artifacts-and-versioning.md)
+- Learn operations: [SLOs and freshness](operations/slos-and-freshness.md)
 
 If you are here because something broke, jump to:
 
-- Runbooks: [`operations/runbooks/pipeline-failed.md`](operations/runbooks/pipeline-failed.md)
+- Runbooks: [Runbook: Pipeline failed](operations/runbooks/pipeline-failed.md)
 
 ## Read next
 
-- Operate daily: [`how-to/operate-daily.md`](how-to/operate-daily.md)
-- Backfills and windows: [`explanation/windows-and-backfills.md`](explanation/windows-and-backfills.md)
-- Output layout: [`reference/output-layout.md`](reference/output-layout.md)
-- Glossary: [`glossary.md`](glossary.md)
+- Operate daily: [How-to: Operate pipelines daily](how-to/operate-daily.md)
+- Backfills and windows: [Windows and backfills](explanation/windows-and-backfills.md)
+- Output layout: [Output layout (local filesystem)](reference/output-layout.md)
+- Glossary: [Glossary](glossary.md)

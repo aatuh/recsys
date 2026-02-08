@@ -1,5 +1,12 @@
-
+---
+diataxis: how-to
+tags:
+  - recsys-pipelines
+  - runbook
+---
 # Runbook: Pipeline failed
+This guide shows how to runbook: Pipeline failed in a reliable, repeatable way.
+
 
 ## Symptoms
 
@@ -29,7 +36,7 @@ See `how-to/rollback-manifest.md`.
 
 ## Read next
 
-- Debug failures: [`how-to/debug-failures.md`](../../how-to/debug-failures.md)
-- Roll back artifacts safely: [`how-to/rollback-safely.md`](../../how-to/rollback-safely.md)
-- Validation failed runbook: [`operations/runbooks/validation-failed.md`](validation-failed.md)
-- SLOs and freshness: [`operations/slos-and-freshness.md`](../slos-and-freshness.md)
+- Debug failures: [How-to: Debug a failed pipeline run](../../how-to/debug-failures.md)
+- Roll back artifacts safely: [How-to: Roll back artifacts safely](../../how-to/rollback-safely.md)
+- Validation failed runbook: [Runbook: Validation failed](validation-failed.md)
+- SLOs and freshness: [SLOs and freshness](../slos-and-freshness.md)

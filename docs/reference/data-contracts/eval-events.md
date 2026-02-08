@@ -1,4 +1,5 @@
 ---
+diataxis: reference
 tags:
   - reference
   - data-contracts
@@ -6,8 +7,9 @@ tags:
   - developer
   - evaluation
 ---
-
 # recsys-eval event schemas (v1)
+This page is the canonical reference for recsys-eval event schemas (v1).
+
 
 ## Who this is for
 
@@ -19,12 +21,6 @@ tags:
 - Required fields and allowed optional fields for each event type
 - JSONL examples you can copy/paste
 - Guidance to avoid validation failures
-
-## Used by
-
-- Minimum instrumentation spec: [`reference/minimum-instrumentation.md`](../minimum-instrumentation.md)
-- Integration checklist: [`how-to/integration-checklist.md`](../../how-to/integration-checklist.md)
-- Run eval and ship decisions: [`how-to/run-eval-and-ship.md`](../../how-to/run-eval-and-ship.md)
 
 `recsys-eval validate` uses strict JSON schemas with
 `additionalProperties: false`. If your JSONL includes extra keys or misses
@@ -122,3 +118,8 @@ EXPOSURE_LOG_FORMAT=eval_v1
 
 If you keep `service_v1`, you must transform logs before running
 `recsys-eval validate`.
+
+## Read next
+
+- Data contracts overview: [Data contracts](index.md)
+- Join logic: [Event join logic (exposures ↔ outcomes ↔ assignments)](join-logic.md)

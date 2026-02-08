@@ -1,9 +1,9 @@
 ---
+diataxis: explanation
 tags:
   - ops
   - performance
 ---
-
 # Performance and capacity guide
 
 This guide describes how to run reproducible load tests against recsys-service
@@ -63,7 +63,7 @@ Capture:
 !!! note
     If you see a lot of `429` responses locally, you may be hitting the dev stack’s safety rate limit. Either lower
     `CONCURRENCY`/`REQUESTS` or use the benchmark setup in
-    [`operations/baseline-benchmarks.md`](baseline-benchmarks.md).
+    [Baseline benchmarks (anchor numbers)](baseline-benchmarks.md).
 
 ## 3) Record sizing data
 
@@ -95,6 +95,6 @@ Re-run the load test after:
 
 ## Read next
 
-- Baseline benchmarks (anchor numbers): [`operations/baseline-benchmarks.md`](baseline-benchmarks.md)
-- Production readiness checklist: [`operations/production-readiness-checklist.md`](production-readiness-checklist.md)
-- Backpressure and limits: [`reference/config/recsys-service.md`](../reference/config/recsys-service.md)
+- Baseline benchmarks (anchor numbers): [Baseline benchmarks (anchor numbers)](baseline-benchmarks.md)
+- Production readiness checklist: [Production readiness checklist (RecSys suite)](production-readiness-checklist.md)
+- Backpressure and limits: [recsys-service configuration](../reference/config/recsys-service.md)

@@ -1,4 +1,5 @@
 ---
+diataxis: how-to
 tags:
   - how-to
   - integration
@@ -6,8 +7,9 @@ tags:
   - developer
   - recsys-service
 ---
-
 # Cookbook: integrate with an event bus (streaming)
+This guide shows how to cookbook: integrate with an event bus (streaming) in a reliable, repeatable way.
+
 
 ## Who this is for
 
@@ -75,5 +77,6 @@ flowchart LR
 
 ## Read next
 
-- Data contracts hub: [`reference/data-contracts/index.md`](../../reference/data-contracts/index.md)
-- Event join logic: [`reference/data-contracts/join-logic.md`](../../reference/data-contracts/join-logic.md)
+- Exposure logging & attribution: [Exposure logging and attribution](../../explanation/exposure-logging-and-attribution.md)
+- Event join logic: [Event join logic (exposures ↔ outcomes ↔ assignments)](../../reference/data-contracts/join-logic.md)
+- Troubleshoot integration failures: [How-to: troubleshooting for integrators](../troubleshooting-integration.md)

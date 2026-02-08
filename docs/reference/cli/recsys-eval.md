@@ -1,4 +1,5 @@
 ---
+diataxis: reference
 tags:
   - reference
   - cli
@@ -6,8 +7,9 @@ tags:
   - developer
   - ops
 ---
-
 # CLI: recsys-eval
+This page is the canonical reference for CLI: recsys-eval.
+
 
 ## Who this is for
 
@@ -112,6 +114,6 @@ esac
 
 ## Read next
 
-- Default evaluation pack: [`recsys-eval/docs/default-evaluation-pack.md`](../../recsys-eval/docs/default-evaluation-pack.md)
-- Run eval and ship decisions: [`how-to/run-eval-and-ship.md`](../../how-to/run-eval-and-ship.md)
-- Data contracts (schemas + examples): [`reference/data-contracts/index.md`](../data-contracts/index.md)
+- Default evaluation pack: [Default evaluation pack (recommended)](../../recsys-eval/docs/default-evaluation-pack.md)
+- Run eval and ship decisions: [How-to: run evaluation and make ship decisions](../../how-to/run-eval-and-ship.md)
+- Data contracts (schemas + examples): [Data contracts](../data-contracts/index.md)

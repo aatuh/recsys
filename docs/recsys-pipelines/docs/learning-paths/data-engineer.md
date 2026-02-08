@@ -1,5 +1,11 @@
-
+---
+diataxis: explanation
+tags:
+  - recsys-pipelines
+---
 # Learning path: Data Engineering
+This page explains Learning path: Data Engineering and how it fits into the RecSys suite.
+
 
 ## Goals
 
@@ -24,7 +30,7 @@
 
 ## Read next
 
-- Start here: [`start-here.md`](../start-here.md)
-- Event schemas: [`reference/schemas-events.md`](../reference/schemas-events.md)
-- Backfill safely: [`how-to/backfill-safely.md`](../how-to/backfill-safely.md)
-- Output layout: [`reference/output-layout.md`](../reference/output-layout.md)
+- Start here: [Start here](../start-here.md)
+- Event schemas: [Event schemas](../reference/schemas-events.md)
+- Backfill safely: [How-to: Backfill pipelines safely](../how-to/backfill-safely.md)
+- Output layout: [Output layout (local filesystem)](../reference/output-layout.md)

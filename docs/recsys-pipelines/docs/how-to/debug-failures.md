@@ -1,5 +1,11 @@
-
+---
+diataxis: how-to
+tags:
+  - recsys-pipelines
+---
 # How-to: Debug a failed pipeline run
+This guide shows how to how-to: Debug a failed pipeline run in a reliable, repeatable way.
+
 
 ## 1) Identify the step
 
@@ -49,8 +55,8 @@ See `operations/runbooks/pipeline-failed.md`.
 
 ## Read next
 
-- Operate pipelines daily: [`how-to/operate-daily.md`](operate-daily.md)
-- Pipeline failed runbook: [`operations/runbooks/pipeline-failed.md`](../operations/runbooks/pipeline-failed.md)
-- Validation failed runbook: [`operations/runbooks/validation-failed.md`](../operations/runbooks/validation-failed.md)
-- Limit exceeded runbook: [`operations/runbooks/limit-exceeded.md`](../operations/runbooks/limit-exceeded.md)
-- Output layout (verify “current”): [`reference/output-layout.md`](../reference/output-layout.md)
+- Operate pipelines daily: [How-to: Operate pipelines daily](operate-daily.md)
+- Pipeline failed runbook: [Runbook: Pipeline failed](../operations/runbooks/pipeline-failed.md)
+- Validation failed runbook: [Runbook: Validation failed](../operations/runbooks/validation-failed.md)
+- Limit exceeded runbook: [Runbook: Limit exceeded](../operations/runbooks/limit-exceeded.md)
+- Output layout (verify “current”): [Output layout (local filesystem)](../reference/output-layout.md)

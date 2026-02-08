@@ -1,12 +1,14 @@
 ---
+diataxis: explanation
 tags:
   - explanation
   - artifacts
   - ops
   - developer
 ---
-
 # Data modes: DB-only vs artifact/manifest
+This page explains Data modes: DB-only vs artifact/manifest and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -63,7 +65,7 @@ Notes:
 
 !!! warning
     If artifact mode is enabled but the manifest pointer is missing/stale (or the object store is unreachable), serving
-    can degrade to empty/partial results. See: [`operations/failure-modes.md`](../operations/failure-modes.md).
+    can degrade to empty/partial results. See: [Failure modes & diagnostics (baseline)](../operations/failure-modes.md).
 
 ## Recommendation
 
@@ -79,6 +81,6 @@ from the artifact manifest and uses Postgres for tag metadata.
 
 ## Read next
 
-- Minimum components by goal: [`start-here/minimum-components-by-goal.md`](../start-here/minimum-components-by-goal.md)
-- Tutorial (DB-only loop): [`tutorials/local-end-to-end.md`](../tutorials/local-end-to-end.md)
-- Tutorial (artifact/manifest mode): [`tutorials/production-like-run.md`](../tutorials/production-like-run.md)
+- Minimum components by goal: [Minimum components by goal](../start-here/minimum-components-by-goal.md)
+- Tutorial (DB-only loop): [local end-to-end (service → logging → eval)](../tutorials/local-end-to-end.md)
+- Tutorial (artifact/manifest mode): [production-like run (pipelines → object store → ship/rollback)](../tutorials/production-like-run.md)

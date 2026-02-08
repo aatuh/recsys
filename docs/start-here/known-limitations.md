@@ -1,10 +1,10 @@
 ---
+diataxis: explanation
 tags:
   - overview
   - evaluation
   - business
 ---
-
 # Known limitations and non-goals (current)
 
 This page is intentionally blunt. It exists so evaluators and operators can set expectations early.
@@ -24,7 +24,7 @@ This page is intentionally blunt. It exists so evaluators and operators can set 
 ## Limitations
 
 - **Tenant creation is DB-only today.** There is no admin API to create tenants yet; bootstrap requires a SQL insert.
-  See: [`reference/api/admin.md`](../reference/api/admin.md)
+  See: [Admin API + local bootstrap (recsys-service)](../reference/api/admin.md)
 
 - **Pipelines manifest registry is filesystem-based.** `recsys-pipelines` writes the “current manifest pointer” to its
   configured `registry_dir` on the filesystem. Artifacts can be published to S3/MinIO, but publishing the manifest to
@@ -36,20 +36,6 @@ This page is intentionally blunt. It exists so evaluators and operators can set 
 - **Dev headers don’t carry roles.** If you enable admin RBAC roles, admin endpoints require roles from JWT/API keys.
   For local dev with dev headers, either disable RBAC roles or use JWT.
 
-## ML scope (modeling boundaries)
-
-RecSys is designed for **deterministic, auditable recommendations** first.
-
-What this means in practice:
-
-- The serving stack does **not** train models online or run end-to-end learned-to-rank training for your domain.
-- Offline pipelines compute a few baseline signals (popularity/co-occurrence/implicit feedback) deterministically.
-- There is no built-in feature store; signals come from Postgres tables or versioned artifacts.
-
-If you want learned models, keep training external and publish scores/embeddings to stores that `recsys-algo` consumes.
-Start here: [`recsys-algo/store-ports.md`](../recsys-algo/store-ports.md) and
-[`how-to/add-signal-end-to-end.md`](../how-to/add-signal-end-to-end.md).
-
 ## Non-goals (by default)
 
 - Running your infrastructure for you (managed hosting is not implied by this repo)
@@ -57,6 +43,6 @@ Start here: [`recsys-algo/store-ports.md`](../recsys-algo/store-ports.md) and
 
 ## Read next
 
-- Pilot plan (what to do first): [`start-here/pilot-plan.md`](pilot-plan.md)
-- Data modes (DB-only vs artifact/manifest): [`explanation/data-modes.md`](../explanation/data-modes.md)
-- Local end-to-end tutorial (known-good baseline): [`tutorials/local-end-to-end.md`](../tutorials/local-end-to-end.md)
+- Pilot plan (what to do first): [Pilot plan (2–6 weeks)](pilot-plan.md)
+- Data modes (DB-only vs artifact/manifest): [Data modes: DB-only vs artifact/manifest](../explanation/data-modes.md)
+- Local end-to-end tutorial (known-good baseline): [local end-to-end (service → logging → eval)](../tutorials/local-end-to-end.md)

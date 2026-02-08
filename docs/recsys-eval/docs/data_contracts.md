@@ -1,4 +1,11 @@
+---
+diataxis: explanation
+tags:
+  - recsys-eval
+---
 # Data contracts: what inputs look like
+This page explains Data contracts: what inputs look like and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -48,12 +55,10 @@ Minimal example (illustrative, not exhaustive):
 
 {
   "request_id": "req_123",
+  "tenant": "demo",
+  "surface": "home",
   "user_id": "u_42",
-  "ts": "2026-01-27T12:00:00Z",
-  "context": {
-    "tenant_id": "demo",
-    "surface": "home"
-  },
+  "timestamp": "2026-01-27T12:00:00Z",
   "items": [
     {"item_id": "A", "rank": 1},
     {"item_id": "B", "rank": 2}
@@ -82,10 +87,9 @@ Minimal example:
 
 {
   "request_id": "req_123",
-  "user_id": "u_42",
+  "event": "click",
   "item_id": "B",
-  "event_type": "click",
-  "ts": "2026-01-27T12:00:05Z"
+  "timestamp": "2026-01-27T12:00:05Z"
 }
 
 ```
@@ -105,11 +109,9 @@ Minimal example:
 ```json
 
 {
-  "experiment_id": "exp_home_rank_v3",
-  "variant": "control",
   "request_id": "req_123",
-  "user_id": "u_42",
-  "ts": "2026-01-27T12:00:00Z"
+  "experiment_id": "exp_home_rank_v3",
+  "variant": "control"
 }
 
 ```
@@ -132,14 +134,14 @@ In reports, look for:
 
 - match rate: how many exposures have outcomes
 - duplicate request_id rates
-- ts anomalies
-- missing segmentation context keys (for example: `tenant_id`, `surface`)
+- timestamp anomalies
+- missing tenant/surface fields (kills segmentation)
 
 If joins look wrong, stop and fix instrumentation. Do not "tune metrics".
 
 ## Read next
 
-- Integration logging plan: [`recsys-eval/docs/integration.md`](integration.md)
-- Workflow: Offline gate in CI: [`recsys-eval/docs/workflows/offline-gate-in-ci.md`](workflows/offline-gate-in-ci.md)
-- Suite-level contract index: [`reference/data-contracts/index.md`](../../reference/data-contracts/index.md)
-- Troubleshooting joins: [`recsys-eval/docs/troubleshooting.md`](troubleshooting.md)
+- Integration logging plan: [Integration: how to produce the inputs](integration.md)
+- Workflow: Offline gate in CI: [Workflow: Offline gate in CI](workflows/offline-gate-in-ci.md)
+- Suite-level contract index: [Data contracts](../../reference/data-contracts/index.md)
+- Troubleshooting joins: [Troubleshooting: symptom -> cause -> fix](troubleshooting.md)

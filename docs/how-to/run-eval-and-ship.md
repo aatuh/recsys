@@ -1,4 +1,5 @@
 ---
+diataxis: how-to
 tags:
   - how-to
   - evaluation
@@ -6,8 +7,9 @@ tags:
   - business
   - recsys-eval
 ---
-
 # How-to: run evaluation and make ship decisions
+This guide shows how to how-to: run evaluation and make ship decisions in a reliable, repeatable way.
+
 
 ## Who this is for
 
@@ -54,7 +56,7 @@ Tip: if you want `recsys-service` to emit `exposure.v1` directly, set:
 - `EXPOSURE_LOG_ENABLED=true`
 - `EXPOSURE_LOG_FORMAT=eval_v1`
 
-See: [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)
+See: [Exposure logging and attribution](../explanation/exposure-logging-and-attribution.md)
 
 ## 1) Run an offline regression gate (recommended baseline)
 
@@ -107,9 +109,9 @@ Rollback levers:
 
 See:
 
-- Pipelines rollback: [`recsys-pipelines/docs/how-to/rollback-manifest.md`](../recsys-pipelines/docs/how-to/rollback-manifest.md)
-- Admin cache invalidation: [`reference/api/admin.md`](../reference/api/admin.md)
-- Interpreting results: [`recsys-eval/docs/interpreting_results.md`](../recsys-eval/docs/interpreting_results.md)
+- Pipelines rollback: [How-to: Roll back to a previous artifact version](../recsys-pipelines/docs/how-to/rollback-manifest.md)
+- Admin cache invalidation: [Admin API + local bootstrap (recsys-service)](../reference/api/admin.md)
+- Interpreting results: [Interpreting results: how to go from report to decision](../recsys-eval/docs/interpreting_results.md)
 
 ## Verify
 
@@ -118,6 +120,6 @@ See:
 
 ## Read next
 
-- Default quality gate contract (thresholds + override policy): [`recsys-eval/docs/default-quality-gate.md`](../recsys-eval/docs/default-quality-gate.md)
-- Decision playbook (ship / hold / rollback): [`recsys-eval/docs/decision-playbook.md`](../recsys-eval/docs/decision-playbook.md)
-- Exposure logging and attribution: [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)
+- Decision playbook (ship / hold / rollback): [Decision playbook: ship / hold / rollback](../recsys-eval/docs/decision-playbook.md)
+- Experimentation model: [Experimentation model (A/B, interleaving, OPE)](../explanation/experimentation-model.md)
+- Exposure logging and attribution: [Exposure logging and attribution](../explanation/exposure-logging-and-attribution.md)

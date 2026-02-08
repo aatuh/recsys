@@ -1,12 +1,14 @@
 ---
+diataxis: reference
 tags:
   - reference
   - database
   - ops
   - recsys-service
 ---
-
 # Migrations (safe upgrade)
+This page is the canonical reference for Migrations (safe upgrade).
+
 
 ## Who this is for
 
@@ -91,3 +93,8 @@ go run ./cmd/migrate --allow-down down
 1. config/rules version tables + current pointers
 1. audit log
 1. exposure_events (partitioned)
+
+## Read next
+
+- Database reference: [Database reference](index.md)
+- Migrations: [Migrations (safe upgrade)](migrations.md)

@@ -1,11 +1,13 @@
 ---
+diataxis: reference
 tags:
   - overview
   - business
   - security
 ---
-
 # Procurement pack (Security, Legal, IT, Finance)
+Role-based links to the exact artifacts Security, Legal, IT, and Finance typically review.
+
 
 ## Who this is for
 
@@ -18,44 +20,31 @@ tags:
 - A skimmable checklist of the exact artifacts to review
 - Role-based sections (Security/Legal/IT/Finance) with canonical links only
 
-## Trust map (claims → evidence → limits)
-
-Use this as a fast “why trust this?” map. Each claim links to evidence you can inspect, plus the boundary conditions.
-
-- Deterministic serving (same inputs + versions)
-  - Evidence: [How it works](../explanation/how-it-works.md), [Ranking reference](../recsys-algo/ranking-reference.md),
-    [Tutorial: local end-to-end](../tutorials/local-end-to-end.md)
-  - Limits: determinism assumes identical inputs/config/rules/artifacts and versions; experiments can intentionally
-    change outputs.
-
-- Auditable measurement loop (exposures ↔ outcomes join by `request_id`)
-  - Evidence: [Evidence examples](evidence.md), [Minimum instrumentation](../reference/minimum-instrumentation.md),
-    [Join logic](../reference/data-contracts/join-logic.md)
-  - Limits: if `request_id` is missing/unstable, join-rate collapses and KPIs become untrustworthy; do not log raw PII.
-
-- Safe ship/rollback levers (config/rules + manifest pointer)
-  - Evidence: [Operational reliability & rollback](../start-here/operational-reliability-and-rollback.md),
-    [Tutorial: production-like run](../tutorials/production-like-run.md),
-    [Stale manifest (runbook)](../operations/runbooks/stale-manifest.md)
-  - Limits: artifact/manifest mode depends on pipelines freshness and artifact availability; practice rollback before
-    production.
-
-- Operational readiness (runbooks + checklists)
-  - Evidence: [Production readiness checklist](../operations/production-readiness-checklist.md),
-    [Failure modes](../operations/failure-modes.md)
-  - Limits: you must define SLOs/alerts and validate performance with your data and deployment shape.
-
-- Security and privacy posture (auth/tenancy + data handling)
-  - Evidence: [Security pack](../security/security-pack.md),
-    [Security, privacy, compliance](../start-here/security-privacy-compliance.md)
-  - Limits: security requires correct configuration (auth, tenancy scope, retention, secrets); no managed hosting is
-    implied by this repo.
-
 ## Security
 
 - Security pack (canonical): [Security pack](../security/security-pack.md)
+- Security posture snapshot (dated one-page summary): [Security posture snapshot](../security/posture-snapshot.md)
+- Commercial procurement artifacts (what is published vs Enterprise-custom):
+  [Commercial procurement artifacts](../security/commercial-procurement-artifacts.md)
+- DPA/SCC baseline (self-serve plans): [DPA and SCC terms](../security/dpa-and-scc.md)
+- Subprocessor/distribution disclosure: [Subprocessors and distribution details](../security/subprocessors.md)
+- Standard support schedule: [SLA and support schedule](../security/sla-schedule.md)
 - Security/privacy/compliance overview: [Security, privacy, compliance](../start-here/security-privacy-compliance.md)
 - Known limitations (non-goals): [Known limitations](../start-here/known-limitations.md)
+
+
+## Privacy / data protection
+
+This is not legal advice. Use this as a practical checklist for your privacy review.
+
+- [ ] Confirm no raw PII is required for the pilot (pseudonymous identifiers are sufficient).
+- [ ] Confirm which identifiers you will send (user_id / anonymous_id / session_id) and how they are generated.
+- [ ] Define retention for exposure/outcome logs and who can access them.
+- [ ] Define deletion/erasure handling (if your org requires it).
+- [ ] Confirm data residency requirements (where logs and DB data live).
+- [ ] Review default contractual terms (DPA/SCC/subprocessor disclosures) and decide if Enterprise customization is needed.
+
+Canonical overview: [Security, privacy, compliance](../start-here/security-privacy-compliance.md)
 
 ## Legal
 
@@ -63,6 +52,7 @@ Use this as a fast “why trust this?” map. Each claim links to evidence you c
 - Commercial use and how to buy: [Commercial use](../licensing/commercial.md)
 - Evaluation license text: [Evaluation license](../licensing/eval_license.md)
 - Commercial license text: [Commercial license](../licensing/commercial_license.md)
+- Self-serve procurement path: [Self-serve procurement](self-serve-procurement.md)
 - Pricing definitions (order form terms): [Pricing definitions](../licensing/pricing.md)
 - Order form template: [Order form template](../licensing/order_form.md)
 
@@ -71,8 +61,7 @@ Use this as a fast “why trust this?” map. Each claim links to evidence you c
 - Operations hub: [Operations](../operations/index.md)
 - Baseline benchmarks (performance anchors): [Baseline benchmarks](../operations/baseline-benchmarks.md)
 - Failure modes and diagnostics: [Failure modes](../operations/failure-modes.md)
-- Rollback story (ship/hold/rollback levers):
-  [Operational reliability & rollback](../start-here/operational-reliability-and-rollback.md)
+- Rollback story (ship/hold/rollback levers): [Operational reliability & rollback](../start-here/operational-reliability-and-rollback.md)
 - Deployment guide: [Deploy with Helm](../how-to/deploy-helm.md)
 
 ## Finance / Procurement
@@ -80,21 +69,17 @@ Use this as a fast “why trust this?” map. Each claim links to evidence you c
 - Buyer guide (evaluation + procurement flow): [Buyer guide](../pricing/evaluation-and-licensing.md)
 - Pricing overview (commercial plans): [Pricing](../pricing/index.md)
 - Support model (expectations by plan): [Support](../project/support.md)
+- Final cross-functional review template: [Decision readiness matrix](decision-readiness.md)
 
 ## Procurement checklist (Definition of Done)
 
-- [ ] We identified one recommendation surface for the pilot.
-- [ ] We can measure impact credibly (instrumentation + join-rate sanity):
-  [Minimum instrumentation](../reference/minimum-instrumentation.md)
-- [ ] We reviewed known limitations and confirmed fit for our current stage:
-  [Known limitations](../start-here/known-limitations.md)
-- [ ] Security reviewed the security pack and data posture: [Security pack](../security/security-pack.md)
-- [ ] Legal reviewed licensing obligations and the order form terms:
-  [Licensing](../licensing/index.md) and [Order form template](../licensing/order_form.md)
-- [ ] We chose plan scope (tenants/deployments) and support expectations: [Pricing](../pricing/index.md)
+Use the canonical checklist when you want a single shareable DoD list:
+
+- [Procurement checklist](procurement-checklist.md)
 
 ## Read next
 
 - Buyer journey (5-minute path): [Buyer journey](buyer-journey.md)
 - Start an evaluation (technical path): [Start an evaluation](../evaluate/index.md)
 - Buyer guide (evaluation + procurement): [Buyer guide](../pricing/evaluation-and-licensing.md)
+- Final go/no-go review: [Decision readiness matrix](decision-readiness.md)

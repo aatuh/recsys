@@ -1,11 +1,13 @@
 ---
+diataxis: explanation
 tags:
   - overview
   - business
   - evaluation
 ---
-
 # ROI and risk model
+This page explains ROI and risk model and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -52,29 +54,29 @@ To measure lift reliably, you need consistent logging and joins:
 
 Start here:
 
-- Data contracts (canonical schemas + examples): [`reference/data-contracts/index.md`](../reference/data-contracts/index.md)
-- Pilot plan (deliverables + exit criteria): [`start-here/pilot-plan.md`](pilot-plan.md)
+- Data contracts (canonical schemas + examples): [Data contracts](../reference/data-contracts/index.md)
+- Pilot plan (deliverables + exit criteria): [Pilot plan (2–6 weeks)](pilot-plan.md)
 - How to run evaluation and decide ship/hold/rollback:
-  [`how-to/run-eval-and-ship.md`](../how-to/run-eval-and-ship.md)
+  [How-to: run evaluation and make ship decisions](../how-to/run-eval-and-ship.md)
 
 ## Risks and mitigations (practical)
 
 - **Bad instrumentation (joins low, SRM warnings, “impossible” lift)**
   - Mitigation: validate schemas early; fix logging before trusting metrics.
-  - Docs: [`recsys-eval/docs/troubleshooting.md`](../recsys-eval/docs/troubleshooting.md)
+  - Docs: [Troubleshooting: symptom -> cause -> fix](../recsys-eval/docs/troubleshooting.md)
 - **Operational risk (bad publish affects users)**
   - Mitigation: use reversible rollouts; practice rollback once.
-  - Docs: [`start-here/operational-reliability-and-rollback.md`](operational-reliability-and-rollback.md)
+  - Docs: [Operational reliability and rollback](operational-reliability-and-rollback.md)
 - **Data quality drift (late data, spikes, schema surprises)**
   - Mitigation: validation gates + guardrails; alert on freshness.
-  - Docs: [`recsys-pipelines/docs/operations/slos-and-freshness.md`](../recsys-pipelines/docs/operations/slos-and-freshness.md)
+  - Docs: [SLOs and freshness](../recsys-pipelines/docs/operations/slos-and-freshness.md)
 - **Privacy / compliance risk**
   - Mitigation: log only pseudonymous IDs; treat schemas as strict; minimize PII.
-  - Docs: [`start-here/security-privacy-compliance.md`](security-privacy-compliance.md)
+  - Docs: [Security, privacy, and compliance (overview)](security-privacy-compliance.md)
 
 ## Read next
 
-- Pilot plan: [`start-here/pilot-plan.md`](pilot-plan.md)
-- Stakeholder overview: [`start-here/what-is-recsys.md`](what-is-recsys.md)
-- Security, privacy, compliance: [`start-here/security-privacy-compliance.md`](security-privacy-compliance.md)
-- Interpreting eval results: [`recsys-eval/docs/interpreting_results.md`](../recsys-eval/docs/interpreting_results.md)
+- Pilot plan: [Pilot plan (2–6 weeks)](pilot-plan.md)
+- Stakeholder overview: [What the RecSys suite is (stakeholder overview)](what-is-recsys.md)
+- Security, privacy, compliance: [Security, privacy, and compliance (overview)](security-privacy-compliance.md)
+- Interpreting eval results: [Interpreting results: how to go from report to decision](../recsys-eval/docs/interpreting_results.md)

@@ -1,4 +1,5 @@
 ---
+diataxis: reference
 tags:
   - reference
   - api
@@ -6,8 +7,9 @@ tags:
   - developer
   - recsys-service
 ---
-
 # Auth and tenancy reference
+This page is the canonical reference for Auth and tenancy reference.
+
 
 ## Who this is for
 
@@ -23,9 +25,9 @@ tags:
 ## Concepts (2 minutes)
 
 - **Tenant**: a logically separate recommendation domain
-  (see [`project/glossary.md#tenant`](../project/glossary.md#tenant)).
+  (see [Glossary](../project/glossary.md#tenant)).
 - **Surface**: the recommendation surface/placement
-  (see [`project/glossary.md#surface`](../project/glossary.md#surface)).
+  (see [Glossary](../project/glossary.md#surface)).
 - **Tenant scope**: which tenant a request is allowed to operate on.
 
 In general:
@@ -39,7 +41,7 @@ In general:
 
 When `DEV_AUTH_ENABLED=true`, you can authenticate using headers.
 The canonical env var list and defaults live in:
-[`reference/config/recsys-service.md`](config/recsys-service.md).
+[recsys-service configuration](config/recsys-service.md).
 
 Common headers:
 
@@ -105,10 +107,10 @@ When `API_KEY_ENABLED=true`, send:
 
 Admin endpoints are control-plane: restrict network access and require roles in production.
 
-- Docs: [`reference/api/admin.md`](api/admin.md)
-- Security checklist: [`start-here/security-privacy-compliance.md`](../start-here/security-privacy-compliance.md)
+- Docs: [Admin API + local bootstrap (recsys-service)](api/admin.md)
+- Security checklist: [Security, privacy, and compliance (overview)](../start-here/security-privacy-compliance.md)
 
 ## Read next
 
-- Integration guide: [`how-to/integrate-recsys-service.md`](../how-to/integrate-recsys-service.md)
-- API reference: [`reference/api/api-reference.md`](api/api-reference.md)
+- Integration guide: [How-to: integrate recsys-service into an application](../how-to/integrate-recsys-service.md)
+- API reference: [API Reference](api/api-reference.md)

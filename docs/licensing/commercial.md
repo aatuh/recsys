@@ -1,10 +1,10 @@
 ---
+diataxis: explanation
 tags:
   - licensing
   - commercial
   - business
 ---
-
 # Commercial Use & Licensing
 
 This page explains how to purchase and use a **commercial license** for parts of this repository that are otherwise
@@ -12,12 +12,19 @@ licensed under **AGPLv3**.
 
 This page is informational and describes our commercial offering at a high level.
 
+## Document controls
+
+- Owner: RecSys maintainers (`contact@recsys.app`)
+- Last legal/doc review: 2026-02-08
+- Next review due: 2026-05-08
+- Order of precedence: signed Commercial License Agreement + signed Order Form > this page
+
 ## Why a commercial license?
 
 The AGPLv3 is designed for software used over a network. If you modify AGPL-covered code and provide network access to users,
 AGPLv3 requires offering those users access to the Corresponding Source of your modified version (see Section 13).
 
-A commercial license allows you to use the covered components under alternative terms, typically enabling:
+A commercial license allows you to use the covered components under alternative terms, enabling:
 
 - Internal or external deployment without AGPL source-offer obligations (subject to the commercial agreement)
 - Keeping modifications private
@@ -25,7 +32,7 @@ A commercial license allows you to use the covered components under alternative 
 
 ## What is covered?
 
-Commercial licensing applies to the components that are AGPLv3 in this repository, including typically:
+Commercial licensing applies to the components that are AGPLv3 in this repository, including:
 
 - `recsys-service` (serving API; `docker compose` service name: `api`)
 - `recsys-algo` (algorithms used by the service)
@@ -35,53 +42,49 @@ Commercial licensing applies to the components that are AGPLv3 in this repositor
 
 ## What you get when you buy
 
-A typical commercial purchase includes:
+A commercial purchase includes, at minimum:
 
 - A signed commercial license grant (agreement + order form)
-- A license token/file for bookkeeping (optional, **not DRM**)
-- Access to **commercial release artifacts** (e.g., signed container images) if you offer those
-- Security and patch releases according to the purchased tier
-- Optional support terms (if purchased)
+- Any entitlement token/file described in the Order Form (bookkeeping only, **not DRM**)
+- Access to commercial release artifacts when specified in the Order Form
+- Security/patch update access according to the purchased plan
+- Support terms as stated in the signed Order Form
 
 See:
 
-- Pricing overview (commercial plans): [`pricing/index.md`](../pricing/index.md)
-- Legal pricing definitions (order forms): [`licensing/pricing.md`](pricing.md)
+- Pricing overview (commercial plans): [Pricing](../pricing/index.md)
+- Legal pricing definitions (order forms): [Pricing definitions](pricing.md)
 
 ## How to buy
 
 Recommended low-friction flow:
 
-1. Choose a plan in [`pricing/index.md`](../pricing/index.md)
-2. Request a commercial license (public or private inquiry)
-3. Receive:
+1. Choose a plan in [Pricing](../pricing/index.md)
+2. For Commercial Evaluation/Starter/Growth, follow the standard self-serve path:
+   [Self-serve procurement](../for-businesses/self-serve-procurement.md)
+3. Use direct contact only for Enterprise/custom terms (OEM/resale, custom legal/security/SLA commitments):
 
-   - commercial license paperwork,
-   - delivery instructions for artifacts (if applicable),
-   - optional support contact
+   - Open a GitHub issue titled **"Commercial licensing inquiry"** (public), or
+   - Email: [`contact@recsys.app`][pricing_contact]
+   - LinkedIn: [`linkedin.com/showcase/recsys-suite`][recsys_linkedin]
 
-How to request a commercial license:
+## Evaluation licenses
 
-- Open a GitHub issue titled **"Commercial licensing inquiry"** (public), or
-- Email: [`contact@recsys.app`][pricing_contact]
-- LinkedIn: [`linkedin.com/showcase/recsys-suite`][recsys_linkedin]
+Evaluation terms for this project are documented in:
 
-## Evaluation licenses (optional)
-
-If you offer evaluation terms, define them clearly:
-
-- Duration (e.g., 30 days)
-- Limits (e.g., 1 deployment, non-production)
-- What’s included (e.g., private artifact access)
-
-Document details in [`eval_license.md`](eval_license.md) if you provide this.
+- [RecSys Evaluation License Terms](eval_license.md)
 
 ## Where are the legal terms?
 
 Commercial terms live in:
 
-- [`commercial_license.md`](commercial_license.md)
-- [`order_form.md`](order_form.md)
+- [RecSys Commercial License Agreement](commercial_license.md)
+- [Order Form (Template) — RecSys Commercial License](order_form.md)
 
 [pricing_contact]: mailto:contact@recsys.app?subject=RecSys%20pricing%20inquiry
 [recsys_linkedin]: https://www.linkedin.com/showcase/recsys-suite
+
+## Read next
+
+- Pricing: [Pricing](../pricing/index.md)
+- Evaluation and licensing: [Evaluation, pricing, and licensing (buyer guide)](../pricing/evaluation-and-licensing.md)

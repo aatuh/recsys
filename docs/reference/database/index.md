@@ -1,11 +1,13 @@
 ---
+diataxis: reference
 tags:
   - reference
   - database
   - ops
 ---
-
 # Database reference
+This page is the canonical reference for Database reference.
+
 
 ## Who this is for
 
@@ -25,4 +27,4 @@ tags:
 
 ## Read next
 
-- Empty recs runbook: [`operations/runbooks/empty-recs.md`](../../operations/runbooks/empty-recs.md)
+- Empty recs runbook: [Runbook: Empty recs](../../operations/runbooks/empty-recs.md)

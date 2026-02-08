@@ -1,12 +1,14 @@
 ---
+diataxis: tutorial
 tags:
   - tutorial
   - quickstart
   - developer
   - recsys-service
 ---
+# Tutorial: Quickstart (full validation)
+In this tutorial you will follow a guided walkthrough and verify a working result.
 
-# Tutorial: Quickstart (10 minutes)
 
 ## Who this is for
 
@@ -26,9 +28,8 @@ tags:
 > - Choose **artifact/manifest mode** when you want atomic publish and rollback (pipelines produce artifacts and a
 >   manifest pointer drives serving).
 >
-> See: [Choose your data mode](../start-here/choose-data-mode.md) (decision guide) and
-> [Data modes](../explanation/data-modes.md) (details). For an artifact-mode walkthrough, jump to
-> [Production-like run](production-like-run.md).
+> See: [Data modes: DB-only vs artifact/manifest](../explanation/data-modes.md). For an artifact-mode walkthrough, jump to
+> [production-like run (pipelines → object store → ship/rollback)](production-like-run.md).
 
 ## Prereqs
 
@@ -46,8 +47,22 @@ make --version
 curl --version
 ```
 
---8<-- "_snippets/key-terms.list.snippet"
---8<-- "_snippets/key-terms.defs.one-up.snippet"
+
+## 0) Get the code
+
+If you don’t already have RecSys locally:
+
+```bash
+git clone https://github.com/aatuh/recsys
+cd recsys
+```
+
+> This documentation site is rendered from the repository’s `/docs` directory.
+!!! info "Key terms (2 minutes)"
+    - **[Tenant](../project/glossary.md#tenant)**: a configuration + data isolation boundary (usually one organization).
+    - **[Surface](../project/glossary.md#surface)**: where recommendations are shown (home, PDP, cart, ...).
+    - **[Request ID](../project/glossary.md#request-id)**: the join key that ties together responses, exposures, and outcomes.
+    - **[Exposure log](../project/glossary.md#exposure-log)**: what was shown (audit trail + evaluation input).
 
 ## 1) Start Postgres + `recsys-service` (DB-only mode)
 
@@ -121,7 +136,13 @@ Expected:
 
 Insert a tenant row:
 
---8<-- "_snippets/demo-tenant-insert.snippet"
+```bash
+docker exec -i recsys-db psql -U recsys-db -d recsys-db <<'SQL'
+insert into tenants (external_id, name)
+values ('demo', 'Demo Tenant')
+on conflict (external_id) do nothing;
+SQL
+```
 
 Upsert a minimal config:
 
@@ -239,7 +260,22 @@ Expected:
 
 - [ ] `curl -fsS http://localhost:8000/healthz` succeeds
 - [ ] `POST /v1/recommend` returns a non-empty `items` list
-- [ ] `/tmp/exposures.eval.jsonl` exists and contains a `request_id`
+- [ ] The first item is `item_3` (proof rules are applied deterministically)
+- [ ] Response `meta` includes `request_id`, `config_version`, and `rules_version`
+- [ ] `/tmp/exposures.eval.jsonl` exists and contains the same `request_id`
+
+Quick checks:
+
+```bash
+curl -fsS http://localhost:8000/v1/recommend   -H 'Content-Type: application/json'   -H 'X-Request-Id: req-1'   -H 'X-Dev-User-Id: dev-user-1'   -H 'X-Dev-Org-Id: demo'   -H 'X-Org-Id: demo'   -d '{"surface":"home","k":5,"user":{"user_id":"u_1","session_id":"s_1"}}' | jq -r '.items[0].item_id, .meta.request_id, .meta.config_version, .meta.rules_version'
+```
+
+Expected (order may vary, but first line must be `item_3`):
+
+- `item_3`
+- `req-1`
+- `W/"..."` (etag-like)
+- `W/"..."` (etag-like)
 
 ## Troubleshooting (common failures)
 
@@ -248,9 +284,22 @@ Expected:
 - Migrations fail or tables are missing → [Database migration issues](../operations/runbooks/db-migration-issues.md)
 - Exposure log file is missing → confirm `EXPOSURE_LOG_*` in `api/.env`, then restart:
   `docker compose up -d --force-recreate api`
+## Persist your pilot data (so it survives restarts)
+
+For a real pilot, make sure you can **persist and re-hydrate** the minimum viable data:
+
+- [ ] Tenant config and rules (admin API)
+- [ ] Item catalog / item metadata
+- [ ] Exposure logs (where they are stored, retention, access)
+- [ ] Outcome logs (optional but recommended)
+
+Use the checklist: [How-to: Integration checklist (one surface)](../how-to/integration-checklist.md)
+
+If you want a production-like operating model (publish/rollback), choose artifact mode:
+[production-like run (pipelines → object store → ship/rollback)](production-like-run.md)
 
 ## Read next
 
-- Integrate into an app: [`how-to/integrate-recsys-service.md`](../how-to/integrate-recsys-service.md)
-- API reference (Swagger UI + OpenAPI spec): [`reference/api/api-reference.md`](../reference/api/api-reference.md)
-- Exposure logging & attribution: [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)
+- Integrate into an app: [How-to: integrate recsys-service into an application](../how-to/integrate-recsys-service.md)
+- Full walkthrough (serving → logging → eval): [local end-to-end (service → logging → eval)](local-end-to-end.md)
+- API reference (Swagger UI + OpenAPI spec): [API Reference](../reference/api/api-reference.md)

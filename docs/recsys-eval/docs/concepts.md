@@ -1,4 +1,11 @@
+---
+diataxis: explanation
+tags:
+  - recsys-eval
+---
 # Concepts: how to understand recsys-eval
+This page explains Concepts: how to understand recsys-eval and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -179,7 +186,7 @@ recsys-eval is the "truth serum": it turns change claims into evidence.
 
 ## Read next
 
-- Metrics: [`recsys-eval/docs/metrics.md`](metrics.md)
-- Interpreting results: [`recsys-eval/docs/interpreting_results.md`](interpreting_results.md)
-- Online A/B workflow: [`recsys-eval/docs/workflows/online-ab-in-production.md`](workflows/online-ab-in-production.md)
-- CI gates: [`recsys-eval/docs/ci_gates.md`](ci_gates.md)
+- Metrics: [Metrics: what we measure and why](metrics.md)
+- Interpreting results: [Interpreting results: how to go from report to decision](interpreting_results.md)
+- Online A/B workflow: [Workflow: Online A/B analysis in production](workflows/online-ab-in-production.md)
+- CI gates: [CI gates: using recsys-eval in automation](ci_gates.md)

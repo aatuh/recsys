@@ -1,4 +1,8 @@
-
+---
+diataxis: tutorial
+tags:
+  - recsys-pipelines
+---
 # Tutorial: Run locally (filesystem mode)
 
 This tutorial assumes you want to run the pipeline on the included tiny
@@ -53,7 +57,7 @@ make smoke
 
 ## Read next
 
-- Job-per-step mode: [`tutorials/job-mode.md`](job-mode.md)
-- Artifacts and versioning: [`explanation/artifacts-and-versioning.md`](../explanation/artifacts-and-versioning.md)
-- Output layout: [`reference/output-layout.md`](../reference/output-layout.md)
-- Start here: [`start-here.md`](../start-here.md)
+- Job-per-step mode: [Run in job-per-step mode](job-mode.md)
+- Artifacts and versioning: [Artifacts and versioning](../explanation/artifacts-and-versioning.md)
+- Output layout: [Output layout (local filesystem)](../reference/output-layout.md)
+- Start here: [Start here](../start-here.md)

@@ -1,4 +1,8 @@
-
+---
+diataxis: tutorial
+tags:
+  - recsys-pipelines
+---
 # Tutorial: Run in job-per-step mode
 
 Some teams prefer orchestration where each step runs as a separate job
@@ -39,7 +43,7 @@ make build
 
 ## Read next
 
-- SLOs and freshness: [`operations/slos-and-freshness.md`](../operations/slos-and-freshness.md)
-- Schedule pipelines: [`how-to/schedule-pipelines.md`](../how-to/schedule-pipelines.md)
-- Debug failures: [`how-to/debug-failures.md`](../how-to/debug-failures.md)
-- Start here: [`start-here.md`](../start-here.md)
+- SLOs and freshness: [SLOs and freshness](../operations/slos-and-freshness.md)
+- Schedule pipelines: [How-to: Schedule pipelines with CronJob](../how-to/schedule-pipelines.md)
+- Debug failures: [How-to: Debug a failed pipeline run](../how-to/debug-failures.md)
+- Start here: [Start here](../start-here.md)

@@ -1,4 +1,5 @@
 ---
+diataxis: tutorial
 tags:
   - tutorial
   - quickstart
@@ -7,8 +8,9 @@ tags:
   - recsys-pipelines
   - recsys-eval
 ---
-
 # Tutorial: local end-to-end (service → logging → eval)
+In this tutorial you will follow a guided walkthrough and verify a working result.
+
 
 ## Who this is for
 
@@ -28,9 +30,8 @@ tags:
 > - Choose **artifact/manifest mode** when you want pipelines to publish versioned artifacts and use the manifest as
 >   a ship/rollback lever.
 >
-> See: [Choose your data mode](../start-here/choose-data-mode.md) (decision guide) and
-> [Data modes](../explanation/data-modes.md) (details). For artifact mode end-to-end, follow
-> [Production-like run](production-like-run.md).
+> See: [Data modes: DB-only vs artifact/manifest](../explanation/data-modes.md). For artifact mode end-to-end, follow
+> [production-like run (pipelines → object store → ship/rollback)](production-like-run.md).
 
 ## Prereqs
 
@@ -50,9 +51,6 @@ curl --version
 python3 --version
 go version
 ```
-
---8<-- "_snippets/key-terms.list.snippet"
---8<-- "_snippets/key-terms.defs.one-up.snippet"
 
 ## Verify (expected outcome)
 
@@ -78,6 +76,12 @@ Apply database migrations (idempotent):
 Verify:
 
 ```bash
+for _ in $(seq 1 60); do
+  if curl -fsS http://localhost:8000/healthz >/dev/null; then
+    break
+  fi
+  sleep 2
+done
 curl -fsS http://localhost:8000/healthz >/dev/null
 ```
 
@@ -128,6 +132,12 @@ docker compose up -d --force-recreate api
 Verify:
 
 ```bash
+for _ in $(seq 1 60); do
+  if curl -fsS http://localhost:8000/healthz >/dev/null; then
+    break
+  fi
+  sleep 2
+done
 curl -fsS http://localhost:8000/healthz >/dev/null
 ```
 
@@ -139,7 +149,13 @@ Expected:
 
 Insert a tenant row:
 
---8<-- "_snippets/demo-tenant-insert.snippet"
+```bash
+docker exec -i recsys-db psql -U recsys-db -d recsys-db <<'SQL'
+insert into tenants (external_id, name)
+values ('demo', 'Demo Tenant')
+on conflict (external_id) do nothing;
+SQL
+```
 
 Expected:
 
@@ -273,9 +289,18 @@ Example response shape:
     "rules_version": "W/\"...\"",
     "request_id": "req-1"
   },
-  "warnings": []
+  "warnings": [
+    { "code": "DEFAULT_APPLIED", "detail": "segment defaulted to 'default'" },
+    { "code": "SIGNAL_UNAVAILABLE", "detail": "content unavailable: unavailable" }
+  ]
 }
 ```
+
+You may see `warnings[]`; in this tutorial that is expected:
+
+- `DEFAULT_APPLIED` means omitted request fields (for example `segment` or `options`) were filled with defaults.
+- `SIGNAL_UNAVAILABLE` for session/collaborative/content means those optional signals were not seeded in this DB-only walkthrough.
+- These warnings are non-fatal here. Treat the step as successful when HTTP 200 returns with non-empty `items`.
 
 If you get an empty list, check:
 
@@ -298,9 +323,7 @@ docker compose cp api:/app/tmp/exposures.eval.jsonl /tmp/exposures.jsonl
 Extract the hashed `user_id` from the exposure file (this is what `recsys-service` logs for eval format):
 
 ```bash
-EXPOSURE_USER_ID="$(
-  python3 -c 'import json; print(json.loads(open("/tmp/exposures.jsonl").readline())["user_id"])'
-)"
+EXPOSURE_USER_ID="$(python3 -c 'import json; print(json.loads(open(\"/tmp/exposures.jsonl\").readline())[\"user_id\"])')"
 ```
 
 Create a minimal outcome log that joins by `request_id` (and matches the exposure `user_id`):
@@ -354,8 +377,8 @@ Build + run:
 ```bash
 (cd recsys-eval && make build)
 
-recsys-eval/bin/recsys-eval validate --schema exposure.v1 --input /tmp/exposures.jsonl
-recsys-eval/bin/recsys-eval validate --schema outcome.v1 --input /tmp/outcomes.jsonl
+(cd recsys-eval && ./bin/recsys-eval validate --schema exposure.v1 --input /tmp/exposures.jsonl)
+(cd recsys-eval && ./bin/recsys-eval validate --schema outcome.v1 --input /tmp/outcomes.jsonl)
 
 recsys-eval/bin/recsys-eval run \
   --mode offline \
@@ -455,12 +478,12 @@ docker compose run --rm --entrypoint sh minio-init -c \
 
 ### Runbooks
 
-- Service not ready: [`operations/runbooks/service-not-ready.md`](../operations/runbooks/service-not-ready.md)
-- Empty recs: [`operations/runbooks/empty-recs.md`](../operations/runbooks/empty-recs.md)
-- Database migration issues: [Database migration issues](../operations/runbooks/db-migration-issues.md)
+- Service not ready: [Runbook: Service not ready](../operations/runbooks/service-not-ready.md)
+- Empty recs: [Runbook: Empty recs](../operations/runbooks/empty-recs.md)
+- Database migration issues: [Runbook: Database migration issues](../operations/runbooks/db-migration-issues.md)
 
 ## Read next
 
-- First surface end-to-end: [`how-to/first-surface-end-to-end.md`](../how-to/first-surface-end-to-end.md)
-- Minimum instrumentation spec: [`reference/minimum-instrumentation.md`](../reference/minimum-instrumentation.md)
-- Exposure logging & attribution: [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)
+- Production-like suite tutorial: [production-like run (pipelines → object store → ship/rollback)](production-like-run.md)
+- Integrate the serving API into your app: [How-to: integrate recsys-service into an application](../how-to/integrate-recsys-service.md)
+- Operate pipelines: [How-to: operate recsys-pipelines](../how-to/operate-pipelines.md)

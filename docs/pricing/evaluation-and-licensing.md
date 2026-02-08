@@ -1,17 +1,19 @@
 ---
+diataxis: how-to
 tags:
   - overview
   - business
   - pricing
   - licensing
 ---
-
 # Evaluation, pricing, and licensing (buyer guide)
+
+Use this page to run a credible evaluation and procure the right license **without meetings**.
 
 !!! info "Canonical page"
     This page is canonical for the **evaluation and procurement flow** (what to do next, what artifacts to produce).
-    For plan definitions and prices, see [pricing](index.md). For file-level license rules, see
-    [licensing](../licensing/index.md).
+    For plan definitions and prices, see [Pricing](index.md). For file-level license rules, see
+    [Licensing](../licensing/index.md).
 
 ## Who this is for
 
@@ -19,69 +21,50 @@ tags:
 
 ## What you will get
 
-- a recommended evaluation path (what to do first)
-- links to canonical pricing definitions and licensing terms
-- a practical checklist for procurement/security review
+- A step-by-step evaluation path (what to do first)
+- The shortest path from **pilot → decision → procurement**
+- A procurement checklist you can hand to Security/Legal/IT/Finance
 
-!!! warning "Risk & limitations (read before evaluating)"
-    RecSys is built for **operational predictability** (deterministic serving, auditable logs, versioned rollback).
+## Step 0 — Decide the evaluation owner and success bar
 
-    Before you commit to a pilot, confirm these boundaries match your expectations:
+Before you run anything, agree on:
 
-    - This is not a managed service; you run it in your own infrastructure.
-    - Some setup is still manual today (for example: tenant bootstrap is DB-only).
-    - Some connectors are scaffolded (for example: Kafka ingestion is not implemented yet).
+- **One surface** to pilot (start small)
+- **One primary KPI** and 2–5 guardrails
+- **Who owns the decision** (ship / hold / rollback)
 
-    Canonical list: [Known limitations](../start-here/known-limitations.md) and
-    [Capability matrix](../explanation/capability-matrix.md).
+Start here:
 
-## The evaluation path (recommended)
+- Pilot plan (2–6 weeks): [Pilot plan](../start-here/pilot-plan.md)
+- Ownership (RACI): [Responsibilities](../start-here/responsibilities.md)
+- KPIs and guardrails: [Success metrics](../for-businesses/success-metrics.md)
 
-1. **Run a pilot on one surface**
+## Step 1 — Run a pilot that produces auditable evidence
 
-   - Instrument exposures + outcomes with stable `request_id`
-   - Produce at least one report that compares baseline vs candidate
+A credible pilot proves the measurement loop is real:
 
-   Start here:
+- You can serve non-empty recommendations
+- You log what was shown (**exposures**) and what happened (**outcomes**)
+- You can join them reliably by a stable `request_id`
+- You can produce a report that supports a decision
 
-   - Pilot plan (2–6 weeks): [Pilot plan](../start-here/pilot-plan.md)
-   - Success metrics (KPIs + guardrails): [Success metrics](../for-businesses/success-metrics.md)
-   - Evidence (what outputs look like): [Evidence](../for-businesses/evidence.md)
+Start here:
 
-2. **Confirm operational fit**
+- Tutorial (end-to-end): [Local end-to-end](../tutorials/local-end-to-end.md)
+- Suite workflow: [Run eval and ship](../how-to/run-eval-and-ship.md)
+- What “good outputs” look like: [Evidence](../for-businesses/evidence.md)
 
-   - Known limitations and non-goals: [Known limitations](../start-here/known-limitations.md)
-   - Security, privacy, compliance:
-     [Security, privacy, compliance](../start-here/security-privacy-compliance.md)
-   - Rollback story:
-     [Operational reliability & rollback](../start-here/operational-reliability-and-rollback.md)
+## Step 2 — Confirm operational fit for your environment
 
-3. **Decide your purchase scope**
+Confirm the suite fits your constraints **before** procurement:
 
-   Typical scope questions:
+- Boundaries and non-goals: [Known limitations](../start-here/known-limitations.md)
+- Data handling and posture: [Security, privacy, compliance](../start-here/security-privacy-compliance.md)
+- Rollback story: [Operational reliability & rollback](../start-here/operational-reliability-and-rollback.md)
 
-   - How many tenants and deployments do we need?
-   - Do we require commercial terms for production use?
-   - What support expectations do we need (response time, channels, escalation)?
+## Step 3 — Choose plan scope and license path
 
-## Do you need commercial terms? (quick decision tree)
-
-This is not legal advice. If licensing affects your business, involve counsel.
-
-1. Are you only using `recsys-eval/**`?
-   - Yes → it is Apache-2.0 (commercial license not needed; comply with Apache-2.0 conditions).
-   - No → continue.
-2. Are you deploying or offering network access to the serving stack
-   (`api/**`, `recsys-algo/**`, `recsys-pipelines/**`)?
-   - Yes → AGPLv3 applies unless you have commercial terms.
-   - No → your obligations depend on how you use/distribute the code.
-3. Can you comply with AGPLv3 terms for your deployment (including source-offer obligations for modifications)?
-   - Yes → use under AGPLv3.
-   - No / we need modifications private → request a commercial license.
-
-See the canonical decision tree and file-level rules: [Licensing](../licensing/index.md).
-
-## Plan mapping (quick)
+### Plan mapping (quick)
 
 - **Commercial Evaluation (30 days)**: a time-boxed pilot under commercial terms (recommended if you want to avoid AGPL
   uncertainty during the pilot).
@@ -91,30 +74,21 @@ See the canonical decision tree and file-level rules: [Licensing](../licensing/i
 
 Canonical plan definitions and prices: [Pricing](index.md).
 
-## Support and maintenance
+### Do you need commercial terms? (quick decision tree)
 
-This section is a buyer-facing summary. Your agreement controls if anything here differs.
+This is not legal advice. If licensing affects your business, involve counsel.
 
-**Channels (typical):**
+1. Are you only using `recsys-eval/**`?
+   - Yes → it is Apache-2.0 (commercial license not needed; comply with Apache-2.0 conditions).
+   - No → continue.
+2. Are you deploying or offering network access to the serving stack (`api/**`, `recsys-algo/**`, `recsys-pipelines/**`)?
+   - Yes → AGPLv3 applies unless you have commercial terms.
+   - No → your obligations depend on how you use/distribute the code.
+3. Can you comply with AGPLv3 terms for your deployment (including source-offer obligations for modifications)?
+   - Yes → use under AGPLv3.
+   - No / we need modifications private → request a commercial license.
 
-- Community (free): GitHub Issues and Discussions (no response-time guarantees)
-- Commercial: private support email and/or private issue tracker (provided upon agreement)
-
-**Response expectations (typical):**
-
-| Plan | Response expectations (typical) |
-| --- | --- |
-| Commercial Evaluation | Best-effort async (no SLA) |
-| Starter | Best-effort async (no SLA) |
-| Growth | Typically within 2 business days (async) |
-| Enterprise | Custom (can include SLA/premium support) |
-
-**Updates and patch releases:**
-
-- Commercial plans include access to updates. Security/patch expectations are defined in your tier/agreement.
-- Premium support/SLA (8×5 or 24×7) is an optional add-on for Growth/Enterprise.
-
-Full details: [Support](../project/support.md).
+See the canonical decision tree and file-level rules: [Licensing](../licensing/index.md).
 
 ## How to procure (fast path)
 
@@ -122,8 +96,11 @@ Full details: [Support](../project/support.md).
    [Run eval and ship](../how-to/run-eval-and-ship.md)
 2. Confirm fit for your environment:
    [Known limitations](../start-here/known-limitations.md) and [Security pack](../security/security-pack.md)
-3. Choose the plan and scope (tenants/deployments/support expectations): [Pricing](index.md)
-4. Use the order form template and contact us:
+3. Choose the plan and scope (tenants/deployments/support expectations):
+   [Pricing](index.md)
+4. Use the self-serve procurement path for standard plans:
+   [Self-serve procurement](../for-businesses/self-serve-procurement.md)
+5. Use the order form + contact path only for Enterprise/custom terms:
    [Order form template](../licensing/order_form.md) and [`contact@recsys.app`][pricing_contact]
 
 ## Outputs and exit criteria
@@ -140,68 +117,19 @@ By the end of a successful evaluation, you should have:
 - One rollback drill completed (so you trust the lever before you need it):
   [Operational reliability & rollback](../start-here/operational-reliability-and-rollback.md)
 
-## Who does what (typical)
+## Procurement checklist
 
-- Product owner: chooses KPIs/guardrails and owns the final ship/hold decision
-- Lead developer: integrates one surface end-to-end and owns the rollout plan
-- Data/analytics: validates join-rate and reads the evaluation reports
-- Security: reviews the security pack and data posture
+Hand this to Security/Legal/IT/Finance as a Definition of Done:
 
-See also:
+- [Procurement checklist](../for-businesses/procurement-checklist.md)
+- [Decision readiness matrix](../for-businesses/decision-readiness.md)
 
-- Responsibilities (RACI): [Responsibilities](../start-here/responsibilities.md)
-- Customer onboarding checklist: [Customer onboarding checklist](../start-here/customer-onboarding-checklist.md)
-
-## Timeline vs evaluation license term
-
-- Pilot plans commonly take **2–6 weeks**: [Pilot plan](../start-here/pilot-plan.md)
-- The commercial evaluation license term is **30 days** (from first access), unless extended in writing:
-  [Evaluation license](../licensing/eval_license.md)
-
-If your pilot scope exceeds 30 days:
-
-- Request an evaluation term extension in writing **before** the term expires, and/or
-- Start procurement earlier so licensing does not block measurement.
-
-## Pricing (canonical)
-
-For current plan definitions and pricing, see:
-
-- Pricing overview (commercial plans): [Pricing](index.md)
-- Legal pricing definitions: [Pricing definitions](../licensing/pricing.md)
-
-## Licensing (plain language)
-
-This repository is multi-license:
-
-- `recsys-eval/**` is Apache-2.0 (permissive).
-- The serving stack (`api/**`, `recsys-algo/**`, `recsys-pipelines/**`) is AGPLv3 unless you purchase commercial terms.
-
-For the canonical decision tree and file-level rules, see:
-
-- Licensing overview: [Licensing](../licensing/index.md)
-- Commercial use & how to buy: [Commercial use](../licensing/commercial.md)
-
-## What to hand to procurement/security
-
-- Security pack: [Security pack](../security/security-pack.md)
-- Known limitations: [Known limitations](../start-here/known-limitations.md)
-- Support model (includes expectations by plan): [Support](../project/support.md)
-- Order form template: [Order form template](../licensing/order_form.md)
-
-## Procurement checklist (Definition of Done)
-
-- [ ] We ran a pilot and produced at least one evaluation report.
-- [ ] Our pilot timeline fits the chosen license term (or we secured an extension in writing).
-- [ ] We reviewed known limitations and confirmed fit for our current stage.
-- [ ] We chose plan scope (tenants/deployments) and support expectations.
-- [ ] We confirmed license obligations (AGPL vs commercial terms).
-- [ ] Security reviewed the security pack.
+[pricing_contact]: mailto:contact@recsys.app?subject=RecSys%20Commercial%20Evaluation
 
 ## Read next
 
 - Pricing overview (commercial plans): [Pricing](index.md)
+- Self-serve path: [Self-serve procurement](../for-businesses/self-serve-procurement.md)
 - Licensing decision tree: [Licensing](../licensing/index.md)
+- What “good outputs” look like: [Evidence](../for-businesses/evidence.md)
 - Security pack: [Security pack](../security/security-pack.md)
-
-[pricing_contact]: mailto:contact@recsys.app?subject=RecSys%20Commercial%20Evaluation

@@ -1,11 +1,13 @@
 ---
+diataxis: explanation
 tags:
   - overview
   - business
   - evaluation
 ---
-
 # Success metrics (KPIs, guardrails, and exit criteria)
+This page explains Success metrics (KPIs, guardrails, and exit criteria) and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -54,7 +56,7 @@ Start here:
 Then use the `recsys-eval` workflow pages:
 
 - [Offline gate in CI](../recsys-eval/docs/workflows/offline-gate-in-ci.md)
-- [Online A/B in production](../recsys-eval/docs/workflows/online-ab-in-production.md)
+- [Workflow: Online A/B analysis in production](../recsys-eval/docs/workflows/online-ab-in-production.md)
 - [Interpretation cheat sheet](../recsys-eval/docs/workflows/interpretation-cheat-sheet.md)
 
 ## Read next

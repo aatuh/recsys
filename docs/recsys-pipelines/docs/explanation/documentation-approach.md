@@ -1,4 +1,8 @@
-
+---
+diataxis: explanation
+tags:
+  - recsys-pipelines
+---
 # Documentation approach
 
 This documentation is organized around four different user needs:
@@ -12,8 +16,8 @@ This structure is based on the Diataxis documentation framework.
 
 ## Read next
 
-- Start here: [`start-here.md`](../start-here.md)
-- Local quickstart tutorial: [`tutorials/local-quickstart.md`](../tutorials/local-quickstart.md)
-- Docs style guide (module): [`contributing/style.md`](../contributing/style.md)
-- Pipelines docs index: [`docs/index.md`](../index.md)
-- Glossary: [`glossary.md`](../glossary.md)
+- Start here: [Start here](../start-here.md)
+- Local quickstart tutorial: [Run locally (filesystem mode)](../tutorials/local-quickstart.md)
+- Docs style guide (module): [Style guide](../contributing/style.md)
+- Pipelines docs index: [recsys-pipelines docs](../index.md)
+- Glossary: [Glossary](../glossary.md)

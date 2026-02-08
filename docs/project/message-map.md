@@ -1,8 +1,8 @@
 ---
+diataxis: reference
 tags:
   - project
 ---
-
 # Message map (maintainers)
 
 This page helps keep **positioning and wording consistent** across the docs, README, and commercial pages.
@@ -15,13 +15,13 @@ Wedge statement (use verbatim):
 
 1. **Auditable decisions**
    - Proof: exposure/outcome logs join by `request_id`; evaluation reports produce ship/hold/rollback artifacts.
-   - Docs: [`how-to/run-eval-and-ship.md`](../how-to/run-eval-and-ship.md)
+   - Docs: [How-to: run evaluation and make ship decisions](../how-to/run-eval-and-ship.md)
 1. **Deterministic ranking (predictable behavior)**
    - Proof: deterministic ranking core; explicit constraints/rules; versioned artifacts.
-   - Docs: [`explanation/candidate-vs-ranking.md`](../explanation/candidate-vs-ranking.md)
+   - Docs: [Candidate generation vs ranking](../explanation/candidate-vs-ranking.md)
 1. **Safe shipping and rollback**
    - Proof: versioned config/rules/manifests; runbooks for common failures.
-   - Docs: [`start-here/operational-reliability-and-rollback.md`](../start-here/operational-reliability-and-rollback.md)
+   - Docs: [Operational reliability and rollback](../start-here/operational-reliability-and-rollback.md)
 
 ## Common objections → short answers
 
@@ -34,3 +34,8 @@ Wedge statement (use verbatim):
 - Homepage (`docs/index.md`), hub pages (`docs/developers/index.md`, `docs/for-businesses/index.md`)
 - Pricing and evaluation pages (`docs/pricing/index.md`, `docs/evaluate/index.md`)
 - README (`README.md`)
+
+## Read next
+
+- Project hub: [Project](index.md)
+- Contributing: [Contributing](contributing.md)

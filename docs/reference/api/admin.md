@@ -1,4 +1,5 @@
 ---
+diataxis: reference
 tags:
   - reference
   - api
@@ -6,7 +7,6 @@ tags:
   - developer
   - recsys-service
 ---
-
 # Admin API + local bootstrap (recsys-service)
 
 This page documents the **admin/control-plane** endpoints and the minimum
@@ -230,4 +230,9 @@ See also:
 
 - `reference/api/examples/admin-config.http`
 - `tutorials/local-end-to-end.md`
-- Auth & tenancy: [`reference/auth-and-tenancy.md`](../auth-and-tenancy.md)
+- Auth & tenancy: [Auth and tenancy reference](../auth-and-tenancy.md)
+
+## Read next
+
+- API reference: [API Reference](api-reference.md)
+- Errors: [Error handling & troubleshooting API calls](errors.md)

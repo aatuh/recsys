@@ -1,11 +1,11 @@
 ---
+diataxis: explanation
 description: "Branding, buyer-centric navigation, and enterprise-grade docs UX signals."
 date: 2026-02-05
 tags:
   - docs
   - release
 ---
-
 # Docs: enterprise feel baseline
 
 This release focuses on **making evaluation easier** for business and technical stakeholders.
@@ -23,3 +23,7 @@ This release focuses on **making evaluation easier** for business and technical 
 
 - If you prefer a component-centric view, use search and tags to jump straight to `recsys-algo`, `recsys-eval`, or
   `recsys-pipelines`.
+
+## Read next
+
+- What's new: [What’s new](../index.md)

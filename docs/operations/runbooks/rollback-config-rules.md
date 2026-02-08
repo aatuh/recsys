@@ -1,11 +1,11 @@
 ---
+diataxis: how-to
 tags:
   - runbook
   - ops
   - config
   - recsys-service
 ---
-
 # Runbook: Roll back config/rules
 
 This runbook covers **rolling back tenant config and rules** in `recsys-service`.
@@ -119,3 +119,9 @@ High-level steps:
    ```
 
 Repeat the same pattern for `tenant_rules_current`.
+
+## Read next
+
+- Production readiness checklist: [Production readiness checklist (RecSys suite)](../production-readiness-checklist.md)
+- Empty recs incident: [Runbook: Empty recs](empty-recs.md)
+- Operations index: [Operations](../index.md)

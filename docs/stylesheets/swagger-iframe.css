@@ -1,20 +1,13 @@
-/* Swagger UI is rendered inside an iframe (mkdocs-swagger-ui-tag).
- *
- * Goal: the iframe should expand to its content height so the **parent page**
- * scrolls (no nested scrollbars).
- */
+/* Swagger UI iframe styling for mkdocs-swagger-ui-tag */
 
-html,
-body {
-  overflow: hidden;
+iframe.swagger-ui-iframe {
+  display: block;
+  width: 100%;
+  border: 0;
+  /* Height is set dynamically by swagger-iframe-autosize.js */
 }
 
-#swagger-ui,
-.swagger-ui {
-  height: auto !important;
-  overflow: visible !important;
-}
-
-.swagger-ui .wrapper {
-  max-width: 100% !important;
+/* Ensure the iframe can expand without creating nested scrollbars */
+.md-content__inner {
+  overflow: visible;
 }

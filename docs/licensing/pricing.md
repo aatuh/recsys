@@ -1,10 +1,10 @@
 ---
+diataxis: reference
 tags:
   - licensing
   - pricing
   - business
 ---
-
 # Pricing definitions
 
 This page defines terms used in our commercial pricing and order forms.
@@ -39,3 +39,9 @@ For current plan prices and a plain-language overview, see: [Pricing](../pricing
 
 [pricing_contact]: mailto:contact@recsys.app?subject=RecSys%20pricing%20inquiry
 [recsys_linkedin]: https://www.linkedin.com/showcase/recsys-suite
+
+## Read next
+
+- Pricing: [Pricing](../pricing/index.md)
+- Self-serve procurement: [Self-serve procurement](../for-businesses/self-serve-procurement.md)
+- Evaluation and licensing: [Evaluation, pricing, and licensing (buyer guide)](../pricing/evaluation-and-licensing.md)

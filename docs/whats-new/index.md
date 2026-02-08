@@ -1,9 +1,9 @@
 ---
+diataxis: explanation
 tags:
   - overview
   - project
 ---
-
 # What’s new
 
 Release notes and updates for the RecSys suite and its documentation.
@@ -20,5 +20,5 @@ Release notes and updates for the RecSys suite and its documentation.
 
 ## Read next
 
-- Docs versioning: [`project/docs-versioning.md`](../project/docs-versioning.md)
-- Start here: [`start-here/index.md`](../start-here/index.md)
+- Docs versioning: [Docs versioning](../project/docs-versioning.md)
+- Start here: [Start here](../start-here/index.md)

@@ -1,10 +1,12 @@
 ---
+diataxis: explanation
 tags:
   - overview
   - business
 ---
-
 # Buyer journey: evaluate RecSys in 5 minutes
+
+A buyer-first reading order to decide whether a pilot is credible and how to procure the right license.
 
 ## Who this is for
 
@@ -17,19 +19,6 @@ tags:
 - The minimum requirements for a credible pilot
 - Proof artifacts you can inspect (no calls required)
 - Links to pricing, licensing, and procurement artifacts
-
-!!! warning "Risk & limitations (read before you invest time)"
-    RecSys is optimized for **deterministic, auditable operation**. It is not a managed service and it does not try to
-    be an end-to-end “auto-ML recommender platform”.
-
-    Common “surprises” to check early:
-
-    - You run it in your own infrastructure (runbooks and checklists are included).
-    - Some setup is still manual today (for example: tenant bootstrap is DB-only).
-    - Some connectors are scaffolded (for example: Kafka ingestion is not implemented yet).
-
-    Full list: [Known limitations](../start-here/known-limitations.md) and
-    [Capability matrix](../explanation/capability-matrix.md).
 
 ## The 5-minute path (recommended order)
 
@@ -50,6 +39,7 @@ tags:
    - Buyer guide (evaluation + procurement): [Buyer guide](../pricing/evaluation-and-licensing.md)
    - Licensing decision tree: [Licensing](../licensing/index.md)
    - Pricing overview (commercial plans): [Pricing](../pricing/index.md)
+   - Self-serve path (minimum requests): [Self-serve procurement](self-serve-procurement.md)
 
 ## Outcomes you should expect
 
@@ -67,6 +57,9 @@ See the canonical checklist: [Buyer guide](../pricing/evaluation-and-licensing.m
 - Pricing overview (commercial plans): [Pricing](../pricing/index.md)
 - Licensing obligations (AGPL vs commercial): [Licensing](../licensing/index.md)
 - Procurement flow and artifacts: [Buyer guide](../pricing/evaluation-and-licensing.md)
+- One-request procurement path: [Self-serve procurement](self-serve-procurement.md)
+- Procurement checklist (Definition of Done): [Procurement checklist](procurement-checklist.md)
+- Final go/no-go matrix: [Decision readiness matrix](decision-readiness.md)
 - Order form template: [Order form template](../licensing/order_form.md)
 
 ## What you need for a credible pilot (minimum)
@@ -103,5 +96,6 @@ Canonical spec:
 ## Read next
 
 - For businesses hub: [For businesses](index.md)
+- One-request procurement path: [Self-serve procurement](self-serve-procurement.md)
 - Procurement pack (Security/Legal/IT/Finance): [Procurement pack](procurement-pack.md)
 - Start an evaluation (technical path): [Start an evaluation](../evaluate/index.md)

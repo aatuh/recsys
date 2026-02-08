@@ -1,10 +1,12 @@
 ---
+diataxis: explanation
 tags:
   - overview
   - business
 ---
-
 # Value model (ROI template)
+This page explains Value model (ROI template) and how it fits into the RecSys suite.
+
 
 ## Who this is for
 

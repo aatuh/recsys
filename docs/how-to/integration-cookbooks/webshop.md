@@ -1,12 +1,14 @@
 ---
+diataxis: how-to
 tags:
   - how-to
   - integration
   - developer
   - recsys-service
 ---
-
 # Cookbook: integrate with a webshop
+This guide shows how to cookbook: integrate with a webshop in a reliable, repeatable way.
+
 
 ## Who this is for
 
@@ -93,5 +95,6 @@ Example outcome JSONL (one object per line):
 
 ## Read next
 
-- Production-like ship/rollback: [`tutorials/production-like-run.md`](../../tutorials/production-like-run.md)
-- Rules and constraints (control plane): [`reference/api/admin.md`](../../reference/api/admin.md)
+- Exposure logging & attribution: [Exposure logging and attribution](../../explanation/exposure-logging-and-attribution.md)
+- Validate determinism and joinability: [Tutorial: verify determinism](../../tutorials/verify-determinism.md)
+- Run evaluation and decide ship/hold/rollback: [How-to: run evaluation and make ship decisions](../run-eval-and-ship.md)

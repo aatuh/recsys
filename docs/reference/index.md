@@ -1,9 +1,9 @@
 ---
+diataxis: reference
 tags:
   - reference
   - developer
 ---
-
 # Reference
 
 Use this section when you need **precise contracts** (API, config, schemas) rather than step-by-step guidance.
@@ -18,6 +18,8 @@ Use this section when you need **precise contracts** (API, config, schemas) rath
   JWT/API keys vs dev headers, and how tenant scope is determined.
 - **[Config](config/index.md)**  
   Suite and module configuration options.
+- **[Algorithm reference](../recsys-algo/index.md)**  
+  Scoring model specification and ranking/constraint contracts.
 - **[Data contracts](data-contracts/index.md)**  
   Event schemas, field catalog, and join logic.
 - **[Database](database/index.md)**  
@@ -29,5 +31,5 @@ Use this section when you need **precise contracts** (API, config, schemas) rath
 
 ## Read next
 
-- API reference: [`reference/api/api-reference.md`](api/api-reference.md)
-- Config overview: [`reference/config/index.md`](config/index.md)
+- API reference: [API Reference](api/api-reference.md)
+- Config overview: [Configuration reference](config/index.md)

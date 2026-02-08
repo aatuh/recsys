@@ -1,12 +1,14 @@
 ---
+diataxis: how-to
 tags:
   - runbook
   - ops
   - database
   - recsys-service
 ---
-
 # Runbook: Database migration issues
+This guide shows how to runbook: Database migration issues in a reliable, repeatable way.
+
 
 ## Symptoms
 
@@ -49,7 +51,7 @@ Production:
   - re-run `up`
 - Avoid `down` in production unless you have an explicit rollback plan and DB backups.
 
-See the migration policy and commands: [`reference/database/migrations.md`](../../reference/database/migrations.md)
+See the migration policy and commands: [Migrations (safe upgrade)](../../reference/database/migrations.md)
 
 ## Verification
 
@@ -58,5 +60,6 @@ See the migration policy and commands: [`reference/database/migrations.md`](../.
 
 ## Read next
 
-- Service readiness runbook: [`operations/runbooks/service-not-ready.md`](service-not-ready.md)
-- Migrations reference: [`reference/database/migrations.md`](../../reference/database/migrations.md)
+- Failure modes & diagnostics: [Failure modes & diagnostics](../failure-modes.md)
+- Rollback levers: [Runbook: Roll back config/rules](rollback-config-rules.md)
+- Operations index: [Operations](../index.md)

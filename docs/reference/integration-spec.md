@@ -1,4 +1,5 @@
 ---
+diataxis: reference
 tags:
   - reference
   - integration
@@ -6,8 +7,9 @@ tags:
   - evaluation
   - recsys-service
 ---
-
 # Integration spec (one surface)
+This page is the canonical reference for Integration spec (one surface).
+
 
 ## Who this is for
 
@@ -31,7 +33,7 @@ tags:
 Tenant scope can come from **one** trusted source (claim/API key) or from a header.
 If you send multiple sources, they must match.
 
-Reference: [`reference/auth-and-tenancy.md`](../reference/auth-and-tenancy.md)
+Reference: [Auth and tenancy reference](auth-and-tenancy.md)
 
 Local dev (dev headers enabled):
 
@@ -93,7 +95,7 @@ Rules:
 
 Reference:
 
-- Join logic (exposures ↔ outcomes): [`reference/data-contracts/join-logic.md`](../reference/data-contracts/join-logic.md)
+- Join logic (exposures ↔ outcomes): [Event join logic (exposures ↔ outcomes ↔ assignments)](data-contracts/join-logic.md)
 
 ## Logging contract (minimum)
 
@@ -101,9 +103,9 @@ You must produce exposures and outcomes that can be joined by `request_id`.
 
 Canonical schemas and examples:
 
-- Data contracts hub: [`reference/data-contracts/index.md`](../reference/data-contracts/index.md)
-- Eval events schemas: [`reference/data-contracts/eval-events.md`](../reference/data-contracts/eval-events.md)
-- Minimum instrumentation spec: [`reference/minimum-instrumentation.md`](../reference/minimum-instrumentation.md)
+- Data contracts hub: [Data contracts](data-contracts/index.md)
+- Eval events schemas: [recsys-eval event schemas (v1)](data-contracts/eval-events.md)
+- Minimum instrumentation spec: [Minimum instrumentation spec (for credible evaluation)](minimum-instrumentation.md)
 
 Security baseline:
 
@@ -134,7 +136,7 @@ curl -fsS http://localhost:8000/v1/recommend/validate \
 
 ## Read next
 
-- Integration checklist: [`how-to/integration-checklist.md`](../how-to/integration-checklist.md)
-- Minimal integration walkthrough: [`how-to/integrate-recsys-service.md`](../how-to/integrate-recsys-service.md)
-- Exposure logging & attribution: [`explanation/exposure-logging-and-attribution.md`](../explanation/exposure-logging-and-attribution.md)
-- Runbooks (empty recs): [`operations/runbooks/empty-recs.md`](../operations/runbooks/empty-recs.md)
+- Integration checklist: [How-to: Integration checklist (one surface)](../how-to/integration-checklist.md)
+- Minimal integration walkthrough: [How-to: integrate recsys-service into an application](../how-to/integrate-recsys-service.md)
+- Exposure logging & attribution: [Exposure logging and attribution](../explanation/exposure-logging-and-attribution.md)
+- Runbooks (empty recs): [Runbook: Empty recs](../operations/runbooks/empty-recs.md)

@@ -1,4 +1,8 @@
-
+---
+diataxis: reference
+tags:
+  - recsys-pipelines
+---
 # Config reference
 
 Config is JSON. Example: `configs/env/local.json`.
@@ -90,7 +94,7 @@ implemented with a streaming consumer.
 
 ## Read next
 
-- Start here: [`start-here.md`](../start-here.md)
-- Validation and guardrails: [`explanation/validation-and-guardrails.md`](../explanation/validation-and-guardrails.md)
-- Run incremental: [`how-to/run-incremental.md`](../how-to/run-incremental.md)
-- Limit exceeded runbook: [`operations/runbooks/limit-exceeded.md`](../operations/runbooks/limit-exceeded.md)
+- Start here: [Start here](../start-here.md)
+- Validation and guardrails: [Validation and guardrails](../explanation/validation-and-guardrails.md)
+- Run incremental: [How-to: Run incremental pipelines](../how-to/run-incremental.md)
+- Limit exceeded runbook: [Runbook: Limit exceeded](../operations/runbooks/limit-exceeded.md)

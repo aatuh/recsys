@@ -1,19 +1,25 @@
 ---
+diataxis: reference
 tags:
   - licensing
   - commercial
   - business
 ---
-
 # Order Form (Template) — RecSys Commercial License
 
 **Order Form ID:** `OF-YYYY-NNN`  
 **Effective Date:** `YYYY-MM-DD`  
-**Vendor:** `VENDOR_LEGAL_NAME` ("Vendor")  
+**Vendor:** `PakkaSys` ("Vendor")  
 **Customer:** `CUSTOMER_LEGAL_NAME` ("Customer")
 
-This Order Form is governed by and incorporates the **Commercial License Agreement (RecSys) v`version`**
+This Order Form is governed by and incorporates the **Commercial License Agreement (RecSys) v`1.0`**
 ("Agreement"). Capitalized terms not defined here have the meaning given in the Agreement.
+
+## Document controls
+
+- Owner: RecSys maintainers (`contact@recsys.app`)
+- Last legal/doc review: 2026-02-08
+- Next review due: 2026-05-08
 
 ---
 
@@ -80,6 +86,9 @@ Support channel(s): `email/ticket portal`
 Response targets (if applicable): `e.g., P1 4h, P2 1bd, ...`  
 Exclusions/limits: `optional`
 
+Default schedule for self-serve plans:
+[SLA and support schedule](../security/sla-schedule.md)
+
 ---
 
 ## 4. Delivery and Access
@@ -95,6 +104,14 @@ Exclusions/limits: `optional`
 
 `Any negotiated terms, e.g., security addendum, DPA reference, custom liability cap, etc.`
 
+Default self-serve legal/security references:
+
+- DPA/SCC baseline: [DPA and SCC terms](../security/dpa-and-scc.md)
+- Subprocessor/distribution disclosure: [Subprocessors and distribution details](../security/subprocessors.md)
+- Support/SLA defaults: [SLA and support schedule](../security/sla-schedule.md)
+
+Use this section for Enterprise/custom overrides only.
+
 ---
 
 ## 6. Signatures
@@ -104,3 +121,65 @@ Name/Title: ________________________
 
 **Customer:** ______________________  Date: __________  
 Name/Title: ________________________
+
+---
+
+## 7. Filled example — Starter
+
+Example only. Replace with actual customer and commercial terms before signature.
+
+- Order Form ID: `OF-2026-001`
+- Effective Date: `2026-03-01`
+- Customer: `Example Commerce Oy`
+- Plan: Starter
+- Term: `2026-03-01` to `2027-02-28` (annual renewal)
+- License fee: € `9,900`
+- Support fee: € `0`
+- Total: € `9,900` (excl. VAT)
+- Payment terms: `Net 30`
+- Authorized Tenants: `1`
+- Authorized Production Deployments: `1`
+- Support tier: `Best effort async`
+- Response target: `No SLA`
+- Delivery method: `Private container registry`
+
+---
+
+## 8. Filled example — Growth
+
+Example only. Replace with actual customer and commercial terms before signature.
+
+- Order Form ID: `OF-2026-002`
+- Effective Date: `2026-03-01`
+- Customer: `Example Retail Group Ltd`
+- Plan: Growth
+- Term: `2026-03-01` to `2027-02-28` (annual renewal)
+- License fee: € `24,900`
+- Support fee: € `0`
+- Total: € `24,900` (excl. VAT)
+- Payment terms: `Net 30`
+- Authorized Tenants: `3`
+- Authorized Production Deployments: `3`
+- Support tier: `Growth default async`
+- Response target: `First async response target within 2 business days`
+- Delivery method: `Private container registry`
+
+---
+
+## 9. Fallback text for common legal/procurement edits
+
+These short clauses can be copied to Section 5 (Special Terms) when needed.
+
+- Liability cap fallback:
+  `The limitation of liability in Section 12 of the Agreement applies. Any alternate cap must be stated explicitly in this Order Form.`
+- Support fallback (no SLA):
+  `Support is best-effort async. No service credits apply unless an SLA schedule is attached to this Order Form.`
+- DPA/privacy fallback:
+  `For self-serve plans, the published DPA/SCC baseline applies by reference. Any Enterprise/custom DPA/SCC rider must be stated explicitly in this Order Form.`
+- Security incident process fallback:
+  `Security escalation and notification contacts are defined in the support/security addendum attached to this Order Form, if any.`
+
+## Read next
+
+- Pricing: [Pricing](../pricing/index.md)
+- Evaluation and licensing: [Evaluation, pricing, and licensing (buyer guide)](../pricing/evaluation-and-licensing.md)

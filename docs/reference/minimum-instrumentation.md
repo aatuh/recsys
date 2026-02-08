@@ -1,11 +1,13 @@
 ---
+diataxis: reference
 tags:
   - reference
   - evaluation
   - developer
 ---
-
 # Minimum instrumentation spec (for credible evaluation)
+This page is the canonical reference for Minimum instrumentation spec (for credible evaluation).
+
 
 ## Who this is for
 
@@ -19,12 +21,6 @@ tags:
 - The join key (`request_id`) and the invariants you must enforce
 - Common pitfalls that cause low join-rate or misleading results
 
-## Used by
-
-- First surface end-to-end: [`how-to/first-surface-end-to-end.md`](../how-to/first-surface-end-to-end.md)
-- Integration checklist: [`how-to/integration-checklist.md`](../how-to/integration-checklist.md)
-- Run eval and ship decisions: [`how-to/run-eval-and-ship.md`](../how-to/run-eval-and-ship.md)
-
 ## Core invariants (do not compromise)
 
 1. **`request_id` is unique per rendered list.**
@@ -37,7 +33,7 @@ tags:
 
 The strict schemas and examples live here:
 
-- [`reference/data-contracts/eval-events.md`](data-contracts/eval-events.md)
+- [recsys-eval event schemas (v1)](data-contracts/eval-events.md)
 
 ### `exposure.v1` (required)
 
@@ -143,7 +139,7 @@ Required fields:
   - generating `request_id` twice (one for the API call, another for logging)
   - not propagating `request_id` to client-side outcome events
 
-See: [`reference/data-contracts/join-logic.md`](data-contracts/join-logic.md)
+See: [Event join logic (exposures ↔ outcomes ↔ assignments)](data-contracts/join-logic.md)
 
 ### Empty-recs rate
 
@@ -177,7 +173,7 @@ recsys-eval validate --schema assignment.v1 --input assignments.jsonl # if you r
 
 ## Read next
 
-- Data contracts hub: [`reference/data-contracts/index.md`](data-contracts/index.md)
-- Decision playbook (ship/hold/rollback): [`recsys-eval/docs/decision-playbook.md`](../recsys-eval/docs/decision-playbook.md)
-- Integration spec (headers, request_id, invariants): [`developers/integration-spec.md`](../developers/integration-spec.md)
-- Integration checklist: [`how-to/integration-checklist.md`](../how-to/integration-checklist.md)
+- Data contracts hub: [Data contracts](data-contracts/index.md)
+- Decision playbook (ship/hold/rollback): [Decision playbook: ship / hold / rollback](../recsys-eval/docs/decision-playbook.md)
+- Integration spec (headers, request_id, invariants): [Integration spec (one surface)](../reference/integration-spec.md)
+- Integration checklist: [How-to: Integration checklist (one surface)](../how-to/integration-checklist.md)

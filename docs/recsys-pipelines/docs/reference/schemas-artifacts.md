@@ -1,4 +1,8 @@
-
+---
+diataxis: reference
+tags:
+  - recsys-pipelines
+---
 # Artifact schemas
 
 Artifacts are JSON documents intended for serving systems.
@@ -26,7 +30,7 @@ See `explanation/artifacts-and-versioning.md`.
 
 ## Read next
 
-- Start here: [`start-here.md`](../start-here.md)
-- Add artifact type: [`how-to/add-artifact-type.md`](../how-to/add-artifact-type.md)
-- Output layout: [`reference/output-layout.md`](output-layout.md)
-- Artifacts and versioning: [`explanation/artifacts-and-versioning.md`](../explanation/artifacts-and-versioning.md)
+- Start here: [Start here](../start-here.md)
+- Add artifact type: [How-to: Add a new artifact type](../how-to/add-artifact-type.md)
+- Output layout: [Output layout (local filesystem)](output-layout.md)
+- Artifacts and versioning: [Artifacts and versioning](../explanation/artifacts-and-versioning.md)

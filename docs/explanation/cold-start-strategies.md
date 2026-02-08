@@ -1,12 +1,14 @@
 ---
+diataxis: explanation
 tags:
   - explanation
   - ml
   - developer
   - recsys-algo
 ---
-
 # Cold start strategies
+This page explains Cold start strategies and how it fits into the RecSys suite.
+
 
 ## Who this is for
 
@@ -142,7 +144,7 @@ This is also how you avoid “new surface cold start”:
 
 - Seed a minimal popularity table for the new surface namespace.
 - If you intentionally want a cross-surface fallback, use the `default` namespace fallback described in
-  [`explanation/surface-namespaces.md`](surface-namespaces.md).
+  [Surface namespaces](surface-namespaces.md).
 
 ## Strategy 3: Segment defaults (different policies per cohort)
 
@@ -168,7 +170,7 @@ Recommended ladder:
 
 - **Empty results because the surface has no popularity rows**
   - Fix: seed `item_popularity_daily` for the surface namespace (or intentionally rely on `default` fallback).
-  - Runbook: [`operations/runbooks/empty-recs.md`](../operations/runbooks/empty-recs.md)
+  - Runbook: [Runbook: Empty recs](../operations/runbooks/empty-recs.md)
 - **Overly strict allow-lists**
   - Symptom: `CANDIDATES_INCLUDE_EMPTY`.
   - Fix: prefer `anchors.item_ids` for seeding; use `candidates.include_ids` only when you mean “only these items”.
@@ -178,6 +180,6 @@ Recommended ladder:
 
 ## Read next
 
-- Candidate vs ranking (controls order and warnings): [`explanation/candidate-vs-ranking.md`](candidate-vs-ranking.md)
-- Admin API (rules scoping by segment): [`reference/api/admin.md`](../reference/api/admin.md)
-- Minimal pilot (DB-only): [`tutorials/minimal-pilot-db-only.md`](../tutorials/minimal-pilot-db-only.md)
+- Candidate vs ranking (controls order and warnings): [Candidate generation vs ranking](candidate-vs-ranking.md)
+- Admin API (rules scoping by segment): [Admin API + local bootstrap (recsys-service)](../reference/api/admin.md)
+- Minimal pilot (DB-only): [minimal pilot mode (DB-only, popularity baseline)](../tutorials/minimal-pilot-db-only.md)

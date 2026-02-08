@@ -1,4 +1,5 @@
 ---
+diataxis: reference
 tags:
   - reference
   - database
@@ -6,8 +7,9 @@ tags:
   - ops
   - recsys-service
 ---
-
 # Database schema
+This page is the canonical reference for Database schema.
+
 
 ## Who this is for
 
@@ -76,6 +78,6 @@ docker exec -i recsys-db psql -U recsys-db -d recsys-db -c "select relname from 
 
 ## Read next
 
-- Migrations (safe upgrade): [`reference/database/migrations.md`](migrations.md)
-- DB-only seed examples: [`reference/database/db-only-seeding.md`](db-only-seeding.md)
-- Empty recs runbook: [`operations/runbooks/empty-recs.md`](../../operations/runbooks/empty-recs.md)
+- Migrations (safe upgrade): [Migrations (safe upgrade)](migrations.md)
+- DB-only seed examples: [DB-only signals: seed examples](db-only-seeding.md)
+- Empty recs runbook: [Runbook: Empty recs](../../operations/runbooks/empty-recs.md)

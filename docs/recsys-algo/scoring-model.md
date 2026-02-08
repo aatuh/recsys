@@ -1,12 +1,14 @@
 ---
+diataxis: reference
 tags:
   - recsys-algo
   - scoring
   - reference
   - recsys-engineering
 ---
-
 # Scoring model specification (recsys-algo)
+This page is the canonical reference for Scoring model specification (recsys-algo).
+
 
 ## Who this is for
 
@@ -171,6 +173,6 @@ score_final = 1.16 * 1.1 = 1.276
 
 ## Read next
 
-- Ranking & constraints reference: [`recsys-algo/ranking-reference.md`](ranking-reference.md)
-- recsys-service knobs that affect scoring: [`reference/config/recsys-service.md`](../reference/config/recsys-service.md)
-- Serving API fields (algorithm/weights/explain): [`reference/api/api-reference.md`](../reference/api/api-reference.md)
+- Ranking & constraints reference: [Ranking & constraints reference](ranking-reference.md)
+- recsys-service knobs that affect scoring: [recsys-service configuration](../reference/config/recsys-service.md)
+- Serving API fields (algorithm/weights/explain): [API Reference](../reference/api/api-reference.md)

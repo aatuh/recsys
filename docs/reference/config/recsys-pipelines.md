@@ -1,4 +1,5 @@
 ---
+diataxis: reference
 tags:
   - reference
   - config
@@ -6,8 +7,9 @@ tags:
   - developer
   - ops
 ---
-
 # recsys-pipelines configuration
+This page is the canonical reference for recsys-pipelines configuration.
+
 
 ## Who this is for
 
@@ -114,6 +116,6 @@ Note: the Kafka connector is scaffolded and returns a clear error until it is im
 
 ## Read next
 
-- CLI usage and exit codes: [`reference/cli/recsys-pipelines.md`](../cli/recsys-pipelines.md)
-- Operate pipelines (ship/rollback): [`how-to/operate-pipelines.md`](../../how-to/operate-pipelines.md)
-- Pipelines module config reference (full field list): [`recsys-pipelines/docs/reference/config.md`](../../recsys-pipelines/docs/reference/config.md)
+- CLI usage and exit codes: [CLI: recsys-pipelines](../cli/recsys-pipelines.md)
+- Operate pipelines (ship/rollback): [How-to: operate recsys-pipelines](../../how-to/operate-pipelines.md)
+- Pipelines module config reference (full field list): [Config reference](../../recsys-pipelines/docs/reference/config.md)

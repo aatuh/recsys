@@ -1,12 +1,14 @@
 ---
+diataxis: reference
 tags:
   - reference
   - cli
   - developer
   - ops
 ---
-
 # CLI reference
+This page is the canonical reference for CLI reference.
+
 
 ## Who this is for
 
@@ -25,4 +27,4 @@ tags:
 
 ## Read next
 
-- Run eval and ship: [`how-to/run-eval-and-ship.md`](../../how-to/run-eval-and-ship.md)
+- Run eval and ship: [How-to: run evaluation and make ship decisions](../../how-to/run-eval-and-ship.md)
