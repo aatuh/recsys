@@ -11,7 +11,7 @@ This page is the canonical reference for Data contracts.
 
 ## Who this is for
 
-- Lead developers and data engineers implementing logging, pipelines, and data validation
+- Developers and data engineers implementing logging, pipelines, and data validation
 - Analysts and recommendation engineers running `recsys-eval`
 - Operators who need to reason about “what was served” vs “what was clicked” vs “what artifact version is
   live”

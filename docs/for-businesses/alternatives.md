@@ -12,7 +12,7 @@ This page explains Alternatives and build vs buy and how it fits into the RecSys
 ## Who this is for
 
 - Buyers comparing approaches
-- Lead developers evaluating long-term ownership and risk
+- Developers evaluating long-term ownership and risk
 
 ## What you will get
 

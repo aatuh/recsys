@@ -17,7 +17,7 @@ This page explains Suite architecture and how it fits into the RecSys suite.
 
 ## Who this is for
 
-- Lead developers and platform engineers integrating the suite
+- Developers and platform engineers integrating the suite
 - Recommendation engineers who want a “whole system” mental model
 - SRE / on-call engineers who need to know rollback levers and common failure modes
 

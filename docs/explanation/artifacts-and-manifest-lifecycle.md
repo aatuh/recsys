@@ -14,7 +14,7 @@ This page explains Artifacts and manifest lifecycle (pipelines → service) and 
 
 ## Who this is for
 
-- Lead developers and platform engineers designing a safe “ship/rollback” process
+- Developers and platform engineers designing a safe “ship/rollback” process
 - SRE/on-call who need a concrete mental model for freshness and rollback incidents
 - Data engineers operating `recsys-pipelines`
 

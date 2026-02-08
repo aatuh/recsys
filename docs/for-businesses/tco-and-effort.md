@@ -12,7 +12,7 @@ This page explains TCO and effort model and how it fits into the RecSys suite.
 ## Who this is for
 
 - Buyers and stakeholders planning time, roles, and risk.
-- Lead developers estimating integration effort.
+- Developers estimating integration effort.
 
 ## What you will get
 

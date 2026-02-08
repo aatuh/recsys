@@ -12,7 +12,7 @@ This guide shows how to customer onboarding checklist in a reliable, repeatable 
 
 ## Who this is for
 
-- Customer lead developer / platform engineer
+- Customer developer / platform engineer
 - Security/compliance reviewer
 - Data engineer / analytics owner
 - SRE / on-call owner

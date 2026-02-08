@@ -12,7 +12,7 @@ This page is the canonical reference for API compatibility policy.
 
 ## Who this is for
 
-- Lead developers and platform engineers integrating the API long-term.
+- Developers and platform engineers integrating the API long-term.
 - Buyers who need procurement-grade clarity about “what can change”.
 
 ## What you will get

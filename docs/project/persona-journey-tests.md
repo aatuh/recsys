@@ -80,7 +80,7 @@ Score based on whether a buyer can reach "pricing → licensing choice → evalu
 
 Each persona script includes 3–5 tasks. The **first task** is the primary task for TTFS.
 
-### Lead developer
+### Developer
 
 1. **Run a minimal local quickstart** and see a non-empty recommendation response.
 2. Find the minimum instrumentation requirements (request IDs, exposures, outcomes).
@@ -89,7 +89,7 @@ Each persona script includes 3–5 tasks. The **first task** is the primary task
 
 Start points:
 
-- Persona hub: [Lead developer](../personas/lead-developer.md)
+- Persona hub: [Developer](../personas/lead-developer.md)
 - Primary tutorial: [Quickstart (minimal)](../tutorials/quickstart-minimal.md)
 
 ### Business representative

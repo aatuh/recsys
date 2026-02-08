@@ -12,7 +12,7 @@ This page explains Start here and how it fits into the RecSys suite.
 
 ## Who this is for
 
-- Lead developers / platform engineers evaluating the offline layer
+- Developers / platform engineers evaluating the offline layer
 - Data engineers operating daily runs and backfills
 - SRE / on-call responding to freshness and pipeline failures
 - Recommendation engineers who need to understand “what artifacts exist and when they update”

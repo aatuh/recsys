@@ -32,7 +32,7 @@ This page is the canonical reference for Docs map.
 
 ## Pick your path (by role)
 
-### Lead developer / platform engineer
+### Developer / platform engineer
 
 - Architecture + boundaries: [Suite architecture](../explanation/suite-architecture.md)
 - Config + contracts:

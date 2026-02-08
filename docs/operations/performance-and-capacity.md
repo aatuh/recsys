@@ -11,7 +11,7 @@ and capture sizing data for production planning.
 
 ## Who this is for
 
-- Lead developers and SREs sizing `recsys-service` for production
+- Developers and SREs sizing `recsys-service` for production
 - Engineers running load tests before enabling new signals or data modes
 
 ## What you will get
@@ -71,7 +71,7 @@ Use this table as a **living record**. Fill with measured results from your
 environment (hardware, cache settings, dataset size).
 
 | Tier  | Target QPS | p95 Latency | CPU | Memory | Notes              |
-| :---- | ---------: | ----------: | --: | -----: | ------------------ |
+|:------|-----------:|------------:|----:|-------:|--------------------|
 | dev   |            |             |     |        | local, seeded data |
 | small |            |             |     |        | single tenant      |
 | med   |            |             |     |        | multi-tenant       |

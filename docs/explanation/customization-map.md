@@ -12,7 +12,7 @@ This page explains Customization map and how it fits into the RecSys suite.
 
 ## Who this is for
 
-- Lead developers, recsys engineers, and stakeholders who need to understand **what can be changed where**.
+- Developers, recsys engineers, and stakeholders who need to understand **what can be changed where**.
 
 ## What you will get
 

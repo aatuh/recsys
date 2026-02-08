@@ -13,7 +13,7 @@ This page explains Pipelines operational invariants (safety model) and how it fi
 ## Who this is for
 
 - SRE/on-call and platform engineers operating `recsys-pipelines`
-- Lead developers designing a safe ship/rollback workflow
+- Developers designing a safe ship/rollback workflow
 - Data engineers who need to reason about retries and partial failures
 
 ## What you will get

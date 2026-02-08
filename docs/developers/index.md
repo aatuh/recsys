@@ -11,7 +11,7 @@ RecSys is an auditable recommendation system suite with deterministic ranking an
 
 ## Who this is for
 
-- Lead developers / platform engineers integrating the suite
+- Developers / platform engineers integrating the suite
 - Application engineers wiring one recommendation surface end-to-end
 - Recommendation engineers validating ranking changes
 

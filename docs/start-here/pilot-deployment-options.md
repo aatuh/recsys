@@ -12,7 +12,7 @@ This guide shows how to pilot deployment options in a reliable, repeatable way.
 
 ## Who this is for
 
-- Lead developers and platform engineers planning a pilot environment.
+- Developers and platform engineers planning a pilot environment.
 - Buyers who want to understand what “running it” entails.
 
 ## What you will get

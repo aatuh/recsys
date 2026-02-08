@@ -13,7 +13,7 @@ This guide shows how to choose your data mode in a reliable, repeatable way.
 
 ## Who this is for
 
-- Lead developers and platform engineers deciding how to integrate and operate RecSys.
+- Developers and platform engineers deciding how to integrate and operate RecSys.
 
 ## What you will get
 

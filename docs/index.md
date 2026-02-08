@@ -14,7 +14,7 @@ RecSys is a modular recommendation suite you can run locally or in production. T
 
 ## Choose your path (persona hubs)
 
-- **Lead Developer (integration + deployment)** → [Developers hub](developers/index.md)
+- **Developer (integration + deployment)** → [Developers hub](developers/index.md)
 - **Business representative (evaluation + procurement)** → [For businesses](for-businesses/index.md)
 - **SRE / operator (reliability + runbooks)** → [Operations](operations/index.md)
 - **Recommendation engineer (signals + evaluation)** → [RecSys engineering hub](recsys-engineering/index.md)

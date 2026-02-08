@@ -11,7 +11,7 @@ This guide shows how to production readiness checklist (RecSys suite) in a relia
 
 ## Who this is for
 
-Lead developers, platform/SRE, and security reviewers preparing to run `recsys-service` in production.
+Developers, platform/SRE, and security reviewers preparing to run `recsys-service` in production.
 
 ## What you will get
 

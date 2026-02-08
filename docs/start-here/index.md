@@ -56,7 +56,7 @@ recommendation system.
 
 ## Role-based entry points
 
-### Lead developer / platform engineer
+### Developer / platform engineer
 
 - Suite architecture and contracts:
   - [Suite architecture](../explanation/suite-architecture.md)

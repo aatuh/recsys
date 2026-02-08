@@ -144,7 +144,7 @@ nav:
 
 
   - Personas:
-      - Lead developer: personas/lead-developer.md
+      - Developer: personas/developer.md
       - Business representative: personas/business-representative.md
     #   - Technical writer: personas/technical-writer.md
       - SRE / on-call: operations/index.md

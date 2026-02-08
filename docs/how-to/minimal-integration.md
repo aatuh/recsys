@@ -12,7 +12,7 @@ This guide shows how to how-to: Minimal integration (one surface) in a reliable,
 
 ## Who this is for
 
-- Lead developers who want the smallest “real integration” that still allows evaluation
+- Developers who want the smallest “real integration” that still allows evaluation
 
 ## Goal
 

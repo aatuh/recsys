@@ -12,7 +12,7 @@ This page is intentionally blunt. It exists so evaluators and operators can set 
 ## Who this is for
 
 - Evaluators deciding whether this suite fits their current stage
-- Lead developers planning adoption and integration scope
+- Developers planning adoption and integration scope
 - Operators who need to avoid “surprise missing feature” incidents
 
 ## What you will get
