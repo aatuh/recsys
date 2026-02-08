@@ -41,7 +41,7 @@ func NewS3Reader(cfg S3Config, maxBytes int) (*S3Reader, error) {
 	return &S3Reader{client: client, maxBytes: int64(maxBytes)}, nil
 }
 
-func (r *S3Reader) Get(ctx context.Context, uri string) ([]byte, error) {
+func (r *S3Reader) Get(ctx context.Context, uri string) (_ []byte, err error) {
 	if r == nil || r.client == nil {
 		return nil, fmt.Errorf("s3 reader not configured")
 	}
@@ -53,7 +53,11 @@ func (r *S3Reader) Get(ctx context.Context, uri string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer obj.Close()
+	defer func() {
+		if closeErr := obj.Close(); err == nil && closeErr != nil {
+			err = closeErr
+		}
+	}()
 	var reader io.Reader = obj
 	if r.maxBytes > 0 {
 		reader = io.LimitReader(obj, r.maxBytes+1)

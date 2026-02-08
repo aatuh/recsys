@@ -4,13 +4,12 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  scripts/release.sh [--default VERSION] [--api VERSION] [--algo VERSION] [--pipelines VERSION] [--eval VERSION] [--suite VERSION] [--no-push]
+  scripts/release.sh [--default VERSION] [--api VERSION] [--algo VERSION] [--pipelines VERSION] [--eval VERSION] [--suite VERSION]
 
 Rules:
   - Default VERSION is used for all packages unless overridden.
-  - Per-package VERSION '-' skips tagging/pushing that package.
+  - Per-package VERSION '-' skips tagging that package.
   - Default VERSION cannot be '-'.
-  - --no-push creates tags locally without pushing to origin.
 
 Examples:
   scripts/release.sh --default v1.0.0
@@ -24,7 +23,6 @@ algo_version=""
 pipelines_version=""
 eval_version=""
 suite_version=""
-no_push=false
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -58,10 +56,6 @@ while [[ $# -gt 0 ]]; do
       suite_version="$2"
       shift 2
       ;;
-    --no-push)
-      no_push=true
-      shift
-      ;;
     -h|--help)
       usage
       exit 0
@@ -89,7 +83,6 @@ git checkout master
 git pull --ff-only origin master
 git fetch --tags origin
 
-tags_to_push=()
 
 create_tag() {
   local prefix="$1"
@@ -105,7 +98,6 @@ create_tag() {
   fi
   tag="${prefix}/${version}"
   git tag -a "$tag" -m "Release $tag"
-  tags_to_push+=("$tag")
 }
 
 create_tag "api" "$api_version"
@@ -113,11 +105,3 @@ create_tag "recsys-algo" "$algo_version"
 create_tag "recsys-pipelines" "$pipelines_version"
 create_tag "recsys-eval" "$eval_version"
 create_tag "recsys-suite" "$suite_version"
-
-if [[ "$no_push" == "true" ]]; then
-  echo "Skipping push (--no-push)."
-elif [[ ${#tags_to_push[@]} -gt 0 ]]; then
-  git push origin "${tags_to_push[@]}"
-else
-  echo "No tags selected, nothing to push."
-fi

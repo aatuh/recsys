@@ -129,7 +129,7 @@ func buildAppDeps(log ports.Logger, pool ports.DatabasePool, cfg config.Config) 
 	}
 	var customAlgo algorithm.Algorithm
 	if algoCfg.PluginEnabled && strings.TrimSpace(algoCfg.PluginPath) != "" {
-		if strings.EqualFold(cfg.Config.Env, "production") {
+		if strings.EqualFold(cfg.Env, "production") {
 			return appDeps{}, fmt.Errorf("algo plugins are disabled in production")
 		}
 		pluginAlgo, err := algoplugin.Load(algoCfg.PluginPath, algoStore, rulesManager, algoParams)

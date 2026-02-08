@@ -66,16 +66,23 @@ func main() {
 	}
 }
 
-func writeFile(path string, data []byte) error {
+func writeFile(path string, data []byte) (err error) {
 	f, err := os.Create(path)
 	if err != nil {
 		return err
 	}
-	defer f.Close()
-	if _, err := io.Copy(f, bytes.NewReader(data)); err != nil {
+	defer func() {
+		if closeErr := f.Close(); err == nil && closeErr != nil {
+			err = closeErr
+		}
+	}()
+	if _, err = io.Copy(f, bytes.NewReader(data)); err != nil {
 		return err
 	}
-	return f.Sync()
+	if err = f.Sync(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func fatalf(format string, args ...any) {
