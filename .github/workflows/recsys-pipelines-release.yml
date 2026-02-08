@@ -27,13 +27,26 @@ jobs:
           go-version-file: recsys-pipelines/go.mod
           cache: true
 
-      - name: Release with GoReleaser
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build release artifacts
         run: |
-          go install github.com/goreleaser/goreleaser/v2@latest
           VERSION="${GITHUB_REF_NAME#recsys-pipelines/}"
-          GORELEASER_CURRENT_TAG="$VERSION" goreleaser release --clean
+          ARTIFACT="dist/recsys-pipelines_${VERSION}_linux_amd64.tar.gz"
+          mkdir -p dist
+          GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o dist/recsys-pipelines ./cmd/recsys-pipelines
+          tar -C dist -czf "$ARTIFACT" recsys-pipelines
+          sha256sum "$ARTIFACT" > dist/checksums.txt
+
+      - name: Ensure GitHub release exists
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 || \
+            gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes "Automated release for $GITHUB_REF_NAME"
+
+      - name: Upload release artifacts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "$GITHUB_REF_NAME" dist/recsys-pipelines_*.tar.gz dist/checksums.txt --clobber
 
       - name: Generate SBOM
         run: |
