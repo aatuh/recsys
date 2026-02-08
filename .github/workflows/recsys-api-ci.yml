@@ -69,7 +69,7 @@ jobs:
         run: git diff --exit-code docs
 
       - name: Build container image
-        run: docker build -t recsys-service:ci -f Dockerfile .
+        run: docker build -t recsys-service:ci -f Dockerfile.ci ..
 
       - name: Login to registry
         if: ${{ env.REGISTRY_HOST != '' && env.REGISTRY_USERNAME != '' && env.REGISTRY_PASSWORD != '' }}
