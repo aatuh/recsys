@@ -30,11 +30,29 @@ jobs:
       - name: Build release artifacts
         run: |
           VERSION="${GITHUB_REF_NAME#recsys-pipelines/}"
-          ARTIFACT="dist/recsys-pipelines_${VERSION}_linux_amd64.tar.gz"
+          BIN_NAME="recsys-pipelines"
+          TARGETS="linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64"
           mkdir -p dist
-          GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o dist/recsys-pipelines ./cmd/recsys-pipelines
-          tar -C dist -czf "$ARTIFACT" recsys-pipelines
-          sha256sum "$ARTIFACT" > dist/checksums.txt
+          for target in $TARGETS; do
+            GOOS="${target%/*}"
+            GOARCH="${target#*/}"
+            SUFFIX="${BIN_NAME}_${VERSION}_${GOOS}_${GOARCH}"
+            BIN_PATH="dist/${SUFFIX}"
+            if [ "$GOOS" = "windows" ]; then
+              BIN_PATH="${BIN_PATH}.exe"
+            fi
+
+            CGO_ENABLED=0 GOOS="$GOOS" GOARCH="$GOARCH" go build -trimpath -o "$BIN_PATH" ./cmd/recsys-pipelines
+
+            if [ "$GOOS" = "windows" ]; then
+              (cd dist && zip -q "${SUFFIX}.zip" "${SUFFIX}.exe")
+            else
+              tar -C dist -czf "dist/${SUFFIX}.tar.gz" "$(basename "$BIN_PATH")"
+            fi
+
+            rm -f "$BIN_PATH"
+          done
+          (cd dist && sha256sum *.tar.gz *.zip > checksums.txt)
 
       - name: Ensure GitHub release exists
         env:
@@ -46,7 +64,7 @@ jobs:
       - name: Upload release artifacts
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload "$GITHUB_REF_NAME" dist/recsys-pipelines_*.tar.gz dist/checksums.txt --clobber
+        run: gh release upload "$GITHUB_REF_NAME" dist/*.tar.gz dist/*.zip dist/checksums.txt --clobber
 
       - name: Generate SBOM
         run: |

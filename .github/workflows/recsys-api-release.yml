@@ -35,6 +35,33 @@ jobs:
       - name: Build binary
         run: make build-bin
 
+      - name: Build release artifacts
+        run: |
+          VERSION="${GITHUB_REF_NAME#api/}"
+          BIN_NAME="recsys-service"
+          TARGETS="linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64"
+          mkdir -p dist
+          for target in $TARGETS; do
+            GOOS="${target%/*}"
+            GOARCH="${target#*/}"
+            SUFFIX="${BIN_NAME}_${VERSION}_${GOOS}_${GOARCH}"
+            BIN_PATH="dist/${SUFFIX}"
+            if [ "$GOOS" = "windows" ]; then
+              BIN_PATH="${BIN_PATH}.exe"
+            fi
+
+            CGO_ENABLED=0 GOOS="$GOOS" GOARCH="$GOARCH" go build -trimpath -o "$BIN_PATH" ./cmd/recsys-service
+
+            if [ "$GOOS" = "windows" ]; then
+              (cd dist && zip -q "${SUFFIX}.zip" "${SUFFIX}.exe")
+            else
+              tar -C dist -czf "dist/${SUFFIX}.tar.gz" "$(basename "$BIN_PATH")"
+            fi
+
+            rm -f "$BIN_PATH"
+          done
+          (cd dist && sha256sum *.tar.gz *.zip > checksums.txt)
+
       - name: Login to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
@@ -58,6 +85,11 @@ jobs:
         run: |
           gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 || \
             gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes "Automated release for $GITHUB_REF_NAME"
+
+      - name: Upload release artifacts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "$GITHUB_REF_NAME" dist/*.tar.gz dist/*.zip dist/checksums.txt --clobber
 
       - name: Upload SBOM to release
         env:
