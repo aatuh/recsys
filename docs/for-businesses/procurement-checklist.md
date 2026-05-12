@@ -22,6 +22,7 @@ Use this checklist to move from **completed pilot** → **approved procurement**
 
 ### 1) Evaluation evidence (product + analytics)
 
+- [ ] We can link to the local proof-kit output or equivalent pilot evidence.
 - [ ] We can show a non-empty recommendation response (one surface).
 - [ ] We have exposures and outcomes joined by stable `request_id`.
 - [ ] We produced at least one evaluation report comparing baseline vs candidate.
@@ -30,6 +31,8 @@ Use this checklist to move from **completed pilot** → **approved procurement**
 Links:
 
 - Evidence (what “good outputs” look like): [Evidence](evidence.md)
+- Commercial proof kit: [Commercial proof kit](../tutorials/commercial-proof-kit.md)
+- Guided evaluation intake: [Guided evaluation](../evaluate/guided-evaluation.md)
 - Suite workflow (report → decision): [Run eval and ship](../how-to/run-eval-and-ship.md)
 - Data contracts (schemas + join logic): [Data contracts](../reference/data-contracts/index.md)
 
@@ -59,13 +62,17 @@ Links:
 
 - [ ] We chose **AGPL vs commercial** path and documented why.
 - [ ] We chose plan scope (tenants, deployments) and support expectations.
+- [ ] We chose a private first-year bundle, or confirmed no bundle is needed.
 - [ ] We chose any fixed-scope service package needed for the next milestone, or confirmed none is needed.
+- [ ] We documented service package scope: milestone, tenant/deployment/surface, and review inputs.
+- [ ] For Enterprise, we completed an Enterprise readiness evidence review.
 - [ ] For self-serve plans, we use published legal/security defaults; for Enterprise, negotiated terms are captured in the Order Form.
 
 Links:
 
 - Pricing (canonical): [Pricing](../pricing/index.md)
 - Buyer guide (recommended flow): [Evaluation, pricing, and licensing](../pricing/evaluation-and-licensing.md)
+- Enterprise readiness evidence: [Enterprise readiness evidence](enterprise-readiness-evidence.md)
 - Self-serve procurement flow: [Self-serve procurement](self-serve-procurement.md)
 - Licensing decision tree: [Licensing](../licensing/index.md)
 - Commercial use (what you get + how to buy): [Commercial Use & Licensing](../licensing/commercial.md)
@@ -80,12 +87,15 @@ Copy/paste this into your procurement thread:
 
 - Pilot summary (surface, KPI, window)
 - Links to:
+  - proof-kit output or equivalent pilot evidence
   - evaluation report
   - evidence kit / logs sample
   - security pack
   - known limitations
   - selected plan and scope
+  - selected private first-year bundle, if any
   - selected fixed-scope service package(s), if any
+  - Enterprise readiness evidence review, if applicable
   - order form draft
 
 If you want a ready-made internal bundle format, start from the template in:
@@ -97,5 +107,6 @@ If you want a ready-made internal bundle format, start from the template in:
 - Buyer guide: [Evaluation, pricing, and licensing](../pricing/evaluation-and-licensing.md)
 - Procurement pack (role-based links): [Procurement pack](procurement-pack.md)
 - Pricing (canonical): [Pricing](../pricing/index.md)
+- Enterprise readiness evidence: [Enterprise readiness evidence](enterprise-readiness-evidence.md)
 - Security pack: [Security pack](../security/security-pack.md)
 - Final go/no-go review: [Decision readiness matrix](decision-readiness.md)

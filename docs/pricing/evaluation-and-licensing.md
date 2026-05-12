@@ -23,6 +23,7 @@ Use this page to run a credible evaluation and procure the right license **witho
 
 - A step-by-step evaluation path (what to do first)
 - The shortest path from **pilot → decision → procurement**
+- How to get guided help without a hosted SaaS sandbox
 - A procurement checklist you can hand to Security/Legal/IT/Finance
 
 ## Step 0 — Decide the evaluation owner and success bar
@@ -51,9 +52,13 @@ A credible pilot proves the measurement loop is real:
 Start here:
 
 - Commercial proof kit: [Commercial proof kit](../tutorials/commercial-proof-kit.md)
+- Guided evaluation after the proof kit: [Guided evaluation](../evaluate/guided-evaluation.md)
 - Tutorial (end-to-end): [Local end-to-end](../tutorials/local-end-to-end.md)
 - Suite workflow: [Run eval and ship](../how-to/run-eval-and-ship.md)
 - What “good outputs” look like: [Evidence](../for-businesses/evidence.md)
+
+RecSys does not currently offer a hosted evaluation sandbox. The supported path is the local proof kit first, then a
+guided customer-environment pilot with your own surface, events, metric, guardrails, and procurement constraints.
 
 ## Step 2 — Confirm operational fit for your environment
 
@@ -81,7 +86,8 @@ days after evaluation completion. One written 30-day extension may be granted fo
 - **Starter**: one tenant, one production deployment, and 1-2 production recommendation surfaces.
 - **Growth**: up to 3 tenants/deployments and up to 6 production recommendation surfaces, with faster async response
   expectations.
-- **Enterprise**: multi-region HA, OEM/resale, regulated environments, or custom terms.
+- **Enterprise**: custom scope such as OEM/resale, regulated deployments, multi-region HA, custom SLA, or custom
+  legal/security terms.
 
 Canonical plan definitions and prices: [Pricing](index.md).
 
@@ -89,10 +95,12 @@ Canonical plan definitions and prices: [Pricing](index.md).
 
 1. Run the pilot on one surface and produce an evaluation report.
 2. Use the commercial proof kit as the local evidence template before replacing synthetic data with pilot data.
-3. Decide ship/hold/rollback and record the evidence links.
-4. If the pilot should move forward, choose Starter or Growth based on tenant/deployment/surface scope.
-5. Apply the Commercial Evaluation fee as a credit if production purchase happens within the 60-day credit window.
-6. Add fixed-scope review packages only when they reduce a concrete adoption risk:
+3. Use the guided evaluation intake when you want help scoping a customer-environment pilot:
+   [Guided evaluation](../evaluate/guided-evaluation.md).
+4. Decide ship/hold/rollback and record the evidence links.
+5. If the pilot should move forward, choose Starter or Growth based on tenant/deployment/surface scope.
+6. Apply the Commercial Evaluation fee as a credit if production purchase happens within the 60-day credit window.
+7. Add fixed-scope review packages only when they reduce a concrete adoption risk:
    [Pricing](index.md#fixed-scope-services-and-add-ons).
 
 ### Do you need commercial terms? (quick decision tree)
@@ -119,11 +127,13 @@ See the canonical decision tree and file-level rules: [Licensing](../licensing/i
    [Known limitations](../start-here/known-limitations.md) and [Security pack](../security/security-pack.md)
 3. Choose the plan and scope (tenants/deployments/support expectations):
    [Pricing](index.md)
-4. Use the self-serve procurement path for standard plans:
+4. Choose any private first-year bundle or fixed-scope service package in the Order Form when it reduces adoption risk:
+   [Pricing](index.md#private-first-year-bundles-order-form-examples)
+5. Use the self-serve procurement path for standard plans:
    [Self-serve procurement](../for-businesses/self-serve-procurement.md)
-5. Add any fixed-scope review packages to the same procurement request when needed:
-   [Pricing](index.md#fixed-scope-services-and-add-ons)
-6. Use the order form + contact path only for Enterprise/custom terms:
+6. For Enterprise/custom terms, review Enterprise readiness evidence:
+   [Enterprise readiness evidence](../for-businesses/enterprise-readiness-evidence.md).
+7. Send the order form + contact path only for Enterprise/custom terms:
    [Order form template](../licensing/order_form.md) and [`contact@recsys.app`][pricing_contact]
 
 ## Outputs and exit criteria
@@ -154,7 +164,9 @@ Hand this to Security/Legal/IT/Finance as a Definition of Done:
 ## Read next
 
 - Pricing overview (commercial plans): [Pricing](index.md)
+- Guided evaluation: [Guided evaluation](../evaluate/guided-evaluation.md)
 - Self-serve path: [Self-serve procurement](../for-businesses/self-serve-procurement.md)
+- Enterprise readiness evidence: [Enterprise readiness evidence](../for-businesses/enterprise-readiness-evidence.md)
 - Licensing decision tree: [Licensing](../licensing/index.md)
 - What “good outputs” look like: [Evidence](../for-businesses/evidence.md)
 - Security pack: [Security pack](../security/security-pack.md)

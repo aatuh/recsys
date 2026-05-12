@@ -24,6 +24,7 @@ RecSys is an auditable recommendation system suite with deterministic ranking an
 [Read licensing](../licensing/index.md){ .md-button }
 [Self-serve procurement](../for-businesses/self-serve-procurement.md){ .md-button }
 [Buyer guide](evaluation-and-licensing.md){ .md-button }
+[Guided evaluation](../evaluate/guided-evaluation.md){ .md-button }
 [Contact](#contact){ .md-button }
 
 All prices below are **EUR, excl. VAT**.
@@ -68,10 +69,12 @@ license term is **30 days** (unless extended in writing): [Evaluation license](.
 
 - **Enterprise**  
   From €60,000 / year  
-  **Who it’s for:** multi-region HA, OEM/resale, regulated environments, or custom terms.  
+  **Who it’s for:** custom scope only: OEM/resale, regulated deployments, multi-region HA, custom SLA, or custom
+  legal/security terms.
   **Scope:** custom.  
   **Includes:** custom scope/terms. Typical negotiation scope: SLA/service credits, DPA/SCC riders, liability/legal
-  riders, OEM/resale rights, and custom deployment/support commitments.
+  riders, OEM/resale rights, and custom deployment/support commitments. Enterprise buyers should review the
+  [Enterprise readiness evidence](../for-businesses/enterprise-readiness-evidence.md) before relying on custom terms.
 
 </div>
 
@@ -96,6 +99,21 @@ operations, or production on-call.
 - **Security / Procurement Review Package:** one review packet covering published security artifacts, SBOM/provenance
   navigation, procurement checklist gaps, and recommended follow-up questions.
 
+## Private first-year bundles (Order Form examples)
+
+These examples are private Order Form bundles, not new public tiers, Stripe products, or public discounts. They package
+a published production plan with a fixed-scope review package for the first year.
+
+| Example bundle | First-year total | Included components |
+| --- | ---: | --- |
+| Starter + Pilot Integration Review | €14,900 | Starter (€9,900/year) + Pilot Integration Review (€5,000 one-time) |
+| Starter + Production Readiness Package | €22,400 | Starter (€9,900/year) + Production Readiness Package (€12,500 one-time) |
+| Growth + Production Readiness Package | €37,400 | Growth (€24,900/year) + Production Readiness Package (€12,500 one-time) |
+
+Bundles do not change plan entitlements, list prices, support defaults, renewal pricing, or service-package scope unless
+a signed Order Form states otherwise. Renewal defaults to the selected plan's then-current commercial terms without the
+one-time service package fee unless the Order Form says otherwise.
+
 ## Plan chooser (objective thresholds)
 
 Use the smallest plan that meets your current scope.
@@ -105,7 +123,7 @@ Use the smallest plan that meets your current scope.
 | Time-boxed pilot in non-production only (1 tenant, 1 deployment) | Commercial Evaluation |
 | One tenant, one production deployment, 1-2 production surfaces, no contractual SLA required | Starter |
 | Up to 3 tenants/deployments and up to 6 production surfaces, faster async response expectations | Growth |
-| Multi-region HA, OEM/resale, regulated requirements, or custom legal/security terms | Enterprise |
+| OEM/resale, regulated deployments, multi-region HA, custom SLA, or custom legal/security terms | Enterprise |
 
 If you exceed plan scope at any time, upgrade via a new Order Form.
 
@@ -147,6 +165,7 @@ Choose the smallest purchase that matches your current stage.
 2. **Use the self-serve path (Commercial Evaluation/Starter/Growth)**
 
    - Use published legal/security artifacts and standard defaults.
+   - Choose a private first-year bundle only through an Order Form if packaged first-year help reduces adoption risk.
    - Follow: [Self-serve procurement](../for-businesses/self-serve-procurement.md)
    - Checkout links:
      [Commercial Evaluation][stripe_commercial_evaluation] ·
@@ -158,6 +177,8 @@ Choose the smallest purchase that matches your current stage.
 3. **Use Enterprise procurement (custom terms)**
 
    - Required for OEM/resale, regulated environments, custom legal/security terms, or custom SLA commitments.
+   - Review the Enterprise evidence map before depending on HA, support, security, or operational commitments:
+     [Enterprise readiness evidence](../for-businesses/enterprise-readiness-evidence.md)
    - Submit scope and requested terms via order form + contact channel.
 
 4. **Use only `recsys-eval` (Apache-2.0)**
@@ -173,6 +194,7 @@ Next step:
 ## Details and legal terms
 
 - Legal pricing definitions (order forms): [Pricing definitions](../licensing/pricing.md)
+- Enterprise readiness evidence: [Enterprise readiness evidence](../for-businesses/enterprise-readiness-evidence.md)
 - Commercial use & how to buy: [Commercial use](../licensing/commercial.md)
 - Order form template: [Order form template](../licensing/order_form.md)
 - DPA/SCC baseline: [DPA and SCC terms](../security/dpa-and-scc.md)
@@ -196,6 +218,8 @@ Fastest fulfillment is async:
 ## Read next
 
 - Buyer guide: [Evaluation, pricing, and licensing (buyer guide)](evaluation-and-licensing.md)
+- Guided evaluation: [Guided evaluation](../evaluate/guided-evaluation.md)
 - Self-serve path: [Self-serve procurement](../for-businesses/self-serve-procurement.md)
+- Enterprise evidence map: [Enterprise readiness evidence](../for-businesses/enterprise-readiness-evidence.md)
 - Procurement pack: [Procurement pack (Security, Legal, IT, Finance)](../for-businesses/procurement-pack.md)
 - Final go/no-go review: [Decision readiness matrix](../for-businesses/decision-readiness.md)

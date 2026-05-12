@@ -36,6 +36,8 @@ Tip: use your browser’s **Print → Save as PDF** to produce a single-file “
   [Subprocessors and distribution details](subprocessors.md)
 - Standard support schedule:
   [SLA and support schedule](sla-schedule.md)
+- Enterprise readiness evidence:
+  [Enterprise readiness evidence](../for-businesses/enterprise-readiness-evidence.md)
 - Production readiness checklist:
   [Production readiness checklist](../operations/production-readiness-checklist.md)
 - Known limitations and non-goals:
@@ -60,6 +62,8 @@ Tip: use your browser’s **Print → Save as PDF** to produce a single-file “
 - Operational reliability & rollback:
   [Operational reliability & rollback](../start-here/operational-reliability-and-rollback.md)
 - Operations hub + runbooks: [Operations](../operations/index.md)
+- Enterprise readiness evidence:
+  [Enterprise readiness evidence](../for-businesses/enterprise-readiness-evidence.md)
 
 ## Data handling and auditability
 
@@ -74,6 +78,7 @@ Tip: use your browser’s **Print → Save as PDF** to produce a single-file “
 - Pricing: [Pricing](../pricing/index.md)
 - Buyer guide (evaluation + pricing + licensing):
   [Evaluation, pricing, and licensing](../pricing/evaluation-and-licensing.md)
+- Guided evaluation: [Guided evaluation](../evaluate/guided-evaluation.md)
 - Commercial use & how to buy: [Commercial use](../licensing/commercial.md)
 - Order form template: [Order form template](../licensing/order_form.md)
 - DPA/SCC baseline: [DPA and SCC terms](dpa-and-scc.md)
@@ -88,4 +93,6 @@ Tip: use your browser’s **Print → Save as PDF** to produce a single-file “
 
 - Trust center: [Trust center](index.md)
 - Procurement pack: [Procurement pack (Security, Legal, IT, Finance)](../for-businesses/procurement-pack.md)
+- Enterprise readiness evidence:
+  [Enterprise readiness evidence](../for-businesses/enterprise-readiness-evidence.md)
 - Commercial procurement artifacts: [Commercial procurement artifacts](commercial-procurement-artifacts.md)

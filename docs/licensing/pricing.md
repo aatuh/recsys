@@ -24,6 +24,9 @@ For current plan prices and a plain-language overview, see: [Pricing](../pricing
 - **Fixed-scope service package**: a time-boxed advisory/review package listed on the pricing page. These packages do
   not include managed hosting, production on-call, or unlimited custom development unless explicitly stated in an Order
   Form.
+- **First-year bundle**: private Order Form packaging that combines a production plan with a fixed-scope service
+  package for the first year. It is not a new public tier and does not change plan entitlements, list prices, support
+  defaults, renewal pricing, or service-package scope unless the Order Form states otherwise.
 
 ## Notes
 

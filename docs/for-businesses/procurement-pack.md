@@ -29,6 +29,8 @@ Role-based links to the exact artifacts Security, Legal, IT, and Finance typical
 - DPA/SCC baseline (self-serve plans): [DPA and SCC terms](../security/dpa-and-scc.md)
 - Subprocessor/distribution disclosure: [Subprocessors and distribution details](../security/subprocessors.md)
 - Standard support schedule: [SLA and support schedule](../security/sla-schedule.md)
+- Enterprise readiness evidence:
+  [Enterprise readiness evidence](enterprise-readiness-evidence.md)
 - Security/privacy/compliance overview: [Security, privacy, compliance](../start-here/security-privacy-compliance.md)
 - Known limitations (non-goals): [Known limitations](../start-here/known-limitations.md)
 
@@ -55,6 +57,7 @@ Canonical overview: [Security, privacy, compliance](../start-here/security-priva
 - Self-serve procurement path: [Self-serve procurement](self-serve-procurement.md)
 - Pricing definitions (order form terms): [Pricing definitions](../licensing/pricing.md)
 - Order form template: [Order form template](../licensing/order_form.md)
+- Guided evaluation intake: [Guided evaluation](../evaluate/guided-evaluation.md)
 
 ## IT / Operations
 
@@ -63,11 +66,14 @@ Canonical overview: [Security, privacy, compliance](../start-here/security-priva
 - Failure modes and diagnostics: [Failure modes](../operations/failure-modes.md)
 - Rollback story (ship/hold/rollback levers): [Operational reliability & rollback](../start-here/operational-reliability-and-rollback.md)
 - Deployment guide: [Deploy with Helm](../how-to/deploy-helm.md)
+- Enterprise readiness evidence: [Enterprise readiness evidence](enterprise-readiness-evidence.md)
 
 ## Finance / Procurement
 
 - Buyer guide (evaluation + procurement flow): [Buyer guide](../pricing/evaluation-and-licensing.md)
 - Pricing overview (commercial plans): [Pricing](../pricing/index.md)
+- First-year bundle examples:
+  [Private first-year bundles](../pricing/index.md#private-first-year-bundles-order-form-examples)
 - Support model (expectations by plan): [Support](../project/support.md)
 - Final cross-functional review template: [Decision readiness matrix](decision-readiness.md)
 
@@ -81,5 +87,7 @@ Use the canonical checklist when you want a single shareable DoD list:
 
 - Buyer journey (5-minute path): [Buyer journey](buyer-journey.md)
 - Start an evaluation (technical path): [Start an evaluation](../evaluate/index.md)
+- Guided evaluation: [Guided evaluation](../evaluate/guided-evaluation.md)
 - Buyer guide (evaluation + procurement): [Buyer guide](../pricing/evaluation-and-licensing.md)
+- Enterprise readiness evidence: [Enterprise readiness evidence](enterprise-readiness-evidence.md)
 - Final go/no-go review: [Decision readiness matrix](decision-readiness.md)

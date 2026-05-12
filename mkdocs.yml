@@ -247,8 +247,10 @@ nav:
       - Evidence: for-businesses/evidence.md
       - Procurement pack: for-businesses/procurement-pack.md
       - Procurement checklist: for-businesses/procurement-checklist.md
+      - Enterprise readiness evidence: for-businesses/enterprise-readiness-evidence.md
       - Decision readiness matrix: for-businesses/decision-readiness.md
       - Start an evaluation: evaluate/index.md
+      - Guided evaluation: evaluate/guided-evaluation.md
       - Pricing:
           - pricing/index.md
           - Buyer guide: pricing/evaluation-and-licensing.md

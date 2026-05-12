@@ -33,6 +33,7 @@ Where to start:
 
 - Suite workflow: [Run eval and ship](../how-to/run-eval-and-ship.md)
 - Commercial proof kit: [Commercial proof kit](../tutorials/commercial-proof-kit.md)
+- Guided evaluation after proof kit: [Guided evaluation](../evaluate/guided-evaluation.md)
 - Recommended outputs bundle: [Evidence kit template](#evidence-kit-template-copypaste)
 
 ## Evidence ladder (how to interpret)
@@ -240,4 +241,6 @@ Use this template as the “bundle” you share internally for decision-making a
 
 - Success metrics (KPIs + guardrails): [Success metrics](success-metrics.md)
 - Evaluation, pricing, and licensing (buyer guide): [Buyer guide](../pricing/evaluation-and-licensing.md)
+- Guided evaluation: [Guided evaluation](../evaluate/guided-evaluation.md)
+- Enterprise readiness evidence: [Enterprise readiness evidence](enterprise-readiness-evidence.md)
 - Security pack: [Security pack](../security/security-pack.md)

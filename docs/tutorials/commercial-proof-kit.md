@@ -130,6 +130,7 @@ Fill in:
 
 ## Read next
 
+- Guided evaluation: [Guided evaluation](../evaluate/guided-evaluation.md)
 - Evidence guide: [Evidence](../for-businesses/evidence.md)
 - Buyer guide: [Evaluation, pricing, and licensing](../pricing/evaluation-and-licensing.md)
 - Run eval and ship: [How-to: run evaluation and make ship decisions](../how-to/run-eval-and-ship.md)

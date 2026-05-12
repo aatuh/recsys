@@ -30,6 +30,8 @@ A buyer-first reading order to decide whether a pilot is credible and how to pro
 3. **Inspect evidence (what outputs look like)**
    - Example response, logs, and report excerpt: [Evidence](evidence.md)
    - Runnable local proof bundle: [Commercial proof kit](../tutorials/commercial-proof-kit.md)
+   - Guided customer-environment path after the proof kit:
+     [Guided evaluation](../evaluate/guided-evaluation.md)
 4. **Confirm operational fit**
    - Known limitations (non-goals): [Known limitations](../start-here/known-limitations.md)
    - Rollback story: [Operational reliability & rollback](../start-here/operational-reliability-and-rollback.md)
@@ -41,6 +43,8 @@ A buyer-first reading order to decide whether a pilot is credible and how to pro
    - Licensing decision tree: [Licensing](../licensing/index.md)
    - Pricing overview (commercial plans): [Pricing](../pricing/index.md)
    - Self-serve path (minimum requests): [Self-serve procurement](self-serve-procurement.md)
+   - Enterprise readiness evidence for custom terms:
+     [Enterprise readiness evidence](enterprise-readiness-evidence.md)
 
 ## Outcomes you should expect
 
@@ -60,6 +64,8 @@ See the canonical checklist: [Buyer guide](../pricing/evaluation-and-licensing.m
 - Licensing obligations (AGPL vs commercial): [Licensing](../licensing/index.md)
 - Procurement flow and artifacts: [Buyer guide](../pricing/evaluation-and-licensing.md)
 - One-request procurement path: [Self-serve procurement](self-serve-procurement.md)
+- Guided evaluation intake: [Guided evaluation](../evaluate/guided-evaluation.md)
+- Enterprise readiness evidence: [Enterprise readiness evidence](enterprise-readiness-evidence.md)
 - Procurement checklist (Definition of Done): [Procurement checklist](procurement-checklist.md)
 - Final go/no-go matrix: [Decision readiness matrix](decision-readiness.md)
 - Order form template: [Order form template](../licensing/order_form.md)
@@ -88,6 +94,8 @@ Canonical spec:
   Example response, exposure log, joined outcomes, and report excerpt.
 - **[Commercial proof kit](../tutorials/commercial-proof-kit.md)**
   Runnable synthetic ecommerce demo that writes the local proof bundle.
+- **[Guided evaluation](../evaluate/guided-evaluation.md)**
+  The supported path after the proof kit when you want help in your customer-controlled environment.
 - **[Baseline benchmarks](../operations/baseline-benchmarks.md)**  
   Reproducible “anchor numbers” and a template for your own runs.
 - **[Security pack](../security/security-pack.md)**  
@@ -103,3 +111,4 @@ Canonical spec:
 - One-request procurement path: [Self-serve procurement](self-serve-procurement.md)
 - Procurement pack (Security/Legal/IT/Finance): [Procurement pack](procurement-pack.md)
 - Start an evaluation (technical path): [Start an evaluation](../evaluate/index.md)
+- Enterprise readiness evidence: [Enterprise readiness evidence](enterprise-readiness-evidence.md)
