@@ -50,8 +50,13 @@ Each module is versioned independently. Tags are module-prefixed, for example:
 
 The recommended workflow is:
 
-- run builds/tests from within each module directory (e.g., `cd recsys-eval && make test`)
+- run the full suite from the repo root with `make test`
+- run builds/tests from within each module directory when you only need one component (e.g., `cd recsys-eval && make test`)
 - use Docker Compose for the service when you want the full local stack (`make dev`)
+
+Fresh checkouts do not need manual env-file setup for the common flows. `make dev` creates `api/.env` from
+`api/.env.example` when missing, and `make test` creates `api/.env.test` from `api/.env.test.example` when missing.
+Existing local env files are never overwritten. The same test env bootstrap runs when you use `cd api && make test`.
 
 The `api/` module uses `replace` directives for local development (for example, to use the local `../recsys-algo`).
 

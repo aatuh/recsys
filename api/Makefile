@@ -13,13 +13,35 @@ export API_SVC
 COMPOSE_FILES := -f ../docker-compose.yml
 DOCKER_COMPOSE := docker compose $(COMPOSE_FILES)
 
-.PHONY: help dev down logs codegen migrate-build migrate-up migrate-down migrate-status migrate-preflight migrate-new tidy test test-cached test-fast test-clean health build-bin
+.PHONY: help env test-env dev down logs codegen migrate-build migrate-up migrate-down migrate-status migrate-preflight migrate-new tidy test test-cached test-fast test-clean health build-bin
 
 help: ## Show this help message
 	@echo "Available targets:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
-dev: ## Start development environment
+env: ## Create local API env file if missing
+	@if [ -f .env ]; then \
+		echo "api/.env already exists; leaving it unchanged"; \
+	elif [ -f .env.example ]; then \
+		cp .env.example .env; \
+		echo "Created api/.env from api/.env.example"; \
+	else \
+		echo "missing required example env file: api/.env.example" >&2; \
+		exit 1; \
+	fi
+
+test-env: ## Create local API test env file if missing
+	@if [ -f .env.test ]; then \
+		echo "api/.env.test already exists; leaving it unchanged"; \
+	elif [ -f .env.test.example ]; then \
+		cp .env.test.example .env.test; \
+		echo "Created api/.env.test from api/.env.test.example"; \
+	else \
+		echo "missing required example env file: api/.env.test.example" >&2; \
+		exit 1; \
+	fi
+
+dev: env ## Start development environment
 	@$(DOCKER_COMPOSE) --env-file .env up api --build -d
 
 down: ## Clean up containers and volumes
@@ -82,16 +104,17 @@ FAST ?= false
 SKIP_API_WAIT ?= false
 CACHE_TTL ?= 3600
 CACHE_ENABLED ?= false
+TEST_ENV_FILE ?= ./api/.env.test
 
-test: ## Run tests
+test: test-env ## Run tests
 	@echo "🧪 Running tests. Pattern: '$(TEST_PATTERN)'  Flags: '$(FLAGS)'  Pkg: '$(PKG)' Fast: ${FAST}"
-	@RECSYS_API_ENV_FILE=./api/.env.test $(DOCKER_COMPOSE) up -d db api
-	@$(DOCKER_COMPOSE) exec -T api sh -c 'dir_arg=""; \
+	@RECSYS_API_ENV_FILE=$(TEST_ENV_FILE) RECSYS_TEST_ENV_FILE=$(TEST_ENV_FILE) $(DOCKER_COMPOSE) up -d db api
+	@RECSYS_API_ENV_FILE=$(TEST_ENV_FILE) RECSYS_TEST_ENV_FILE=$(TEST_ENV_FILE) $(DOCKER_COMPOSE) exec -T api sh -c 'dir_arg=""; \
 		if [ -n "$$MIGRATIONS_DIR" ] && [ "$$MIGRATIONS_DIR" != "-" ]; then \
 			dir_arg="-dir $$MIGRATIONS_DIR"; \
 		fi; \
 		GOTMPDIR=/app/tmp TMPDIR=/app/tmp go run ./cmd/migrate $$dir_arg up'
-	@$(DOCKER_COMPOSE) run --build --no-deps --rm \
+	@RECSYS_API_ENV_FILE=$(TEST_ENV_FILE) RECSYS_TEST_ENV_FILE=$(TEST_ENV_FILE) $(DOCKER_COMPOSE) run --build --no-deps --rm \
 		-e TEST_PATTERN='$(TEST_PATTERN)' \
 		-e FLAGS='$(FLAGS)' \
 		-e PKG='$(PKG)' \
@@ -102,15 +125,15 @@ test: ## Run tests
 		-e TEST_CACHE_DIR='/tmp/test-cache' \
 		test
 
-test-cached: ## Run tests with caching enabled
+test-cached: test-env ## Run tests with caching enabled
 	@echo "🧪 Running cached tests. Pattern: '$(TEST_PATTERN)'  Flags: '$(FLAGS)'  Pkg: '$(PKG)' Fast: ${FAST} Cache TTL: '$(CACHE_TTL)'"
-	@RECSYS_API_ENV_FILE=./api/.env.test $(DOCKER_COMPOSE) up -d db api
-	@$(DOCKER_COMPOSE) exec -T api sh -c 'dir_arg=""; \
+	@RECSYS_API_ENV_FILE=$(TEST_ENV_FILE) RECSYS_TEST_ENV_FILE=$(TEST_ENV_FILE) $(DOCKER_COMPOSE) up -d db api
+	@RECSYS_API_ENV_FILE=$(TEST_ENV_FILE) RECSYS_TEST_ENV_FILE=$(TEST_ENV_FILE) $(DOCKER_COMPOSE) exec -T api sh -c 'dir_arg=""; \
 		if [ -n "$$MIGRATIONS_DIR" ] && [ "$$MIGRATIONS_DIR" != "-" ]; then \
 			dir_arg="-dir $$MIGRATIONS_DIR"; \
 		fi; \
 		GOTMPDIR=/app/tmp TMPDIR=/app/tmp go run ./cmd/migrate $$dir_arg up'
-	@$(DOCKER_COMPOSE) run --build --no-deps --rm \
+	@RECSYS_API_ENV_FILE=$(TEST_ENV_FILE) RECSYS_TEST_ENV_FILE=$(TEST_ENV_FILE) $(DOCKER_COMPOSE) run --build --no-deps --rm \
 		-e TEST_PATTERN='$(TEST_PATTERN)' \
 		-e FLAGS='$(FLAGS)' \
 		-e PKG='$(PKG)' \
@@ -121,16 +144,16 @@ test-cached: ## Run tests with caching enabled
 		-e TEST_CACHE_DIR='/tmp/test-cache' \
 		test
 
-test-clean: ## Clean test cache
+test-clean: test-env ## Clean test cache
 	@echo "🧹 Cleaning test cache..."
-	@$(DOCKER_COMPOSE) run --no-deps --rm test sh -c "rm -rf /tmp/test-cache .test-cache"
+	@RECSYS_API_ENV_FILE=$(TEST_ENV_FILE) RECSYS_TEST_ENV_FILE=$(TEST_ENV_FILE) $(DOCKER_COMPOSE) run --no-deps --rm test sh -c "rm -rf /tmp/test-cache .test-cache"
 
-fmt: ## Format Go code
+fmt: env ## Format Go code
 	@echo "🎨 Formatting Go code..."
 	@$(DOCKER_COMPOSE) run --no-deps --rm api gofmt -s -w .
 	@echo "✅ Code formatted successfully"
 
-lint: ## Lint Go code
+lint: env ## Lint Go code
 	@echo "🔍 Linting Go code..."
 	$(DOCKER_COMPOSE) run --no-deps --rm api sh -c "GOLANGCI_LINT_CACHE=/tmp/golangci-lint go vet ./... && GOLANGCI_LINT_CACHE=/tmp/golangci-lint golangci-lint run"
 	@echo "✅ Code linted successfully"

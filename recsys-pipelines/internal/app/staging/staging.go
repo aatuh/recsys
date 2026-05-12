@@ -41,7 +41,10 @@ func (s Store) Put(ctx context.Context, ref artifacts.Ref, blob []byte) (string,
 		return "", fmt.Errorf("ref version must be set")
 	}
 	winDir := s.windowDir(ref.Key, ref.Window)
-	path := filepath.Join(winDir, ref.Version+".json")
+	path, err := artifactPath(winDir, ref.Version)
+	if err != nil {
+		return "", err
+	}
 	if err := fsutil.WriteFileAtomic(path, blob, 0o644); err != nil {
 		return "", err
 	}
@@ -82,7 +85,10 @@ func (s Store) LoadCurrent(
 	if ver == "" {
 		return artifacts.Ref{}, nil, false, fmt.Errorf("staging current.version is empty")
 	}
-	path := filepath.Join(winDir, ver+".json")
+	path, err := artifactPath(winDir, ver)
+	if err != nil {
+		return artifacts.Ref{}, nil, false, err
+	}
 	blob, err := os.ReadFile(path)
 	if err != nil {
 		return artifacts.Ref{}, nil, false, err
@@ -103,6 +109,17 @@ func (s Store) windowDir(key artifacts.Key, w windows.Window) string {
 		string(key.Type),
 		win,
 	)
+}
+
+func artifactPath(winDir string, version string) (string, error) {
+	version = strings.TrimSpace(version)
+	if version == "" {
+		return "", fmt.Errorf("artifact version must be set")
+	}
+	if version == "." || version == ".." || strings.ContainsAny(version, `/\`) {
+		return "", fmt.Errorf("artifact version contains invalid path segment")
+	}
+	return filepath.Join(winDir, version+".json"), nil
 }
 
 func (s Store) loadSingleJSON(

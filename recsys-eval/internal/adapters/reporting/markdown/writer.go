@@ -15,11 +15,12 @@ type Writer struct{}
 func (Writer) Write(_ context.Context, rep report.Report, path string) error {
 	var b strings.Builder
 	b.WriteString("# Recsys Eval Report\n\n")
-	b.WriteString(fmt.Sprintf("- Run ID: `%s`\n", rep.RunID))
-	b.WriteString(fmt.Sprintf("- Mode: `%s`\n", rep.Mode))
-	b.WriteString(fmt.Sprintf("- Created At: `%s`\n", rep.CreatedAt.Format("2006-01-02T15:04:05Z")) + "\n")
+	fmt.Fprintf(&b, "- Run ID: `%s`\n", rep.RunID)
+	fmt.Fprintf(&b, "- Mode: `%s`\n", rep.Mode)
+	fmt.Fprintf(&b, "- Created At: `%s`\n", rep.CreatedAt.Format("2006-01-02T15:04:05Z"))
+	b.WriteString("\n")
 	if rep.Summary.CasesEvaluated > 0 {
-		b.WriteString(fmt.Sprintf("- Cases Evaluated: `%d`\n\n", rep.Summary.CasesEvaluated))
+		fmt.Fprintf(&b, "- Cases Evaluated: `%d`\n\n", rep.Summary.CasesEvaluated)
 	} else {
 		b.WriteString("\n")
 	}
@@ -27,24 +28,24 @@ func (Writer) Write(_ context.Context, rep report.Report, path string) error {
 	if rep.Summary.Executive != nil {
 		b.WriteString("## Executive Summary\n\n")
 		if rep.Summary.Executive.Decision != "" {
-			b.WriteString(fmt.Sprintf("- Decision: `%s`\n", rep.Summary.Executive.Decision))
+			fmt.Fprintf(&b, "- Decision: `%s`\n", rep.Summary.Executive.Decision)
 		}
 		if len(rep.Summary.Executive.Highlights) > 0 {
 			b.WriteString("- Highlights:\n")
 			for _, m := range rep.Summary.Executive.Highlights {
-				b.WriteString(fmt.Sprintf("  - %s: %.6f\n", m.Name, m.Value))
+				fmt.Fprintf(&b, "  - %s: %.6f\n", m.Name, m.Value)
 			}
 		}
 		if len(rep.Summary.Executive.KeyDeltas) > 0 {
 			b.WriteString("- Key Deltas vs Baseline:\n")
 			for _, d := range rep.Summary.Executive.KeyDeltas {
-				b.WriteString(fmt.Sprintf("  - %s: %.6f\n", d.Name, d.Delta))
+				fmt.Fprintf(&b, "  - %s: %.6f\n", d.Name, d.Delta)
 			}
 		}
 		if len(rep.Summary.Executive.NextSteps) > 0 {
 			b.WriteString("- Next Steps:\n")
 			for _, step := range rep.Summary.Executive.NextSteps {
-				b.WriteString(fmt.Sprintf("  - %s\n", step))
+				fmt.Fprintf(&b, "  - %s\n", step)
 			}
 		}
 		b.WriteString("\n")

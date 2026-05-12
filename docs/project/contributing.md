@@ -42,7 +42,10 @@ To keep things simple, we may ask contributors to:
 
 Notes for local tests:
 
+- From a fresh checkout, `make test` creates `api/.env.test` from `api/.env.test.example` when it is missing.
+- Existing local env files are left unchanged, so you can keep local overrides in ignored files.
 - API integration tests start the service with `api/.env.test` via `RECSYS_API_ENV_FILE`. Override if needed.
+- Running `cd api && make test` uses the same test env bootstrap as the root test flow.
 
 ## Commit sign-off (DCO)
 

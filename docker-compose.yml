@@ -76,7 +76,7 @@ services:
       - GOCACHE=/root/.cache/go-build
       - GOMODCACHE=/go/pkg/mod
     env_file:
-      - api/.env.test
+      - ${RECSYS_TEST_ENV_FILE:-./api/.env.test}
     volumes:
       - ./api:/app
       - ./recsys-algo:/recsys-algo

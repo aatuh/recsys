@@ -1,4 +1,4 @@
-.PHONY: help codegen dev down build test fmt lint health reuse mdlint codespell mkdocs-serve
+.PHONY: help env test-env codegen dev down build test fmt lint health reuse mdlint codespell mkdocs-serve
 
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 COMMIT ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo none)
@@ -20,7 +20,13 @@ help: ## Show this help message
 	@echo "Available targets:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
-dev: ## Start development environment
+env: ## Create local development env files if missing
+	cd api && $(MAKE) env
+
+test-env: ## Create local test env files if missing
+	cd api && $(MAKE) test-env
+
+dev: env ## Start development environment
 	@echo "🚀 Starting development environment (VERSION=$(VERSION), COMMIT=$(COMMIT), TOOLKIT=$(TOOLKIT))..."
 	@$(DOCKER_COMPOSE) $(COMPOSE_FILES) up -d
 
@@ -40,13 +46,14 @@ codegen: ## Generate code
 	@echo "🔄 Generating code..."
 	cd api && $(MAKE) codegen
 
-build: ## Build all Docker Compose services
+build: env ## Build all Docker Compose services
 	@echo "🔨 Building all services..."
 	$(MAKE) down
 	@$(DOCKER_COMPOSE) $(COMPOSE_FILES) build
 
-test: ## Run tests
+test: test-env ## Run tests
 	@echo "🧪 Running tests..."
+	bash scripts/test_env_bootstrap.sh
 	cd api && $(MAKE) test
 	cd recsys-eval && $(MAKE) test
 	cd recsys-pipelines && $(MAKE) test
