@@ -52,6 +52,7 @@ A credible pilot proves the measurement loop is real:
 Start here:
 
 - Commercial proof kit: [Commercial proof kit](../tutorials/commercial-proof-kit.md)
+- Evaluation deliverables pack: [Evaluation deliverables pack](../for-businesses/evaluation-deliverables-pack.md)
 - Guided evaluation after the proof kit: [Guided evaluation](../evaluate/guided-evaluation.md)
 - Tutorial (end-to-end): [Local end-to-end](../tutorials/local-end-to-end.md)
 - Suite workflow: [Run eval and ship](../how-to/run-eval-and-ship.md)
@@ -144,6 +145,8 @@ By the end of a successful evaluation, you should have:
   [Run eval and ship](../how-to/run-eval-and-ship.md)
 - A local proof bundle or equivalent pilot evidence:
   [Commercial proof kit](../tutorials/commercial-proof-kit.md)
+- Completed synthetic examples of the report, review memos, procurement packet, and decision note:
+  [Evaluation deliverables pack](../for-businesses/evaluation-deliverables-pack.md)
 - A default evaluation pack agreed (primary KPI + guardrails):
   [Default evaluation pack](../recsys-eval/docs/default-evaluation-pack.md)
 - An evidence trail you can audit later (exposures + outcomes joined by `request_id`):
@@ -164,6 +167,7 @@ Hand this to Security/Legal/IT/Finance as a Definition of Done:
 ## Read next
 
 - Pricing overview (commercial plans): [Pricing](index.md)
+- Evaluation deliverables pack: [Evaluation deliverables pack](../for-businesses/evaluation-deliverables-pack.md)
 - Guided evaluation: [Guided evaluation](../evaluate/guided-evaluation.md)
 - Self-serve path: [Self-serve procurement](../for-businesses/self-serve-procurement.md)
 - Enterprise readiness evidence: [Enterprise readiness evidence](../for-businesses/enterprise-readiness-evidence.md)

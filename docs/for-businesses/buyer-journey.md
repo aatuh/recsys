@@ -30,6 +30,8 @@ A buyer-first reading order to decide whether a pilot is credible and how to pro
 3. **Inspect evidence (what outputs look like)**
    - Example response, logs, and report excerpt: [Evidence](evidence.md)
    - Runnable local proof bundle: [Commercial proof kit](../tutorials/commercial-proof-kit.md)
+   - Completed synthetic deliverables:
+     [Evaluation deliverables pack](evaluation-deliverables-pack.md)
    - Guided customer-environment path after the proof kit:
      [Guided evaluation](../evaluate/guided-evaluation.md)
 4. **Confirm operational fit**
@@ -94,6 +96,8 @@ Canonical spec:
   Example response, exposure log, joined outcomes, and report excerpt.
 - **[Commercial proof kit](../tutorials/commercial-proof-kit.md)**
   Runnable synthetic ecommerce demo that writes the local proof bundle.
+- **[Evaluation deliverables pack](evaluation-deliverables-pack.md)**
+  Completed synthetic examples of the pilot report, review memos, procurement packet, and decision note.
 - **[Guided evaluation](../evaluate/guided-evaluation.md)**
   The supported path after the proof kit when you want help in your customer-controlled environment.
 - **[Baseline benchmarks](../operations/baseline-benchmarks.md)**  
@@ -111,4 +115,5 @@ Canonical spec:
 - One-request procurement path: [Self-serve procurement](self-serve-procurement.md)
 - Procurement pack (Security/Legal/IT/Finance): [Procurement pack](procurement-pack.md)
 - Start an evaluation (technical path): [Start an evaluation](../evaluate/index.md)
+- Evaluation deliverables pack: [Evaluation deliverables pack](evaluation-deliverables-pack.md)
 - Enterprise readiness evidence: [Enterprise readiness evidence](enterprise-readiness-evidence.md)

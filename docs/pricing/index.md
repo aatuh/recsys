@@ -150,6 +150,8 @@ Standard schedule reference: [SLA and support schedule](../security/sla-schedule
 - A signed license grant (or equivalent commercial entitlement artifact)
 - Credentials/instructions to pull signed commercial images from the private registry (if applicable)
 - A recommended evaluation workflow and ship/rollback runbooks
+- A buyer deliverables example pack for evaluation and fixed-scope review outputs:
+  [Evaluation deliverables pack](../for-businesses/evaluation-deliverables-pack.md)
 
 ## Ways to buy
 
@@ -218,6 +220,7 @@ Fastest fulfillment is async:
 ## Read next
 
 - Buyer guide: [Evaluation, pricing, and licensing (buyer guide)](evaluation-and-licensing.md)
+- Evaluation deliverables pack: [Evaluation deliverables pack](../for-businesses/evaluation-deliverables-pack.md)
 - Guided evaluation: [Guided evaluation](../evaluate/guided-evaluation.md)
 - Self-serve path: [Self-serve procurement](../for-businesses/self-serve-procurement.md)
 - Enterprise evidence map: [Enterprise readiness evidence](../for-businesses/enterprise-readiness-evidence.md)

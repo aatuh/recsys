@@ -50,6 +50,8 @@ Send one concise request with:
 
 - Review of the planned surface, tenant/deployment scope, and instrumentation assumptions
 - Review of proof-kit output and pilot evidence shape
+- Comparison against the completed synthetic examples in the
+  [Evaluation deliverables pack](../for-businesses/evaluation-deliverables-pack.md)
 - Guidance on using published docs, runbooks, and procurement artifacts
 - Written recommendations for next steps: stop, continue pilot, buy Starter/Growth, or enter Enterprise discovery
 
@@ -73,6 +75,7 @@ By the end of a guided evaluation, you should have:
 ## Read next
 
 - Start an evaluation: [Start an evaluation](index.md)
+- Evaluation deliverables pack: [Evaluation deliverables pack](../for-businesses/evaluation-deliverables-pack.md)
 - Buyer guide: [Evaluation, pricing, and licensing](../pricing/evaluation-and-licensing.md)
 - Self-serve procurement: [Self-serve procurement](../for-businesses/self-serve-procurement.md)
 - Enterprise readiness evidence: [Enterprise readiness evidence](../for-businesses/enterprise-readiness-evidence.md)

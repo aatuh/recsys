@@ -25,6 +25,7 @@ Buyer-first entry point: outcomes, evaluation evidence, and procurement-ready ar
 Prefer a single shareable page:
 
 - Buyer journey (5-minute path): [Buyer journey](buyer-journey.md)
+- Evaluation deliverables pack: [Evaluation deliverables pack](evaluation-deliverables-pack.md)
 - Self-serve procurement (minimum requests): [Self-serve procurement](self-serve-procurement.md)
 - Procurement pack (Security/Legal/IT/Finance): [Procurement pack](procurement-pack.md)
 - Procurement checklist (Definition of Done): [Procurement checklist](procurement-checklist.md)
@@ -33,9 +34,10 @@ Prefer a single shareable page:
 1. [What is RecSys?](../start-here/what-is-recsys.md) — outcomes, positioning, and where it fits.
 2. [Pilot plan (2–6 weeks)](../start-here/pilot-plan.md) — timeline, deliverables, and exit criteria.
 3. [Evidence (what “good outputs” look like)](evidence.md) — examples of logs, reports, and audit records.
-4. [Evaluation, pricing, and licensing (buyer guide)](../pricing/evaluation-and-licensing.md) — what to do next and
+4. [Evaluation deliverables pack](evaluation-deliverables-pack.md) — completed synthetic pilot and review outputs.
+5. [Evaluation, pricing, and licensing (buyer guide)](../pricing/evaluation-and-licensing.md) — what to do next and
    how to procure.
-5. [Security pack](../security/security-pack.md) — self-serve pack for security/procurement review.
+6. [Security pack](../security/security-pack.md) — self-serve pack for security/procurement review.
 
 ## Proof you can inspect (no calls required)
 
@@ -43,6 +45,8 @@ Prefer a single shareable page:
 
 - **[Evidence (example logs + report excerpt)](evidence.md)**  
   What “good outputs” look like (response, exposure log, joined outcomes, report snippet).
+- **[Evaluation deliverables pack](evaluation-deliverables-pack.md)**
+  Completed synthetic examples of the pilot report, review memos, procurement packet, and decision note.
 - **[Benchmarks methodology](benchmarks.md)**  
   How to run comparable benchmarks and record results. See also: [Baseline benchmarks](../operations/baseline-benchmarks.md).
 - **[Security pack](../security/security-pack.md)**  
@@ -83,6 +87,8 @@ Prefer a single shareable page:
   What we log/store and how to run this safely.
 - **[Evidence (what “good outputs” look like)](evidence.md)**  
   Example response, logs, report excerpt, and audit record shape.
+- **[Evaluation deliverables pack](evaluation-deliverables-pack.md)**
+  What you receive after evaluation or a fixed-scope review.
 - **[Evaluation, pricing, and licensing (buyer guide)](../pricing/evaluation-and-licensing.md)**  
   A single page that ties together evaluation, pricing, and licensing.
 - **[Licensing & pricing](../licensing/index.md)**  
@@ -109,6 +115,7 @@ Start here:
 
 - Use cases (what to start with): [Use cases](use-cases.md)
 - Success metrics (KPIs + guardrails): [Success metrics](success-metrics.md)
+- Evaluation deliverables pack: [Evaluation deliverables pack](evaluation-deliverables-pack.md)
 - Evaluation, pricing, and licensing (buyer guide): [Buyer guide](../pricing/evaluation-and-licensing.md)
 - One-request procurement path: [Self-serve procurement](self-serve-procurement.md)
 - Final review before purchase: [Decision readiness matrix](decision-readiness.md)

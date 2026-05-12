@@ -84,6 +84,16 @@ tmp/commercial-proof-kit/eval/offline-report.md
 tmp/commercial-proof-kit/decision-note.md
 ```
 
+## Compare to the buyer deliverables pack
+
+After the script finishes, compare your local files with the completed synthetic examples in the buyer deliverables
+pack:
+
+- Evaluation deliverables pack: [Evaluation deliverables pack](../for-businesses/evaluation-deliverables-pack.md)
+
+The checked-in examples use stable excerpts from the same `ecommerce-mini` fixture and replace nondeterministic fields,
+such as run IDs and timestamps, with placeholders.
+
 By default the script stops the local Compose stack when it finishes. To keep the stack running for manual inspection:
 
 ```bash
@@ -131,6 +141,7 @@ Fill in:
 ## Read next
 
 - Guided evaluation: [Guided evaluation](../evaluate/guided-evaluation.md)
+- Evaluation deliverables pack: [Evaluation deliverables pack](../for-businesses/evaluation-deliverables-pack.md)
 - Evidence guide: [Evidence](../for-businesses/evidence.md)
 - Buyer guide: [Evaluation, pricing, and licensing](../pricing/evaluation-and-licensing.md)
 - Run eval and ship: [How-to: run evaluation and make ship decisions](../how-to/run-eval-and-ship.md)

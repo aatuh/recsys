@@ -45,6 +45,8 @@ Enterprise is intentionally custom and may require negotiation.
 
 - Licensing decision tree: [Licensing](../licensing/index.md)
 - Commercial agreement: [Commercial license](../licensing/commercial_license.md)
+- Evaluation deliverables pack:
+  [Evaluation deliverables pack](evaluation-deliverables-pack.md)
 - DPA/SCC baseline: [DPA and SCC terms](../security/dpa-and-scc.md)
 - Subprocessor/distribution disclosure:
   [Subprocessors and distribution details](../security/subprocessors.md)
@@ -105,6 +107,7 @@ custom development unless a custom Enterprise Order Form says otherwise.
 ## Read next
 
 - Buyer guide (end-to-end): [Evaluation, pricing, and licensing](../pricing/evaluation-and-licensing.md)
+- Evaluation deliverables pack: [Evaluation deliverables pack](evaluation-deliverables-pack.md)
 - Guided evaluation: [Guided evaluation](../evaluate/guided-evaluation.md)
 - Procurement checklist: [Procurement checklist](procurement-checklist.md)
 - Enterprise readiness evidence: [Enterprise readiness evidence](enterprise-readiness-evidence.md)

@@ -31,6 +31,7 @@ Use this checklist to move from **completed pilot** → **approved procurement**
 Links:
 
 - Evidence (what “good outputs” look like): [Evidence](evidence.md)
+- Evaluation deliverables pack: [Evaluation deliverables pack](evaluation-deliverables-pack.md)
 - Commercial proof kit: [Commercial proof kit](../tutorials/commercial-proof-kit.md)
 - Guided evaluation intake: [Guided evaluation](../evaluate/guided-evaluation.md)
 - Suite workflow (report → decision): [Run eval and ship](../how-to/run-eval-and-ship.md)
@@ -88,6 +89,7 @@ Copy/paste this into your procurement thread:
 - Pilot summary (surface, KPI, window)
 - Links to:
   - proof-kit output or equivalent pilot evidence
+  - completed deliverables pack example used as the internal template
   - evaluation report
   - evidence kit / logs sample
   - security pack
@@ -106,6 +108,7 @@ If you want a ready-made internal bundle format, start from the template in:
 
 - Buyer guide: [Evaluation, pricing, and licensing](../pricing/evaluation-and-licensing.md)
 - Procurement pack (role-based links): [Procurement pack](procurement-pack.md)
+- Evaluation deliverables pack: [Evaluation deliverables pack](evaluation-deliverables-pack.md)
 - Pricing (canonical): [Pricing](../pricing/index.md)
 - Enterprise readiness evidence: [Enterprise readiness evidence](enterprise-readiness-evidence.md)
 - Security pack: [Security pack](../security/security-pack.md)

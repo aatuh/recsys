@@ -93,8 +93,9 @@ Included at no extra charge:
 - Guided-evaluation proof-kit outputs, if applicable:
   `recommendation response / manifest / eval report / decision note`
 
-Fixed-scope service packages are advisory/review packages. They do not include managed hosting, production on-call, or
-unlimited custom development unless explicitly stated in Section 5.
+Fixed-scope service packages produce written review deliverables. They are advisory/review packages and do not include
+managed hosting, production on-call, unlimited custom development, SLA commitments, or guaranteed KPI lift unless
+explicitly stated in Section 5.
 
 ### 2.6 First-Year Bundle Scope (if purchased)
 
@@ -249,7 +250,65 @@ Example only. Replace with actual customer and commercial terms before signature
 
 ---
 
-## 10. Fallback text for common legal/procurement edits
+## 10. Filled example — Starter + Production Readiness Package first-year bundle
+
+Example only. Replace with actual customer and commercial terms before signature.
+
+- Order Form ID: `OF-2026-004`
+- Effective Date: `2026-03-01`
+- Customer: `Example Commerce GmbH`
+- Plan: Starter
+- First-year bundle: Starter + Production Readiness Package
+- Term: `2026-03-01` to `2027-02-28` (annual renewal)
+- License fee: € `9,900`
+- First-year bundle total: € `22,400`
+- Fixed-scope service package fee: included in bundle
+- Support fee: € `0`
+- Total: € `22,400` (excl. VAT)
+- Payment terms: `Net 30`
+- Authorized Tenants: `1`
+- Authorized Production Deployments: `1`
+- Authorized Production Recommendation Surfaces: `2`
+- Fixed-scope service package: `Production Readiness Package`
+- Review milestone: `production readiness`
+- Review inputs: `deployment shape, rollback runbooks, observability, hardening checklist`
+- Renewal default: `Starter renewal only unless a later Order Form says otherwise`
+- Support tier: `Best effort async`
+- Response target: `No SLA`
+- Delivery method: `Private container registry`
+
+---
+
+## 11. Filled example — Growth + Production Readiness Package first-year bundle
+
+Example only. Replace with actual customer and commercial terms before signature.
+
+- Order Form ID: `OF-2026-005`
+- Effective Date: `2026-03-01`
+- Customer: `Example Retail Group Ltd`
+- Plan: Growth
+- First-year bundle: Growth + Production Readiness Package
+- Term: `2026-03-01` to `2027-02-28` (annual renewal)
+- License fee: € `24,900`
+- First-year bundle total: € `37,400`
+- Fixed-scope service package fee: included in bundle
+- Support fee: € `0`
+- Total: € `37,400` (excl. VAT)
+- Payment terms: `Net 30`
+- Authorized Tenants: `3`
+- Authorized Production Deployments: `3`
+- Authorized Production Recommendation Surfaces: `6`
+- Fixed-scope service package: `Production Readiness Package`
+- Review milestone: `production readiness`
+- Review inputs: `deployment shape, rollback runbooks, observability, hardening checklist`
+- Renewal default: `Growth renewal only unless a later Order Form says otherwise`
+- Support tier: `Growth default async`
+- Response target: `First async response target within 2 business days`
+- Delivery method: `Private container registry`
+
+---
+
+## 12. Fallback text for common legal/procurement edits
 
 These short clauses can be copied to Section 5 (Special Terms) when needed.
 
@@ -265,4 +324,5 @@ These short clauses can be copied to Section 5 (Special Terms) when needed.
 ## Read next
 
 - Pricing: [Pricing](../pricing/index.md)
+- Evaluation deliverables pack: [Evaluation deliverables pack](../for-businesses/evaluation-deliverables-pack.md)
 - Evaluation and licensing: [Evaluation, pricing, and licensing (buyer guide)](../pricing/evaluation-and-licensing.md)

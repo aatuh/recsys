@@ -26,6 +26,7 @@ If you follow the recommended pilot path, you should be able to produce:
 - **A shareable evaluation report** (JSON + optional Markdown/HTML summary)
 - **An evidence kit** (sample recommendation response, exposure/outcome samples, join-rate checks)
 - **A local proof bundle** from the commercial proof kit (served response, manifest, eval report, decision note)
+- **A buyer deliverables pack** showing completed synthetic examples of the report and review memos
 - **A written ship/hold/rollback decision** linked to the artifacts
 - **A reproducibility record** (commands, versions, and where artifacts are stored)
 
@@ -33,6 +34,7 @@ Where to start:
 
 - Suite workflow: [Run eval and ship](../how-to/run-eval-and-ship.md)
 - Commercial proof kit: [Commercial proof kit](../tutorials/commercial-proof-kit.md)
+- Evaluation deliverables pack: [Evaluation deliverables pack](evaluation-deliverables-pack.md)
 - Guided evaluation after proof kit: [Guided evaluation](../evaluate/guided-evaluation.md)
 - Recommended outputs bundle: [Evidence kit template](#evidence-kit-template-copypaste)
 
@@ -241,6 +243,7 @@ Use this template as the “bundle” you share internally for decision-making a
 
 - Success metrics (KPIs + guardrails): [Success metrics](success-metrics.md)
 - Evaluation, pricing, and licensing (buyer guide): [Buyer guide](../pricing/evaluation-and-licensing.md)
+- Evaluation deliverables pack: [Evaluation deliverables pack](evaluation-deliverables-pack.md)
 - Guided evaluation: [Guided evaluation](../evaluate/guided-evaluation.md)
 - Enterprise readiness evidence: [Enterprise readiness evidence](enterprise-readiness-evidence.md)
 - Security pack: [Security pack](../security/security-pack.md)
