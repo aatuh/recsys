@@ -1,0 +1,7 @@
+{"request_id":"req-ecom-001","user_id":"u_footwear","item_id":"sku-running-shoe","event_type":"click","value":1,"ts":"2026-01-01T08:00:12Z"}
+{"request_id":"req-ecom-001","user_id":"u_footwear","item_id":"sku-cotton-socks","event_type":"conversion","value":12,"ts":"2026-01-01T08:02:31Z"}
+{"request_id":"req-ecom-002","user_id":"u_outdoor","item_id":"sku-backpack","event_type":"click","value":1,"ts":"2026-01-01T09:00:18Z"}
+{"request_id":"req-ecom-003","user_id":"u_fitness","item_id":"sku-yoga-mat","event_type":"conversion","value":39,"ts":"2026-01-01T10:04:03Z"}
+{"request_id":"req-ecom-004","user_id":"u_commute","item_id":"sku-wireless-earbuds","event_type":"click","value":1,"ts":"2026-01-01T11:00:09Z"}
+{"request_id":"req-ecom-005","user_id":"u_gift","item_id":"sku-coffee-beans","event_type":"click","value":1,"ts":"2026-01-01T12:00:21Z"}
+{"request_id":"req-ecom-006","user_id":"u_repeat","item_id":"sku-running-shoe","event_type":"conversion","value":89,"ts":"2026-01-01T13:03:40Z"}

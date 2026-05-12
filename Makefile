@@ -1,4 +1,4 @@
-.PHONY: help env test-env codegen dev down build test fmt lint health reuse mdlint codespell mkdocs-serve
+.PHONY: help env test-env codegen dev down build test proof-kit-test fmt lint health reuse mdlint codespell mkdocs-serve
 
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 COMMIT ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo none)
@@ -54,10 +54,15 @@ build: env ## Build all Docker Compose services
 test: test-env ## Run tests
 	@echo "🧪 Running tests..."
 	bash scripts/test_env_bootstrap.sh
+	$(MAKE) proof-kit-test
 	cd api && $(MAKE) test
 	cd recsys-eval && $(MAKE) test
 	cd recsys-pipelines && $(MAKE) test
 	cd recsys-algo && $(MAKE) test
+
+proof-kit-test: ## Run commercial proof-kit smoke test
+	@echo "🧾 Running commercial proof-kit smoke test..."
+	bash scripts/test_commercial_proof_kit.sh
 
 fmt: ## Format code
 	@echo "🎨 Formatting code..."

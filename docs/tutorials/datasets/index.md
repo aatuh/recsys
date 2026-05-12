@@ -23,6 +23,9 @@ In this tutorial you will follow a guided walkthrough and verify a working resul
 
 - **[Tiny dataset](tiny/README.md)**  
   Intentionally small and human-readable. Good for docs, smoke tests, and demos.
+- **Ecommerce mini dataset**
+  Synthetic commerce catalog, pipeline exposures, and eval fixtures for the commercial proof kit. Source:
+  `examples/data/ecommerce-mini/`.
 
 ## When to use which
 
@@ -30,6 +33,10 @@ In this tutorial you will follow a guided walkthrough and verify a working resul
   - fast local runs
   - deterministic debugging
   - copy/paste-friendly examples
+- Use **Ecommerce mini** when you want:
+  - a buyer-facing proof bundle
+  - a realistic home recommendation surface
+  - served recommendations plus evaluation evidence
 
 ## Read next
 

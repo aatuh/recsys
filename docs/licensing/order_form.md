@@ -28,7 +28,9 @@ This Order Form is governed by and incorporates the **Commercial License Agreeme
 ### 1.1 Product
 
 - Product: **RecSys Commercial License**
-- Plan: ☐ Starter ☐ Growth ☐ Enterprise (custom)
+- Plan: ☐ Commercial Evaluation ☐ Starter ☐ Growth ☐ Enterprise (custom)
+- Fixed-scope service package(s): ☐ None ☐ Pilot Integration Review ☐ Production Readiness Package ☐ Security /
+  Procurement Review Package ☐ Other: `...`
 
 ### 1.2 Term
 
@@ -39,6 +41,7 @@ This Order Form is governed by and incorporates the **Commercial License Agreeme
 ### 1.3 Fees (excl. VAT)
 
 - License fee: € `AMOUNT`
+- Fixed-scope service package fee (if any): € `AMOUNT`
 - Support fee (if any): € `AMOUNT`
 - Total: € `AMOUNT`
 - Payment terms: `e.g., Net 14 / Net 30`
@@ -67,12 +70,27 @@ Included at no extra charge:
 
 - Up to **2** non-prod environments per Production Deployment (dev/staging/sandbox)
 
-### 2.4 Regions / Affiliates (if applicable)
+### 2.4 Production Recommendation Surfaces
+
+- Authorized Production Recommendation Surfaces: `N`
+- Surface names/descriptions: `e.g., home feed, product detail page`
+
+### 2.5 Fixed-Scope Service Package Scope (if purchased)
+
+- Package(s): `e.g., Pilot Integration Review`
+- Review milestone: `pilot readiness / production readiness / security procurement`
+- In-scope tenant/deployment/surface: `...`
+- Review inputs: `links to docs, configs, reports, runbooks, or artifacts`
+
+Fixed-scope service packages are advisory/review packages. They do not include managed hosting, production on-call, or
+unlimited custom development unless explicitly stated in Section 5.
+
+### 2.6 Regions / Affiliates (if applicable)
 
 - Regions allowed: `e.g., EU / global`
 - Affiliates allowed: ☐ Yes ☐ No (details if yes): `...`
 
-### 2.5 OEM / Resale / Third-Party Hosting
+### 2.7 OEM / Resale / Third-Party Hosting
 
 - OEM/resale: ☐ Not allowed ☐ Allowed (details): `...`
 - Third-party hosting: ☐ Not allowed ☐ Allowed (details): `...`
@@ -134,11 +152,13 @@ Example only. Replace with actual customer and commercial terms before signature
 - Plan: Starter
 - Term: `2026-03-01` to `2027-02-28` (annual renewal)
 - License fee: € `9,900`
+- Fixed-scope service package fee: € `0`
 - Support fee: € `0`
 - Total: € `9,900` (excl. VAT)
 - Payment terms: `Net 30`
 - Authorized Tenants: `1`
 - Authorized Production Deployments: `1`
+- Authorized Production Recommendation Surfaces: `2`
 - Support tier: `Best effort async`
 - Response target: `No SLA`
 - Delivery method: `Private container registry`
@@ -155,11 +175,13 @@ Example only. Replace with actual customer and commercial terms before signature
 - Plan: Growth
 - Term: `2026-03-01` to `2027-02-28` (annual renewal)
 - License fee: € `24,900`
+- Fixed-scope service package fee: € `0`
 - Support fee: € `0`
 - Total: € `24,900` (excl. VAT)
 - Payment terms: `Net 30`
 - Authorized Tenants: `3`
 - Authorized Production Deployments: `3`
+- Authorized Production Recommendation Surfaces: `6`
 - Support tier: `Growth default async`
 - Response target: `First async response target within 2 business days`
 - Delivery method: `Private container registry`

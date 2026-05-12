@@ -29,6 +29,7 @@ A buyer-first reading order to decide whether a pilot is credible and how to pro
    - Define KPIs and guardrails: [Success metrics](success-metrics.md)
 3. **Inspect evidence (what outputs look like)**
    - Example response, logs, and report excerpt: [Evidence](evidence.md)
+   - Runnable local proof bundle: [Commercial proof kit](../tutorials/commercial-proof-kit.md)
 4. **Confirm operational fit**
    - Known limitations (non-goals): [Known limitations](../start-here/known-limitations.md)
    - Rollback story: [Operational reliability & rollback](../start-here/operational-reliability-and-rollback.md)
@@ -47,6 +48,7 @@ By the end of a credible pilot, you should be able to show:
 
 - At least one evaluation report comparing baseline vs candidate (plus a written ship/hold decision)
 - An evidence trail you can audit later (exposures + outcomes joined by `request_id`)
+- A local proof bundle showing served recommendations, artifact manifest, eval report, and decision note
 - A rollback drill completed (so you trust the lever before you need it)
 - A clear “next step” recommendation (ship to staging/production, expand to more surfaces, or stop)
 
@@ -84,6 +86,8 @@ Canonical spec:
 
 - **[Evidence](evidence.md)**  
   Example response, exposure log, joined outcomes, and report excerpt.
+- **[Commercial proof kit](../tutorials/commercial-proof-kit.md)**
+  Runnable synthetic ecommerce demo that writes the local proof bundle.
 - **[Baseline benchmarks](../operations/baseline-benchmarks.md)**  
   Reproducible “anchor numbers” and a template for your own runs.
 - **[Security pack](../security/security-pack.md)**  

@@ -1,7 +1,14 @@
 # Demo data (synthetic)
 
-This folder contains a tiny, permissively-licensed synthetic dataset that can
-run the pipelines end-to-end without external inputs.
+This folder contains permissively licensed synthetic datasets that can run the
+pipelines and proof-kit flows end-to-end without external inputs.
+
+## Available datasets
+
+- `tiny/`: minimal pipeline fixture used by older demos and smoke tests.
+- `ecommerce-mini/`: synthetic ecommerce fixture used by the commercial proof
+  kit. It includes pipeline raw exposures, eval fixtures, and a small product
+  catalog.
 
 ## Schema: exposure.jsonl
 

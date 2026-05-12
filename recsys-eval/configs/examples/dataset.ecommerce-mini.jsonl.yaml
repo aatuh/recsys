@@ -1,0 +1,10 @@
+exposures:
+  type: jsonl
+  path: ../examples/data/ecommerce-mini/eval/exposures.jsonl
+outcomes:
+  type: jsonl
+  path: ../examples/data/ecommerce-mini/eval/outcomes.jsonl
+assignments:
+  type: jsonl
+  path: ../examples/data/ecommerce-mini/eval/assignments.jsonl
+

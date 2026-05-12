@@ -7,8 +7,8 @@ tags:
 ---
 # Commercial Use & Licensing
 
-This page explains how to purchase and use a **commercial license** for parts of this repository that are otherwise
-licensed under **AGPLv3**.
+This page explains how to purchase and use commercial terms for RecSys when you need private-use rights, commercial
+release artifacts, patch access, and procurement certainty.
 
 This page is informational and describes our commercial offering at a high level.
 
@@ -21,14 +21,18 @@ This page is informational and describes our commercial offering at a high level
 
 ## Why a commercial license?
 
-The AGPLv3 is designed for software used over a network. If you modify AGPL-covered code and provide network access to users,
-AGPLv3 requires offering those users access to the Corresponding Source of your modified version (see Section 13).
+A commercial license is for teams that want to run RecSys as business infrastructure under signed commercial terms. It
+gives procurement, legal, and platform teams a clear path for:
 
-A commercial license allows you to use the covered components under alternative terms, enabling:
-
-- Internal or external deployment without AGPL source-offer obligations (subject to the commercial agreement)
 - Keeping modifications private
 - Using the software in proprietary stacks
+- Accessing commercial release artifacts and patch/update channels defined by the Order Form
+- Recording tenants, deployments, support expectations, and optional service packages in one commercial document
+
+The AGPLv3 remains the open-source license for the serving stack. AGPLv3 is designed for software used over a network;
+if you modify AGPL-covered code and provide network access to users, AGPLv3 requires offering those users access to the
+Corresponding Source of your modified version (see Section 13). Commercial terms provide an alternative path when your
+organization does not want to operate under those obligations.
 
 ## What is covered?
 
@@ -49,6 +53,7 @@ A commercial purchase includes, at minimum:
 - Access to commercial release artifacts when specified in the Order Form
 - Security/patch update access according to the purchased plan
 - Support terms as stated in the signed Order Form
+- Optional fixed-scope service packages when purchased in the Order Form
 
 See:
 
@@ -62,11 +67,16 @@ Recommended low-friction flow:
 1. Choose a plan in [Pricing](../pricing/index.md)
 2. For Commercial Evaluation/Starter/Growth, follow the standard self-serve path:
    [Self-serve procurement](../for-businesses/self-serve-procurement.md)
+   Direct checkout links:
+   [Commercial Evaluation][stripe_commercial_evaluation], [Starter][stripe_starter_plan], [Growth][stripe_growth_plan]
+   Need invoicing or an Enterprise quotation? Contact: [`contact@recsys.app`][pricing_contact]
 3. Use direct contact only for Enterprise/custom terms (OEM/resale, custom legal/security/SLA commitments):
 
    - Open a GitHub issue titled **"Commercial licensing inquiry"** (public), or
    - Email: [`contact@recsys.app`][pricing_contact]
    - LinkedIn: [`linkedin.com/showcase/recsys-suite`][recsys_linkedin]
+
+After payment: you’ll receive the license and invoice/receipt.
 
 ## Evaluation licenses
 
@@ -83,6 +93,9 @@ Commercial terms live in:
 
 [pricing_contact]: mailto:contact@recsys.app?subject=RecSys%20pricing%20inquiry
 [recsys_linkedin]: https://www.linkedin.com/showcase/recsys-suite
+[stripe_commercial_evaluation]: https://buy.stripe.com/9B6fZh6r8dl97OP2sD0Jq00
+[stripe_starter_plan]: https://buy.stripe.com/28EeVd7vcdl98ST6IT0Jq01
+[stripe_growth_plan]: https://buy.stripe.com/aFafZh16Odl9c550kv0Jq02
 
 ## Read next
 

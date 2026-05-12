@@ -28,6 +28,16 @@ RecSys is an auditable recommendation system suite with deterministic ranking an
 
 All prices below are **EUR, excl. VAT**.
 
+## Pricing posture
+
+RecSys is priced as **auditable, self-hosted recommendation infrastructure**: deterministic ranking, evaluation,
+versioned ship/rollback, and commercial procurement certainty. The production plans are intentionally not priced like a
+low-cost library or a usage-only API wrapper.
+
+We do not publish a radically cheaper production tier because the main adoption cost is not the license line item. The
+real work is integration, exposure/outcome logging, operational readiness, and trust in the evaluation loop. Lowering
+production list prices would create a weaker business-grade signal without reducing that implementation effort.
+
 Pilot plans commonly take **2–6 weeks** ([Pilot plan](../start-here/pilot-plan.md)), while the commercial evaluation
 license term is **30 days** (unless extended in writing): [Evaluation license](../licensing/eval_license.md).
 
@@ -40,18 +50,19 @@ license term is **30 days** (unless extended in writing): [Evaluation license](.
   **Who it’s for:** teams validating lift and operational fit under commercial terms.  
   **Scope:** 1 tenant · 1 deployment (non-prod allowed).  
   **Includes:** evaluation license, best-effort async support (no SLA), and access to signed commercial artifacts (if
-  applicable).
+  applicable). The evaluation fee is credited toward Starter or Growth if purchased within 60 days after evaluation
+  completion. One written 30-day extension may be granted for active pilots with clear scope.
 
 - **Starter**  
   €9,900 / year  
-  **Who it’s for:** one production deployment with a small number of surfaces.  
-  **Scope:** 1 tenant · 1 production deployment (+ up to 2 non-prod).  
+  **Who it’s for:** one production deployment with one or two recommendation surfaces.
+  **Scope:** 1 tenant · 1 production deployment (+ up to 2 non-prod) · 1-2 production recommendation surfaces.
   **Includes:** commercial license grant, signed artifacts, updates, and best-effort async support (no SLA).
 
 - **Growth**  
   €24,900 / year  
   **Who it’s for:** a few tenants and/or deployments, with faster response expectations.  
-  **Scope:** up to 3 tenants and/or up to 3 production deployments.  
+  **Scope:** up to 3 tenants and/or up to 3 production deployments · up to 6 production recommendation surfaces.
   **Includes:** everything in Starter + default async first response target within 2 business days (no SLA unless
   purchased as add-on).
 
@@ -64,11 +75,26 @@ license term is **30 days** (unless extended in writing): [Evaluation license](.
 
 </div>
 
-## Add-ons (not included by default)
+## Fixed-scope services and add-ons
 
-- Premium support / SLA (8×5 or 24×7)
-- Security review package (SBOM/provenance guidance, hardening checklist)
-- Fixed-scope onboarding (time-boxed)
+These packages reduce adoption risk. They are advisory/review packages, not unlimited custom development, managed
+operations, or production on-call.
+
+| Package | Price | What it covers |
+| --- | ---: | --- |
+| Pilot Integration Review | €5,000 one-time | Review one scoped pilot integration, instrumentation, tenant/surface setup, and evaluation readiness. |
+| Production Readiness Package | €12,500 one-time | Review deployment shape, rollback runbooks, hardening checklist, observability, and production cutover risks. |
+| Security / Procurement Review Package | €5,000 one-time | Support security/procurement review with SBOM/provenance guidance, hardening checklist review, and artifact navigation. |
+| Premium support / SLA | Custom | 8×5 or 24×7 response commitments for Growth/Enterprise, captured in the Order Form. |
+
+### Service package deliverables
+
+- **Pilot Integration Review:** one written review memo covering request/response integration, tenant/surface setup,
+  exposure/outcome instrumentation, and evaluation-readiness gaps.
+- **Production Readiness Package:** one readiness memo covering deployment shape, rollback procedure, observability,
+  hardening checklist status, and launch blockers.
+- **Security / Procurement Review Package:** one review packet covering published security artifacts, SBOM/provenance
+  navigation, procurement checklist gaps, and recommended follow-up questions.
 
 ## Plan chooser (objective thresholds)
 
@@ -77,11 +103,16 @@ Use the smallest plan that meets your current scope.
 | If your current need is... | Recommended plan |
 | --- | --- |
 | Time-boxed pilot in non-production only (1 tenant, 1 deployment) | Commercial Evaluation |
-| One tenant, one production deployment, no contractual SLA required | Starter |
-| Up to 3 tenants and/or up to 3 production deployments, faster async response expectations | Growth |
+| One tenant, one production deployment, 1-2 production surfaces, no contractual SLA required | Starter |
+| Up to 3 tenants/deployments and up to 6 production surfaces, faster async response expectations | Growth |
 | Multi-region HA, OEM/resale, regulated requirements, or custom legal/security terms | Enterprise |
 
 If you exceed plan scope at any time, upgrade via a new Order Form.
+
+## Discount policy
+
+There is no public low-cost production tier. Private design-partner discounts may be offered through a custom Order
+Form, but discounts do not change published list prices, plan scope, or support defaults.
 
 ## Default support terms by plan
 
@@ -109,12 +140,20 @@ Choose the smallest purchase that matches your current stage.
 1. **Run a time-boxed evaluation under commercial terms**
 
    - Pick **Commercial Evaluation (30 days)** if you want to avoid AGPL uncertainty during the pilot.
+   - Apply the €490 evaluation fee toward Starter or Growth if you buy within 60 days after evaluation completion.
+   - Request one written 30-day extension before expiry if the pilot is active and has clear scope.
    - Follow the buyer flow: [Evaluation, pricing, and licensing (buyer guide)](evaluation-and-licensing.md)
 
 2. **Use the self-serve path (Commercial Evaluation/Starter/Growth)**
 
    - Use published legal/security artifacts and standard defaults.
    - Follow: [Self-serve procurement](../for-businesses/self-serve-procurement.md)
+   - Checkout links:
+     [Commercial Evaluation][stripe_commercial_evaluation] ·
+     [Starter][stripe_starter_plan] ·
+     [Growth][stripe_growth_plan]
+   - Need invoicing or an Enterprise quotation? Contact: [`contact@recsys.app`][pricing_contact]
+   - Include any fixed-scope service package in the same procurement request or Order Form.
 
 3. **Use Enterprise procurement (custom terms)**
 
@@ -150,6 +189,9 @@ Fastest fulfillment is async:
 
 [pricing_contact]: mailto:contact@recsys.app?subject=RecSys%20pricing%20inquiry
 [recsys_linkedin]: https://www.linkedin.com/showcase/recsys-suite
+[stripe_commercial_evaluation]: https://buy.stripe.com/9B6fZh6r8dl97OP2sD0Jq00
+[stripe_starter_plan]: https://buy.stripe.com/28EeVd7vcdl98ST6IT0Jq01
+[stripe_growth_plan]: https://buy.stripe.com/aFafZh16Odl9c550kv0Jq02
 
 ## Read next
 

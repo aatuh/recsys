@@ -11,6 +11,7 @@ tags:
 RecSys is an auditable recommendation system suite with deterministic ranking and versioned ship/rollback.
 
 [See pricing](../pricing/index.md){ .md-button }
+[Run proof kit](../tutorials/commercial-proof-kit.md){ .md-button }
 [Run the open-source quickstart](../tutorials/local-end-to-end.md){ .md-button }
 [Buyer guide](../pricing/evaluation-and-licensing.md){ .md-button }
 
@@ -30,6 +31,7 @@ RecSys is an auditable recommendation system suite with deterministic ranking an
 
 - The minimum “credible pilot” instrumentation checklist
 - A recommended 2–6 week plan and exit criteria
+- A local proof-kit path that produces served recommendations and evaluation artifacts
 - Links to the exact docs you will run during the evaluation
 
 ## What “evaluation” means here
@@ -42,6 +44,8 @@ An evaluation is successful when you can answer these questions with evidence:
 
 ## Evaluation onboarding checklist (Phase 1)
 
+- [ ] Run the commercial proof kit locally once:
+  [Commercial proof kit](../tutorials/commercial-proof-kit.md)
 - [ ] Choose one recommendation surface (for example: home feed, PDP similar-items, related content)
 - [ ] Integrate `recsys-service` for that surface (auth + tenancy + request/response contract)
 - [ ] Emit exposure logs and outcome logs with the same `request_id`
@@ -65,6 +69,7 @@ See:
 ## Read next
 
 - Pilot plan (2–6 weeks): [Pilot plan (2–6 weeks)](../start-here/pilot-plan.md)
+- Commercial proof kit: [Commercial proof kit](../tutorials/commercial-proof-kit.md)
 - Procurement pack (Security/Legal/IT/Finance): [Procurement pack (Security, Legal, IT, Finance)](../for-businesses/procurement-pack.md)
 - How-to run eval and ship decisions: [How-to: run evaluation and make ship decisions](../how-to/run-eval-and-ship.md)
 - Default evaluation pack (recommended): [Default evaluation pack (recommended)](../recsys-eval/docs/default-evaluation-pack.md)

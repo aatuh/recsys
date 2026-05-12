@@ -25,12 +25,14 @@ If you follow the recommended pilot path, you should be able to produce:
 
 - **A shareable evaluation report** (JSON + optional Markdown/HTML summary)
 - **An evidence kit** (sample recommendation response, exposure/outcome samples, join-rate checks)
+- **A local proof bundle** from the commercial proof kit (served response, manifest, eval report, decision note)
 - **A written ship/hold/rollback decision** linked to the artifacts
 - **A reproducibility record** (commands, versions, and where artifacts are stored)
 
 Where to start:
 
 - Suite workflow: [Run eval and ship](../how-to/run-eval-and-ship.md)
+- Commercial proof kit: [Commercial proof kit](../tutorials/commercial-proof-kit.md)
 - Recommended outputs bundle: [Evidence kit template](#evidence-kit-template-copypaste)
 
 ## Evidence ladder (how to interpret)
@@ -178,14 +180,18 @@ Start here:
 
 Run the suite locally and produce a report you can share:
 
+- Buyer-grade path: [Commercial proof kit](../tutorials/commercial-proof-kit.md)
 - Tutorial: [Local end-to-end](../tutorials/local-end-to-end.md)
 
-This gives you:
+The commercial proof kit gives you:
 
-- a working serving API
-- eval-compatible exposure logs
-- a minimal outcome log
-- a sample evaluation report
+- a served recommendation response from a synthetic ecommerce fixture
+- a published artifact manifest
+- eval-compatible exposure/outcome fixtures
+- JSON and Markdown evaluation reports
+- a decision-note template
+
+The local end-to-end tutorial gives you the lower-level service/logging/eval walkthrough.
 
 
 ## Evidence kit template (copy/paste)

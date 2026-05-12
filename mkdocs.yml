@@ -153,6 +153,7 @@ nav:
       - tutorials/index.md
       - Quickstart (minimal): tutorials/quickstart-minimal.md
       - Quickstart (full validation): tutorials/quickstart.md
+      - Commercial proof kit: tutorials/commercial-proof-kit.md
       - Local end-to-end (20–30 minutes): tutorials/local-end-to-end.md
       - Production-like run (artifact/manifest): tutorials/production-like-run.md
       - Minimal pilot (DB-only): tutorials/minimal-pilot-db-only.md

@@ -1,0 +1,10 @@
+item_id,namespace,tags,price,created_at,title
+sku-running-shoe,home,brand:stride|category:footwear|margin:medium,89.00,2026-01-01T00:00:00Z,Stride Runner Shoe
+sku-cotton-socks,home,brand:stride|category:footwear|margin:high,12.00,2026-01-01T00:00:00Z,Cotton Crew Socks
+sku-trail-jacket,home,brand:northline|category:outerwear|margin:medium,129.00,2026-01-01T00:00:00Z,Trail Shell Jacket
+sku-yoga-mat,home,brand:flowco|category:fitness|margin:high,39.00,2026-01-01T00:00:00Z,Studio Yoga Mat
+sku-wireless-earbuds,home,brand:soundbyte|category:electronics|margin:medium,79.00,2026-01-01T00:00:00Z,Wireless Earbuds
+sku-coffee-beans,home,brand:roastlab|category:pantry|margin:high,16.00,2026-01-01T00:00:00Z,House Blend Coffee Beans
+sku-backpack,home,brand:northline|category:bags|margin:medium,59.00,2026-01-01T00:00:00Z,Commuter Backpack
+sku-denim-jacket,home,brand:urbanstitch|category:outerwear|margin:medium,99.00,2026-01-01T00:00:00Z,Denim Chore Jacket
+

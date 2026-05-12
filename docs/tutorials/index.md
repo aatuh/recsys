@@ -25,6 +25,8 @@ In this tutorial you will follow a guided walkthrough and verify a working resul
 
 - **[Quickstart (10 minutes)](quickstart.md)**  
   Fastest path to a non-empty `POST /v1/recommend` response and an exposure log.
+- **[Commercial proof kit](commercial-proof-kit.md)**
+  Buyer-grade local proof bundle: served recommendation, manifest, eval report, and decision note.
 - **[Local end-to-end](local-end-to-end.md)**  
   Full walkthrough: run the suite locally and produce a report.
 - **[Production-like run](production-like-run.md)**  
@@ -42,5 +44,6 @@ In this tutorial you will follow a guided walkthrough and verify a working resul
 ## Read next
 
 - Quickstart (10 minutes): [Quickstart (10 minutes)](quickstart.md)
+- Commercial proof kit: [commercial proof kit](commercial-proof-kit.md)
 - Local end-to-end tutorial: [local end-to-end (service → logging → eval)](local-end-to-end.md)
 - Integrate the serving API into your app: [How-to: integrate recsys-service into an application](../how-to/integrate-recsys-service.md)

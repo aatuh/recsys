@@ -17,8 +17,13 @@ For current plan prices and a plain-language overview, see: [Pricing](../pricing
   line, customer partition).
 - **Production deployment**: one production environment serving real end-user traffic (e.g., a Kubernetes
   cluster/namespace or a distinct production installation).
+- **Production recommendation surface**: one user-facing placement or product area where recommendations are served
+  under a distinct business objective (e.g., home feed, product detail page, cart upsell, media watch-next rail).
 - **Non-production environments**: up to **2 non-prod environments** (dev/staging) per production deployment are included
   at no extra charge.
+- **Fixed-scope service package**: a time-boxed advisory/review package listed on the pricing page. These packages do
+  not include managed hosting, production on-call, or unlimited custom development unless explicitly stated in an Order
+  Form.
 
 ## Notes
 

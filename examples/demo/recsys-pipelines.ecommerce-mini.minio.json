@@ -1,0 +1,35 @@
+{
+  "out_dir": "../tmp/commercial-proof-kit/pipelines",
+  "raw_events_dir": "../examples/data/ecommerce-mini/pipelines",
+  "canonical_dir": "../tmp/commercial-proof-kit/pipelines/canonical",
+  "checkpoint_dir": "../tmp/commercial-proof-kit/pipelines/checkpoints",
+  "raw_source": {
+    "type": "fs",
+    "dir": "../examples/data/ecommerce-mini/pipelines"
+  },
+  "artifacts_dir": "../tmp/commercial-proof-kit/pipelines/artifacts",
+  "object_store_dir": "../tmp/commercial-proof-kit/pipelines/objectstore",
+  "object_store": {
+    "type": "minio",
+    "s3": {
+      "endpoint": "localhost:9000",
+      "bucket": "recsys-artifacts",
+      "access_key": "minioadmin",
+      "secret_key": "minioadmin",
+      "prefix": "",
+      "use_ssl": false
+    }
+  },
+  "registry_dir": "../tmp/commercial-proof-kit/pipelines/registry",
+  "limits": {
+    "max_days_backfill": 30,
+    "max_events_per_run": 10000,
+    "max_sessions_per_run": 1000,
+    "max_items_per_session": 50,
+    "max_distinct_items_per_run": 1000,
+    "max_neighbors_per_item": 10,
+    "max_items_per_artifact": 100,
+    "min_cooc_support": 1
+  }
+}
+

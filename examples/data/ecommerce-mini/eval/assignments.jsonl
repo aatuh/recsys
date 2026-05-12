@@ -1,0 +1,6 @@
+{"experiment_id":"exp_ecommerce_mini","variant":"A","request_id":"req-ecom-001","user_id":"u_footwear","ts":"2026-01-01T08:00:00Z","context":{"tenant":"demo","surface":"home"}}
+{"experiment_id":"exp_ecommerce_mini","variant":"B","request_id":"req-ecom-002","user_id":"u_outdoor","ts":"2026-01-01T09:00:00Z","context":{"tenant":"demo","surface":"home"}}
+{"experiment_id":"exp_ecommerce_mini","variant":"B","request_id":"req-ecom-003","user_id":"u_fitness","ts":"2026-01-01T10:00:00Z","context":{"tenant":"demo","surface":"home"}}
+{"experiment_id":"exp_ecommerce_mini","variant":"A","request_id":"req-ecom-004","user_id":"u_commute","ts":"2026-01-01T11:00:00Z","context":{"tenant":"demo","surface":"home"}}
+{"experiment_id":"exp_ecommerce_mini","variant":"A","request_id":"req-ecom-005","user_id":"u_gift","ts":"2026-01-01T12:00:00Z","context":{"tenant":"demo","surface":"home"}}
+{"experiment_id":"exp_ecommerce_mini","variant":"B","request_id":"req-ecom-006","user_id":"u_repeat","ts":"2026-01-01T13:00:00Z","context":{"tenant":"demo","surface":"home"}}

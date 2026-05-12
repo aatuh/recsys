@@ -27,6 +27,19 @@ A simple framing:
 - Incremental value = KPI lift × eligible traffic × value per action
 - Cost = engineering + operations + infrastructure
 
+## License-cost sanity check
+
+Use pricing as a small part of the business case, not as the whole decision. For a production rollout, compare the
+annual license against the value needed to justify the recommendation surface:
+
+- Break-even lift value = annual license + implementation effort + operating effort
+- Production plans make sense when one scoped surface can plausibly cover that break-even value
+- If the expected value is uncertain, run Commercial Evaluation first and convert within the credit window if the pilot
+  produces defensible evidence
+
+This is why the production plans are not published as a radically low-cost tier. The expensive part of a recommender
+pilot is usually trustworthy integration and measurement, not the license alone.
+
 For the full checklist (including risks and mitigations), use:
 
 - ROI and risk model: [ROI and risk model](../start-here/roi-and-risk-model.md)

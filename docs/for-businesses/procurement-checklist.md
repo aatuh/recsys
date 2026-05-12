@@ -59,6 +59,7 @@ Links:
 
 - [ ] We chose **AGPL vs commercial** path and documented why.
 - [ ] We chose plan scope (tenants, deployments) and support expectations.
+- [ ] We chose any fixed-scope service package needed for the next milestone, or confirmed none is needed.
 - [ ] For self-serve plans, we use published legal/security defaults; for Enterprise, negotiated terms are captured in the Order Form.
 
 Links:
@@ -84,6 +85,7 @@ Copy/paste this into your procurement thread:
   - security pack
   - known limitations
   - selected plan and scope
+  - selected fixed-scope service package(s), if any
   - order form draft
 
 If you want a ready-made internal bundle format, start from the template in:

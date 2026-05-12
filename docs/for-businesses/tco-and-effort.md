@@ -106,6 +106,19 @@ Use this as a procurement-ready checklist:
 - [ ] Pilot environment defined (local / staging / prod-like)
 - [ ] Success metrics agreed (business + offline/online)
 
+## Optional paid review packages
+
+Fixed-scope review packages can reduce adoption risk when your team wants a second set of eyes on a concrete milestone.
+They are advisory reviews, not managed operations or unlimited implementation work.
+
+| Package | When to use it |
+| --- | --- |
+| Pilot Integration Review | Before judging pilot results, to check integration, logging, tenant/surface setup, and evaluation readiness. |
+| Production Readiness Package | Before production cutover, to review deployment shape, rollback runbooks, hardening, and observability risks. |
+| Security / Procurement Review Package | During security/legal/procurement review, to navigate artifacts and review hardening/provenance expectations. |
+
+Current prices and scope live on the canonical pricing page: [Pricing](../pricing/index.md#fixed-scope-services-and-add-ons).
+
 ## Read next
 
 - Pilot plan: [Pilot plan (2–6 weeks)](../start-here/pilot-plan.md)

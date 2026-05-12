@@ -92,7 +92,7 @@ Unless Vendor gives written permission, Licensee must not publish benchmark resu
 ## 5. Term and Expiration
 
 The Evaluation Term begins on the date Licensee first accesses the Evaluation Materials and lasts **30 days**, unless
-extended in writing by Vendor.
+extended in writing by Vendor. Vendor may grant one written **30-day extension** for an active pilot with clear scope.
 
 > Practical note: Our pilot plan is commonly **2–6 weeks**. If you expect your evaluation to exceed 30 days, request an
 > extension in writing before the Evaluation Term expires.

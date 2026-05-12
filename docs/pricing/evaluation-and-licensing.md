@@ -50,6 +50,7 @@ A credible pilot proves the measurement loop is real:
 
 Start here:
 
+- Commercial proof kit: [Commercial proof kit](../tutorials/commercial-proof-kit.md)
 - Tutorial (end-to-end): [Local end-to-end](../tutorials/local-end-to-end.md)
 - Suite workflow: [Run eval and ship](../how-to/run-eval-and-ship.md)
 - What “good outputs” look like: [Evidence](../for-businesses/evidence.md)
@@ -64,15 +65,35 @@ Confirm the suite fits your constraints **before** procurement:
 
 ## Step 3 — Choose plan scope and license path
 
+### Evaluation or production direct?
+
+Choose **Commercial Evaluation** when you need a non-production pilot under commercial terms before committing to a
+production license. Choose **Starter** directly when you already know the first production surface, tenant, and
+deployment scope and only need commercial terms to ship.
+
+Commercial Evaluation remains €490 for 30 days. The fee is credited toward Starter or Growth if purchased within 60
+days after evaluation completion. One written 30-day extension may be granted for active pilots with clear scope.
+
 ### Plan mapping (quick)
 
 - **Commercial Evaluation (30 days)**: a time-boxed pilot under commercial terms (recommended if you want to avoid AGPL
   uncertainty during the pilot).
-- **Starter**: one production deployment for one tenant, plus a small number of surfaces.
-- **Growth**: a few tenants and/or deployments, with faster async response expectations.
+- **Starter**: one tenant, one production deployment, and 1-2 production recommendation surfaces.
+- **Growth**: up to 3 tenants/deployments and up to 6 production recommendation surfaces, with faster async response
+  expectations.
 - **Enterprise**: multi-region HA, OEM/resale, regulated environments, or custom terms.
 
 Canonical plan definitions and prices: [Pricing](index.md).
+
+### Evaluation-to-production path
+
+1. Run the pilot on one surface and produce an evaluation report.
+2. Use the commercial proof kit as the local evidence template before replacing synthetic data with pilot data.
+3. Decide ship/hold/rollback and record the evidence links.
+4. If the pilot should move forward, choose Starter or Growth based on tenant/deployment/surface scope.
+5. Apply the Commercial Evaluation fee as a credit if production purchase happens within the 60-day credit window.
+6. Add fixed-scope review packages only when they reduce a concrete adoption risk:
+   [Pricing](index.md#fixed-scope-services-and-add-ons).
 
 ### Do you need commercial terms? (quick decision tree)
 
@@ -100,7 +121,9 @@ See the canonical decision tree and file-level rules: [Licensing](../licensing/i
    [Pricing](index.md)
 4. Use the self-serve procurement path for standard plans:
    [Self-serve procurement](../for-businesses/self-serve-procurement.md)
-5. Use the order form + contact path only for Enterprise/custom terms:
+5. Add any fixed-scope review packages to the same procurement request when needed:
+   [Pricing](index.md#fixed-scope-services-and-add-ons)
+6. Use the order form + contact path only for Enterprise/custom terms:
    [Order form template](../licensing/order_form.md) and [`contact@recsys.app`][pricing_contact]
 
 ## Outputs and exit criteria
@@ -109,6 +132,8 @@ By the end of a successful evaluation, you should have:
 
 - At least one evaluation report comparing baseline vs candidate:
   [Run eval and ship](../how-to/run-eval-and-ship.md)
+- A local proof bundle or equivalent pilot evidence:
+  [Commercial proof kit](../tutorials/commercial-proof-kit.md)
 - A default evaluation pack agreed (primary KPI + guardrails):
   [Default evaluation pack](../recsys-eval/docs/default-evaluation-pack.md)
 - An evidence trail you can audit later (exposures + outcomes joined by `request_id`):

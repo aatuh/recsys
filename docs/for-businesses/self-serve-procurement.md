@@ -21,6 +21,7 @@ This flow is designed for:
 - Commercial Evaluation
 - Starter
 - Growth
+- Fixed-scope service packages listed on [Pricing](../pricing/index.md#fixed-scope-services-and-add-ons)
 
 Enterprise is intentionally custom and may require negotiation.
 
@@ -28,11 +29,13 @@ Enterprise is intentionally custom and may require negotiation.
 
 1. Choose plan and scope from canonical pricing:
    [Pricing](../pricing/index.md)
-2. Validate legal/security artifacts from published docs:
+2. Choose any fixed-scope service package that reduces a concrete adoption risk:
+   [Fixed-scope services and add-ons](../pricing/index.md#fixed-scope-services-and-add-ons)
+3. Validate legal/security artifacts from published docs:
    [Commercial procurement artifacts](../security/commercial-procurement-artifacts.md)
-3. Fill the order form template using standard defaults:
+4. Fill the order form template using standard defaults:
    [Order form template](../licensing/order_form.md)
-4. Send a single procurement request with completed order form and selected plan.
+5. Send a single procurement request with completed order form, selected plan, and selected service package(s).
 
 ## Required artifact bundle (all published)
 
@@ -53,6 +56,18 @@ Enterprise negotiation only, including:
 - Custom SLA/service credits
 - Custom DPA/SCC/legal riders
 - Custom liability cap or other redlines
+
+## What to include for service packages
+
+For each selected fixed-scope service package, include:
+
+- The package name from [Pricing](../pricing/index.md#fixed-scope-services-and-add-ons)
+- The tenant, deployment, and surface in scope
+- The milestone to review (pilot readiness, production readiness, or security/procurement review)
+- Links to the relevant docs, configs, reports, or runbooks you want reviewed
+
+These packages are advisory/review packages. They do not include managed hosting, production on-call, or unlimited
+custom development unless a custom Enterprise Order Form says otherwise.
 
 ## Read next
 
