@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io/fs"
-	"net/http"
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
@@ -93,10 +92,6 @@ func main() {
 	}
 	defer securityStack.Close()
 
-	var pprofHandler http.Handler
-	if cfg.Performance.PprofEnabled {
-		pprofHandler = http.DefaultServeMux
-	}
 	bootstrap.MountSystemEndpoints(r, bootstrap.SystemEndpoints{
 		Health: health.NewHandler(healthManager),
 		Version: versionep.NewHandler(versionep.Config{
@@ -107,7 +102,7 @@ func main() {
 				Date:    date,
 			},
 		}),
-		Pprof:   pprofHandler,
+		Pprof:   systemPprofHandler(cfg),
 		Metrics: metrics.PrometheusHandler(),
 	})
 	if docsHandler != nil {

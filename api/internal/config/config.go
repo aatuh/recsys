@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"net"
 	"os"
 	"strconv"
 	"strings"
@@ -415,7 +416,43 @@ func Load() Config {
 	if err := loader.Err(); err != nil {
 		panic(err)
 	}
+	if err := Validate(cfg); err != nil {
+		panic(err)
+	}
 	return cfg
+}
+
+// Validate checks cross-field settings that cannot be enforced by simple env parsing.
+func Validate(cfg Config) error {
+	if cfg.Performance.PprofEnabled && !isLoopbackAddr(cfg.Addr) {
+		return fmt.Errorf("PPROF_ENABLED requires API_ADDR to bind to localhost or a loopback IP")
+	}
+	if !config.IsProduction(cfg.Env) {
+		return nil
+	}
+	if cfg.Exposure.Enabled && strings.TrimSpace(cfg.Exposure.HashSalt) == "" {
+		return fmt.Errorf("EXPOSURE_HASH_SALT is required in production when exposure logging is enabled")
+	}
+	if cfg.Experiment.Enabled && strings.TrimSpace(cfg.Experiment.Salt) == "" {
+		return fmt.Errorf("EXPERIMENT_ASSIGNMENT_SALT is required in production when experiment assignment is enabled")
+	}
+	if cfg.Auth.APIKeys.Enabled && strings.TrimSpace(cfg.Auth.APIKeys.HashSecret) == "" {
+		return fmt.Errorf("API_KEY_HASH_SECRET is required in production when API key auth is enabled")
+	}
+	return nil
+}
+
+func isLoopbackAddr(addr string) bool {
+	host, _, err := net.SplitHostPort(strings.TrimSpace(addr))
+	if err != nil {
+		return false
+	}
+	host = strings.Trim(host, "[]")
+	if strings.EqualFold(host, "localhost") {
+		return true
+	}
+	ip := net.ParseIP(host)
+	return ip != nil && ip.IsLoopback()
 }
 
 func applySecretFile(envKey string) error {

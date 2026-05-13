@@ -7,7 +7,7 @@ Status legend:
 - [ ] not done
 - [x] done
 
-## Epic E1 - Security dependency and debug exposure hardening [ ]
+## Epic E1 - Security dependency and debug exposure hardening [x]
 
 Description: Remove the highest-risk API security findings from the audit before broader refactors.
 
@@ -30,7 +30,7 @@ Notes:
 - Minimum verification: `cd api && GOWORK=off govulncheck ./...`.
 - Also run API tests and lint because the dependency is reachable from service startup/tracing.
 
-### Ticket E1-T2 - Protect pprof debug endpoints [ ]
+### Ticket E1-T2 - Protect pprof debug endpoints [x]
 
 Description: Ensure pprof cannot be exposed publicly when `PPROF_ENABLED=true`; require an explicit safe mount strategy such as admin-only auth, separate listener, or local-only binding.
 
@@ -49,7 +49,7 @@ Notes:
 - Add tests proving `/debug/pprof` is not mounted by default and is protected when enabled.
 - Update docs/config reference if operational behavior changes.
 
-### Ticket E1-T3 - Require production hashing secrets [ ]
+### Ticket E1-T3 - Require production hashing secrets [x]
 
 Description: Fail startup in production when exposure logging, experiment assignment, or API-key auth are enabled without the required salt/secret.
 
