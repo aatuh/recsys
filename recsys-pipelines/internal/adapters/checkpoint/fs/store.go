@@ -30,7 +30,7 @@ func (s *Store) GetLastIngested(ctx context.Context, tenant, surface string) (ti
 	if err != nil {
 		return time.Time{}, false, err
 	}
-	raw, err := os.ReadFile(path)
+	raw, err := os.ReadFile(path) // #nosec G304 -- checkpoint path is built from validated tenant/surface segments under baseDir.
 	if err != nil {
 		if os.IsNotExist(err) {
 			return time.Time{}, false, nil
@@ -58,7 +58,7 @@ func (s *Store) SetLastIngested(ctx context.Context, tenant, surface string, day
 	if err != nil {
 		return err
 	}
-	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(path), 0o750); err != nil {
 		return err
 	}
 	payload := struct {

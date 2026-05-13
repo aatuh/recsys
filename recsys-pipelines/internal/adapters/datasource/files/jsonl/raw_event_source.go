@@ -98,7 +98,7 @@ func (s *FSRawEventSource) readFile(
 	w windows.Window,
 	out chan<- events.ExposureEvent,
 ) error {
-	f, err := os.Open(fp)
+	f, err := os.Open(fp) // #nosec G304 -- fp is discovered under the configured raw-source directory.
 	if err != nil {
 		return err
 	}

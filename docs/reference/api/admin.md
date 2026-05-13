@@ -96,8 +96,8 @@ If you prefer JWT:
 RBAC roles (JWT or API keys):
 
 - `viewer`: read-only admin access (GET config/rules/audit).
-- `operator`: config/rules updates + cache invalidation.
-- `admin`: full admin access (includes operator + viewer).
+- `operator`: config/rules updates + cache invalidation. Operators can also see raw audit `before_state`, `after_state`, and `extra` detail.
+- `admin`: full admin access (includes operator + viewer). Admins can also see raw audit detail.
 
 ## 3) Admin endpoints
 
@@ -206,6 +206,8 @@ Notes:
 ### GET /v1/admin/tenants/{tenant_id}/audit
 
 Returns recent audit log entries for admin actions (write operations).
+Viewer responses include metadata such as actor, action, entity, request id, IP, and user agent. Raw `before_state`,
+`after_state`, and `extra` payloads are only returned to `operator` and `admin` roles.
 
 Query parameters:
 

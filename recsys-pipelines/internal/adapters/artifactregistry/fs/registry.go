@@ -53,7 +53,7 @@ func (r *FSRegistry) Record(ctx context.Context, ref artifacts.Ref) error {
 	} else if err != nil && !os.IsNotExist(err) {
 		return err
 	}
-	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(path), 0o750); err != nil {
 		return err
 	}
 	b, err := json.MarshalIndent(ref, "", "  ")
@@ -76,7 +76,7 @@ func (r *FSRegistry) LoadManifest(ctx context.Context, tenant, surface string) (
 	if err != nil {
 		return artifacts.ManifestV1{}, false, err
 	}
-	b, err := os.ReadFile(path)
+	b, err := os.ReadFile(path) // #nosec G304 -- manifest path is built from validated tenant/surface segments under registry baseDir.
 	if err != nil {
 		if os.IsNotExist(err) {
 			return artifacts.ManifestV1{}, false, nil
@@ -103,7 +103,7 @@ func (r *FSRegistry) SwapManifest(ctx context.Context, tenant, surface string, n
 	if err != nil {
 		return err
 	}
-	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(path), 0o750); err != nil {
 		return err
 	}
 	b, err := json.MarshalIndent(next, "", "  ")

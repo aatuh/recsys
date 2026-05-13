@@ -46,10 +46,10 @@ func CacheInvalidateResponse(result adminsvc.CacheInvalidateResult) types.CacheI
 }
 
 // AuditLogResponse maps audit log entries to DTO.
-func AuditLogResponse(log adminsvc.AuditLog) types.AuditLogResponse {
+func AuditLogResponse(log adminsvc.AuditLog, includeDetails bool) types.AuditLogResponse {
 	entries := make([]types.AuditLogEntry, 0, len(log.Entries))
 	for _, entry := range log.Entries {
-		entries = append(entries, AuditLogEntry(entry))
+		entries = append(entries, AuditLogEntry(entry, includeDetails))
 	}
 	resp := types.AuditLogResponse{
 		TenantID: log.TenantID,
@@ -63,8 +63,8 @@ func AuditLogResponse(log adminsvc.AuditLog) types.AuditLogResponse {
 }
 
 // AuditLogEntry maps an audit entry to DTO.
-func AuditLogEntry(entry adminsvc.AuditEntry) types.AuditLogEntry {
-	return types.AuditLogEntry{
+func AuditLogEntry(entry adminsvc.AuditEntry, includeDetails bool) types.AuditLogEntry {
+	dto := types.AuditLogEntry{
 		ID:         entry.ID,
 		OccurredAt: entry.OccurredAt.UTC().Format(time.RFC3339Nano),
 		TenantID:   entry.TenantID,
@@ -76,10 +76,13 @@ func AuditLogEntry(entry adminsvc.AuditEntry) types.AuditLogEntry {
 		RequestID:  entry.RequestID,
 		IP:         ipToString(entry.IP),
 		UserAgent:  entry.UserAgent,
-		Before:     decodeJSON(entry.Before),
-		After:      decodeJSON(entry.After),
-		Extra:      decodeJSON(entry.Extra),
 	}
+	if includeDetails {
+		dto.Before = decodeJSON(entry.Before)
+		dto.After = decodeJSON(entry.After)
+		dto.Extra = decodeJSON(entry.Extra)
+	}
+	return dto
 }
 
 func decodeJSON(raw []byte) any {

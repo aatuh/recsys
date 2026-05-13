@@ -33,6 +33,7 @@ type Config struct {
 	Artifacts   ArtifactConfig
 	License     LicenseConfig
 	Algo        AlgoConfig
+	TenantDB    TenantDBConfig
 }
 
 // AppConfig holds app-wide public-facing configuration.
@@ -92,6 +93,11 @@ type AuditConfig struct {
 	Fsync   bool
 }
 
+// TenantDBConfig configures database tenant-isolation guardrails.
+type TenantDBConfig struct {
+	RequireRLS bool
+}
+
 // ExposureConfig configures exposure logging.
 type ExposureConfig struct {
 	Enabled       bool
@@ -119,6 +125,7 @@ type ExplainConfig struct {
 type ArtifactConfig struct {
 	Enabled          bool
 	ManifestTemplate string
+	FileRoot         string
 	ManifestTTL      time.Duration
 	ArtifactTTL      time.Duration
 	MaxBytes         int
@@ -324,6 +331,7 @@ func Load() Config {
 	artifactCfg := ArtifactConfig{
 		Enabled:          loader.Bool("RECSYS_ARTIFACT_MODE_ENABLED", false),
 		ManifestTemplate: loader.String("RECSYS_ARTIFACT_MANIFEST_TEMPLATE", ""),
+		FileRoot:         loader.String("RECSYS_ARTIFACT_FILE_ROOT", ""),
 		ManifestTTL:      loader.Duration("RECSYS_ARTIFACT_MANIFEST_TTL", time.Minute),
 		ArtifactTTL:      loader.Duration("RECSYS_ARTIFACT_CACHE_TTL", time.Minute),
 		MaxBytes:         loader.Int("RECSYS_ARTIFACT_MAX_BYTES", 10_000_000),
@@ -340,6 +348,9 @@ func Load() Config {
 		PublicKey:     loader.String("RECSYS_LICENSE_PUBLIC_KEY", ""),
 		PublicKeyFile: loader.String("RECSYS_LICENSE_PUBLIC_KEY_FILE", ""),
 		CacheTTL:      loader.Duration("RECSYS_LICENSE_CACHE_TTL", time.Minute),
+	}
+	tenantDBCfg := TenantDBConfig{
+		RequireRLS: loader.Bool("RECSYS_DB_REQUIRE_RLS", false),
 	}
 	expVariants := loader.CSV("EXPERIMENT_DEFAULT_VARIANTS")
 	if len(expVariants) == 0 {
@@ -412,6 +423,7 @@ func Load() Config {
 		Artifacts:  artifactCfg,
 		License:    licenseCfg,
 		Algo:       algoCfg,
+		TenantDB:   tenantDBCfg,
 	}
 	if err := loader.Err(); err != nil {
 		panic(err)
@@ -463,7 +475,7 @@ func applySecretFile(envKey string) error {
 	if path == "" {
 		return nil
 	}
-	data, err := os.ReadFile(path)
+	data, err := os.ReadFile(path) // #nosec G304,G703 -- *_FILE paths are operator-provisioned secret mounts, not client input.
 	if err != nil {
 		return fmt.Errorf("read %s_FILE: %w", envKey, err)
 	}

@@ -25,14 +25,31 @@ import (
 
 // AdminHandler exposes admin/control-plane endpoints.
 type AdminHandler struct {
-	Svc       *adminsvc.Service
-	Logger    ports.Logger
-	Validator ports.Validator
+	Svc              *adminsvc.Service
+	Logger           ports.Logger
+	Validator        ports.Validator
+	AuditDetailRoles []string
 }
 
+// AdminHandlerOption configures AdminHandler behavior.
+type AdminHandlerOption func(*AdminHandler)
+
 // NewAdminHandler constructs a new admin handler.
-func NewAdminHandler(s *adminsvc.Service, l ports.Logger, v ports.Validator) *AdminHandler {
-	return &AdminHandler{Svc: s, Logger: l, Validator: v}
+func NewAdminHandler(s *adminsvc.Service, l ports.Logger, v ports.Validator, opts ...AdminHandlerOption) *AdminHandler {
+	h := &AdminHandler{Svc: s, Logger: l, Validator: v}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(h)
+		}
+	}
+	return h
+}
+
+// WithAuditDetailRoles sets roles that may read raw before/after/extra audit details.
+func WithAuditDetailRoles(roles ...string) AdminHandlerOption {
+	return func(h *AdminHandler) {
+		h.AuditDetailRoles = append([]string(nil), roles...)
+	}
 }
 
 // Routes returns a router with admin endpoints.
@@ -196,7 +213,30 @@ func (h *AdminHandler) getAudit(w http.ResponseWriter, r *http.Request) {
 		h.writeAdminErr(w, r, err)
 		return
 	}
-	response_writer.WriteJSON(w, http.StatusOK, mapper.AuditLogResponse(log))
+	response_writer.WriteJSON(w, http.StatusOK, mapper.AuditLogResponse(log, h.canReadAuditDetails(r)))
+}
+
+func (h *AdminHandler) canReadAuditDetails(r *http.Request) bool {
+	if h == nil || len(h.AuditDetailRoles) == 0 {
+		return true
+	}
+	return hasAnyAuditRole(auth.RolesFromContext(r.Context()), h.AuditDetailRoles)
+}
+
+func hasAnyAuditRole(roles []string, allowed []string) bool {
+	for _, role := range roles {
+		role = strings.TrimSpace(role)
+		if role == "" {
+			continue
+		}
+		for _, required := range allowed {
+			required = strings.TrimSpace(required)
+			if required != "" && strings.EqualFold(role, required) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func (h *AdminHandler) writeAdminErr(w http.ResponseWriter, r *http.Request, err error) {

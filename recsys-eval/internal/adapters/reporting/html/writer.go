@@ -151,7 +151,7 @@ func (Writer) Write(_ context.Context, rep report.Report, path string) error {
 	if err != nil {
 		return err
 	}
-	file, err := os.Create(path)
+	file, err := os.Create(path) // #nosec G304 -- report output path is a trusted operator-selected CLI destination.
 	if err != nil {
 		return err
 	}

@@ -45,7 +45,7 @@ func main() {
 		return
 	}
 
-	if err := os.MkdirAll(*outDir, 0o755); err != nil {
+	if err := os.MkdirAll(*outDir, 0o750); err != nil {
 		fatalf("create output dir: %v", err)
 	}
 
@@ -67,7 +67,7 @@ func main() {
 }
 
 func writeFile(path string, data []byte) (err error) {
-	f, err := os.Create(path)
+	f, err := os.Create(path) // #nosec G304 -- openapi-sync is a developer tool writing generated docs to an operator-supplied output directory.
 	if err != nil {
 		return err
 	}

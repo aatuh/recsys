@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io/fs"
-	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"strings"
@@ -14,6 +13,7 @@ import (
 	"github.com/aatuh/recsys-suite/api/docs"
 	"github.com/aatuh/recsys-suite/api/internal/config"
 	appmw "github.com/aatuh/recsys-suite/api/internal/http/middleware"
+	"github.com/aatuh/recsys-suite/api/internal/store"
 	"github.com/aatuh/recsys-suite/api/migrations"
 
 	"github.com/aatuh/api-toolkit/contrib/v2/adapters/logzap"
@@ -68,6 +68,12 @@ func main() {
 		bootstrap.RunMigrationsOrExit(
 			ctx, cfg.Config, log, []fs.FS{migrations.Migrations},
 		)
+	}
+	if cfg.TenantDB.RequireRLS {
+		if err := store.CheckTenantRLS(ctx, pool); err != nil {
+			log.Error("tenant database guardrail failed", "err", err.Error())
+			os.Exit(1)
+		}
 	}
 
 	r, err := buildRouter(log, cfg)

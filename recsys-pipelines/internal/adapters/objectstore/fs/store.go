@@ -36,7 +36,7 @@ func (s *FSObjectStore) Put(ctx context.Context, key string, _ string, data []by
 	if err != nil {
 		return "", err
 	}
-	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(path), 0o750); err != nil {
 		return "", err
 	}
 	if err := fsutil.WriteFileAtomic(path, data, 0o644); err != nil {
@@ -59,5 +59,5 @@ func (s *FSObjectStore) Get(ctx context.Context, uri string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return os.ReadFile(path)
+	return os.ReadFile(path) // #nosec G304 -- URI is first confined under the filesystem object-store root.
 }

@@ -113,7 +113,7 @@ func runPreflight(args []string) {
 		return pending[i].Version < pending[j].Version
 	})
 
-	log.Printf("preflight ok: applied=%d pending=%d", len(applied), len(pending))
+	log.Printf("preflight ok: applied=%d pending=%d", len(applied), len(pending)) // #nosec G706 -- counts are integers produced by the preflight process.
 	if len(pending) > 0 {
 		for _, mig := range pending {
 			log.Printf("pending: %d %s", mig.Version, mig.Name)
@@ -125,7 +125,11 @@ func loadApplied(ctx context.Context, db *sql.DB, table string) ([]appliedRow, e
 	if strings.TrimSpace(table) == "" {
 		table = "schema_migrations"
 	}
-	q := fmt.Sprintf("SELECT version, name, checksum, success FROM %s ORDER BY applied_at ASC, version ASC;", pq(table))
+	quotedTable, err := quoteTableIdent(table)
+	if err != nil {
+		return nil, err
+	}
+	q := fmt.Sprintf("SELECT version, name, checksum, success FROM %s ORDER BY applied_at ASC, version ASC;", quotedTable) // #nosec G201 -- table is validated as an identifier before quoting.
 	rows, err := db.QueryContext(ctx, q)
 	if err != nil {
 		return nil, err
@@ -210,4 +214,21 @@ func checksum(s string) string {
 
 func pq(ident string) string {
 	return `"` + strings.ReplaceAll(ident, `"`, `""`) + `"`
+}
+
+var tableIdentRe = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)?$`)
+
+func quoteTableIdent(ident string) (string, error) {
+	ident = strings.TrimSpace(ident)
+	if ident == "" {
+		ident = "schema_migrations"
+	}
+	if !tableIdentRe.MatchString(ident) {
+		return "", fmt.Errorf("invalid schema migrations table name")
+	}
+	parts := strings.Split(ident, ".")
+	for i, part := range parts {
+		parts[i] = pq(part)
+	}
+	return strings.Join(parts, "."), nil
 }

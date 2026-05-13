@@ -164,7 +164,7 @@ func (l *FileLogger) ensureFileLocked(now time.Time) error {
 			_ = l.file.Close()
 		}
 		filename := filepath.Join(l.dir, "exposure-"+date+".jsonl")
-		f, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600)
+		f, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600) // #nosec G304 -- filename is derived from logger-owned directory and UTC date.
 		if err != nil {
 			return err
 		}

@@ -124,7 +124,7 @@ func (m *Manager) evaluate(now time.Time) (Info, error) {
 	if path == "" {
 		return Info{Status: StatusUnknown}, nil
 	}
-	data, err := os.ReadFile(path)
+	data, err := os.ReadFile(path) // #nosec G304 -- license file path is operator-configured and intentionally local.
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			return Info{Status: StatusUnknown}, nil
@@ -233,7 +233,7 @@ func (m *Manager) publicKey() (any, error) {
 	}
 	raw := strings.TrimSpace(m.cfg.PublicKey)
 	if raw == "" && strings.TrimSpace(m.cfg.PublicKeyFile) != "" {
-		data, err := os.ReadFile(m.cfg.PublicKeyFile)
+		data, err := os.ReadFile(m.cfg.PublicKeyFile) // #nosec G304 -- public-key file path is operator-configured and intentionally local.
 		if err != nil {
 			m.setKey(nil, fmt.Errorf("read public key file: %w", err))
 			return nil, m.pubKeyErr

@@ -16,7 +16,7 @@ import (
 // temporary file is created on the same mount as the target.
 func WriteFileAtomic(path string, data []byte, perm fs.FileMode) error {
 	dir := filepath.Dir(path)
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return err
 	}
 
@@ -64,7 +64,7 @@ func WriteFileAtomic(path string, data []byte, perm fs.FileMode) error {
 // The caller must close the returned file before calling commit.
 func CreateAtomicWriter(path string, perm fs.FileMode) (*os.File, func() error, func() error, error) {
 	dir := filepath.Dir(path)
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return nil, nil, nil, err
 	}
 	tmp, err := os.CreateTemp(dir, "."+filepath.Base(path)+".tmp-*")
@@ -103,7 +103,7 @@ func CreateAtomicWriter(path string, perm fs.FileMode) (*os.File, func() error, 
 }
 
 func syncDir(dir string) error {
-	d, err := os.Open(dir)
+	d, err := os.Open(dir) // #nosec G304 -- dir is derived from a previously confined target path and opened only for fsync.
 	if err != nil {
 		return fmt.Errorf("open dir for sync: %w", err)
 	}

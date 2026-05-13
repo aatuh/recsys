@@ -7,7 +7,7 @@ GOLANGCI_LINT_VERSION ?= latest
 GOSEC_VERSION ?= latest
 GOVULNCHECK_VERSION ?= latest
 
-.PHONY: help tools fmt lint vuln gosec tidy test test-race fuzz clean finalize
+.PHONY: help tools fmt lint vuln gosec tidy test test-race fuzz clean build plugin-example finalize
 
 help: ## Show help
 	@awk 'BEGIN {FS=":.*## "}; \
@@ -41,6 +41,12 @@ tidy: ## Run go mod tidy
 test: ## Run unit tests
 	$(GO) test ./...
 
+build: ## Build library and standard examples
+	$(GO) build ./algorithm ./model ./rules ./examples/basic ./examples/personalized ./examples/rules
+
+plugin-example: ## Build the custom algorithm plugin example
+	$(GO) build -buildmode=plugin -o /tmp/recsys-hello-algo.so ./examples/custom_algo
+
 test-race: ## Run unit tests with race detector
 	$(GO) test ./... -race -count=1
 
@@ -58,6 +64,8 @@ finalize: ## Run every quality assurance tool
 	$(MAKE) gosec
 	$(MAKE) tidy
 	$(MAKE) test
+	$(MAKE) build
+	$(MAKE) plugin-example
 	$(MAKE) test-race
 	$(MAKE) fuzz
 	$(MAKE) clean

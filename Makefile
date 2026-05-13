@@ -1,4 +1,4 @@
-.PHONY: help env test-env codegen dev down build test proof-kit-test fmt lint health reuse mdlint codespell mkdocs-serve
+.PHONY: help env test-env codegen dev down build test proof-kit-test fmt lint security health reuse mdlint codespell mkdocs-serve
 
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 COMMIT ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo none)
@@ -77,6 +77,13 @@ lint: ## Lint code
 	cd recsys-eval && $(MAKE) lint
 	cd recsys-pipelines && $(MAKE) lint
 	cd recsys-algo && $(MAKE) lint
+
+security: ## Run module vulnerability and static security scans
+	@echo "🔐 Running security scans..."
+	cd api && GOWORK=off govulncheck ./... && GOWORK=off gosec ./...
+	cd recsys-eval && GOWORK=off govulncheck ./... && GOWORK=off gosec ./...
+	cd recsys-pipelines && GOWORK=off govulncheck ./... && GOWORK=off gosec ./...
+	cd recsys-algo && GOWORK=off govulncheck ./... && GOWORK=off gosec ./...
 
 mdlint: ## Lint Markdown files
 	@echo "🧾 Linting Markdown..."

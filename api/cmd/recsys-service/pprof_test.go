@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	toolkitconfig "github.com/aatuh/api-toolkit/contrib/v2/config"
@@ -27,7 +28,16 @@ func TestPprofHandlerEnabledAfterSafeConfigValidation(t *testing.T) {
 	if err := config.Validate(cfg); err != nil {
 		t.Fatalf("Validate() error = %v", err)
 	}
-	if got := systemPprofHandler(cfg); got != http.DefaultServeMux {
-		t.Fatalf("pprofHandler() = %T, want http.DefaultServeMux", got)
+	got := systemPprofHandler(cfg)
+	if got == nil {
+		t.Fatalf("pprofHandler() = nil")
+	}
+	if got == http.DefaultServeMux {
+		t.Fatalf("pprofHandler() used http.DefaultServeMux")
+	}
+	rec := httptest.NewRecorder()
+	got.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/debug/pprof/", nil))
+	if rec.Code != http.StatusOK {
+		t.Fatalf("pprof index status = %d, want %d", rec.Code, http.StatusOK)
 	}
 }

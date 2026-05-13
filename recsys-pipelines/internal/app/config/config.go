@@ -76,7 +76,7 @@ type DatabaseConfig struct {
 }
 
 func LoadEnvConfig(path string) (EnvConfig, error) {
-	b, err := os.ReadFile(path)
+	b, err := os.ReadFile(path) // #nosec G304 -- config path is an operator-supplied CLI input.
 	if err != nil {
 		return EnvConfig{}, err
 	}

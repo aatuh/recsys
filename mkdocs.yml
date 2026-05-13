@@ -232,6 +232,7 @@ nav:
       - Capability matrix: explanation/capability-matrix.md
       - Pipelines operational invariants: explanation/pipelines-operational-invariants.md
       - Artifacts and manifest lifecycle: explanation/artifacts-and-manifest-lifecycle.md
+      - File trust policy: explanation/file-trust-policy.md
 
   - For businesses:
       - for-businesses/index.md
@@ -375,6 +376,7 @@ nav:
       - Message map: project/message-map.md
       - Support model: project/support.md
       - Security policy: project/security.md
+      - Quality gates: project/quality-gates.md
       - Governance: project/governance.md
       - Contributing: project/contributing.md
       - Code of conduct: project/code_of_conduct.md

@@ -73,7 +73,7 @@ func (s Store) LoadCurrent(
 	}
 	winDir := s.windowDir(key, w)
 	cur := filepath.Join(winDir, "current.version")
-	b, err := os.ReadFile(cur)
+	b, err := os.ReadFile(cur) // #nosec G304 -- current.version path is derived from validated artifact key/window under staging baseDir.
 	if err != nil {
 		if os.IsNotExist(err) {
 			// Fallback: if there is a single .json file, pick it.
@@ -94,7 +94,7 @@ func (s Store) LoadCurrent(
 	if err != nil {
 		return artifacts.Ref{}, nil, false, err
 	}
-	blob, err := os.ReadFile(path) // #nosec G703 -- version is path-segment validated and path is confined to s.baseDir.
+	blob, err := os.ReadFile(path) // #nosec G304,G703 -- version is path-segment validated and path is confined to s.baseDir.
 	if err != nil {
 		return artifacts.Ref{}, nil, false, err
 	}
@@ -151,7 +151,7 @@ func (s Store) loadSingleJSON(
 	}
 	sort.Strings(files)
 	path := files[len(files)-1]
-	blob, err := os.ReadFile(path)
+	blob, err := os.ReadFile(path) // #nosec G304 -- fallback path comes from listing the validated staging window directory.
 	if err != nil {
 		return artifacts.Ref{}, nil, false, err
 	}

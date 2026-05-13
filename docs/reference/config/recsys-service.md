@@ -35,6 +35,7 @@ This page is the canonical reference for recsys-service configuration.
 | `DATABASE_URL_FILE` | unset | If set, reads DSN from file and sets `DATABASE_URL`. |
 | `MIGRATE_ON_START` | `false` | Run DB migrations on startup. |
 | `MIGRATIONS_DIR` | `-` | Migration source. `-` means use embedded migrations. |
+| `RECSYS_DB_REQUIRE_RLS` | `false` | When `true`, service startup fails unless tenant-scoped tables have Postgres row-level security enabled. Keep `false` only when application-layer tenant filters and restricted DB access are the accepted control. |
 
 ### Docs endpoints (local helper)
 
@@ -150,6 +151,7 @@ See also: [Minimum instrumentation](../minimum-instrumentation.md).
 | --- | --- | --- |
 | `RECSYS_ARTIFACT_MODE_ENABLED` | `false` | Enables artifact/manifest reading for popularity/co-vis artifacts. |
 | `RECSYS_ARTIFACT_MANIFEST_TEMPLATE` | unset | Manifest URI template (supports `{tenant}` and `{surface}`). |
+| `RECSYS_ARTIFACT_FILE_ROOT` | unset | Root directory for local `file://` or bare-path manifest/artifact reads. Local artifact mode requires this; S3-only mode leaves file reads disabled. |
 | `RECSYS_ARTIFACT_MANIFEST_TTL` | `1m` | Manifest cache TTL. |
 | `RECSYS_ARTIFACT_CACHE_TTL` | `1m` | Artifact blob cache TTL. |
 | `RECSYS_ARTIFACT_MAX_BYTES` | `10000000` | Max artifact size (bytes). |

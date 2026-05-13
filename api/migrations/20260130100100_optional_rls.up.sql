@@ -2,6 +2,11 @@
 -- Purpose: optional row-level security (RLS) "seatbelt".
 -- Enable only if you plan to set app.tenant_id (or similar) per connection
 -- and understand RLS bypass rules for owners/superusers.
+-- If you require database-enforced tenant isolation in production, enable RLS
+-- policies and set RECSYS_DB_REQUIRE_RLS=true so service startup fails when
+-- tenant-scoped tables do not have RLS enabled. With the default false value,
+-- the accepted control is application-layer tenant filtering plus restricted
+-- database access for operators and jobs.
 
 -- Example:
 -- ALTER TABLE tenant_config_versions ENABLE ROW LEVEL SECURITY;

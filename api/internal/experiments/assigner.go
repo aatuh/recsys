@@ -67,7 +67,7 @@ func (a *DeterministicAssigner) pickVariant(expID, subject string) string {
 	_, _ = mac.Write([]byte(subject))
 	sum := mac.Sum(nil)
 	value := binary.BigEndian.Uint64(sum[:8])
-	idx := int(value % uint64(len(a.variants)))
+	idx := int(value % uint64(len(a.variants))) // #nosec G115 -- modulo by len(a.variants) bounds the value to a valid slice index.
 	return a.variants[idx]
 }
 

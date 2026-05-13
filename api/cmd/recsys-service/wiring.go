@@ -33,6 +33,7 @@ type appDeps struct {
 	ExperimentAssigner  experiments.Assigner
 	ExplainMaxItems     int
 	ExplainRequireAdmin bool
+	OperatorRole        string
 	AdminRole           string
 	LicenseManager      *license.Manager
 	Close               func()
@@ -62,7 +63,14 @@ func buildAppDeps(log ports.Logger, pool ports.DatabasePool, cfg config.Config) 
 		if strings.TrimSpace(cfg.Artifacts.ManifestTemplate) == "" {
 			return appDeps{}, fmt.Errorf("artifact mode enabled but manifest template is empty")
 		}
-		fsReader := objectstore.NewFSReader(cfg.Artifacts.MaxBytes)
+		var fsReader *objectstore.FSReader
+		if strings.TrimSpace(cfg.Artifacts.FileRoot) != "" {
+			reader, err := objectstore.NewRootedFSReader(cfg.Artifacts.FileRoot, cfg.Artifacts.MaxBytes)
+			if err != nil {
+				return appDeps{}, err
+			}
+			fsReader = reader
+		}
 		var s3Reader *objectstore.S3Reader
 		if strings.TrimSpace(cfg.Artifacts.S3.Endpoint) != "" {
 			reader, err := objectstore.NewS3Reader(objectstore.S3Config{
@@ -76,6 +84,9 @@ func buildAppDeps(log ports.Logger, pool ports.DatabasePool, cfg config.Config) 
 				return appDeps{}, err
 			}
 			s3Reader = reader
+		}
+		if fsReader == nil && !strings.HasPrefix(strings.TrimSpace(cfg.Artifacts.ManifestTemplate), "s3://") {
+			return appDeps{}, fmt.Errorf("artifact file root is required for local file manifests")
 		}
 		reader := objectstore.NewMultiReader(fsReader, s3Reader, cfg.Artifacts.MaxBytes)
 		loader := artifacts.NewLoader(reader, artifacts.LoaderConfig{
@@ -206,6 +217,7 @@ func buildAppDeps(log ports.Logger, pool ports.DatabasePool, cfg config.Config) 
 		ExperimentAssigner:  assigner,
 		ExplainMaxItems:     cfg.Explain.MaxItems,
 		ExplainRequireAdmin: cfg.Explain.RequireAdmin,
+		OperatorRole:        cfg.Auth.OperatorRole,
 		AdminRole:           cfg.Auth.AdminRole,
 		LicenseManager:      licenseManager,
 		Close:               closeFn,

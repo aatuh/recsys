@@ -202,9 +202,12 @@ func (s *Store) execBatch(ctx context.Context, total int, queue func(batch *pgx.
 		res := s.pool.SendBatch(ctxTimeout, batch)
 		for i := 0; i < limit; i++ {
 			if _, err := res.Exec(); err != nil {
-				res.Close()
+				closeErr := res.Close()
 				if cancel != nil {
 					cancel()
+				}
+				if closeErr != nil {
+					return errors.Join(err, fmt.Errorf("close batch: %w", closeErr))
 				}
 				return err
 			}

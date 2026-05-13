@@ -129,7 +129,7 @@ func (s *FSCanonicalStore) readDay(
 	w windows.Window,
 	out chan<- events.ExposureEvent,
 ) error {
-	f, err := os.Open(path)
+	f, err := os.Open(path) // #nosec G304 -- path is built from validated tenant/surface/window under canonical store root.
 	if err != nil {
 		return err
 	}
