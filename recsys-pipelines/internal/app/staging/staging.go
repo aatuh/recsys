@@ -12,6 +12,7 @@ import (
 
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/fsutil"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/domain/artifacts"
+	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/domain/pathsafe"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/domain/windows"
 )
 
@@ -89,7 +90,11 @@ func (s Store) LoadCurrent(
 	if err != nil {
 		return artifacts.Ref{}, nil, false, err
 	}
-	blob, err := os.ReadFile(path)
+	path, err = fsutil.ConfineAbsolute(s.baseDir, path)
+	if err != nil {
+		return artifacts.Ref{}, nil, false, err
+	}
+	blob, err := os.ReadFile(path) // #nosec G703 -- version is path-segment validated and path is confined to s.baseDir.
 	if err != nil {
 		return artifacts.Ref{}, nil, false, err
 	}
@@ -112,12 +117,9 @@ func (s Store) windowDir(key artifacts.Key, w windows.Window) string {
 }
 
 func artifactPath(winDir string, version string) (string, error) {
-	version = strings.TrimSpace(version)
-	if version == "" {
-		return "", fmt.Errorf("artifact version must be set")
-	}
-	if version == "." || version == ".." || strings.ContainsAny(version, `/\`) {
-		return "", fmt.Errorf("artifact version contains invalid path segment")
+	version, err := pathsafe.Segment("artifact version", version)
+	if err != nil {
+		return "", err
 	}
 	return filepath.Join(winDir, version+".json"), nil
 }

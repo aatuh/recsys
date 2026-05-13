@@ -11,6 +11,7 @@ import (
 
 	"github.com/aatuh/recsys-suite/api/internal/cache"
 	"github.com/aatuh/recsys-suite/api/internal/objectstore"
+	"github.com/aatuh/recsys-suite/api/internal/pathsafe"
 
 	"github.com/aatuh/api-toolkit/v2/ports"
 )
@@ -100,6 +101,15 @@ func (l *Loader) ManifestURI(tenant, surface string) (string, error) {
 	}
 	if l.manifestTemplate == "" {
 		return "", fmt.Errorf("manifest template is required")
+	}
+	var err error
+	tenant, err = pathsafe.Segment("tenant", tenant)
+	if err != nil {
+		return "", err
+	}
+	surface, err = pathsafe.Segment("surface", surface)
+	if err != nil {
+		return "", err
 	}
 	out := l.manifestTemplate
 	out = strings.ReplaceAll(out, "{tenant}", tenant)

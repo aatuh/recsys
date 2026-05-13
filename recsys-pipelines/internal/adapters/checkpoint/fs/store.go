@@ -3,12 +3,12 @@ package fs
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
+	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/fsutil"
+	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/domain/pathsafe"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/ports/checkpoint"
 )
 
@@ -26,7 +26,10 @@ func (s *Store) GetLastIngested(ctx context.Context, tenant, surface string) (ti
 	if err := ctx.Err(); err != nil {
 		return time.Time{}, false, err
 	}
-	path := s.pathFor(tenant, surface)
+	path, err := s.pathFor(tenant, surface)
+	if err != nil {
+		return time.Time{}, false, err
+	}
 	raw, err := os.ReadFile(path)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -51,7 +54,10 @@ func (s *Store) SetLastIngested(ctx context.Context, tenant, surface string, day
 	if err := ctx.Err(); err != nil {
 		return err
 	}
-	path := s.pathFor(tenant, surface)
+	path, err := s.pathFor(tenant, surface)
+	if err != nil {
+		return err
+	}
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return err
 	}
@@ -67,18 +73,14 @@ func (s *Store) SetLastIngested(ctx context.Context, tenant, surface string, day
 	return os.WriteFile(path, raw, 0o600)
 }
 
-func (s *Store) pathFor(tenant, surface string) string {
-	t := sanitize(tenant)
-	surf := sanitize(surface)
-	return filepath.Join(s.baseDir, t, fmt.Sprintf("%s.json", surf))
-}
-
-func sanitize(value string) string {
-	value = strings.TrimSpace(value)
-	if value == "" {
-		return "default"
+func (s *Store) pathFor(tenant, surface string) (string, error) {
+	tenant, err := pathsafe.Segment("tenant", tenant)
+	if err != nil {
+		return "", err
 	}
-	value = strings.ReplaceAll(value, "/", "_")
-	value = strings.ReplaceAll(value, "\\", "_")
-	return value
+	surface, err = pathsafe.Segment("surface", surface)
+	if err != nil {
+		return "", err
+	}
+	return fsutil.Confine(s.baseDir, filepath.Join(tenant, surface+".json"))
 }

@@ -72,7 +72,7 @@ Notes:
 
 Description: Close filesystem traversal and path inclusion risks across API artifact mode and pipeline filesystem adapters.
 
-### Ticket E2-T1 - Add a shared path-segment validation helper [ ]
+### Ticket E2-T1 - Add a shared path-segment validation helper [x]
 
 Description: Define a small reusable validator for logical IDs used as filesystem path segments, including tenant, surface, segment, artifact type/key, and artifact version.
 
@@ -91,7 +91,7 @@ Notes:
 - Reject empty, `.`, `..`, slash, backslash, and control/whitespace-only path segments.
 - Keep the helper dependency direction inward; domain packages should not import adapters.
 
-### Ticket E2-T2 - Apply path validation to API artifact mode [ ]
+### Ticket E2-T2 - Apply path validation to API artifact mode [x]
 
 Description: Validate surface and manifest path substitutions before loading filesystem-backed artifacts in the API service.
 
@@ -110,7 +110,7 @@ Notes:
 - Add regression tests for malicious `surface` values in recommend and similar requests.
 - Ensure public error responses stay generic and do not leak filesystem paths.
 
-### Ticket E2-T3 - Apply path validation to pipeline filesystem adapters [ ]
+### Ticket E2-T3 - Apply path validation to pipeline filesystem adapters [x]
 
 Description: Harden `recsys-pipelines` staging, artifact registry, checkpoint, object store, and file datasource paths against traversal through tenant, surface, segment, and object key inputs.
 

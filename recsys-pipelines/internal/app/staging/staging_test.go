@@ -101,10 +101,36 @@ func TestStoreRejectsTraversalVersion(t *testing.T) {
 	}
 }
 
+func TestStoreRejectsUnsafeKeySegments(t *testing.T) {
+	store := New(t.TempDir())
+	win := testWindow()
+	tests := []struct {
+		name string
+		key  artifacts.Key
+	}{
+		{name: "tenant", key: artifacts.Key{Tenant: "../tenant", Surface: "home", Segment: "default", Type: artifacts.TypePopularity}},
+		{name: "surface", key: artifacts.Key{Tenant: "tenant-a", Surface: "home/escape", Segment: "default", Type: artifacts.TypePopularity}},
+		{name: "segment", key: artifacts.Key{Tenant: "tenant-a", Surface: "home", Segment: `bad\segment`, Type: artifacts.TypePopularity}},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := store.Put(context.Background(), artifacts.Ref{Key: tc.key, Window: win, Version: "v1"}, []byte(`{}`))
+			if err == nil {
+				t.Fatal("expected unsafe key segment to fail")
+			}
+			if !strings.Contains(err.Error(), "invalid path segment") {
+				t.Fatalf("error = %q, want invalid path segment", err.Error())
+			}
+		})
+	}
+}
+
 func testKey() artifacts.Key {
 	return artifacts.Key{
 		Tenant:  "tenant-a",
 		Surface: "home",
+		Segment: "default",
 		Type:    artifacts.TypePopularity,
 	}
 }

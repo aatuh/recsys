@@ -9,7 +9,9 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/fsutil"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/domain/events"
+	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/domain/pathsafe"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/domain/windows"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/ports/datasource"
 )
@@ -37,7 +39,11 @@ func (s *FSRawEventSource) ReadExposureEvents(
 		defer close(out)
 		defer close(errs)
 
-		files := s.resolveFiles(tenant, surface, w)
+		files, err := s.resolveFiles(tenant, surface, w)
+		if err != nil {
+			errs <- err
+			return
+		}
 		if len(files) == 0 {
 			// No input is not an error: upstream systems may legitimately have no
 			// events for a window. The pipeline must remain idempotent and treat
@@ -56,10 +62,18 @@ func (s *FSRawEventSource) ReadExposureEvents(
 	return out, errs
 }
 
-func (s *FSRawEventSource) resolveFiles(tenant, surface string, w windows.Window) []string {
+func (s *FSRawEventSource) resolveFiles(tenant, surface string, w windows.Window) ([]string, error) {
 	flat := filepath.Join(s.baseDir, "exposure.jsonl")
 	if _, err := os.Stat(flat); err == nil {
-		return []string{flat}
+		return []string{flat}, nil
+	}
+	tenant, err := pathsafe.Segment("tenant", tenant)
+	if err != nil {
+		return nil, err
+	}
+	surface, err = pathsafe.Segment("surface", surface)
+	if err != nil {
+		return nil, err
 	}
 
 	var files []string
@@ -67,12 +81,15 @@ func (s *FSRawEventSource) resolveFiles(tenant, surface string, w windows.Window
 	endDay := time.Date(w.End.Year(), w.End.Month(), w.End.Day(), 0, 0, 0, 0, time.UTC)
 	for day := startDay; day.Before(endDay); day = day.Add(24 * time.Hour) {
 		name := fmt.Sprintf("exposure.%s.jsonl", day.Format("2006-01-02"))
-		fp := filepath.Join(s.baseDir, tenant, surface, name)
+		fp, err := fsutil.Confine(s.baseDir, filepath.Join(tenant, surface, name))
+		if err != nil {
+			return nil, err
+		}
 		if _, err := os.Stat(fp); err == nil {
 			files = append(files, fp)
 		}
 	}
-	return files
+	return files, nil
 }
 
 func (s *FSRawEventSource) readFile(

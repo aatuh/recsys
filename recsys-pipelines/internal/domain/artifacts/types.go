@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/domain/pathsafe"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/domain/windows"
 )
 
@@ -26,14 +27,20 @@ type Key struct {
 }
 
 func (k Key) Validate() error {
-	if strings.TrimSpace(k.Tenant) == "" {
-		return fmt.Errorf("tenant must be set")
+	if _, err := pathsafe.Segment("tenant", k.Tenant); err != nil {
+		return err
 	}
-	if strings.TrimSpace(k.Surface) == "" {
-		return fmt.Errorf("surface must be set")
+	if _, err := pathsafe.Segment("surface", k.Surface); err != nil {
+		return err
+	}
+	if _, err := pathsafe.Segment("segment", k.Segment); err != nil {
+		return err
 	}
 	if k.Type == "" {
 		return fmt.Errorf("type must be set")
+	}
+	if _, err := pathsafe.Segment("artifact type", string(k.Type)); err != nil {
+		return err
 	}
 	return nil
 }
@@ -55,6 +62,9 @@ func (r Ref) Validate() error {
 	}
 	if strings.TrimSpace(r.Version) == "" {
 		return fmt.Errorf("version must be set")
+	}
+	if _, err := pathsafe.Segment("version", r.Version); err != nil {
+		return err
 	}
 	return nil
 }

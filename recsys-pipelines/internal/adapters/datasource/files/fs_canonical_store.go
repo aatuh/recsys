@@ -11,6 +11,7 @@ import (
 
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/fsutil"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/domain/events"
+	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/domain/pathsafe"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/domain/windows"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/ports/datasource"
 )
@@ -37,7 +38,10 @@ func (s *FSCanonicalStore) ReplaceExposureEvents(
 		return ctx.Err()
 	default:
 	}
-	path := s.dayFile(tenant, surface, day)
+	path, err := s.dayFile(tenant, surface, day)
+	if err != nil {
+		return err
+	}
 	if len(evs) == 0 {
 		if err := os.Remove(path); err != nil {
 			if os.IsNotExist(err) {
@@ -89,7 +93,11 @@ func (s *FSCanonicalStore) ReadExposureEvents(
 		endDay := time.Date(w.End.Year(), w.End.Month(), w.End.Day(), 0, 0, 0, 0, time.UTC)
 
 		for day := startDay; day.Before(endDay); day = day.Add(24 * time.Hour) {
-			path := s.dayFile(tenant, surface, day)
+			path, err := s.dayFile(tenant, surface, day)
+			if err != nil {
+				errs <- err
+				return
+			}
 			if _, err := os.Stat(path); err != nil {
 				continue
 			}
@@ -103,8 +111,16 @@ func (s *FSCanonicalStore) ReadExposureEvents(
 	return out, errs
 }
 
-func (s *FSCanonicalStore) dayFile(tenant, surface string, day time.Time) string {
-	return filepath.Join(s.baseDir, tenant, surface, "exposures", day.Format("2006-01-02")+".jsonl")
+func (s *FSCanonicalStore) dayFile(tenant, surface string, day time.Time) (string, error) {
+	tenant, err := pathsafe.Segment("tenant", tenant)
+	if err != nil {
+		return "", err
+	}
+	surface, err = pathsafe.Segment("surface", surface)
+	if err != nil {
+		return "", err
+	}
+	return fsutil.Confine(s.baseDir, filepath.Join(tenant, surface, "exposures", day.Format("2006-01-02")+".jsonl"))
 }
 
 func (s *FSCanonicalStore) readDay(

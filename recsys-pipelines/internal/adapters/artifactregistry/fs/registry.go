@@ -10,6 +10,7 @@ import (
 
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/fsutil"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/domain/artifacts"
+	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/domain/pathsafe"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/ports/artifactregistry"
 )
 
@@ -33,15 +34,18 @@ func (r *FSRegistry) Record(ctx context.Context, ref artifacts.Ref) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	if err := ref.Key.Validate(); err != nil {
+	if err := ref.Validate(); err != nil {
 		return err
 	}
-	if ref.Version == "" || ref.URI == "" {
-		return fmt.Errorf("ref version and uri must be set")
+	if ref.URI == "" {
+		return fmt.Errorf("ref uri must be set")
 	}
+	tenant, _ := pathsafe.Segment("tenant", ref.Key.Tenant)
+	surface, _ := pathsafe.Segment("surface", ref.Key.Surface)
+	artifactType, _ := pathsafe.Segment("artifact type", string(ref.Key.Type))
+	version, _ := pathsafe.Segment("version", ref.Version)
 
-	path := filepath.Join(r.baseDir, "records", ref.Key.Tenant, ref.Key.Surface,
-		string(ref.Key.Type), ref.Version+".json")
+	path := filepath.Join(r.baseDir, "records", tenant, surface, artifactType, version+".json")
 	if _, err := os.Stat(path); err == nil {
 		// Records are append-only and version-addressed. Re-publishing the same
 		// version should not mutate the original record.
@@ -68,7 +72,10 @@ func (r *FSRegistry) LoadManifest(ctx context.Context, tenant, surface string) (
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	path := r.manifestPath(tenant, surface)
+	path, err := r.manifestPath(tenant, surface)
+	if err != nil {
+		return artifacts.ManifestV1{}, false, err
+	}
 	b, err := os.ReadFile(path)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -92,7 +99,10 @@ func (r *FSRegistry) SwapManifest(ctx context.Context, tenant, surface string, n
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	path := r.manifestPath(tenant, surface)
+	path, err := r.manifestPath(tenant, surface)
+	if err != nil {
+		return err
+	}
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return err
 	}
@@ -103,6 +113,14 @@ func (r *FSRegistry) SwapManifest(ctx context.Context, tenant, surface string, n
 	return fsutil.WriteFileAtomic(path, b, 0o644)
 }
 
-func (r *FSRegistry) manifestPath(tenant, surface string) string {
-	return filepath.Join(r.baseDir, "current", tenant, surface, "manifest.json")
+func (r *FSRegistry) manifestPath(tenant, surface string) (string, error) {
+	tenant, err := pathsafe.Segment("tenant", tenant)
+	if err != nil {
+		return "", err
+	}
+	surface, err = pathsafe.Segment("surface", surface)
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(r.baseDir, "current", tenant, surface, "manifest.json"), nil
 }

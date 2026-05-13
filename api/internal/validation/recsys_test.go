@@ -46,6 +46,39 @@ func TestNormalizeRecommendRequiresUser(t *testing.T) {
 	}
 }
 
+func TestNormalizeRecommendRejectsUnsafePathSegments(t *testing.T) {
+	tests := []struct {
+		name    string
+		surface string
+		segment string
+	}{
+		{name: "surface traversal", surface: "../tenant", segment: "default"},
+		{name: "segment separator", surface: "home", segment: "a/b"},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			req := &types.RecommendRequest{
+				Surface: tc.surface,
+				Segment: tc.segment,
+				User:    &types.UserRef{UserID: randID("user")},
+			}
+
+			_, _, err := NormalizeRecommendRequest(req)
+			if err == nil {
+				t.Fatal("expected error")
+			}
+			verr, ok := err.(Error)
+			if !ok {
+				t.Fatalf("expected validation.Error, got %T", err)
+			}
+			if verr.Status != 400 {
+				t.Fatalf("expected status 400, got %d", verr.Status)
+			}
+		})
+	}
+}
+
 func TestNormalizeRecommendContextNow(t *testing.T) {
 	req := &types.RecommendRequest{
 		Surface: "home",
@@ -67,5 +100,21 @@ func TestNormalizeSimilarRequiresItem(t *testing.T) {
 	_, _, err := NormalizeSimilarRequest(req)
 	if err == nil {
 		t.Fatalf("expected error")
+	}
+}
+
+func TestNormalizeSimilarRejectsUnsafeSurface(t *testing.T) {
+	req := &types.SimilarRequest{Surface: `pdp\..\x`, ItemID: randID("item")}
+
+	_, _, err := NormalizeSimilarRequest(req)
+	if err == nil {
+		t.Fatal("expected error")
+	}
+	verr, ok := err.(Error)
+	if !ok {
+		t.Fatalf("expected validation.Error, got %T", err)
+	}
+	if verr.Status != 400 {
+		t.Fatalf("expected status 400, got %d", verr.Status)
 	}
 }

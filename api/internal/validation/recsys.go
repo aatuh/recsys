@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aatuh/recsys-suite/api/internal/pathsafe"
 	"github.com/aatuh/recsys-suite/api/internal/services/recsysvc"
 	"github.com/aatuh/recsys-suite/api/src/specs/types"
 )
@@ -34,11 +35,20 @@ func NormalizeRecommendRequest(dto *types.RecommendRequest) (recsysvc.RecommendR
 	if surface == "" {
 		return recsysvc.RecommendRequest{}, warnings, newError(http.StatusBadRequest, codeInvalidRequest, "surface is required")
 	}
+	var err error
+	surface, err = pathsafe.Segment("surface", surface)
+	if err != nil {
+		return recsysvc.RecommendRequest{}, warnings, newError(http.StatusBadRequest, codeInvalidRequest, err.Error())
+	}
 
 	segment := strings.TrimSpace(dto.Segment)
 	if segment == "" {
 		segment = defaultSegment
 		warnings = appendWarning(warnings, warningDefaultApplied, "segment defaulted to 'default'")
+	}
+	segment, err = pathsafe.Segment("segment", segment)
+	if err != nil {
+		return recsysvc.RecommendRequest{}, warnings, newError(http.StatusBadRequest, codeInvalidRequest, err.Error())
 	}
 
 	k := defaultK
@@ -119,11 +129,20 @@ func NormalizeSimilarRequest(dto *types.SimilarRequest) (recsysvc.SimilarRequest
 	if surface == "" {
 		return recsysvc.SimilarRequest{}, warnings, newError(http.StatusBadRequest, codeInvalidRequest, "surface is required")
 	}
+	var err error
+	surface, err = pathsafe.Segment("surface", surface)
+	if err != nil {
+		return recsysvc.SimilarRequest{}, warnings, newError(http.StatusBadRequest, codeInvalidRequest, err.Error())
+	}
 
 	segment := strings.TrimSpace(dto.Segment)
 	if segment == "" {
 		segment = defaultSegment
 		warnings = appendWarning(warnings, warningDefaultApplied, "segment defaulted to 'default'")
+	}
+	segment, err = pathsafe.Segment("segment", segment)
+	if err != nil {
+		return recsysvc.SimilarRequest{}, warnings, newError(http.StatusBadRequest, codeInvalidRequest, err.Error())
 	}
 
 	itemID := strings.TrimSpace(dto.ItemID)

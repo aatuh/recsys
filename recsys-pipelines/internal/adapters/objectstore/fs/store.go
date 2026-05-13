@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/adapters/fsutil"
+	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/domain/pathsafe"
 	"github.com/aatuh/recsys-suite/recsys-pipelines/internal/ports/objectstore"
 )
 
@@ -27,8 +28,14 @@ func (s *FSObjectStore) Put(ctx context.Context, key string, _ string, data []by
 		return "", ctx.Err()
 	default:
 	}
-	key = strings.TrimPrefix(key, "/")
-	path := filepath.Join(s.baseDir, filepath.FromSlash(key))
+	rel, err := pathsafe.RelativePath("object key", key)
+	if err != nil {
+		return "", err
+	}
+	path, err := fsutil.Confine(s.baseDir, filepath.FromSlash(rel))
+	if err != nil {
+		return "", err
+	}
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return "", err
 	}
@@ -48,5 +55,9 @@ func (s *FSObjectStore) Get(ctx context.Context, uri string) ([]byte, error) {
 		return nil, fmt.Errorf("unsupported uri: %s", uri)
 	}
 	path := strings.TrimPrefix(uri, "file://")
+	path, err := fsutil.ConfineAbsolute(s.baseDir, path)
+	if err != nil {
+		return nil, err
+	}
 	return os.ReadFile(path)
 }
