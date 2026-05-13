@@ -1,6 +1,8 @@
 package test
 
 import (
+	"os"
+	"strings"
 	"testing"
 
 	"github.com/aatuh/api-toolkit/contrib/v2/adapters/envvar"
@@ -27,10 +29,15 @@ type DevAuthConfig struct {
 func MustLoadConfig(t *testing.T) Config {
 	t.Helper()
 	env := envvar.New()
+	apiHost := strings.TrimSpace(os.Getenv("API_HOST"))
+	databaseURL := strings.TrimSpace(os.Getenv("DATABASE_URL"))
+	if apiHost == "" || databaseURL == "" {
+		t.Skip("skipping API integration test: API_HOST and DATABASE_URL must be set")
+	}
 	devEnabled := env.GetBoolOr("DEV_AUTH_ENABLED", false)
 	return Config{
-		APIHost:     env.MustGet("API_HOST"),
-		DatabaseURL: env.MustGet("DATABASE_URL"),
+		APIHost:     apiHost,
+		DatabaseURL: databaseURL,
 		AuthToken:   env.GetOr("TEST_BEARER_TOKEN", ""),
 		DevAuth: DevAuthConfig{
 			Enabled:       devEnabled,

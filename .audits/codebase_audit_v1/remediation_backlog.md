@@ -232,7 +232,7 @@ Notes:
 
 Description: Make local and CI validation clearer, more complete, and less environment-fragile.
 
-### Ticket E4-T1 - Split or self-gate API integration tests [ ]
+### Ticket E4-T1 - Split or self-gate API integration tests [x]
 
 Description: Ensure raw `go test ./...` in `api/` either skips integration tests with a clear message or moves them behind an explicit integration command.
 
@@ -251,7 +251,7 @@ Notes:
 - Keep the existing Docker Compose integration workflow available.
 - Avoid panics for missing `API_HOST` or `DATABASE_URL`.
 
-### Ticket E4-T2 - Add security regression tests for audit findings [ ]
+### Ticket E4-T2 - Add security regression tests for audit findings [x]
 
 Description: Add focused tests for pprof protection, production secrets, artifact path traversal, and duplicate eval request IDs.
 
