@@ -152,7 +152,7 @@ Notes:
 
 Description: Make misconfiguration and data-contract violations fail visibly instead of being silently accepted.
 
-### Ticket E3-T1 - Make API config parsing fail fast [ ]
+### Ticket E3-T1 - Make API config parsing fail fast [x]
 
 Description: Replace silent defaults for invalid numeric and list environment values with startup validation errors.
 
@@ -171,7 +171,7 @@ Notes:
 - Cover invalid floats, invalid int16 CSV values, and valid defaults.
 - Keep error messages actionable and free of secret values.
 
-### Ticket E3-T2 - Enforce safe production S3 defaults [ ]
+### Ticket E3-T2 - Enforce safe production S3 defaults [x]
 
 Description: Require TLS for production S3 artifact mode unless an explicit local-development override is used.
 

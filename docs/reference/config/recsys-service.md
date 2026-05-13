@@ -157,7 +157,7 @@ See also: [Minimum instrumentation](../minimum-instrumentation.md).
 | `RECSYS_ARTIFACT_S3_ACCESS_KEY` | unset | S3 access key. |
 | `RECSYS_ARTIFACT_S3_SECRET_KEY` | unset | S3 secret key. |
 | `RECSYS_ARTIFACT_S3_REGION` | unset | S3 region. |
-| `RECSYS_ARTIFACT_S3_USE_SSL` | `false` | Use TLS when talking to S3/MinIO. |
+| `RECSYS_ARTIFACT_S3_USE_SSL` | `true` | Use TLS when talking to S3/MinIO. May be set to `false` for local MinIO/dev; production startup fails when S3 artifact mode is configured without TLS. |
 
 Note: Tags and constraints are still read from Postgres even in artifact mode.
 

@@ -332,7 +332,7 @@ func Load() Config {
 			AccessKey: loader.String("RECSYS_ARTIFACT_S3_ACCESS_KEY", ""),
 			SecretKey: loader.String("RECSYS_ARTIFACT_S3_SECRET_KEY", ""),
 			Region:    loader.String("RECSYS_ARTIFACT_S3_REGION", ""),
-			UseSSL:    loader.Bool("RECSYS_ARTIFACT_S3_USE_SSL", false),
+			UseSSL:    loader.Bool("RECSYS_ARTIFACT_S3_USE_SSL", true),
 		},
 	}
 	licenseCfg := LicenseConfig{
@@ -439,6 +439,9 @@ func Validate(cfg Config) error {
 	if cfg.Auth.APIKeys.Enabled && strings.TrimSpace(cfg.Auth.APIKeys.HashSecret) == "" {
 		return fmt.Errorf("API_KEY_HASH_SECRET is required in production when API key auth is enabled")
 	}
+	if cfg.Artifacts.Enabled && strings.TrimSpace(cfg.Artifacts.S3.Endpoint) != "" && !cfg.Artifacts.S3.UseSSL {
+		return fmt.Errorf("RECSYS_ARTIFACT_S3_USE_SSL must be true in production when S3 artifact mode is configured")
+	}
 	return nil
 }
 
@@ -481,7 +484,7 @@ func floatEnv(loader *config.Loader, key string, def float64) float64 {
 	}
 	val, err := strconv.ParseFloat(raw, 64)
 	if err != nil {
-		return def
+		panic(fmt.Errorf("%s must be a valid float", key))
 	}
 	return val
 }
@@ -502,7 +505,7 @@ func int16CSV(loader *config.Loader, key string) []int16 {
 		}
 		val, err := strconv.ParseInt(raw, 10, 16)
 		if err != nil {
-			continue
+			panic(fmt.Errorf("%s contains invalid int16 value", key))
 		}
 		out = append(out, int16(val))
 	}

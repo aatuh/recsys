@@ -70,6 +70,8 @@ RECSYS_ARTIFACT_S3_REGION=us-east-1
 RECSYS_ARTIFACT_S3_USE_SSL=false
 ```
 
+`RECSYS_ARTIFACT_S3_USE_SSL=false` is intended for local MinIO/dev only. Production service startup fails when S3 artifact mode is configured without TLS.
+
 ## Verify
 
 - Pipelines produced a manifest for your tenant/surface (local filesystem registry example):
