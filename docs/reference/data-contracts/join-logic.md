@@ -66,8 +66,9 @@ At a high level, `recsys-eval`:
 
 This is a many-to-one join: one exposure → many outcomes.
 
-Important implication: if your exposure stream contains multiple exposure records with the same `request_id`, later
-records can overwrite earlier ones (so treat duplicates as a data quality bug).
+Important implication: if your exposure stream contains multiple exposure records with the same `request_id`,
+`recsys-eval` keeps the first exposure for that join key and reports the additional records as
+`duplicate_exposure_request_ids` in data quality output. Treat any non-zero value as a logging bug.
 
 ## Join integrity: what to measure
 
@@ -76,6 +77,7 @@ records can overwrite earlier ones (so treat duplicates as a data quality bug).
 - **Exposure join rate:** fraction of exposures that have at least one matching outcome
 - **Outcome join rate:** fraction of outcomes that match an exposure
 - **Assignment join rate:** fraction of assignments that match an exposure (when analyzing experiments)
+- **Duplicate exposure request IDs:** count of extra exposure records that reused an existing `request_id`
 
 In addition, compute a simple join rate in your warehouse (by surface and platform) to catch integration issues early.
 

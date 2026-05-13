@@ -96,6 +96,9 @@ func streamJoinByRequest(ctx context.Context, exposures datasource.ExposureStrea
 		if prevExpID != "" && exp.RequestID < prevExpID {
 			return res, fmt.Errorf("exposures must be sorted by request_id for stream mode")
 		}
+		if prevExpID != "" && exp.RequestID == prevExpID {
+			res.JoinStats.DuplicateExposureRequestIDs++
+		}
 		prevExpID = exp.RequestID
 		updateExposureTime(exp.Timestamp)
 

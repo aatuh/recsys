@@ -290,10 +290,11 @@ type CompletenessResult struct {
 
 // JoinIntegrity captures join coverage.
 type JoinIntegrity struct {
-	ExposureCount      int     `json:"exposure_count"`
-	OutcomeCount       int     `json:"outcome_count"`
-	AssignmentsCount   int     `json:"assignments_count"`
-	ExposureJoinRate   float64 `json:"exposure_join_rate"`
-	OutcomeJoinRate    float64 `json:"outcome_join_rate"`
-	AssignmentJoinRate float64 `json:"assignment_join_rate"`
+	ExposureCount               int     `json:"exposure_count"`
+	OutcomeCount                int     `json:"outcome_count"`
+	AssignmentsCount            int     `json:"assignments_count"`
+	DuplicateExposureRequestIDs int     `json:"duplicate_exposure_request_ids,omitempty"`
+	ExposureJoinRate            float64 `json:"exposure_join_rate"`
+	OutcomeJoinRate             float64 `json:"outcome_join_rate"`
+	AssignmentJoinRate          float64 `json:"assignment_join_rate"`
 }

@@ -437,9 +437,10 @@ func buildDataQualityFromCounts(exposureCount, exposureMissing, outcomeCount, ou
 		ExposureCompleteness: report.CompletenessResult{Total: exposureCount, Missing: exposureMissing, MissingRate: exposureRate},
 		OutcomeCompleteness:  report.CompletenessResult{Total: outcomeCount, Missing: outcomeMissing, MissingRate: outcomeRate},
 		JoinIntegrity: report.JoinIntegrity{
-			ExposureCount:    joinStats.ExposureCount,
-			OutcomeCount:     joinStats.OutcomeCount,
-			AssignmentsCount: assignmentCount,
+			ExposureCount:               joinStats.ExposureCount,
+			OutcomeCount:                joinStats.OutcomeCount,
+			AssignmentsCount:            assignmentCount,
+			DuplicateExposureRequestIDs: joinStats.DuplicateExposureRequestIDs,
 		},
 	}
 	if joinStats.ExposureCount > 0 {

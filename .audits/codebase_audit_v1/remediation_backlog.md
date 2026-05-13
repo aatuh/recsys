@@ -190,7 +190,7 @@ Notes:
 - Cover production failure mode and local MinIO/dev behavior.
 - Update config docs with the exact override semantics.
 
-### Ticket E3-T3 - Detect duplicate eval request IDs [ ]
+### Ticket E3-T3 - Detect duplicate eval request IDs [x]
 
 Description: Add duplicate exposure `request_id` detection to `recsys-eval` joins and surface it in data-quality output.
 
