@@ -331,7 +331,7 @@ Notes:
 - Keep middleware behavior unchanged.
 - Preserve tenant mismatch/error behavior and tests.
 
-### Ticket E5-T3 - Remove duplicate explain enforcement [ ]
+### Ticket E5-T3 - Remove duplicate explain enforcement [x]
 
 Description: Remove the duplicate `enforceExplainControls` call in the recommend handler and add a small regression test around explain authorization.
 

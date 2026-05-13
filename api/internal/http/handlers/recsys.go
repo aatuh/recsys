@@ -113,9 +113,6 @@ func (h *RecsysHandler) recommend(w http.ResponseWriter, r *http.Request) {
 	if !h.enforceExplainControls(w, r, norm.Options, norm.K) {
 		return
 	}
-	if !h.enforceExplainControls(w, r, norm.Options, norm.K) {
-		return
-	}
 	if h.ExperimentAssigner != nil {
 		norm.Experiment = h.ExperimentAssigner.Assign(norm.Experiment, norm.User)
 	}
