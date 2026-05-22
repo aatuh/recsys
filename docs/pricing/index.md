@@ -16,8 +16,7 @@ RecSys is an auditable recommendation system suite with deterministic ranking an
 ## Document controls
 
 - Owner: RecSys maintainers
-- Last pricing review: 2026-02-08
-- Next review due: 2026-05-08
+- Pricing review cadence: twice per year
 - Order of precedence: signed Order Form > this page > supporting reference pages
 
 [Start evaluation](../evaluate/index.md){ .md-button .md-button--primary }
@@ -208,9 +207,10 @@ Next step:
 Fastest fulfillment is async:
 
 - Public licensing questions: open a GitHub issue titled **"Licensing question"**
-- Confidential commercial licensing inquiries: message Aatu Harju on LinkedIn: `linkedin.com/in/aatu-harju/`
+- Confidential commercial licensing inquiries: message [Aatu Harju on LinkedIn][aatu_linkedin]
 - Suggested subject: “RecSys Commercial Evaluation” / “Starter” / “Growth” / “Enterprise”
 
+[aatu_linkedin]: https://www.linkedin.com/in/aatu-harju/
 [stripe_commercial_evaluation]: https://buy.stripe.com/9B6fZh6r8dl97OP2sD0Jq00
 [stripe_starter_plan]: https://buy.stripe.com/28EeVd7vcdl98ST6IT0Jq01
 [stripe_growth_plan]: https://buy.stripe.com/aFafZh16Odl9c550kv0Jq02

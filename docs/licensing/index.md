@@ -17,8 +17,7 @@ This repository is a **multi-license** codebase. Different directories are licen
 ## Document controls
 
 - Owner: RecSys maintainers
-- Last legal/doc review: 2026-02-08
-- Next review due: 2026-05-08
+- Legal/doc review cadence: twice per year
 - Order of precedence: per-file SPDX/header notices and signed commercial agreements > this page
 
 ## Quick map
@@ -115,10 +114,12 @@ of your compliance workflow.
 
 For public licensing questions, open a GitHub issue titled **"Licensing question"**.
 
-For confidential commercial licensing inquiries, message Aatu Harju on LinkedIn: `linkedin.com/in/aatu-harju/`.
+For confidential commercial licensing inquiries, message [Aatu Harju on LinkedIn][aatu_linkedin].
 
 Do not include secrets, customer data, or vulnerability details in licensing inquiries. For vulnerabilities, use the
 [Security policy](../project/security.md).
+
+[aatu_linkedin]: https://www.linkedin.com/in/aatu-harju/
 
 ## Read next
 

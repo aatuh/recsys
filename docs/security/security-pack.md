@@ -19,8 +19,7 @@ Tip: use your browser’s **Print → Save as PDF** to produce a single-file “
 ## Document controls
 
 - Owner: RecSys maintainers (`contact@recsys.app`)
-- Last security docs review: 2026-02-08
-- Next review due: 2026-05-08
+- Security docs review cadence: twice per year
 
 ## Forward to security (copy/paste)
 

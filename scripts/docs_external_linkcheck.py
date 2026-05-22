@@ -41,6 +41,7 @@ SKIP_HOSTS = {
     "recsys-svc",  # docker compose hostname used in tests/tutorials
     "your_recsys_host",  # placeholder host used in integration examples
     "example.com",  # placeholder host used in docs examples
+    "www.linkedin.com",  # blocks automated link checks with HTTP 999
 }
 
 SKIP_HOST_SUFFIXES = (

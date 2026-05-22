@@ -11,8 +11,7 @@ This project supports **self-serve adoption**. We keep support lightweight and m
 ## Document controls
 
 - Owner: RecSys maintainers (`contact@recsys.app`)
-- Last support policy review: 2026-02-08
-- Next review due: 2026-05-08
+- Support policy review cadence: twice per year
 - Order of precedence: signed commercial Order Form/support exhibit > this page
 
 ## Community support (free)

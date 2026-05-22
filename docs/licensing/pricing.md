@@ -43,8 +43,9 @@ For current plan prices and a plain-language overview, see: [Pricing](../pricing
 ## Contact
 
 - Public licensing questions: open a GitHub issue titled **"Licensing question"**
-- Confidential commercial licensing inquiries: message Aatu Harju on LinkedIn: `linkedin.com/in/aatu-harju/`
+- Confidential commercial licensing inquiries: message [Aatu Harju on LinkedIn][aatu_linkedin]
 
+[aatu_linkedin]: https://www.linkedin.com/in/aatu-harju/
 
 ## Read next
 

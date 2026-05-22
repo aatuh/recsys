@@ -12,8 +12,7 @@ This page is a dated, procurement-friendly summary of the current RecSys securit
 ## Document controls
 
 - Owner: RecSys maintainers (`contact@recsys.app`)
-- Last reviewed: 2026-02-08
-- Next review due: 2026-05-08
+- Review cadence: twice per year
 - Source of truth for broader guidance: [Security, privacy, compliance](../start-here/security-privacy-compliance.md)
 
 ## Deployment and data model (current)

@@ -14,8 +14,7 @@ This page publishes the default privacy terms used for self-serve commercial pro
 ## Document controls
 
 - Owner: RecSys maintainers (`contact@recsys.app`)
-- Last reviewed: 2026-02-08
-- Next review due: 2026-05-08
+- Review cadence: twice per year
 
 ## Scope
 
