@@ -38,8 +38,8 @@ Enterprise is intentionally custom and may require negotiation.
    [Commercial procurement artifacts](../security/commercial-procurement-artifacts.md)
 4. Fill the order form template using standard defaults:
    [Order form template](../licensing/order_form.md)
-5. Send a single procurement request with completed order form, selected plan, selected bundle if any, and selected
-   service package(s).
+5. Send a single procurement request to [Aatu Harju on LinkedIn][aatu_linkedin] with the completed order form, selected
+   plan, selected bundle if any, and selected service package(s).
 
 ## Required artifact bundle (all published)
 
@@ -112,3 +112,5 @@ custom development unless a custom Enterprise Order Form says otherwise.
 - Procurement checklist: [Procurement checklist](procurement-checklist.md)
 - Enterprise readiness evidence: [Enterprise readiness evidence](enterprise-readiness-evidence.md)
 - Decision readiness matrix: [Decision readiness matrix](decision-readiness.md)
+
+[aatu_linkedin]: https://www.linkedin.com/in/aatu-harju/
