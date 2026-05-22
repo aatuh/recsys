@@ -17,7 +17,7 @@ This Order Form is governed by and incorporates the **Commercial License Agreeme
 
 ## Document controls
 
-- Owner: RecSys maintainers (`contact@recsys.app`)
+- Owner: RecSys maintainers
 - Last legal/doc review: 2026-02-08
 - Next review due: 2026-05-08
 

@@ -42,11 +42,9 @@ For current plan prices and a plain-language overview, see: [Pricing](../pricing
 
 ## Contact
 
-- Email: [`contact@recsys.app`][pricing_contact]
-- LinkedIn: [`linkedin.com/showcase/recsys-suite`][recsys_linkedin]
+- Public licensing questions: open a GitHub issue titled **"Licensing question"**
+- Confidential commercial licensing inquiries: message Aatu Harju on LinkedIn: `linkedin.com/in/aatu-harju/`
 
-[pricing_contact]: mailto:contact@recsys.app?subject=RecSys%20pricing%20inquiry
-[recsys_linkedin]: https://www.linkedin.com/showcase/recsys-suite
 
 ## Read next
 

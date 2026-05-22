@@ -21,7 +21,7 @@ tags:
 
 ## Document controls
 
-- Owner: RecSys maintainers (`contact@recsys.app`)
+- Owner: RecSys maintainers
 - Last legal/doc review: 2026-02-08
 - Next review due: 2026-05-08
 
@@ -169,7 +169,9 @@ agree to the exclusive venue of Helsinki District Court (Helsingin käräjäoike
 
 ## 14. Contact
 
-Vendor contact for evaluation questions: `contact@recsys.app`
+For public evaluation/license questions, open a GitHub issue titled **"Licensing question"**.
+
+For confidential commercial evaluation inquiries, message Aatu Harju on LinkedIn: `linkedin.com/in/aatu-harju/`.
 
 ## Read next
 

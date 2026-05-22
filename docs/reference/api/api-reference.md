@@ -99,7 +99,7 @@ Example response shape (abbreviated):
 
 ## Errors
 
-Errors use [Problem Details](https://www.rfc-editor.org/rfc/rfc7807) with content type `application/problem+json`.
+Errors use [Problem Details](https://www.rfc-editor.org/info/rfc7807/) with content type `application/problem+json`.
 
 Common status codes you should handle:
 

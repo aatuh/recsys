@@ -135,7 +135,7 @@ See the canonical decision tree and file-level rules: [Licensing](../licensing/i
 6. For Enterprise/custom terms, review Enterprise readiness evidence:
    [Enterprise readiness evidence](../for-businesses/enterprise-readiness-evidence.md).
 7. Send the order form + contact path only for Enterprise/custom terms:
-   [Order form template](../licensing/order_form.md) and [`contact@recsys.app`][pricing_contact]
+   [Order form template](../licensing/order_form.md) and the contact options in [Pricing](index.md#contact)
 
 ## Outputs and exit criteria
 
@@ -161,8 +161,6 @@ Hand this to Security/Legal/IT/Finance as a Definition of Done:
 
 - [Procurement checklist](../for-businesses/procurement-checklist.md)
 - [Decision readiness matrix](../for-businesses/decision-readiness.md)
-
-[pricing_contact]: mailto:contact@recsys.app?subject=RecSys%20Commercial%20Evaluation
 
 ## Read next
 

@@ -15,7 +15,7 @@ RecSys is an auditable recommendation system suite with deterministic ranking an
 
 ## Document controls
 
-- Owner: RecSys maintainers (`contact@recsys.app`)
+- Owner: RecSys maintainers
 - Last pricing review: 2026-02-08
 - Next review due: 2026-05-08
 - Order of precedence: signed Order Form > this page > supporting reference pages
@@ -173,7 +173,7 @@ Choose the smallest purchase that matches your current stage.
      [Commercial Evaluation][stripe_commercial_evaluation] ·
      [Starter][stripe_starter_plan] ·
      [Growth][stripe_growth_plan]
-   - Need invoicing or an Enterprise quotation? Contact: [`contact@recsys.app`][pricing_contact]
+   - Need invoicing or an Enterprise quotation? Use the contact options below.
    - Include any fixed-scope service package in the same procurement request or Order Form.
 
 3. **Use Enterprise procurement (custom terms)**
@@ -191,7 +191,7 @@ Choose the smallest purchase that matches your current stage.
 Next step:
 
 - Self-serve plans: follow [Self-serve procurement](../for-businesses/self-serve-procurement.md)
-- Enterprise/custom: use [Order form template](../licensing/order_form.md) and [`contact@recsys.app`][pricing_contact]
+- Enterprise/custom: use [Order form template](../licensing/order_form.md) and the contact options below.
 
 ## Details and legal terms
 
@@ -207,12 +207,10 @@ Next step:
 
 Fastest fulfillment is async:
 
-- Email: [`contact@recsys.app`][pricing_contact]
-- LinkedIn: [`linkedin.com/showcase/recsys-suite`][recsys_linkedin]
+- Public licensing questions: open a GitHub issue titled **"Licensing question"**
+- Confidential commercial licensing inquiries: message Aatu Harju on LinkedIn: `linkedin.com/in/aatu-harju/`
 - Suggested subject: “RecSys Commercial Evaluation” / “Starter” / “Growth” / “Enterprise”
 
-[pricing_contact]: mailto:contact@recsys.app?subject=RecSys%20pricing%20inquiry
-[recsys_linkedin]: https://www.linkedin.com/showcase/recsys-suite
 [stripe_commercial_evaluation]: https://buy.stripe.com/9B6fZh6r8dl97OP2sD0Jq00
 [stripe_starter_plan]: https://buy.stripe.com/28EeVd7vcdl98ST6IT0Jq01
 [stripe_growth_plan]: https://buy.stripe.com/aFafZh16Odl9c550kv0Jq02

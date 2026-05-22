@@ -16,8 +16,8 @@ RecSys is an auditable recommendation system suite with deterministic ranking an
 [Run the open-source quickstart](../tutorials/local-end-to-end.md){ .md-button }
 [Buyer guide](../pricing/evaluation-and-licensing.md){ .md-button }
 
-[Start evaluation (commercial)][commercial_eval]{ .md-button .md-button--primary }
-[Message on LinkedIn][recsys_linkedin]{ .md-button }
+[Start evaluation (commercial)](../pricing/index.md#contact){ .md-button .md-button--primary }
+[Licensing contact](../pricing/index.md#contact){ .md-button }
 
 !!! info "Scope check (read before piloting)"
     Capability boundaries: [Capability matrix (scope and non-scope)](../explanation/capability-matrix.md). Non-goals:
@@ -71,8 +71,8 @@ See:
 - Data contracts (schemas + examples): [Data contracts](../reference/data-contracts/index.md)
 - Exposure logging & attribution: [Exposure logging and attribution](../explanation/exposure-logging-and-attribution.md)
 
-[Start evaluation (commercial)][commercial_eval]{ .md-button .md-button--primary }
-[Message on LinkedIn][recsys_linkedin]{ .md-button }
+[Start evaluation (commercial)](../pricing/index.md#contact){ .md-button .md-button--primary }
+[Licensing contact](../pricing/index.md#contact){ .md-button }
 
 ## Read next
 
@@ -83,6 +83,3 @@ See:
 - How-to run eval and ship decisions: [How-to: run evaluation and make ship decisions](../how-to/run-eval-and-ship.md)
 - Default evaluation pack (recommended): [Default evaluation pack (recommended)](../recsys-eval/docs/default-evaluation-pack.md)
 - Operational reliability & rollback: [Operational reliability and rollback](../start-here/operational-reliability-and-rollback.md)
-
-[commercial_eval]: mailto:contact@recsys.app?subject=RecSys%20Commercial%20Evaluation
-[recsys_linkedin]: https://www.linkedin.com/showcase/recsys-suite

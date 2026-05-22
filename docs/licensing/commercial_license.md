@@ -20,7 +20,7 @@ fees, and entitlements are set out in one or more Order Forms** that reference t
 
 ## Document controls
 
-- Owner: RecSys maintainers (`contact@recsys.app`)
+- Owner: RecSys maintainers
 - Last legal/doc review: 2026-02-08
 - Next review due: 2026-05-08
 - Order of precedence: signed Order Form > this Agreement > referenced attachments/policies

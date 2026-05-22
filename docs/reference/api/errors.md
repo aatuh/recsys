@@ -20,7 +20,7 @@ Integrators and on-call engineers who need to diagnose failed requests quickly a
 
 ## Error format (Problem Details)
 
-Errors use [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) with content type `application/problem+json`.
+Errors use [RFC 7807](https://www.rfc-editor.org/info/rfc7807/) with content type `application/problem+json`.
 
 Typical fields:
 

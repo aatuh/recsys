@@ -16,7 +16,7 @@ This repository is a **multi-license** codebase. Different directories are licen
 
 ## Document controls
 
-- Owner: RecSys maintainers (`contact@recsys.app`)
+- Owner: RecSys maintainers
 - Last legal/doc review: 2026-02-08
 - Next review due: 2026-05-08
 - Order of precedence: per-file SPDX/header notices and signed commercial agreements > this page
@@ -93,7 +93,7 @@ This table is an operational summary, not legal advice.
 | Internal evaluation under vendor-provided commercial evaluation artifacts | Evaluation license | Follow evaluation term, non-production limits, and restrictions in evaluation terms | Yes (evaluation license) |
 | OEM/resale/third-party hosting use case | Commercial enterprise terms | Negotiate explicit rights in signed Order Form | Yes |
 
-If a use case is ambiguous, involve counsel and contact `contact@recsys.app` with deployment details.
+If a use case is ambiguous, involve counsel and use the licensing contact options below with deployment details.
 
 ## Commercial licensing
 
@@ -113,8 +113,12 @@ of your compliance workflow.
 
 ## Questions
 
-If you have licensing questions, open an issue titled **"Licensing question"** (public) or contact us privately if your
-question contains confidential details.
+For public licensing questions, open a GitHub issue titled **"Licensing question"**.
+
+For confidential commercial licensing inquiries, message Aatu Harju on LinkedIn: `linkedin.com/in/aatu-harju/`.
+
+Do not include secrets, customer data, or vulnerability details in licensing inquiries. For vulnerabilities, use the
+[Security policy](../project/security.md).
 
 ## Read next
 

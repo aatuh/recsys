@@ -14,7 +14,7 @@ This page is informational and describes our commercial offering at a high level
 
 ## Document controls
 
-- Owner: RecSys maintainers (`contact@recsys.app`)
+- Owner: RecSys maintainers
 - Last legal/doc review: 2026-02-08
 - Next review due: 2026-05-08
 - Order of precedence: signed Commercial License Agreement + signed Order Form > this page
@@ -69,12 +69,11 @@ Recommended low-friction flow:
    [Self-serve procurement](../for-businesses/self-serve-procurement.md)
    Direct checkout links:
    [Commercial Evaluation][stripe_commercial_evaluation], [Starter][stripe_starter_plan], [Growth][stripe_growth_plan]
-   Need invoicing or an Enterprise quotation? Contact: [`contact@recsys.app`][pricing_contact]
+   Need invoicing or an Enterprise quotation? Use the licensing contact options below.
 3. Use direct contact only for Enterprise/custom terms (OEM/resale, custom legal/security/SLA commitments):
 
-   - Open a GitHub issue titled **"Commercial licensing inquiry"** (public), or
-   - Email: [`contact@recsys.app`][pricing_contact]
-   - LinkedIn: [`linkedin.com/showcase/recsys-suite`][recsys_linkedin]
+   - For public questions, open a GitHub issue titled **"Licensing question"**.
+   - For confidential commercial licensing inquiries, message Aatu Harju on LinkedIn: `linkedin.com/in/aatu-harju/`.
 
 After payment: you’ll receive the license and invoice/receipt.
 
@@ -91,8 +90,6 @@ Commercial terms live in:
 - [RecSys Commercial License Agreement](commercial_license.md)
 - [Order Form (Template) — RecSys Commercial License](order_form.md)
 
-[pricing_contact]: mailto:contact@recsys.app?subject=RecSys%20pricing%20inquiry
-[recsys_linkedin]: https://www.linkedin.com/showcase/recsys-suite
 [stripe_commercial_evaluation]: https://buy.stripe.com/9B6fZh6r8dl97OP2sD0Jq00
 [stripe_starter_plan]: https://buy.stripe.com/28EeVd7vcdl98ST6IT0Jq01
 [stripe_growth_plan]: https://buy.stripe.com/aFafZh16Odl9c550kv0Jq02
