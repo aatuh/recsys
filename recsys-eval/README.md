@@ -1,17 +1,23 @@
 # recsys-eval
 
-Evaluation tooling for recommendation systems: offline regression gates, experiment analysis, OPE and interleaving.
+`recsys-eval` is the Apache-2.0 evaluation CLI for recommendation systems. It supports offline regression gates,
+experiment analysis, OPE, interleaving, schema validation, and decision reports.
+
+## Common commands
+
+```bash
+make test
+make schema-check
+make build
+```
+
+Expected result: evaluation tests pass, report schemas validate, and `bin/recsys-eval` is built.
 
 ## Documentation
 
-All docs are maintained in the suite documentation under `/docs`:
+- Integration and evaluation path: [../docs/integration.md](../docs/integration.md)
+- Data contracts: [../docs/reference/data-contracts.md](../docs/reference/data-contracts.md)
+- Local workflow: [../docs/reference/local-workflow.md](../docs/reference/local-workflow.md)
+- Licensing: [../docs/commercial/licensing.md](../docs/commercial/licensing.md)
 
-- Overview: [`docs/recsys-eval/overview.md`](../docs/recsys-eval/overview.md)
-- Start here: [`docs/recsys-eval/docs/index.md`](../docs/recsys-eval/docs/index.md)
-- Concepts: [`docs/recsys-eval/docs/concepts.md`](../docs/recsys-eval/docs/concepts.md)
-- Data contracts: [`docs/recsys-eval/docs/data_contracts.md`](../docs/recsys-eval/docs/data_contracts.md)
-- Interpreting results: [`docs/recsys-eval/docs/interpreting_results.md`](../docs/recsys-eval/docs/interpreting_results.md)
-
-## Releases
-
-Tag releases with the module prefix, e.g. `recsys-eval/v0.2.0`.
+Release tags use the module prefix, for example `recsys-eval/v0.2.0`.

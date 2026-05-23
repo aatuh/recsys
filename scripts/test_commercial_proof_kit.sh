@@ -140,7 +140,7 @@ echo "Running offline evaluation report..."
 
 echo "Running pipelines against ecommerce-mini fixture..."
 (cd "${ROOT_DIR}/recsys-pipelines" && GOWORK=off go run ./cmd/recsys-pipelines \
-  run --config "${PIPELINES_CFG}" --tenant demo --surface home --start 2026-01-01 --end 2026-01-01)
+  run --config "${PIPELINES_CFG}" --tenant demo --surface home --segment default --start 2026-01-01 --end 2026-01-01)
 
 MANIFEST_PATH="${PROOF_DIR}/pipelines/registry/current/demo/home/manifest.json"
 assert_file_nonempty "${PROOF_DIR}/eval/offline-report.json"
@@ -150,4 +150,3 @@ grep -q 'popularity' "${MANIFEST_PATH}" || fail "manifest does not reference pop
 find "${PROOF_DIR}/pipelines/objectstore" -type f | grep -q . || fail "expected published object-store artifacts"
 
 echo "commercial proof kit smoke passed"
-

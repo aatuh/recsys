@@ -1,46 +1,60 @@
-# RecSys suite
+# RecSys Suite
 
-RecSys is an auditable recommendation system suite with deterministic ranking and versioned ship/rollback.
+RecSys is an auditable recommendation system suite with deterministic ranking, versioned artifact rollout, and offline
+evaluation support.
 
-This repository contains a complete, production-oriented recommendation system stack:
+## Components
 
-- **recsys-service** (`api/`): low-latency HTTP API for serving recommendations
-- **recsys-algo** (`recsys-algo/`): deterministic ranking core used by the service
-- **recsys-pipelines** (`recsys-pipelines/`): offline pipelines that build versioned artifacts
-- **recsys-eval** (`recsys-eval/`): evaluation tooling for regression + experimentation
+| Component | Path | Purpose |
+| --- | --- | --- |
+| recsys-service | `api/` | HTTP API for recommendations, admin config/rules, auth, exposure logging, and OpenAPI artifacts. |
+| recsys-algo | `recsys-algo/` | Deterministic ranking core used by the service and examples. |
+| recsys-pipelines | `recsys-pipelines/` | Offline jobs that build and publish versioned artifacts. |
+| recsys-eval | `recsys-eval/` | Apache-2.0 evaluation tooling for regression gates, experiments, OPE, and reports. |
 
 ## Documentation
 
-All the hosted documentation lives under [`/docs`](/docs), rendered with MkDocs using [`mkdocs.yml`](mkdocs.yml).
-
-You can access this documentation in several ways:
-
-- Visit [`https://recsys.app`](https://recsys.app).
-- Visit [`https://github.com/aatuh/recsys`](https://github.com/aatuh/recsys) and browse the `/docs` directory.
-- Run `make docs-serve` and open [`http://localhost:8001`](http://localhost:8001).
+Canonical documentation lives in [`docs/`](docs/index.md) and is rendered with [`mkdocs.yml`](mkdocs.yml).
 
 Start here:
 
-- [`docs/index.md`](docs/index.md)
-- Tutorial: [`docs/tutorials/local-end-to-end.md`](docs/tutorials/local-end-to-end.md)
-- Suite architecture: [`docs/explanation/suite-architecture.md`](docs/explanation/suite-architecture.md)
+- [Developer quickstart](docs/developer-quickstart.md)
+- [Architecture](docs/architecture.md)
+- [Integration and evaluation](docs/integration.md)
+- [Operations](docs/operations.md)
+- [API reference](docs/reference/api.md)
+- [Configuration reference](docs/reference/config.md)
+- [Licensing](docs/commercial/licensing.md)
+- [Pricing](docs/commercial/pricing.md)
 
-Module docs in MkDocs:
+## Local workflow
 
-- recsys-algo: [`docs/recsys-algo/index.md`](docs/recsys-algo/index.md)
-- recsys-pipelines: [`docs/recsys-pipelines/docs/index.md`](docs/recsys-pipelines/docs/index.md)
-- recsys-eval: [`docs/recsys-eval/docs/index.md`](docs/recsys-eval/docs/index.md)
+```bash
+make env
+make dev
+make docs-check
+```
 
-## Docs versioning
+Expected result:
 
-- Tags `recsys-suite/vX.Y.Z` publish `/X.Y.Z/` and update `/latest/`.
-- Default branch publishes `/dev/`.
-- The site root (`/`) serves the contents of `/latest/` (falls back to `/dev/` before the first tag; no URL change).
-- GitHub Pages source is **GitHub Actions** (Settings → Pages).
+- `make env` creates `api/.env` if it is missing.
+- `make dev` starts the Compose development stack.
+- `make docs-check` validates links, spelling, and strict MkDocs build.
+
+Run the full repository gate when feasible:
+
+```bash
+make finalize
+```
+
+`make finalize` runs formatting, linting, tests, code generation, Markdown linting, and docs checks. It requires the
+same local tooling and Docker prerequisites as the module test targets.
 
 ## Licensing
 
-See the canonical licensing pages in:
+This is a multi-license repository:
 
-- [`docs/licensing/index.md`](docs/licensing/index.md)
-- [`docs/licensing/pricing.md`](docs/licensing/pricing.md)
+- `recsys-eval/**` is Apache-2.0.
+- All other paths are AGPL-3.0-only unless a file or closest directory-level notice states otherwise.
+
+See [Licensing](docs/commercial/licensing.md) and [Pricing](docs/commercial/pricing.md) for commercial terms.

@@ -17,6 +17,8 @@ require (
 
 replace github.com/aatuh/recsys-suite/api/recsys-algo => ../recsys-algo
 
+replace github.com/aatuh/api-toolkit/v2 v2.0.0 => github.com/aatuh/api-toolkit/v2 v2.0.1
+
 require (
 	github.com/MicahParks/jwkset v0.11.0 // indirect
 	github.com/MicahParks/keyfunc/v3 v3.7.0 // indirect

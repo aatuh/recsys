@@ -3,22 +3,32 @@ name: tutorial-smoke
 on:
   pull_request:
     paths:
-      - "docs/tutorials/**"
+      - "docs/developer-quickstart.md"
+      - "docs/local-end-to-end.md"
+      - "docs/integration.md"
       - "api/**"
       - "recsys-eval/**"
+      - "recsys-pipelines/**"
+      - "examples/data/ecommerce-mini/**"
       - "docker-compose.yml"
       - "Makefile"
       - "scripts/tutorial_smoke_test.sh"
+      - "scripts/test_commercial_proof_kit.sh"
       - ".github/workflows/tutorial-smoke.yml"
   push:
     branches: [master]
     paths:
-      - "docs/tutorials/**"
+      - "docs/developer-quickstart.md"
+      - "docs/local-end-to-end.md"
+      - "docs/integration.md"
       - "api/**"
       - "recsys-eval/**"
+      - "recsys-pipelines/**"
+      - "examples/data/ecommerce-mini/**"
       - "docker-compose.yml"
       - "Makefile"
       - "scripts/tutorial_smoke_test.sh"
+      - "scripts/test_commercial_proof_kit.sh"
       - ".github/workflows/tutorial-smoke.yml"
   schedule:
     - cron: "0 7 * * 1"

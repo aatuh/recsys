@@ -37,6 +37,7 @@ SKIP_HOSTS = {
     "localhost",
     "127.0.0.1",
     "0.0.0.0",
+    "recsys.app",  # own docs site may not exist before the first successful deploy
     "minio",  # docker compose hostname used in tutorials
     "recsys-svc",  # docker compose hostname used in tests/tutorials
     "your_recsys_host",  # placeholder host used in integration examples
@@ -105,7 +106,13 @@ def check_url(url: str) -> int | None:
 
 
 def iter_doc_sources() -> list[Path]:
+    if not DOCS_DIR.is_dir():
+        raise FileNotFoundError(f"Docs directory is missing: {DOCS_DIR}")
+
     sources = list(DOCS_DIR.rglob("*.md"))
+    if not sources:
+        raise FileNotFoundError(f"No Markdown files found under docs directory: {DOCS_DIR}")
+
     for extra in EXTRA_DOC_FILES:
         if extra.exists():
             sources.append(extra)
@@ -114,7 +121,13 @@ def iter_doc_sources() -> list[Path]:
 
 def main() -> int:
     url_sources: dict[str, list[str]] = {}
-    for path in iter_doc_sources():
+    try:
+        sources = iter_doc_sources()
+    except FileNotFoundError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+
+    for path in sources:
         try:
             lines = path.read_text(encoding="utf-8", errors="ignore").splitlines()
         except Exception:

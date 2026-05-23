@@ -74,10 +74,19 @@ def norm_target(md_path: Path, href: str) -> Path | None:
 
 
 def main() -> int:
+    if not DOCS.is_dir():
+        print(f"Docs directory is missing: {DOCS}", file=sys.stderr)
+        return 1
+
+    markdown_files = sorted(DOCS.rglob("*.md"))
+    if not markdown_files:
+        print(f"No Markdown files found under docs directory: {DOCS}", file=sys.stderr)
+        return 1
+
     missing: list[tuple[Path, str]] = []
     raw_grid_cards: list[tuple[Path, int]] = []
     reference_stubs: list[tuple[Path, list[str]]] = []
-    for md in DOCS.rglob("*.md"):
+    for md in markdown_files:
         txt = md.read_text(encoding="utf-8", errors="ignore")
 
         in_fence = False

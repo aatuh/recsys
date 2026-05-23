@@ -1,0 +1,650 @@
+openapi: 3.1.0
+info:
+  title: RecSys Service API
+  description: Recommendation service API
+  version: "1.0.0"
+servers:
+  - url: http://localhost:8000
+    description: Local docker compose
+security:
+  - bearerAuth: []
+  - apiKeyAuth: []
+paths:
+  /v1/recommend:
+    post:
+      summary: Get ranked recommendations
+      operationId: recommend
+      parameters:
+        - $ref: "#/components/parameters/TenantHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RecommendRequest" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RecommendResponse" }
+        "400": { $ref: "#/components/responses/Problem" }
+        "401": { $ref: "#/components/responses/Problem" }
+        "403": { $ref: "#/components/responses/Problem" }
+        "422": { $ref: "#/components/responses/Problem" }
+        "429": { $ref: "#/components/responses/Problem" }
+        "500": { $ref: "#/components/responses/Problem" }
+        "503": { $ref: "#/components/responses/Problem" }
+  /v1/recommend/validate:
+    post:
+      summary: Validate and normalize a recommend request
+      operationId: recommendValidate
+      parameters:
+        - $ref: "#/components/parameters/TenantHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RecommendRequest" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ValidateResponse" }
+        "400": { $ref: "#/components/responses/Problem" }
+        "401": { $ref: "#/components/responses/Problem" }
+        "403": { $ref: "#/components/responses/Problem" }
+        "422": { $ref: "#/components/responses/Problem" }
+        "429": { $ref: "#/components/responses/Problem" }
+  /v1/similar:
+    post:
+      summary: Get similar items
+      operationId: similar
+      parameters:
+        - $ref: "#/components/parameters/TenantHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SimilarRequest" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RecommendResponse" }
+        "400": { $ref: "#/components/responses/Problem" }
+        "401": { $ref: "#/components/responses/Problem" }
+        "403": { $ref: "#/components/responses/Problem" }
+        "422": { $ref: "#/components/responses/Problem" }
+        "429": { $ref: "#/components/responses/Problem" }
+        "500": { $ref: "#/components/responses/Problem" }
+        "503": { $ref: "#/components/responses/Problem" }
+  /v1/license:
+    get:
+      summary: Get license status
+      operationId: licenseStatus
+      security: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/LicenseStatusResponse" }
+  /healthz:
+    get:
+      security: []
+      summary: Liveness probe
+      responses:
+        "200": { description: OK }
+  /readyz:
+    get:
+      security: []
+      summary: Readiness probe
+      responses:
+        "200": { description: OK }
+        "503": { description: Not ready }
+  /v1/admin/tenants/{tenant_id}/config:
+    get:
+      summary: Get tenant config
+      operationId: adminGetConfig
+      parameters:
+        - name: tenant_id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TenantConfigResponse" }
+        "401": { $ref: "#/components/responses/Problem" }
+        "403": { $ref: "#/components/responses/Problem" }
+        "404": { $ref: "#/components/responses/Problem" }
+        "500": { $ref: "#/components/responses/Problem" }
+    put:
+      summary: Update tenant config
+      operationId: adminPutConfig
+      parameters:
+        - name: tenant_id
+          in: path
+          required: true
+          schema: { type: string }
+        - name: If-Match
+          in: header
+          required: false
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AdminConfigPayload" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TenantConfigResponse" }
+        "400": { $ref: "#/components/responses/Problem" }
+        "401": { $ref: "#/components/responses/Problem" }
+        "403": { $ref: "#/components/responses/Problem" }
+        "404": { $ref: "#/components/responses/Problem" }
+        "409": { $ref: "#/components/responses/Problem" }
+        "422": { $ref: "#/components/responses/Problem" }
+        "500": { $ref: "#/components/responses/Problem" }
+  /v1/admin/tenants/{tenant_id}/rules:
+    get:
+      summary: Get tenant rules
+      operationId: adminGetRules
+      parameters:
+        - name: tenant_id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TenantRulesResponse" }
+        "401": { $ref: "#/components/responses/Problem" }
+        "403": { $ref: "#/components/responses/Problem" }
+        "404": { $ref: "#/components/responses/Problem" }
+        "500": { $ref: "#/components/responses/Problem" }
+    put:
+      summary: Update tenant rules
+      operationId: adminPutRules
+      parameters:
+        - name: tenant_id
+          in: path
+          required: true
+          schema: { type: string }
+        - name: If-Match
+          in: header
+          required: false
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AdminRulesPayload" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TenantRulesResponse" }
+        "400": { $ref: "#/components/responses/Problem" }
+        "401": { $ref: "#/components/responses/Problem" }
+        "403": { $ref: "#/components/responses/Problem" }
+        "404": { $ref: "#/components/responses/Problem" }
+        "409": { $ref: "#/components/responses/Problem" }
+        "422": { $ref: "#/components/responses/Problem" }
+        "500": { $ref: "#/components/responses/Problem" }
+  /v1/admin/tenants/{tenant_id}/cache/invalidate:
+    post:
+      summary: Invalidate caches
+      operationId: adminInvalidateCache
+      parameters:
+        - name: tenant_id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CacheInvalidateRequest" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CacheInvalidateResponse" }
+        "400": { $ref: "#/components/responses/Problem" }
+        "401": { $ref: "#/components/responses/Problem" }
+        "403": { $ref: "#/components/responses/Problem" }
+        "404": { $ref: "#/components/responses/Problem" }
+        "422": { $ref: "#/components/responses/Problem" }
+        "500": { $ref: "#/components/responses/Problem" }
+  /v1/admin/tenants/{tenant_id}/audit:
+    get:
+      summary: List audit log entries
+      operationId: adminListAudit
+      parameters:
+        - name: tenant_id
+          in: path
+          required: true
+          schema: { type: string }
+        - name: limit
+          in: query
+          required: false
+          schema: { type: integer, format: int32, default: 100, maximum: 200 }
+        - name: before
+          in: query
+          required: false
+          schema: { type: string, format: date-time }
+        - name: before_id
+          in: query
+          required: false
+          schema: { type: integer, format: int64 }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AuditLogResponse" }
+        "400": { $ref: "#/components/responses/Problem" }
+        "401": { $ref: "#/components/responses/Problem" }
+        "403": { $ref: "#/components/responses/Problem" }
+        "404": { $ref: "#/components/responses/Problem" }
+        "500": { $ref: "#/components/responses/Problem" }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  parameters:
+    TenantHeader:
+      name: X-Org-Id
+      in: header
+      required: false
+      schema:
+        type: string
+      description: Tenant external ID when not provided by JWT/API key.
+  responses:
+    Problem:
+      description: Problem Details
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }
+  schemas:
+    Problem:
+      type: object
+      additionalProperties: true
+      properties:
+        type: { type: string }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        code: { type: string }
+        instance: { type: string }
+        request_id: { type: string }
+      required: [type, title, status]
+      example:
+        type: about:blank
+        title: validation failed
+        status: 422
+        detail: surface is required
+        code: VALIDATION_FAILED
+        request_id: a2e38779dfbe/nmiLt982Mq-000004
+    LicenseStatusResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [unknown, valid, invalid, expired]
+        commercial: { type: boolean }
+        expires_at: { type: string, format: date-time }
+        customer: { type: string }
+        entitlements:
+          type: object
+          additionalProperties: { type: integer }
+      required: [status, commercial]
+      example:
+        status: valid
+        commercial: false
+        expires_at: "2026-12-31T23:59:59Z"
+        customer: Example Customer
+        entitlements:
+          tenants: 10
+          prod_deployments: 2
+    Anchors:
+      type: object
+      properties:
+        item_ids:
+          type: array
+          items: { type: string }
+        max_anchors: { type: integer }
+    AnchorsNormalized:
+      type: object
+      properties:
+        item_ids:
+          type: array
+          items: { type: string }
+        max_anchors: { type: integer }
+    Candidates:
+      type: object
+      properties:
+        include_ids:
+          type: array
+          items: { type: string }
+        exclude_ids:
+          type: array
+          items: { type: string }
+    Constraints:
+      type: object
+      properties:
+        required_tags:
+          type: array
+          items: { type: string }
+        forbidden_tags:
+          type: array
+          items: { type: string }
+        max_per_tag:
+          type: object
+          additionalProperties: { type: integer }
+    Experiment:
+      type: object
+      properties:
+        id: { type: string }
+        variant: { type: string }
+    Options:
+      type: object
+      properties:
+        explain: { type: string }
+        include_reasons: { type: boolean }
+        include_trace: { type: boolean }
+        seed: { type: integer }
+    OptionsNormalized:
+      type: object
+      properties:
+        explain: { type: string }
+        include_reasons: { type: boolean }
+        include_trace: { type: boolean }
+        seed: { type: integer }
+    RequestContext:
+      type: object
+      properties:
+        locale: { type: string }
+        device: { type: string }
+        country: { type: string }
+        now: { type: string }
+    UserRef:
+      type: object
+      properties:
+        user_id: { type: string }
+        anonymous_id: { type: string }
+        session_id: { type: string }
+    Weights:
+      type: object
+      properties:
+        pop: { type: number }
+        cooc: { type: number }
+        emb: { type: number }
+    RecommendItemExplain:
+      type: object
+      properties:
+        rules:
+          type: array
+          items: { type: string }
+        signals:
+          type: object
+          additionalProperties: { type: number }
+    RecommendItem:
+      type: object
+      properties:
+        item_id: { type: string }
+        rank: { type: integer }
+        score: { type: number }
+        reasons:
+          type: array
+          items: { type: string }
+        explain: { $ref: "#/components/schemas/RecommendItemExplain" }
+    Warning:
+      type: object
+      properties:
+        code: { type: string }
+        detail: { type: string }
+    ResponseMeta:
+      type: object
+      properties:
+        tenant_id: { type: string }
+        surface: { type: string }
+        segment: { type: string }
+        algo_version: { type: string }
+        config_version: { type: string }
+        rules_version: { type: string }
+        request_id: { type: string }
+        counts:
+          type: object
+          additionalProperties: { type: integer }
+        timings_ms:
+          type: object
+          additionalProperties: { type: integer }
+    RecommendRequest:
+      type: object
+      properties:
+        surface: { type: string }
+        segment: { type: string }
+        k: { type: integer }
+        user: { $ref: "#/components/schemas/UserRef" }
+        context: { $ref: "#/components/schemas/RequestContext" }
+        anchors: { $ref: "#/components/schemas/Anchors" }
+        candidates: { $ref: "#/components/schemas/Candidates" }
+        constraints: { $ref: "#/components/schemas/Constraints" }
+        weights: { $ref: "#/components/schemas/Weights" }
+        options: { $ref: "#/components/schemas/Options" }
+        experiment: { $ref: "#/components/schemas/Experiment" }
+      example:
+        surface: home
+        k: 20
+        user:
+          user_id: u_1
+    SimilarRequest:
+      type: object
+      properties:
+        surface: { type: string }
+        segment: { type: string }
+        item_id: { type: string }
+        k: { type: integer }
+        constraints: { $ref: "#/components/schemas/Constraints" }
+        options: { $ref: "#/components/schemas/Options" }
+      example:
+        surface: pdp
+        item_id: item_1
+        k: 20
+    NormalizedRecommendRequest:
+      type: object
+      properties:
+        surface: { type: string }
+        segment: { type: string }
+        k: { type: integer }
+        user: { $ref: "#/components/schemas/UserRef" }
+        context: { $ref: "#/components/schemas/RequestContext" }
+        anchors: { $ref: "#/components/schemas/AnchorsNormalized" }
+        candidates: { $ref: "#/components/schemas/Candidates" }
+        constraints: { $ref: "#/components/schemas/Constraints" }
+        weights: { $ref: "#/components/schemas/Weights" }
+        options: { $ref: "#/components/schemas/OptionsNormalized" }
+        experiment: { $ref: "#/components/schemas/Experiment" }
+    RecommendResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/RecommendItem" }
+        meta: { $ref: "#/components/schemas/ResponseMeta" }
+        warnings:
+          type: array
+          items: { $ref: "#/components/schemas/Warning" }
+      example:
+        items:
+          - item_id: item_1
+            rank: 1
+            score: 0.12
+          - item_id: item_2
+            rank: 2
+            score: 0.08
+        meta:
+          tenant_id: demo
+          surface: home
+          segment: default
+          algo_version: recsys-algo@local
+          config_version: 'W/"config-etag"'
+          rules_version: 'W/"rules-etag"'
+          request_id: req-1
+        warnings: []
+    ValidateResponse:
+      type: object
+      properties:
+        normalized_request: { $ref: "#/components/schemas/NormalizedRecommendRequest" }
+        warnings:
+          type: array
+          items: { $ref: "#/components/schemas/Warning" }
+        meta: { $ref: "#/components/schemas/ResponseMeta" }
+      example:
+        normalized_request:
+          surface: home
+          segment: default
+          k: 20
+          user:
+            user_id: u_1
+        warnings: []
+        meta:
+          tenant_id: demo
+          surface: home
+          segment: default
+          request_id: req-1
+    TenantConfigResponse:
+      type: object
+      properties:
+        tenant_id: { type: string }
+        config_version: { type: string }
+        config: { $ref: "#/components/schemas/AdminConfigPayload" }
+      example:
+        tenant_id: demo
+        config_version: 'W/"config-etag"'
+        config:
+          weights:
+            pop: 0.7
+            cooc: 0.3
+    TenantRulesResponse:
+      type: object
+      properties:
+        tenant_id: { type: string }
+        rules_version: { type: string }
+        rules: { $ref: "#/components/schemas/AdminRulesPayload" }
+      example:
+        tenant_id: demo
+        rules_version: 'W/"rules-etag"'
+        rules:
+          - action: pin
+            target_type: item
+            item_ids: ["item_1"]
+            surface: home
+            priority: 10
+    CacheInvalidateRequest:
+      type: object
+      properties:
+        targets:
+          type: array
+          items: { type: string }
+        surface: { type: string }
+      example:
+        targets: ["config", "rules"]
+        surface: home
+    CacheInvalidateResponse:
+      type: object
+      properties:
+        tenant_id: { type: string }
+        targets:
+          type: array
+          items: { type: string }
+        surface: { type: string }
+        status: { type: string }
+        invalidated:
+          type: object
+          additionalProperties: { type: integer }
+      example:
+        tenant_id: demo
+        targets: ["config", "rules"]
+        surface: home
+        status: ok
+        invalidated:
+          config: 1
+          rules: 1
+    AuditLogEntry:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        occurred_at: { type: string, format: date-time }
+        tenant_id: { type: string }
+        actor_sub: { type: string }
+        actor_type: { type: string }
+        action: { type: string }
+        entity_type: { type: string }
+        entity_id: { type: string }
+        request_id: { type: string }
+        ip: { type: string }
+        user_agent: { type: string }
+        before_state: { type: object, additionalProperties: true }
+        after_state: { type: object, additionalProperties: true }
+        extra: { type: object, additionalProperties: true }
+    AuditLogResponse:
+      type: object
+      properties:
+        tenant_id: { type: string }
+        entries:
+          type: array
+          items: { $ref: "#/components/schemas/AuditLogEntry" }
+        next_before: { type: string, format: date-time }
+        next_before_id: { type: integer, format: int64 }
+      example:
+        tenant_id: demo
+        entries:
+          - id: 123
+            occurred_at: "2026-02-05T10:00:00Z"
+            tenant_id: demo
+            actor_sub: user:demo-admin
+            actor_type: user
+            action: config.update
+            entity_type: tenant_config
+            entity_id: demo
+            request_id: req-1
+    AdminConfigPayload:
+      type: object
+      additionalProperties: true
+      description: Tenant config payload (free-form). See reference/api/admin.md.
+      example:
+        weights:
+          pop: 0.7
+          cooc: 0.3
+    AdminRulesPayload:
+      oneOf:
+        - type: array
+          items: { type: object }
+        - type: object
+      description: Tenant rules payload. Accepts array or object envelope.
+      example:
+        - action: pin
+          target_type: item
+          item_ids: ["item_1", "item_2"]
+          surface: home
+          priority: 10

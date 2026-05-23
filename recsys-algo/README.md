@@ -1,17 +1,23 @@
 # recsys-algo
 
-Deterministic recommendation engine with explainable scoring, optional personalization, and merchandising rules.
+`recsys-algo` is the deterministic ranking library used by recsys-service. It contains candidate merging, scoring,
+personalization, rules, diversity controls, and example programs.
+
+## Common commands
+
+```bash
+make test
+make build
+make plugin-example
+```
+
+Expected result: unit tests pass, standard examples build, and the custom algorithm plugin example builds to
+`/tmp/recsys-hello-algo.so`.
 
 ## Documentation
 
-All docs are maintained in the suite documentation under `/docs`:
+- Suite architecture: [../docs/architecture.md](../docs/architecture.md)
+- Local workflow: [../docs/reference/local-workflow.md](../docs/reference/local-workflow.md)
+- API integration context: [../docs/integration.md](../docs/integration.md)
 
-- Start here: [`docs/recsys-algo/index.md`](../docs/recsys-algo/index.md)
-- Concepts: [`docs/recsys-algo/concepts.md`](../docs/recsys-algo/concepts.md)
-- Store ports: [`docs/recsys-algo/store-ports.md`](../docs/recsys-algo/store-ports.md)
-- Examples: [`docs/recsys-algo/examples.md`](../docs/recsys-algo/examples.md)
-- Releases: [`docs/recsys-algo/releases.md`](../docs/recsys-algo/releases.md)
-
-## Releases
-
-Tag releases with the module prefix, e.g. `recsys-algo/v0.2.0`.
+Release tags use the module prefix, for example `recsys-algo/v0.2.0`.
