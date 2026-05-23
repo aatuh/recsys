@@ -1,0 +1,36 @@
+---
+import { pageRoutes, type Locale } from "../lib/routes";
+
+interface Props {
+  locale: Locale;
+  heading?: string;
+  text?: string;
+}
+
+const { locale, heading, text } = Astro.props;
+---
+
+<section class="band">
+  <div class="section two-col">
+    <div>
+      <p class="eyebrow">{locale === "fi" ? "Seuraava askel" : "Next step"}</p>
+      <h2>{heading ?? (locale === "fi" ? "Arvioi RecSys rajatulla pilotilla." : "Evaluate RecSys with a focused pilot.")}</h2>
+    </div>
+    <div>
+      <p class="lead">
+        {
+          text ??
+          (locale === "fi"
+            ? "Aloita kaupallisella arvioinnilla, tarkista dokumentaatio tai ota yhteyttä, jos tarvitset lisensointi- tai hankintakeskustelun."
+            : "Start with a commercial evaluation, inspect the technical docs, or open a commercial licensing discussion when procurement needs a clearer path.")
+        }
+      </p>
+      <div class="button-row">
+        <a class="button primary" href={pageRoutes.contact[locale]}>{locale === "fi" ? "Ota yhteyttä" : "Contact"}</a>
+        <a class="button secondary" href={pageRoutes.documentation[locale]}>
+          {locale === "fi" ? "Avaa dokumentaatio" : "Open documentation"}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

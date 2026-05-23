@@ -1,0 +1,32 @@
+---
+import { pricingPlans } from "../lib/content";
+import { type Locale } from "../lib/routes";
+
+const { locale } = Astro.props as { locale: Locale };
+---
+
+<div class="price-grid">
+  {
+    pricingPlans[locale].map((plan) => (
+      <article class="card price-card">
+        <div>
+          <strong>{plan.name}</strong>
+          <div class="price">
+            {plan.price}
+            <small>{plan.cadence}</small>
+          </div>
+        </div>
+        <p>{plan.scope}</p>
+        <a class="button secondary" href={plan.contactPath}>
+          {plan.enterprise
+            ? locale === "fi"
+              ? "Keskustele laajuudesta"
+              : "Discuss scope"
+            : locale === "fi"
+              ? "Kysy suunnitelmasta"
+              : "Ask about this plan"}
+        </a>
+      </article>
+    ))
+  }
+</div>

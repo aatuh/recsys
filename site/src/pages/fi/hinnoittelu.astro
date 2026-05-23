@@ -1,0 +1,44 @@
+---
+import BaseLayout from "../../components/BaseLayout.astro";
+import CTASection from "../../components/CTASection.astro";
+import PageHero from "../../components/PageHero.astro";
+import PricingCards from "../../components/PricingCards.astro";
+import { fixedServices, localized } from "../../lib/content";
+
+const locale = "fi";
+const page = localized[locale].pages.pricing;
+---
+
+<BaseLayout locale={locale} pageKey="pricing" title={page.title} description={page.description}>
+  <PageHero eyebrow={page.eyebrow} heading={page.heading} intro={page.intro} />
+  <section class="section tight">
+    <PricingCards locale={locale} />
+    <p class="muted">Kaikki hinnat ovat euroissa ja ilman arvonlisäveroa. Allekirjoitetut tilauslomakkeet ohittavat julkisen dokumentaation.</p>
+  </section>
+  <section class="section two-col">
+    <div>
+      <p class="eyebrow">Kiinteät katsaukset</p>
+      <h2>Käytä palvelupaketteja, kun julkaisu tarvitsee asiantuntijakatsauksen.</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Paketti</th><th>Hinta</th><th>Laajuus</th></tr></thead>
+        <tbody>
+          {fixedServices[locale].map(([name, price, scope]) => <tr><td>{name}</td><td>{price}</td><td>{scope}</td></tr>)}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <section class="section two-col">
+    <div>
+      <p class="eyebrow">Ostopolku</p>
+      <h2>Arviointi ensin, tuotanto vasta kun näyttö on uskottava.</h2>
+    </div>
+    <ul class="feature-list">
+      <li>Commercial Evaluation sopii lyhyeen ei-tuotannolliseen arviointiin.</li>
+      <li>Starter ja Growth sopivat, kun tenantit, ympäristöt ja suosittelupinnat ovat tiedossa.</li>
+      <li>Enterprise sopii, kun sopimus-, tietoturva-, SLA-, sääntely- tai OEM-vaatimukset ohjaavat laajuutta.</li>
+    </ul>
+  </section>
+  <CTASection locale={locale} heading="Tarvitsetko rajatun tilauslomakkeen?" text="Käytä yhteyspolkua kaupalliseen keskusteluun, arvioinnin aloitukseen, laskutukseen tai allekirjoitettuun tilauslomakkeeseen." />
+</BaseLayout>

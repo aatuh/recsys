@@ -1,0 +1,31 @@
+---
+import BaseLayout from "../components/BaseLayout.astro";
+import CTASection from "../components/CTASection.astro";
+import PageHero from "../components/PageHero.astro";
+import { localized } from "../lib/content";
+
+const locale = "en";
+const page = localized[locale].pages.documentation;
+---
+
+<BaseLayout locale={locale} pageKey="documentation" title={page.title} description={page.description}>
+  <PageHero eyebrow={page.eyebrow} heading={page.heading} intro={page.intro} />
+  <section class="section">
+    <div class="grid cards">
+      <a class="card" href="/documentation/technical/"><strong>Technical documentation</strong><p>The full MkDocs site with architecture, quickstart, operations, and reference pages.</p></a>
+      <a class="card" href="/documentation/technical/developer-quickstart/"><strong>Developer quickstart</strong><p>Run the local stack and make one recommendation request.</p></a>
+      <a class="card" href="/documentation/technical/local-end-to-end/"><strong>Local end-to-end</strong><p>Run the smoke-tested tenant bootstrap, rules, recommendation, and exposure-log path.</p></a>
+      <a class="card" href="/documentation/technical/reference/api/"><strong>API reference</strong><p>Endpoints, auth headers, payload shapes, and OpenAPI source ownership.</p></a>
+      <a class="card" href="/documentation/technical/operations/"><strong>Operations</strong><p>Health checks, rollback levers, and first triage runbooks.</p></a>
+      <a class="card" href="/documentation/technical/commercial/procurement/"><strong>Procurement packet</strong><p>Security, legal, IT, finance, and evaluator review links.</p></a>
+    </div>
+  </section>
+  <section class="section two-col">
+    <div>
+      <p class="eyebrow">Docs policy</p>
+      <h2>Marketing at the root, technical detail one click away.</h2>
+    </div>
+    <p class="lead">The technical documentation remains English-only in v1 because it is tied closely to commands, OpenAPI, schemas, and source files. The marketing site provides the bilingual entry point.</p>
+  </section>
+  <CTASection locale={locale} />
+</BaseLayout>

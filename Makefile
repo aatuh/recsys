@@ -1,4 +1,4 @@
-.PHONY: help env test-env codegen dev down build test proof-kit-test fmt lint security health reuse mdlint codespell mkdocs-serve
+.PHONY: help env test-env codegen dev down build test proof-kit-test fmt lint security health reuse mdlint codespell mkdocs-serve site-install site-build site-check site-preview
 
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 COMMIT ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo none)
@@ -130,6 +130,7 @@ DOCS_PIP_PACKAGES := mkdocs mkdocs-swagger-ui-tag mkdocs-material pymdown-extens
 	mkdocs-git-revision-date-localized-plugin mkdocs-git-authors-plugin \
 	mkdocs-redirects mkdocs-minify-plugin mkdocs-glightbox \
 	pillow cairosvg
+DOCS_SITE_DIR ?= .site/documentation/technical
 
 .PHONY: docs-deps
 
@@ -170,9 +171,9 @@ docs-build: ## Build MkDocs site (strict)
 	}
 	@. .venv/bin/activate 2>/dev/null || true; \
 	if command -v mkdocs >/dev/null 2>&1; then \
-		mkdocs build --strict -f mkdocs.yml -d .site; \
+		mkdocs build --strict -f mkdocs.yml -d $(DOCS_SITE_DIR); \
 	else \
-		. .venv/bin/activate && .venv/bin/mkdocs build --strict -f mkdocs.yml -d .site; \
+		. .venv/bin/activate && .venv/bin/mkdocs build --strict -f mkdocs.yml -d $(DOCS_SITE_DIR); \
 	fi
 
 
@@ -181,3 +182,21 @@ docs-check: ## Check docs internal links + strict MkDocs build
 	python3 scripts/docs_external_linkcheck.py
 	$(MAKE) codespell
 	$(MAKE) docs-build
+
+site-install: ## Install Astro marketing-site dependencies
+	npm ci --prefix site
+
+site-build: ## Build Astro marketing site and MkDocs technical docs into .site
+	rm -rf .site
+	npm run build --prefix site
+	$(MAKE) DOCS_SITE_DIR=.site/documentation/technical docs-build
+	touch .site/.nojekyll
+
+site-check: ## Check Astro site, docs, generated site links, and combined build
+	npm run check --prefix site
+	$(MAKE) docs-check
+	$(MAKE) site-build
+	python3 scripts/site_linkcheck.py .site
+
+site-preview: site-build ## Preview combined static site locally
+	npx --yes serve .site

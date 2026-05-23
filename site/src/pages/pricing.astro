@@ -1,0 +1,44 @@
+---
+import BaseLayout from "../components/BaseLayout.astro";
+import CTASection from "../components/CTASection.astro";
+import PageHero from "../components/PageHero.astro";
+import PricingCards from "../components/PricingCards.astro";
+import { fixedServices, localized } from "../lib/content";
+
+const locale = "en";
+const page = localized[locale].pages.pricing;
+---
+
+<BaseLayout locale={locale} pageKey="pricing" title={page.title} description={page.description}>
+  <PageHero eyebrow={page.eyebrow} heading={page.heading} intro={page.intro} />
+  <section class="section tight">
+    <PricingCards locale={locale} />
+    <p class="muted">All prices are EUR, excluding VAT. Signed order forms override public documentation.</p>
+  </section>
+  <section class="section two-col">
+    <div>
+      <p class="eyebrow">Fixed-scope reviews</p>
+      <h2>Use services when the rollout needs expert review.</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Package</th><th>Price</th><th>Scope</th></tr></thead>
+        <tbody>
+          {fixedServices[locale].map(([name, price, scope]) => <tr><td>{name}</td><td>{price}</td><td>{scope}</td></tr>)}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <section class="section two-col">
+    <div>
+      <p class="eyebrow">Buying path</p>
+      <h2>Evaluation first, production once the evidence is credible.</h2>
+    </div>
+    <ul class="feature-list">
+      <li>Use Commercial Evaluation for a short non-production review.</li>
+      <li>Use Starter or Growth when production tenants, environments, and surfaces are known.</li>
+      <li>Use Enterprise when legal, security, SLA, regulated, OEM, or custom deployment terms drive the scope.</li>
+    </ul>
+  </section>
+  <CTASection locale={locale} heading="Need a scoped order form?" text="Use the contact path for commercial discussion, evaluation setup, invoicing, or a signed order form." />
+</BaseLayout>

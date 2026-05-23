@@ -1,0 +1,110 @@
+---
+import BaseLayout from "../../components/BaseLayout.astro";
+import CTASection from "../../components/CTASection.astro";
+import HeroDashboard from "../../components/HeroDashboard.astro";
+import PricingCards from "../../components/PricingCards.astro";
+import { localized } from "../../lib/content";
+import { absolutePath, pageRoutes } from "../../lib/routes";
+
+const locale = "fi";
+const page = localized[locale].pages.home;
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "RecSys",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Self-hosted",
+    description: page.description,
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "EUR",
+      price: "490",
+      url: absolutePath(pageRoutes.pricing.fi),
+    },
+  },
+];
+---
+
+<BaseLayout locale={locale} pageKey="home" title={page.title} description={page.description} jsonLd={jsonLd}>
+  <section class="section hero">
+    <div>
+      <p class="eyebrow">{page.eyebrow}</p>
+      <h1>{page.heading}</h1>
+      <p class="lead">{page.intro}</p>
+      <div class="hero-actions">
+        <a class="button primary" href="/fi/yhteys/">Aloita arviointi</a>
+        <a class="button secondary" href="/fi/dokumentaatio/">Lue dokumentaatio</a>
+      </div>
+      <div class="proof-strip" aria-label="Tuotteen näyttöpisteet">
+        <span>Deterministinen ranking-ydin</span>
+        <span>Offline-arviointiraportit</span>
+        <span>Versioitu artefaktijulkaisu</span>
+      </div>
+    </div>
+    <HeroDashboard locale={locale} />
+  </section>
+
+  <section class="section two-col">
+    <div>
+      <p class="eyebrow">Ongelma</p>
+      <h2>Suosittelujärjestelmät epäonnistuvat, jos julkaisua ei voi selittää.</h2>
+    </div>
+    <div class="grid cards">
+      <article class="card"><strong>Laatua on vaikea todistaa</strong><p>Tiimit tarvitsevat exposure- ja outcome-liitokset, eivät vain irrallisia offline-pisteitä.</p></article>
+      <article class="card"><strong>Palautus jää usein epäselväksi</strong><p>RecSys käsittelee konfiguraatiot, säännöt ja manifestit operatiivisina palautuskeinoina.</p></article>
+      <article class="card"><strong>Hankinta tarvitsee näyttöä</strong><p>Dokumentaatio, hinnoittelu, lisensointi, tietoturva ja arviointipolku ovat näkyvissä alusta asti.</p></article>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="section two-col">
+      <div>
+        <p class="eyebrow">Järjestelmä</p>
+        <h2>Yksi kokonaisuus tarjoiluun, pipelineihin, arviointiin ja auditointiin.</h2>
+      </div>
+      <ul class="feature-list">
+        <li><strong>recsys-service:</strong> HTTP API, admin-konfiguraatiot, tunnistautuminen ja exposure-lokitus.</li>
+        <li><strong>recsys-algo:</strong> deterministinen ranking, personointi, säännöt ja diversiteettikontrollit.</li>
+        <li><strong>recsys-pipelines:</strong> offline-ajot, jotka julkaisevat versioituja artefakteja ja manifesteja.</li>
+        <li><strong>recsys-eval:</strong> Apache-2.0-arviointityökalu offline-portteihin, kokeisiin ja raportteihin.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section two-col">
+    <div>
+      <p class="eyebrow">Arviointi</p>
+      <h2>Julkaise, pidä odottamassa tai palauta päätösjäljen kanssa.</h2>
+      <p class="lead">Arviointipolku alkaa skeemoista ja join-eheydestä, tarkistaa guardrailit ja vasta sitten liiketoimintamittarit.</p>
+      <div class="button-row">
+        <a class="button secondary" href="/fi/arviointi/">Katso arviointipolku</a>
+      </div>
+    </div>
+    <div class="grid cards">
+      <article class="card"><strong>Validoi syötteet</strong><p>Exposure-, outcome-, assignment-, raportti- ja manifestiskeemat tarkistetaan ennen tulkintaa.</p></article>
+      <article class="card"><strong>Tarkista guardrailit</strong><p>Virheet, latenssi, tyhjät suositukset ja varoitukset pysyvät näkyvissä julkaisun aikana.</p></article>
+      <article class="card"><strong>Pidä palautus valmiina</strong><p>Konfiguraatio-, sääntö- ja manifestiversiot ovat osa julkaisutietuetta.</p></article>
+    </div>
+  </section>
+
+  <section class="section">
+    <p class="eyebrow">Hinnoittelu</p>
+    <h2>Aloita kaupallisella arvioinnilla tai valitse tuotantolaajuus.</h2>
+    <PricingCards locale={locale} />
+  </section>
+
+  <section class="section two-col">
+    <div>
+      <p class="eyebrow">Näyttö</p>
+      <h2>Dokumentaatio pysyy teknisenä ja tarkistettavana.</h2>
+    </div>
+    <div class="grid cards">
+      <a class="card" href="/documentation/technical/developer-quickstart/"><strong>Kehittäjän pika-aloitus</strong><p>Aja paikallinen ympäristö ja tee yksi suosittelupyyntö.</p></a>
+      <a class="card" href="/documentation/technical/reference/api/"><strong>API-viite</strong><p>Tarkista endpointit, auth-headerit, payloadit ja OpenAPI-lähteet.</p></a>
+      <a class="card" href="/documentation/technical/operations/"><strong>Operointi</strong><p>Tarkista health checkit, palautuskeinot ja runbookit.</p></a>
+    </div>
+  </section>
+
+  <CTASection locale={locale} />
+</BaseLayout>

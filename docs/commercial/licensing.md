@@ -45,5 +45,6 @@ fixed-scope service package.
 ## Read next
 
 - [Pricing](pricing.md)
+- [Procurement and Trust Review](procurement.md)
 - [Security](../security.md)
 - [Support](../support.md)

@@ -1,0 +1,119 @@
+---
+import BaseLayout from "../components/BaseLayout.astro";
+import CTASection from "../components/CTASection.astro";
+import HeroDashboard from "../components/HeroDashboard.astro";
+import PricingCards from "../components/PricingCards.astro";
+import { localized } from "../lib/content";
+import { absolutePath, pageRoutes } from "../lib/routes";
+
+const locale = "en";
+const page = localized[locale].pages.home;
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "RecSys",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Self-hosted",
+    description: page.description,
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "EUR",
+      price: "490",
+      url: absolutePath(pageRoutes.pricing.en),
+    },
+  },
+];
+---
+
+<BaseLayout locale={locale} pageKey="home" title={page.title} description={page.description} jsonLd={jsonLd}>
+  <section class="section hero">
+    <div>
+      <p class="eyebrow">{page.eyebrow}</p>
+      <h1>{page.heading}</h1>
+      <p class="lead">{page.intro}</p>
+      <div class="hero-actions">
+        <a class="button primary" href="/contact/">Start an evaluation</a>
+        <a class="button secondary" href="/documentation/">Read the documentation</a>
+      </div>
+      <div class="proof-strip" aria-label="Product proof points">
+        <span>Deterministic ranking core</span>
+        <span>Offline evaluation reports</span>
+        <span>Versioned artifact rollout</span>
+      </div>
+    </div>
+    <HeroDashboard locale={locale} />
+  </section>
+
+  <section class="section two-col">
+    <div>
+      <p class="eyebrow">Problem</p>
+      <h2>Recommendation systems fail when teams cannot explain the rollout.</h2>
+    </div>
+    <div class="grid cards">
+      <article class="card">
+        <strong>Quality is hard to prove</strong>
+        <p>Teams need exposure and outcome joins, not only offline scores detached from serving behavior.</p>
+      </article>
+      <article class="card">
+        <strong>Rollbacks are often vague</strong>
+        <p>RecSys treats config, rules, and artifact manifests as operational rollback levers.</p>
+      </article>
+      <article class="card">
+        <strong>Procurement needs evidence</strong>
+        <p>Docs, pricing, licensing, security posture, and evaluation paths are explicit from the start.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="section two-col">
+      <div>
+        <p class="eyebrow">System</p>
+        <h2>One suite for serving, pipelines, evaluation, and audit trails.</h2>
+      </div>
+      <ul class="feature-list">
+        <li><strong>recsys-service:</strong> HTTP recommendation API, admin config/rules, auth, and exposure logging.</li>
+        <li><strong>recsys-algo:</strong> deterministic ranking, blending, personalization, rules, and diversity controls.</li>
+        <li><strong>recsys-pipelines:</strong> offline jobs that publish versioned artifacts and current manifests.</li>
+        <li><strong>recsys-eval:</strong> Apache-2.0 evaluation CLI for offline gates, experiments, OPE, and reports.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section two-col">
+    <div>
+      <p class="eyebrow">Evaluation</p>
+      <h2>Ship, hold, or roll back with a decision record.</h2>
+      <p class="lead">The evaluation loop starts with schemas and join integrity, then checks guardrails and business metrics before rollout.</p>
+      <div class="button-row">
+        <a class="button secondary" href="/evaluation/">See evaluation workflow</a>
+      </div>
+    </div>
+    <div class="grid cards">
+      <article class="card"><strong>Validate inputs</strong><p>Exposure, outcome, assignment, report, and manifest schemas are checked before interpretation.</p></article>
+      <article class="card"><strong>Check guardrails</strong><p>Error rate, latency, empty recommendations, and warning rates stay visible during rollout.</p></article>
+      <article class="card"><strong>Keep rollback ready</strong><p>Config, rules, and manifest versions remain part of the release record.</p></article>
+    </div>
+  </section>
+
+  <section class="section">
+    <p class="eyebrow">Pricing</p>
+    <h2>Start with a commercial evaluation or choose a production scope.</h2>
+    <PricingCards locale={locale} />
+  </section>
+
+  <section class="section two-col">
+    <div>
+      <p class="eyebrow">Proof</p>
+      <h2>The documentation stays technical and inspectable.</h2>
+    </div>
+    <div class="grid cards">
+      <a class="card" href="/documentation/technical/developer-quickstart/"><strong>Developer quickstart</strong><p>Run the local stack and make a recommendation request.</p></a>
+      <a class="card" href="/documentation/technical/reference/api/"><strong>API reference</strong><p>Inspect endpoints, auth headers, payloads, and OpenAPI sources.</p></a>
+      <a class="card" href="/documentation/technical/operations/"><strong>Operations</strong><p>Review health checks, rollback levers, and incident runbooks.</p></a>
+    </div>
+  </section>
+
+  <CTASection locale={locale} />
+</BaseLayout>

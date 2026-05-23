@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">RecSys social card</title>
+  <desc id="desc">A product dashboard showing evaluation gates, artifact rollout, and rollback readiness.</desc>
+  <rect width="1200" height="630" fill="#f4f7f5"/>
+  <rect x="64" y="58" width="1072" height="514" rx="28" fill="#ffffff" stroke="#d4ded9" stroke-width="2"/>
+  <rect x="64" y="58" width="1072" height="86" rx="28" fill="#172026"/>
+  <circle cx="107" cy="101" r="10" fill="#e15d4f"/>
+  <circle cx="139" cy="101" r="10" fill="#e6bd4b"/>
+  <circle cx="171" cy="101" r="10" fill="#55a86a"/>
+  <text x="94" y="217" fill="#172026" font-family="Inter, Arial, sans-serif" font-size="72" font-weight="800">RecSys</text>
+  <text x="94" y="282" fill="#34414a" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="500">Auditable recommendation rollouts</text>
+  <text x="94" y="338" fill="#5e6b73" font-family="Inter, Arial, sans-serif" font-size="26">Evaluate. Ship. Roll back.</text>
+  <g transform="translate(602 188)">
+    <rect width="438" height="282" rx="18" fill="#f8fbf9" stroke="#cfdad5"/>
+    <text x="28" y="50" fill="#172026" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700">Rollout decision</text>
+    <g transform="translate(28 80)">
+      <rect width="170" height="72" rx="12" fill="#eaf4f1" stroke="#a8c9bf"/>
+      <text x="20" y="30" fill="#4b6660" font-family="Inter, Arial, sans-serif" font-size="16">Join rate</text>
+      <text x="20" y="58" fill="#172026" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="800">97.8%</text>
+    </g>
+    <g transform="translate(228 80)">
+      <rect width="170" height="72" rx="12" fill="#f9f1dc" stroke="#d6b461"/>
+      <text x="20" y="30" fill="#735f25" font-family="Inter, Arial, sans-serif" font-size="16">Guardrails</text>
+      <text x="20" y="58" fill="#172026" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="800">Hold</text>
+    </g>
+    <g transform="translate(28 184)" fill="none" stroke-width="3">
+      <path d="M0 32 H88" stroke="#55a86a"/>
+      <path d="M98 32 H186" stroke="#55a86a"/>
+      <path d="M196 32 H284" stroke="#d6b461"/>
+      <path d="M294 32 H382" stroke="#55a86a"/>
+      <circle cx="0" cy="32" r="9" fill="#55a86a" stroke="#55a86a"/>
+      <circle cx="98" cy="32" r="9" fill="#55a86a" stroke="#55a86a"/>
+      <circle cx="196" cy="32" r="9" fill="#d6b461" stroke="#d6b461"/>
+      <circle cx="294" cy="32" r="9" fill="#55a86a" stroke="#55a86a"/>
+      <circle cx="382" cy="32" r="9" fill="#55a86a" stroke="#55a86a"/>
+    </g>
+    <text x="28" y="258" fill="#5e6b73" font-family="Inter, Arial, sans-serif" font-size="18">Manifest, rules, config rollback ready</text>
+  </g>
+  <rect x="94" y="416" width="148" height="42" rx="21" fill="#172026"/>
+  <text x="122" y="444" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700">Evaluation</text>
+  <rect x="260" y="416" width="130" height="42" rx="21" fill="#e7eee9" stroke="#c5d2ca"/>
+  <text x="289" y="444" fill="#172026" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700">Serving</text>
+  <rect x="408" y="416" width="128" height="42" rx="21" fill="#e7eee9" stroke="#c5d2ca"/>
+  <text x="436" y="444" fill="#172026" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700">Rollback</text>
+</svg>

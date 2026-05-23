@@ -32,6 +32,12 @@ repository posture and the minimum security expectations for a pilot or producti
 - Treat exported reports and datasets as sensitive operational data.
 - Record subprocessors and hosting responsibilities in customer-specific deployment documentation.
 
+## Review handoff
+
+For commercial or procurement review, start with [Procurement and Trust Review](commercial/procurement.md). That page
+links the current security, licensing, pricing, support, operations, and data-contract docs without reviving the old
+large business documentation tree.
+
 ## Pre-production security checks
 
 ```bash

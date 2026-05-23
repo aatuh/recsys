@@ -1,0 +1,49 @@
+---
+import BaseLayout from "../../components/BaseLayout.astro";
+import CTASection from "../../components/CTASection.astro";
+import PageHero from "../../components/PageHero.astro";
+import { localized } from "../../lib/content";
+
+const locale = "fi";
+const page = localized[locale].pages.evaluation;
+---
+
+<BaseLayout locale={locale} pageKey="evaluation" title={page.title} description={page.description}>
+  <PageHero eyebrow={page.eyebrow} heading={page.heading} intro={page.intro} />
+  <section class="section two-col">
+    <div>
+      <p class="eyebrow">Päätösmalli</p>
+      <h2>Tulkitse metriikoita vasta, kun datan eheys on uskottava.</h2>
+    </div>
+    <div class="grid cards">
+      <article class="card"><strong>Validoi skeemat</strong><p>Exposure-, outcome-, assignment-, raportti- ja päätösskeemat tarkistetaan ennen raporttien tulkintaa.</p></article>
+      <article class="card"><strong>Mittaa join-eheys</strong><p>Vakaat request ID:t yhdistävät suositteluvastaukset, exposure-lokit ja outcome-tapahtumat.</p></article>
+      <article class="card"><strong>Pidä guardrailit näkyvissä</strong><p>Virhetaso, latenssi, tyhjät suositukset ja varoitukset määrittävät operatiivisen liikkumavaran.</p></article>
+    </div>
+  </section>
+  <section class="band">
+    <div class="section two-col">
+      <div>
+        <p class="eyebrow">Proof kit</p>
+        <h2>Rajattu tarkistettu polku arvioijien luottamukseen.</h2>
+      </div>
+      <div>
+        <p class="lead">Repository sisältää kaupallisen proof-kit-smokepolun, joka validoi ecommerce-fixturet, kirjoittaa offline-raportit, ajaa pipelinet ja tarkistaa julkaistut artefaktit.</p>
+        <div class="button-row">
+          <a class="button secondary" href="/documentation/technical/integration/">Lue integraatiodokumentaatio</a>
+          <a class="button ghost" href="https://github.com/aatuh/recsys">Avaa GitHub</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <p class="eyebrow">Julkaise / odota / palauta</p>
+    <h2>Tee julkaisupäätökset näkyviksi.</h2>
+    <div class="grid cards">
+      <article class="card"><strong>Julkaise</strong><p>Pää-KPI ylittää sovitun vaikutuksen, slicet ovat vakaita, guardrailit pitävät ja palautus on valmis.</p></article>
+      <article class="card"><strong>Odota</strong><p>Datan eheys on heikko, tulokset ovat epäselviä tai palautuspolku ei ole valmis.</p></article>
+      <article class="card"><strong>Palauta</strong><p>KPI heikkenee olennaisesti, guardrail pettää tai operatiivinen liikkumavara ei enää pidä.</p></article>
+    </div>
+  </section>
+  <CTASection locale={locale} heading="Tarvitseeko ensimmäinen julkaisu näyttöä?" text="Käytä arviointipolkua näytön määrittelyyn ja ota yhteyttä, kun pilotti tarvitsee kaupallista tai hankinnan tukea." />
+</BaseLayout>

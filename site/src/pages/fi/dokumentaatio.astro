@@ -1,0 +1,31 @@
+---
+import BaseLayout from "../../components/BaseLayout.astro";
+import CTASection from "../../components/CTASection.astro";
+import PageHero from "../../components/PageHero.astro";
+import { localized } from "../../lib/content";
+
+const locale = "fi";
+const page = localized[locale].pages.documentation;
+---
+
+<BaseLayout locale={locale} pageKey="documentation" title={page.title} description={page.description}>
+  <PageHero eyebrow={page.eyebrow} heading={page.heading} intro={page.intro} />
+  <section class="section">
+    <div class="grid cards">
+      <a class="card" href="/documentation/technical/"><strong>Tekninen dokumentaatio</strong><p>Koko MkDocs-sivusto: arkkitehtuuri, pika-aloitus, operointi ja viitesivut.</p></a>
+      <a class="card" href="/documentation/technical/developer-quickstart/"><strong>Kehittäjän pika-aloitus</strong><p>Aja paikallinen ympäristö ja tee yksi suosittelupyyntö.</p></a>
+      <a class="card" href="/documentation/technical/local-end-to-end/"><strong>Paikallinen end-to-end-polku</strong><p>Aja smoke-testattu tenant-bootstrap, säännöt, suositukset ja exposure-lokitus.</p></a>
+      <a class="card" href="/documentation/technical/reference/api/"><strong>API-viite</strong><p>Endpointit, auth-headerit, payloadit ja OpenAPI-lähteet.</p></a>
+      <a class="card" href="/documentation/technical/operations/"><strong>Operointi</strong><p>Health checkit, palautuskeinot ja ensimmäiset runbookit.</p></a>
+      <a class="card" href="/documentation/technical/commercial/procurement/"><strong>Hankintapaketti</strong><p>Tietoturvan, lakitiimin, IT:n, talouden ja arvioijien linkit.</p></a>
+    </div>
+  </section>
+  <section class="section two-col">
+    <div>
+      <p class="eyebrow">Dokumentaatiomalli</p>
+      <h2>Markkinointisivusto on kaksikielinen, tekninen dokumentaatio englanniksi.</h2>
+    </div>
+    <p class="lead">Tekninen dokumentaatio pidetään v1:ssä englanniksi, koska se on tiukasti sidottu komentoihin, OpenAPI-kuvaukseen, skeemoihin ja lähdekoodiin. Tämä sivusto tarjoaa suomenkielisen aloituspisteen.</p>
+  </section>
+  <CTASection locale={locale} />
+</BaseLayout>

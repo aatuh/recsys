@@ -1,0 +1,49 @@
+---
+import BaseLayout from "../components/BaseLayout.astro";
+import CTASection from "../components/CTASection.astro";
+import PageHero from "../components/PageHero.astro";
+import { localized } from "../lib/content";
+
+const locale = "en";
+const page = localized[locale].pages.evaluation;
+---
+
+<BaseLayout locale={locale} pageKey="evaluation" title={page.title} description={page.description}>
+  <PageHero eyebrow={page.eyebrow} heading={page.heading} intro={page.intro} />
+  <section class="section two-col">
+    <div>
+      <p class="eyebrow">Decision model</p>
+      <h2>Interpret metrics only after data integrity is credible.</h2>
+    </div>
+    <div class="grid cards">
+      <article class="card"><strong>Validate schemas</strong><p>Exposure, outcome, assignment, report, and decision schemas are checked before reports are trusted.</p></article>
+      <article class="card"><strong>Measure join integrity</strong><p>Stable request IDs connect recommendation responses, exposure logs, and outcomes.</p></article>
+      <article class="card"><strong>Keep guardrails visible</strong><p>Error rate, latency, empty recommendations, and warning rates define the operational envelope.</p></article>
+    </div>
+  </section>
+  <section class="band">
+    <div class="section two-col">
+      <div>
+        <p class="eyebrow">Proof kit</p>
+        <h2>A compact checked path for evaluator confidence.</h2>
+      </div>
+      <div>
+        <p class="lead">The repository includes a commercial proof-kit smoke path that validates ecommerce fixtures, writes offline reports, runs pipelines, and checks published artifacts.</p>
+        <div class="button-row">
+          <a class="button secondary" href="/documentation/technical/integration/">Read integration docs</a>
+          <a class="button ghost" href="https://github.com/aatuh/recsys">Open GitHub</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <p class="eyebrow">Ship / hold / rollback</p>
+    <h2>Make rollout choices explicit.</h2>
+    <div class="grid cards">
+      <article class="card"><strong>Ship</strong><p>Primary KPI clears the pre-agreed effect, slices are stable, guardrails hold, and rollback is ready.</p></article>
+      <article class="card"><strong>Hold</strong><p>Data integrity is weak, results are inconclusive, or the rollback path is not ready.</p></article>
+      <article class="card"><strong>Roll back</strong><p>KPI regresses materially, guardrails breach, or the operational envelope no longer holds.</p></article>
+    </div>
+  </section>
+  <CTASection locale={locale} heading="Need to prove the first rollout?" text="Use the evaluation path to define evidence, then contact us when the pilot needs commercial or procurement support." />
+</BaseLayout>

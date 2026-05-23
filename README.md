@@ -11,10 +11,13 @@ evaluation support.
 | recsys-algo | `recsys-algo/` | Deterministic ranking core used by the service and examples. |
 | recsys-pipelines | `recsys-pipelines/` | Offline jobs that build and publish versioned artifacts. |
 | recsys-eval | `recsys-eval/` | Apache-2.0 evaluation tooling for regression gates, experiments, OPE, and reports. |
+| recsys.app site | `site/` | Astro marketing site published at the root domain, with MkDocs technical docs mounted below it. |
 
 ## Documentation
 
-Canonical documentation lives in [`docs/`](docs/index.md) and is rendered with [`mkdocs.yml`](mkdocs.yml).
+Canonical technical documentation lives in [`docs/`](docs/index.md) and is rendered with [`mkdocs.yml`](mkdocs.yml).
+The public marketing site lives in [`site/`](site/) and publishes the technical docs under
+`/documentation/technical/`.
 
 Start here:
 
@@ -33,6 +36,7 @@ Start here:
 make env
 make dev
 make docs-check
+make site-check
 ```
 
 Expected result:
@@ -40,6 +44,7 @@ Expected result:
 - `make env` creates `api/.env` if it is missing.
 - `make dev` starts the Compose development stack.
 - `make docs-check` validates links, spelling, and strict MkDocs build.
+- `make site-check` validates the Astro marketing site, technical docs, combined build, and generated-site links.
 
 Run the full repository gate when feasible:
 

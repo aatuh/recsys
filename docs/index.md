@@ -12,9 +12,9 @@ source files for details that are safer to maintain in code.
 | --- | --- | --- |
 | Developer integrating the service | [Developer quickstart](developer-quickstart.md) | Run the local stack and make one recommendation request. |
 | Developer proving first success | [Local end-to-end](local-end-to-end.md) | Run the smoke-tested tenant bootstrap, rules, recommendation, and exposure-log path. |
-| Product or data team validating quality | [Integration and evaluation](integration.md) | Understand request IDs, exposure/outcome logging, and evaluation gates. |
-| Operator preparing a rollout | [Operations](operations.md) | Know the health checks, rollback levers, and first triage steps. |
-| Reviewer checking licensing or pricing | [Licensing](commercial/licensing.md) and [Pricing](commercial/pricing.md) | See the file-scope license model and commercial plan definitions. |
+| Product or data team validating quality | [Integration and evaluation](integration.md) and [Evaluation decisions](evaluation-decisions.md) | Understand request IDs, exposure/outcome logging, and ship/hold/rollback gates. |
+| Operator preparing a rollout | [Operations](operations.md) and [Artifacts and pipelines](artifacts-and-pipelines.md) | Know health checks, rollback levers, artifact freshness, and first triage steps. |
+| Reviewer checking licensing or procurement | [Licensing](commercial/licensing.md), [Pricing](commercial/pricing.md), and [Procurement](commercial/procurement.md) | See the license model, commercial plan definitions, and review packet. |
 
 ## What is in this repository
 
@@ -42,16 +42,22 @@ make docs-check
 make docs-serve
 ```
 
-Expected result: `make docs-build` produces `.site/`, `make docs-check` passes internal links, external links,
-codespell, and strict MkDocs build, and `make docs-serve` serves the site at `http://localhost:8001`.
+Expected result: `make docs-build` produces `.site/documentation/technical/`, `make docs-check` passes internal links,
+external links, codespell, and strict MkDocs build, and `make docs-serve` serves the MkDocs site at
+`http://localhost:8001`.
 
 ## Core pages
 
 - [Architecture](architecture.md)
+- [Artifacts and pipelines](artifacts-and-pipelines.md)
 - [Local end-to-end](local-end-to-end.md)
+- [Integration and evaluation](integration.md)
+- [Evaluation decisions](evaluation-decisions.md)
+- [Operations](operations.md)
 - [API reference](reference/api.md)
 - [Configuration reference](reference/config.md)
 - [Data contracts](reference/data-contracts.md)
+- [Glossary](reference/glossary.md)
 - [Local workflow](reference/local-workflow.md)
 - [Security](security.md)
 - [Support](support.md)

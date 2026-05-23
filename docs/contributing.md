@@ -30,7 +30,8 @@ is blocked by missing local infrastructure, run the closest module-level equival
 - Prefer links to code, schemas, OpenAPI, and Makefiles over duplicating long reference data.
 - Do not edit `.site/` as source.
 - Do not restore `.docs/` or `.trash/docs/` wholesale.
-- Use `.trash/docs` only for pricing, licensing schema, and contact details when rebuilding commercial pages.
+- Use `.trash/docs` as historical source material only when the promoted content has a clear reader, current links, and
+  a validation path. Pricing, licensing schema, and contact details need extra care because signed terms override docs.
 
 ## Commit style
 

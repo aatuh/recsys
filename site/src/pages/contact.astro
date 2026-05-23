@@ -1,0 +1,38 @@
+---
+import BaseLayout from "../components/BaseLayout.astro";
+import PageHero from "../components/PageHero.astro";
+import { pricingPlans, localized } from "../lib/content";
+
+const locale = "en";
+const page = localized[locale].pages.contact;
+---
+
+<BaseLayout locale={locale} pageKey="contact" title={page.title} description={page.description}>
+  <PageHero eyebrow={page.eyebrow} heading={page.heading} intro={page.intro} />
+  <section class="section">
+    <div class="grid cards">
+      <article class="card">
+        <strong>Confidential commercial inquiry</strong>
+        <p>Use LinkedIn for commercial evaluation, licensing, procurement, and Enterprise scope discussion.</p>
+        <p><a class="button secondary" href="https://www.linkedin.com/in/aatu-harju/">Message Aatu Harju</a></p>
+      </article>
+      <article class="card">
+        <strong>Public licensing question</strong>
+        <p>Open a public GitHub issue titled <code>Licensing question</code>. Do not include secrets, customer data, or vulnerability details.</p>
+        <p><a class="button secondary" href="https://github.com/aatuh/recsys/issues">Open GitHub issues</a></p>
+      </article>
+      <article class="card">
+        <strong>Security report</strong>
+        <p>Use GitHub private vulnerability reporting when available. If unavailable, open a minimal public issue asking for a private channel.</p>
+        <p><a class="button secondary" href="/security/">Read security guidance</a></p>
+      </article>
+    </div>
+  </section>
+  <section class="section">
+    <p class="eyebrow">Plan context</p>
+    <h2>Include the likely plan when you contact.</h2>
+    <div class="grid cards">
+      {pricingPlans[locale].map((plan) => <article class="card"><strong>{plan.name}</strong><p>{plan.price} {plan.cadence}. {plan.scope}</p></article>)}
+    </div>
+  </section>
+</BaseLayout>

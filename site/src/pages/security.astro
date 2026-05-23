@@ -1,0 +1,46 @@
+---
+import BaseLayout from "../components/BaseLayout.astro";
+import CTASection from "../components/CTASection.astro";
+import PageHero from "../components/PageHero.astro";
+import { localized } from "../lib/content";
+
+const locale = "en";
+const page = localized[locale].pages.security;
+---
+
+<BaseLayout locale={locale} pageKey="security" title={page.title} description={page.description}>
+  <PageHero eyebrow={page.eyebrow} heading={page.heading} intro={page.intro} />
+  <section class="section two-col">
+    <div>
+      <p class="eyebrow">Posture</p>
+      <h2>Security review starts with clear ownership boundaries.</h2>
+    </div>
+    <div class="grid cards">
+      <article class="card"><strong>Self-hosted by default</strong><p>The operator controls infrastructure, network policy, secrets, backups, and retention.</p></article>
+      <article class="card"><strong>Pseudonymous data model</strong><p>Recommendation requests and evaluation datasets do not require raw names, emails, or phone numbers.</p></article>
+      <article class="card"><strong>Explicit control plane</strong><p>Admin config, rules, cache, and audit routes are documented as trusted operator surfaces.</p></article>
+    </div>
+  </section>
+  <section class="band">
+    <div class="section two-col">
+      <div>
+        <p class="eyebrow">Controls</p>
+        <h2>Current repository controls are visible before procurement.</h2>
+      </div>
+      <ul class="feature-list">
+        <li>JWT, API key, and local dev-header modes are represented in configuration and middleware.</li>
+        <li>Tenant claims or tenant headers scope serving and admin routes.</li>
+        <li>Admin audit logging can be enabled for control-plane changes.</li>
+        <li>Production config validation covers sensitive salts, pprof binding, and artifact S3 TLS settings.</li>
+      </ul>
+    </div>
+  </section>
+  <section class="section two-col">
+    <div>
+      <p class="eyebrow">Limits</p>
+      <h2>No hidden certification claims.</h2>
+    </div>
+    <p class="lead">This site does not claim external certifications, managed hosting controls, DPA terms, subprocessor lists, SLA commitments, or data residency guarantees unless they are captured in signed commercial terms.</p>
+  </section>
+  <CTASection locale={locale} heading="Preparing a security review?" text="Start with the procurement page and technical security docs, then use the contact path for confidential commercial review." />
+</BaseLayout>

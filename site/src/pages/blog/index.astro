@@ -1,0 +1,30 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../components/BaseLayout.astro";
+import PageHero from "../../components/PageHero.astro";
+import { localized } from "../../lib/content";
+
+const locale = "en";
+const page = localized[locale].pages.blog;
+const posts = (await getCollection("blog", ({ data }) => data.language === "en")).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+const slugFor = (id: string) => id.replace(/^en\//, "").replace(/\.md$/, "");
+---
+
+<BaseLayout locale={locale} pageKey="blog" title={page.title} description={page.description}>
+  <PageHero eyebrow={page.eyebrow} heading={page.heading} intro={page.intro} />
+  <section class="section tight">
+    <div class="grid cards">
+      {
+        posts.map((post) => (
+          <a class="card blog-card" href={`/blog/${slugFor(post.id)}/`}>
+            <time datetime={post.data.pubDate.toISOString()}>{post.data.pubDate.toISOString().slice(0, 10)}</time>
+            <strong>{post.data.title}</strong>
+            <p>{post.data.description}</p>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>

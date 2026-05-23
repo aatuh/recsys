@@ -8,7 +8,7 @@ Maintainers and contributors running repository quality gates or debugging local
 
 - The repo-level command map.
 - Module-level quality gates.
-- Documentation checks and expected high-level outcomes.
+- Documentation and marketing-site checks with expected high-level outcomes.
 - Notes about checks that need Docker or external tools.
 
 ## Repository commands
@@ -16,6 +16,7 @@ Maintainers and contributors running repository quality gates or debugging local
 ```bash
 make help
 make docs-check
+make site-check
 make test
 make finalize
 ```
@@ -24,6 +25,7 @@ Expected result:
 
 - `make help` lists available targets.
 - `make docs-check` validates docs links, external links, spelling, and strict MkDocs build.
+- `make site-check` validates the Astro marketing site, MkDocs docs, combined static build, and generated-site links.
 - `make test` runs the proof-kit smoke test and module tests.
 - `make finalize` runs formatting, linting, tests, codegen, Markdown lint, and docs checks.
 
@@ -46,7 +48,20 @@ make docs-build
 ```
 
 Expected result: Markdown style passes, internal links resolve, external links are reachable or intentionally skipped,
-and MkDocs builds into `.site/` with strict mode.
+and MkDocs builds into `.site/documentation/technical/` with strict mode.
+
+## Marketing site checks
+
+```bash
+npm ci --prefix site
+npm run check --prefix site
+npm run build --prefix site
+make site-build
+python3 scripts/site_linkcheck.py .site
+```
+
+Expected result: Astro type and content checks pass, the bilingual marketing site builds, MkDocs is mounted under
+`/documentation/technical/`, and generated internal links resolve.
 
 ## Generated files
 

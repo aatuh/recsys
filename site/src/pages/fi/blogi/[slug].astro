@@ -1,0 +1,60 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../../components/BaseLayout.astro";
+import { absolutePath } from "../../../lib/routes";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog", ({ data }) => data.language === "fi");
+  return posts.map((post) => ({
+    params: { slug: post.id.replace(/^fi\//, "").replace(/\.md$/, "") },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const allPosts = await getCollection("blog");
+const enPost = allPosts.find((entry) => entry.data.language === "en" && entry.data.translationKey === post.data.translationKey);
+const enSlug = enPost?.id.replace(/^en\//, "").replace(/\.md$/, "");
+const slug = post.id.replace(/^fi\//, "").replace(/\.md$/, "");
+const canonicalPath = `/fi/blogi/${slug}/`;
+const alternates = {
+  en: enSlug ? absolutePath(`/blog/${enSlug}/`) : absolutePath("/blog/"),
+  fi: absolutePath(canonicalPath),
+  "x-default": enSlug ? absolutePath(`/blog/${enSlug}/`) : absolutePath("/blog/"),
+};
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.data.title,
+    description: post.data.description,
+    datePublished: post.data.pubDate.toISOString(),
+    dateModified: (post.data.updatedDate ?? post.data.pubDate).toISOString(),
+    inLanguage: "fi",
+    url: absolutePath(canonicalPath),
+  },
+];
+---
+
+<BaseLayout
+  locale="fi"
+  pageKey="blog"
+  title={`${post.data.title} | RecSys-blogi`}
+  description={post.data.description}
+  canonicalPath={canonicalPath}
+  alternates={alternates}
+  languageSwitchPath={enSlug ? `/blog/${enSlug}/` : "/blog/"}
+  ogType="article"
+  jsonLd={jsonLd}
+  breadcrumbTitle={post.data.title}
+>
+  <article class="article">
+    <p class="eyebrow">RecSys-blogi</p>
+    <h1>{post.data.title}</h1>
+    <p class="lead">{post.data.description}</p>
+    <div class="article-body">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>

@@ -1,0 +1,74 @@
+---
+const labels = Astro.props.locale === "fi"
+  ? {
+      join: "Join-rate",
+      guardrails: "Guardrailit",
+      manifest: "Manifesti",
+      rollback: "Palautus",
+      validated: "Validoitu",
+      ready: "Valmis",
+      pass: "OK",
+      aria: "RecSysin arviointi- ja julkaisunäkymä",
+      hold: "Pidä",
+      steps: ["Exposure-lokit", "Offline-arviointi", "Manifestijulkaisu", "Palautuspolku"],
+    }
+  : {
+      join: "Join rate",
+      guardrails: "Guardrails",
+      manifest: "Manifest",
+      rollback: "Rollback",
+      validated: "Validated",
+      ready: "Ready",
+      pass: "Pass",
+      aria: "RecSys evaluation and rollout dashboard",
+      hold: "Hold",
+      steps: ["Exposure logs", "Offline evaluation", "Manifest rollout", "Rollback path"],
+    };
+---
+
+<div class="dashboard" role="img" aria-label={labels.aria}>
+  <div class="dashboard-top" aria-hidden="true">
+    <span class="dot red"></span>
+    <span class="dot yellow"></span>
+    <span class="dot green"></span>
+  </div>
+  <div class="dashboard-body">
+    <div class="metric-row wide">
+      <div class="metric">
+        <span>{labels.join}</span>
+        <strong>97.8%</strong>
+      </div>
+      <div class="metric">
+        <span>{labels.guardrails}</span>
+        <strong>{labels.pass}</strong>
+      </div>
+    </div>
+    <div class="panel">
+      <span>{labels.manifest}</span>
+      <div class="pipeline">
+        {
+          labels.steps.map((step, index) => (
+            <div class="step">
+              <span class="step-badge">{index + 1}</span>
+              <strong>{step}</strong>
+              <span class={`status ${index === 1 ? "hold" : "pass"}`}>{index === 1 ? labels.hold : labels.validated}</span>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+    <div class="panel">
+      <span>{labels.rollback}</span>
+      <div class="chart" aria-hidden="true">
+        <span class="bar" style="height: 42%"></span>
+        <span class="bar" style="height: 58%"></span>
+        <span class="bar" style="height: 76%"></span>
+        <span class="bar" style="height: 62%"></span>
+        <span class="bar" style="height: 84%"></span>
+        <span class="bar" style="height: 71%"></span>
+        <span class="bar" style="height: 90%"></span>
+      </div>
+      <p class="muted">{labels.ready}: config, rules, artifact manifest</p>
+    </div>
+  </div>
+</div>

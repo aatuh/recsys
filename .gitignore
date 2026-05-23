@@ -11,3 +11,5 @@
 
 **/tmp/
 **/bin/
+**/node_modules/
+site/dist/

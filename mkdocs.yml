@@ -2,7 +2,7 @@ site_name: RecSys
 site_description: Auditable recommendation system suite for serving, pipelines, and evaluation
 repo_url: https://github.com/aatuh/recsys
 edit_uri: edit/master/docs/
-site_url: https://recsys.app
+site_url: https://recsys.app/documentation/technical/
 
 docs_dir: docs
 site_dir: .site
@@ -65,17 +65,26 @@ nav:
   - Developer Quickstart: developer-quickstart.md
   - Local End-to-End: local-end-to-end.md
   - Architecture: architecture.md
+  - Artifacts and Pipelines: artifacts-and-pipelines.md
   - Integration and Evaluation: integration.md
-  - Operations: operations.md
+  - Evaluation Decisions: evaluation-decisions.md
+  - Operations:
+      - Overview: operations.md
+      - Empty Recommendations: operations/runbooks/empty-recommendations.md
+      - Stale Artifact Manifest: operations/runbooks/stale-artifact-manifest.md
+      - Service Not Ready: operations/runbooks/service-not-ready.md
+      - Rollback Config and Rules: operations/runbooks/rollback-config-rules.md
   - Reference:
       - Overview: reference/index.md
       - API: reference/api.md
       - Configuration: reference/config.md
       - Data Contracts: reference/data-contracts.md
+      - Glossary: reference/glossary.md
       - Local Workflow: reference/local-workflow.md
   - Commercial:
       - Licensing: commercial/licensing.md
       - Pricing: commercial/pricing.md
+      - Procurement and Trust Review: commercial/procurement.md
   - Security: security.md
   - Support: support.md
   - Contributing: contributing.md

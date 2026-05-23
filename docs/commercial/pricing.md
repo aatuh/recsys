@@ -34,11 +34,11 @@ All prices are EUR, excluding VAT.
 Bundles do not change plan entitlements, support defaults, renewal pricing, or service-package scope unless a signed
 order form says otherwise.
 
-## Checkout and contact
+## Contact and order path
 
-- Commercial Evaluation: <https://buy.stripe.com/9B6fZh6r8dl97OP2sD0Jq00>
-- Starter: <https://buy.stripe.com/28EeVd7vcdl98ST6IT0Jq01>
-- Growth: <https://buy.stripe.com/aFafZh16Odl9c550kv0Jq02>
+There are no public payment links in the canonical docs. Use the contact path for evaluation setup, invoicing, signed
+order forms, or scope questions.
+
 - Public licensing questions: open a GitHub issue titled `Licensing question`.
 - Confidential commercial inquiries: message [Aatu Harju on LinkedIn](https://www.linkedin.com/in/aatu-harju/).
 
@@ -46,3 +46,9 @@ order form says otherwise.
 
 Order forms should record plan, term, fees, VAT handling, tenants, production deployments, non-production environments,
 production recommendation surfaces, delivery method, support tier, and any custom Enterprise terms.
+
+## Read next
+
+- [Licensing](licensing.md)
+- [Procurement and Trust Review](procurement.md)
+- [Support](../support.md)

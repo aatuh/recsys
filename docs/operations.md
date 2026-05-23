@@ -1,6 +1,7 @@
 # Operations
 
-This page gives the first operational checks for local development, pilot deployments, and production readiness.
+This page gives the first operational checks for local development, pilot deployments, and production readiness. Use the
+runbooks when a check points to a specific failure mode.
 
 ## Health and readiness
 
@@ -31,11 +32,20 @@ curl -f http://localhost:8000/readyz
 
 | Change | Rollback lever |
 | --- | --- |
-| Tenant config | Reapply the previous config version through admin config routes. |
-| Rules | Reapply previous rules or disable rules with `RECSYS_ALGO_RULES_ENABLED=false`. |
-| Artifact manifest | Point the manifest to the last known-good artifact version. |
+| Tenant config | Reapply the previous config version through admin config routes. See [Rollback Config and Rules](operations/runbooks/rollback-config-rules.md). |
+| Rules | Reapply previous rules or disable rules with `RECSYS_ALGO_RULES_ENABLED=false`. See [Rollback Config and Rules](operations/runbooks/rollback-config-rules.md). |
+| Artifact manifest | Restore the last known-good manifest. See [Stale Artifact Manifest](operations/runbooks/stale-artifact-manifest.md). |
 | Algorithm plugin | Disable `RECSYS_ALGO_PLUGIN_ENABLED` or revert `RECSYS_ALGO_PLUGIN_PATH`. |
 | Service release | Roll back the container image or binary to the previous release. |
+
+## Runbooks
+
+| Runbook | Use it when |
+| --- | --- |
+| [Empty recommendations](operations/runbooks/empty-recommendations.md) | Recommend returns success but `items` is empty or unexpectedly short. |
+| [Stale artifact manifest](operations/runbooks/stale-artifact-manifest.md) | Artifact mode serves old data after pipelines publish. |
+| [Service not ready](operations/runbooks/service-not-ready.md) | `/readyz` fails or the orchestrator keeps the service out of rotation. |
+| [Rollback config and rules](operations/runbooks/rollback-config-rules.md) | A control-plane change must be reverted quickly with an audit trail. |
 
 ## Empty recommendations
 
@@ -47,6 +57,8 @@ First checks:
 4. Check tenant config, rules, artifact manifest, and artifact load errors.
 5. Review service logs using the request ID.
 
+Detailed path: [Empty Recommendations](operations/runbooks/empty-recommendations.md).
+
 ## Stale manifest
 
 First checks:
@@ -55,6 +67,8 @@ First checks:
 2. Check object-store reachability and credentials.
 3. Confirm the manifest `updated_at` and artifact paths.
 4. Invalidate relevant caches through admin cache invalidation when the new manifest is known-good.
+
+Detailed path: [Stale Artifact Manifest](operations/runbooks/stale-artifact-manifest.md).
 
 ## Service not ready
 
@@ -72,3 +86,5 @@ cd api && make migrate-status
 
 Expected result: logs and migration status identify whether the failure is config, database, migrations, or service
 startup.
+
+Detailed path: [Service Not Ready](operations/runbooks/service-not-ready.md).

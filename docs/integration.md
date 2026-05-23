@@ -77,6 +77,8 @@ Then run the relevant checked-in config from `recsys-eval/configs/eval/` against
 decision support, not as automatic ship approval. A good ship decision also checks data quality, sample ratio mismatch,
 guardrail metrics, and operational rollback readiness.
 
+Use [Evaluation Decisions](evaluation-decisions.md) for the ship, hold, and rollback gate sequence.
+
 ## Ecommerce mini proof kit
 
 Use this path when you want a compact evaluator-facing proof that the checked-in fixture, offline report, and pipelines
@@ -109,3 +111,9 @@ Primary evidence files:
 - Preserve request IDs in client logs and server logs for reconstruction.
 - Do not expose internal validation details or stack traces to end users.
 - For empty recommendation sets, use merchandising fallback content and review the [operations guide](operations.md).
+
+## Read next
+
+- [Evaluation Decisions](evaluation-decisions.md)
+- [Artifacts and Pipelines](artifacts-and-pipelines.md)
+- [Data Contracts](reference/data-contracts.md)

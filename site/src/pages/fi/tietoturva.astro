@@ -1,0 +1,46 @@
+---
+import BaseLayout from "../../components/BaseLayout.astro";
+import CTASection from "../../components/CTASection.astro";
+import PageHero from "../../components/PageHero.astro";
+import { localized } from "../../lib/content";
+
+const locale = "fi";
+const page = localized[locale].pages.security;
+---
+
+<BaseLayout locale={locale} pageKey="security" title={page.title} description={page.description}>
+  <PageHero eyebrow={page.eyebrow} heading={page.heading} intro={page.intro} />
+  <section class="section two-col">
+    <div>
+      <p class="eyebrow">Malli</p>
+      <h2>Tietoturvakatsaus alkaa selkeistä vastuurajoista.</h2>
+    </div>
+    <div class="grid cards">
+      <article class="card"><strong>Oletuksena itse ylläpidettävä</strong><p>Operaattori hallitsee infrastruktuuria, verkkoa, salaisuuksia, varmuuskopioita ja säilytystä.</p></article>
+      <article class="card"><strong>Pseudonyymi datamalli</strong><p>Suosittelupyynnöt ja arviointiaineistot eivät vaadi nimiä, sähköposteja tai puhelinnumeroita.</p></article>
+      <article class="card"><strong>Selkeä control plane</strong><p>Admin-konfiguraatiot, säännöt, cache ja auditointi on kuvattu luotetun operaattorin pintoina.</p></article>
+    </div>
+  </section>
+  <section class="band">
+    <div class="section two-col">
+      <div>
+        <p class="eyebrow">Kontrollit</p>
+        <h2>Nykyiset repository-kontrollit ovat näkyvissä ennen hankintaa.</h2>
+      </div>
+      <ul class="feature-list">
+        <li>JWT-, API key- ja paikalliset dev-header-moodit ovat mukana konfiguraatiossa ja middlewaressa.</li>
+        <li>Tenant-claimit tai tenant-headerit rajaavat tarjoilu- ja admin-reittejä.</li>
+        <li>Admin-auditointi voidaan ottaa käyttöön control-plane-muutoksille.</li>
+        <li>Tuotantokonfiguraation validointi kattaa salaisuudet, pprof-sidonnan ja S3/TLS-asetukset.</li>
+      </ul>
+    </div>
+  </section>
+  <section class="section two-col">
+    <div>
+      <p class="eyebrow">Rajat</p>
+      <h2>Ei piilotettuja sertifiointiväitteitä.</h2>
+    </div>
+    <p class="lead">Tämä sivusto ei väitä ulkoisia sertifikaatteja, hallitun hostauksen kontrolleja, DPA-ehtoja, alikäsittelijälistoja, SLA-sitoumuksia tai dataresidenssiä ilman allekirjoitettuja kaupallisia ehtoja.</p>
+  </section>
+  <CTASection locale={locale} heading="Valmisteletko tietoturvakatsausta?" text="Aloita hankintasivulta ja teknisestä tietoturvadokumentaatiosta. Käytä yhteyspolkua luottamukselliseen kaupalliseen katsaukseen." />
+</BaseLayout>

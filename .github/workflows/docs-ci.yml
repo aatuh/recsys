@@ -7,9 +7,12 @@ on:
       - "mkdocs.yml"
       - "scripts/docs_linkcheck.py"
       - "scripts/docs_external_linkcheck.py"
+      - "scripts/site_linkcheck.py"
+      - "site/**"
       - ".codespell_dictionary.txt"
       - ".codespellrc.ini"
       - ".github/workflows/docs-ci.yml"
+      - ".github/workflows/pages.yml"
   push:
     branches: [master]
     paths:
@@ -17,15 +20,21 @@ on:
       - "mkdocs.yml"
       - "scripts/docs_linkcheck.py"
       - "scripts/docs_external_linkcheck.py"
+      - "scripts/site_linkcheck.py"
+      - "site/**"
       - ".codespell_dictionary.txt"
       - ".codespellrc.ini"
       - ".github/workflows/docs-ci.yml"
+      - ".github/workflows/pages.yml"
   schedule:
     - cron: "0 6 * * 1"
   workflow_dispatch:
 
 permissions:
   contents: read
+
+env:
+  ASTRO_TELEMETRY_DISABLED: "1"
 
 jobs:
   build:
@@ -53,17 +62,8 @@ jobs:
             mkdocs-redirects mkdocs-minify-plugin mkdocs-glightbox \
             pillow cairosvg
 
-      - name: Markdown lint
-        run: make mdlint
+      - name: Install site deps
+        run: npm ci --prefix site
 
-      - name: Spell check (codespell)
-        run: make codespell
-
-      - name: Internal link check
-        run: python3 scripts/docs_linkcheck.py
-
-      - name: External link check
-        run: python3 scripts/docs_external_linkcheck.py
-
-      - name: MkDocs strict build
-        run: mkdocs build --strict --site-dir .site
+      - name: Combined site check
+        run: make site-check
