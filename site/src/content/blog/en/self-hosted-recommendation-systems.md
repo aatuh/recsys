@@ -2,7 +2,7 @@
 title: "When a self-hosted recommendation system makes sense"
 description: "A practical checklist for teams considering self-hosted recommendation infrastructure instead of a managed black-box service."
 language: "en"
-pubDate: "2026-05-23"
+pubDate: "2026-03-28"
 translationKey: "self-hosted-recsys"
 tags: ["self-hosted", "security", "procurement"]
 ---

@@ -2,7 +2,7 @@
 title: "Auditable recommendation rollouts need more than model scores"
 description: "A practical view of recommendation rollouts that keep request IDs, exposure logs, artifact versions, and rollback levers in the same decision record."
 language: "en"
-pubDate: "2026-05-23"
+pubDate: "2026-02-28"
 translationKey: "auditable-rollouts"
 tags: ["recommendation systems", "rollout", "audit"]
 ---

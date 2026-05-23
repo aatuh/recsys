@@ -46,7 +46,14 @@ jobs:
       - name: Install site deps
         run: npm ci --prefix site
 
+      - name: Validate Google Analytics configuration
+        env:
+          PUBLIC_GA_MEASUREMENT_ID: ${{ vars.PUBLIC_GA_MEASUREMENT_ID }}
+        run: bash scripts/validate_ga_measurement_id.sh
+
       - name: Build and check combined site
+        env:
+          PUBLIC_GA_MEASUREMENT_ID: ${{ vars.PUBLIC_GA_MEASUREMENT_ID }}
         run: make site-check
 
       - name: Debug artifact layout

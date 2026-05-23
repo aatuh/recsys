@@ -2,7 +2,7 @@
 title: "Arvioi ennen suosittelun ranking-muutoksia"
 description: "Miten exposure- ja outcome-liitoksia, guardraileja ja offline-raportteja käytetään ennen suosittelun ranking-muutosten julkaisua."
 language: "fi"
-pubDate: "2026-05-23"
+pubDate: "2026-03-14"
 translationKey: "evaluate-before-ranking"
 tags: ["arviointi", "ranking", "kokeet"]
 ---

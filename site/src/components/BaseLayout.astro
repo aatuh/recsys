@@ -118,6 +118,8 @@ function safeJsonLd(value: unknown): string {
     <meta name="twitter:image" content={ogImageUrl} />
     <meta name="twitter:image:alt" content={ogImageAlt} />
     <meta name="theme-color" content="#f7f4ed" />
+    <script is:inline src="/assets/analytics-config.js" defer></script>
+    <script is:inline src="/assets/analytics-consent.js" defer></script>
     <script is:inline type="application/ld+json" set:html={safeJsonLd(organization)} />
     <script is:inline type="application/ld+json" set:html={safeJsonLd(website)} />
     {breadcrumb && <script is:inline type="application/ld+json" set:html={safeJsonLd(breadcrumb)} />}
@@ -149,7 +151,16 @@ function safeJsonLd(value: unknown): string {
               FI
             </a>
           </div>
-          <a class="button primary" href={pageRoutes.contact[locale]}>{navLabels[locale].contact}</a>
+          <a
+            class="button primary"
+            href={pageRoutes.contact[locale]}
+            data-analytics-event="cta_click"
+            data-analytics-cta-id="header_contact"
+            data-analytics-cta-location="header"
+            data-analytics-target-path={pageRoutes.contact[locale]}
+          >
+            {navLabels[locale].contact}
+          </a>
         </div>
       </div>
     </header>
@@ -177,6 +188,10 @@ function safeJsonLd(value: unknown): string {
           <a href={pageRoutes.security[locale]}>{navLabels[locale].security}</a>
           <a href={pageRoutes.blog[locale]}>{navLabels[locale].blog}</a>
           <a href={pageRoutes.contact[locale]}>{navLabels[locale].contact}</a>
+          <a href={pageRoutes.privacy[locale]}>{navLabels[locale].privacy}</a>
+          <button type="button" data-analytics-preferences>
+            {locale === "fi" ? "Evästeasetukset" : "Cookie preferences"}
+          </button>
           <a href={oppositeLocale === "fi" ? "/fi/" : "/"}>{oppositeLocale.toUpperCase()}</a>
         </nav>
       </div>

@@ -8,6 +8,7 @@ on:
       - "scripts/docs_linkcheck.py"
       - "scripts/docs_external_linkcheck.py"
       - "scripts/site_linkcheck.py"
+      - "scripts/validate_ga_measurement_id.sh"
       - "site/**"
       - ".codespell_dictionary.txt"
       - ".codespellrc.ini"
@@ -21,6 +22,7 @@ on:
       - "scripts/docs_linkcheck.py"
       - "scripts/docs_external_linkcheck.py"
       - "scripts/site_linkcheck.py"
+      - "scripts/validate_ga_measurement_id.sh"
       - "site/**"
       - ".codespell_dictionary.txt"
       - ".codespellrc.ini"
@@ -35,6 +37,7 @@ permissions:
 
 env:
   ASTRO_TELEMETRY_DISABLED: "1"
+  PUBLIC_GA_MEASUREMENT_ID: "G-TEST0000"
 
 jobs:
   build:
@@ -65,5 +68,12 @@ jobs:
       - name: Install site deps
         run: npm ci --prefix site
 
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+        working-directory: site
+
       - name: Combined site check
         run: make site-check
+
+      - name: Consent E2E
+        run: make site-consent-test

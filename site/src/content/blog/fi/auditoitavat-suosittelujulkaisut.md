@@ -2,7 +2,7 @@
 title: "Auditoitava suosittelujulkaisu vaatii muutakin kuin mallipisteitä"
 description: "Käytännön näkökulma suosittelujulkaisuihin, joissa request ID:t, exposure-lokit, artefaktiversiot ja palautuskeinot pysyvät samassa päätösjäljessä."
 language: "fi"
-pubDate: "2026-05-23"
+pubDate: "2026-02-28"
 translationKey: "auditable-rollouts"
 tags: ["suosittelujärjestelmät", "julkaisu", "auditointi"]
 ---

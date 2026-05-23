@@ -575,9 +575,15 @@ th {
   gap: 0.75rem 1rem;
 }
 
-.footer-links a {
+.footer-links a,
+.footer-links button {
+  background: transparent;
+  border: 0;
   color: var(--muted);
+  cursor: pointer;
+  font: inherit;
   font-weight: 650;
+  padding: 0;
   text-decoration: none;
 }
 

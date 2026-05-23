@@ -1,4 +1,4 @@
-.PHONY: help env test-env codegen dev down build test proof-kit-test fmt lint security health reuse mdlint codespell mkdocs-serve site-install site-build site-check site-preview
+.PHONY: help env test-env codegen dev down build test proof-kit-test fmt lint security health reuse mdlint codespell mkdocs-serve site-install site-build site-check site-preview site-consent-test
 
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 COMMIT ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo none)
@@ -188,7 +188,7 @@ site-install: ## Install Astro marketing-site dependencies
 
 site-build: ## Build Astro marketing site and MkDocs technical docs into .site
 	rm -rf .site
-	npm run build --prefix site
+	PUBLIC_GA_MEASUREMENT_ID=$${PUBLIC_GA_MEASUREMENT_ID:-G-TEST0000} npm run build --prefix site
 	$(MAKE) DOCS_SITE_DIR=.site/documentation/technical docs-build
 	touch .site/.nojekyll
 
@@ -197,6 +197,10 @@ site-check: ## Check Astro site, docs, generated site links, and combined build
 	$(MAKE) docs-check
 	$(MAKE) site-build
 	python3 scripts/site_linkcheck.py .site
+
+site-consent-test: ## Run Playwright analytics consent tests against the combined static site
+	PUBLIC_GA_MEASUREMENT_ID=G-TEST0000 $(MAKE) site-build
+	cd site && PUBLIC_GA_MEASUREMENT_ID=G-TEST0000 npm run test:consent
 
 site-preview: site-build ## Preview combined static site locally
 	npx --yes serve .site

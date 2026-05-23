@@ -13,3 +13,5 @@
 **/bin/
 **/node_modules/
 site/dist/
+site/playwright-report/
+site/test-results/

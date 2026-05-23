@@ -7,7 +7,7 @@ const { locale } = Astro.props as { locale: Locale };
 
 <div class="price-grid">
   {
-    pricingPlans[locale].map((plan) => (
+    pricingPlans[locale].map((plan, index) => (
       <article class="card price-card">
         <div>
           <strong>{plan.name}</strong>
@@ -17,7 +17,14 @@ const { locale } = Astro.props as { locale: Locale };
           </div>
         </div>
         <p>{plan.scope}</p>
-        <a class="button secondary" href={plan.contactPath}>
+        <a
+          class="button secondary"
+          href={plan.contactPath}
+          data-analytics-event="cta_click"
+          data-analytics-cta-id={`pricing_plan_${index + 1}`}
+          data-analytics-cta-location="pricing_card"
+          data-analytics-target-path={plan.contactPath}
+        >
           {plan.enterprise
             ? locale === "fi"
               ? "Keskustele laajuudesta"

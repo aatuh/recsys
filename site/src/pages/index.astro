@@ -33,8 +33,26 @@ const jsonLd = [
       <h1>{page.heading}</h1>
       <p class="lead">{page.intro}</p>
       <div class="hero-actions">
-        <a class="button primary" href="/contact/">Start an evaluation</a>
-        <a class="button secondary" href="/documentation/">Read the documentation</a>
+        <a
+          class="button primary"
+          href="/contact/"
+          data-analytics-event="cta_click"
+          data-analytics-cta-id="home_start_evaluation"
+          data-analytics-cta-location="hero"
+          data-analytics-target-path="/contact/"
+        >
+          Start an evaluation
+        </a>
+        <a
+          class="button secondary"
+          href="/documentation/"
+          data-analytics-event="cta_click"
+          data-analytics-cta-id="home_read_documentation"
+          data-analytics-cta-location="hero"
+          data-analytics-target-path="/documentation/"
+        >
+          Read the documentation
+        </a>
       </div>
       <div class="proof-strip" aria-label="Product proof points">
         <span>Deterministic ranking core</span>
@@ -87,7 +105,16 @@ const jsonLd = [
       <h2>Ship, hold, or roll back with a decision record.</h2>
       <p class="lead">The evaluation loop starts with schemas and join integrity, then checks guardrails and business metrics before rollout.</p>
       <div class="button-row">
-        <a class="button secondary" href="/evaluation/">See evaluation workflow</a>
+        <a
+          class="button secondary"
+          href="/evaluation/"
+          data-analytics-event="cta_click"
+          data-analytics-cta-id="home_evaluation_workflow"
+          data-analytics-cta-location="evaluation_section"
+          data-analytics-target-path="/evaluation/"
+        >
+          See evaluation workflow
+        </a>
       </div>
     </div>
     <div class="grid cards">

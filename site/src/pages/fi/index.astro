@@ -33,8 +33,26 @@ const jsonLd = [
       <h1>{page.heading}</h1>
       <p class="lead">{page.intro}</p>
       <div class="hero-actions">
-        <a class="button primary" href="/fi/yhteys/">Aloita arviointi</a>
-        <a class="button secondary" href="/fi/dokumentaatio/">Lue dokumentaatio</a>
+        <a
+          class="button primary"
+          href="/fi/yhteys/"
+          data-analytics-event="cta_click"
+          data-analytics-cta-id="home_start_evaluation"
+          data-analytics-cta-location="hero"
+          data-analytics-target-path="/fi/yhteys/"
+        >
+          Aloita arviointi
+        </a>
+        <a
+          class="button secondary"
+          href="/fi/dokumentaatio/"
+          data-analytics-event="cta_click"
+          data-analytics-cta-id="home_read_documentation"
+          data-analytics-cta-location="hero"
+          data-analytics-target-path="/fi/dokumentaatio/"
+        >
+          Lue dokumentaatio
+        </a>
       </div>
       <div class="proof-strip" aria-label="Tuotteen näyttöpisteet">
         <span>Deterministinen ranking-ydin</span>
@@ -78,7 +96,16 @@ const jsonLd = [
       <h2>Julkaise, pidä odottamassa tai palauta päätösjäljen kanssa.</h2>
       <p class="lead">Arviointipolku alkaa skeemoista ja join-eheydestä, tarkistaa guardrailit ja vasta sitten liiketoimintamittarit.</p>
       <div class="button-row">
-        <a class="button secondary" href="/fi/arviointi/">Katso arviointipolku</a>
+        <a
+          class="button secondary"
+          href="/fi/arviointi/"
+          data-analytics-event="cta_click"
+          data-analytics-cta-id="home_evaluation_workflow"
+          data-analytics-cta-location="evaluation_section"
+          data-analytics-target-path="/fi/arviointi/"
+        >
+          Katso arviointipolku
+        </a>
       </div>
     </div>
     <div class="grid cards">

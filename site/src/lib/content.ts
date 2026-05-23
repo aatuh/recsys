@@ -159,6 +159,15 @@ export const localized: Record<
         intro:
           "Short articles for teams moving from recommendation experiments to auditable production rollouts.",
       },
+      privacy: {
+        title: "RecSys Privacy and Cookies | Analytics consent",
+        description:
+          "How RecSys uses opt-in Google Analytics, stores cookie preferences, limits analytics events, and handles external contact paths.",
+        eyebrow: "Privacy and cookies",
+        heading: "Analytics stays opt-in.",
+        intro:
+          "RecSys uses analytics only after consent. This page explains what is measured, what is not sent, and how to change your preference.",
+      },
     },
   },
   fi: {
@@ -229,6 +238,15 @@ export const localized: Record<
         heading: "Käytännön muistiinpanoja arvioitaviin suosittelujärjestelmiin.",
         intro:
           "Lyhyitä artikkeleita tiimeille, jotka siirtyvät suosittelukokeiluista auditoitaviin tuotantojulkaisuihin.",
+      },
+      privacy: {
+        title: "RecSys-tietosuoja ja evästeet | Analytiikan suostumus",
+        description:
+          "Miten RecSys käyttää valinnaista Google Analyticsia, tallentaa evästeasetuksen, rajaa analytiikkatapahtumat ja ohjaa ulkoisiin yhteyspolkuihin.",
+        eyebrow: "Tietosuoja ja evästeet",
+        heading: "Analytiikka pysyy valinnaisena.",
+        intro:
+          "RecSys käyttää analytiikkaa vain suostumuksen jälkeen. Tämä sivu kertoo, mitä mitataan, mitä ei lähetetä ja miten asetusta muutetaan.",
       },
     },
   },

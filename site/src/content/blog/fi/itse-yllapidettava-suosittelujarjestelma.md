@@ -2,7 +2,7 @@
 title: "Milloin itse ylläpidettävä suosittelujärjestelmä on järkevä"
 description: "Käytännön tarkistuslista tiimeille, jotka harkitsevat itse ylläpidettävää suositteluinfrastruktuuria hallitun mustan laatikon sijaan."
 language: "fi"
-pubDate: "2026-05-23"
+pubDate: "2026-03-28"
 translationKey: "self-hosted-recsys"
 tags: ["itse ylläpidettävä", "tietoturva", "hankinta"]
 ---

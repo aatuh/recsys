@@ -1,0 +1,58 @@
+---
+import BaseLayout from "../../components/BaseLayout.astro";
+import PageHero from "../../components/PageHero.astro";
+import { localized } from "../../lib/content";
+
+const locale = "fi";
+const page = localized[locale].pages.privacy;
+---
+
+<BaseLayout locale={locale} pageKey="privacy" title={page.title} description={page.description}>
+  <PageHero eyebrow={page.eyebrow} heading={page.heading} intro={page.intro} />
+  <section class="section two-col">
+    <div>
+      <p class="eyebrow">Analytiikka</p>
+      <h2>Valinnainen analytiikka auttaa parantamaan sivustoa.</h2>
+    </div>
+    <div class="grid cards">
+      <article class="card">
+        <strong>Mitä mitataan</strong>
+        <p>Sivukatseluita ja erikseen merkittyjä CTA-klikkauksia voidaan lähettää Google Analyticsiin hyväksynnän jälkeen.</p>
+      </article>
+      <article class="card">
+        <strong>Mitä ei lähetetä</strong>
+        <p>RecSys ei lähetä Google Analyticsiin nimiä, sähköposteja, käyttäjätunnisteita, request ID:itä, salaisuuksia tai yhteydenottojen sisältöä.</p>
+      </article>
+      <article class="card">
+        <strong>Miten suostumus tallennetaan</strong>
+        <p>Analytiikka-asetus tallennetaan localStorageen avaimella <code>recsys.analyticsConsent.v1</code>.</p>
+      </article>
+    </div>
+  </section>
+  <section class="section two-col">
+    <div>
+      <p class="eyebrow">Asetukset</p>
+      <h2>Voit muuttaa valintaasi.</h2>
+    </div>
+    <div>
+      <p class="lead">
+        Käytä alatunnisteen evästeasetuksia hyväksyäksesi, kieltäytyäksesi tai muuttaaksesi analytiikkasuostumusta.
+        Kieltäytyminen poistaa paikallisen analytiikkasuostumuksen ja pyytää selainta vanhentamaan tämän sivuston tunnetut
+        Google Analytics -evästeet.
+      </p>
+      <div class="button-row">
+        <button type="button" class="button secondary" data-analytics-preferences>Evästeasetukset</button>
+      </div>
+    </div>
+  </section>
+  <section class="section two-col">
+    <div>
+      <p class="eyebrow">Yhteyspolut</p>
+      <h2>Ulkoisilla yhteyslinkeillä on omat käytäntönsä.</h2>
+    </div>
+    <p class="lead">
+      Yhteyssivu ohjaa kaupalliset yhteydenotot LinkedIniin ja julkiset lisensointikysymykset GitHub issueihin. Nämä
+      palvelut ovat RecSysin ulkopuolisia ja käyttävät omia tietosuoja-, tili- ja lokituskäytäntöjään.
+    </p>
+  </section>
+</BaseLayout>

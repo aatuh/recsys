@@ -2,7 +2,7 @@
 title: "Evaluate before changing recommendation ranking"
 description: "How to use exposure and outcome joins, guardrails, and offline reports before shipping recommendation ranking changes."
 language: "en"
-pubDate: "2026-05-23"
+pubDate: "2026-03-14"
 translationKey: "evaluate-before-ranking"
 tags: ["evaluation", "ranking", "experiments"]
 ---

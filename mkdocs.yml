@@ -60,6 +60,10 @@ markdown_extensions:
   - pymdownx.tasklist:
       custom_checkbox: true
 
+extra_javascript:
+  - /assets/analytics-config.js
+  - /assets/analytics-consent.js
+
 nav:
   - Home: index.md
   - Developer Quickstart: developer-quickstart.md

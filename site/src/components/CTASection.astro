@@ -26,8 +26,24 @@ const { locale, heading, text } = Astro.props;
         }
       </p>
       <div class="button-row">
-        <a class="button primary" href={pageRoutes.contact[locale]}>{locale === "fi" ? "Ota yhteyttä" : "Contact"}</a>
-        <a class="button secondary" href={pageRoutes.documentation[locale]}>
+        <a
+          class="button primary"
+          href={pageRoutes.contact[locale]}
+          data-analytics-event="cta_click"
+          data-analytics-cta-id="cta_section_contact"
+          data-analytics-cta-location="cta_section"
+          data-analytics-target-path={pageRoutes.contact[locale]}
+        >
+          {locale === "fi" ? "Ota yhteyttä" : "Contact"}
+        </a>
+        <a
+          class="button secondary"
+          href={pageRoutes.documentation[locale]}
+          data-analytics-event="cta_click"
+          data-analytics-cta-id="cta_section_documentation"
+          data-analytics-cta-location="cta_section"
+          data-analytics-target-path={pageRoutes.documentation[locale]}
+        >
           {locale === "fi" ? "Avaa dokumentaatio" : "Open documentation"}
         </a>
       </div>

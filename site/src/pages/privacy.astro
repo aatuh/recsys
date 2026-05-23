@@ -1,0 +1,57 @@
+---
+import BaseLayout from "../components/BaseLayout.astro";
+import PageHero from "../components/PageHero.astro";
+import { localized } from "../lib/content";
+
+const locale = "en";
+const page = localized[locale].pages.privacy;
+---
+
+<BaseLayout locale={locale} pageKey="privacy" title={page.title} description={page.description}>
+  <PageHero eyebrow={page.eyebrow} heading={page.heading} intro={page.intro} />
+  <section class="section two-col">
+    <div>
+      <p class="eyebrow">Analytics</p>
+      <h2>Optional analytics help improve the site.</h2>
+    </div>
+    <div class="grid cards">
+      <article class="card">
+        <strong>What is measured</strong>
+        <p>Page views and explicitly marked CTA clicks may be sent to Google Analytics after you accept analytics.</p>
+      </article>
+      <article class="card">
+        <strong>What is not sent</strong>
+        <p>RecSys does not send names, emails, user IDs, request IDs, secrets, or contact message content to Google Analytics.</p>
+      </article>
+      <article class="card">
+        <strong>How consent is stored</strong>
+        <p>Your analytics preference is stored in localStorage as <code>recsys.analyticsConsent.v1</code>.</p>
+      </article>
+    </div>
+  </section>
+  <section class="section two-col">
+    <div>
+      <p class="eyebrow">Preferences</p>
+      <h2>You can change your choice.</h2>
+    </div>
+    <div>
+      <p class="lead">
+        Use the Cookie preferences control in the footer to accept, decline, or revise analytics consent. Declining removes the
+        local consent for analytics and asks the browser to expire known Google Analytics cookies for this site.
+      </p>
+      <div class="button-row">
+        <button type="button" class="button secondary" data-analytics-preferences>Cookie preferences</button>
+      </div>
+    </div>
+  </section>
+  <section class="section two-col">
+    <div>
+      <p class="eyebrow">Contact paths</p>
+      <h2>External contact links have their own policies.</h2>
+    </div>
+    <p class="lead">
+      The contact page routes commercial inquiries through LinkedIn and public licensing questions through GitHub issues. Those
+      services are external to RecSys and apply their own privacy, account, and logging practices.
+    </p>
+  </section>
+</BaseLayout>

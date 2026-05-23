@@ -6,7 +6,8 @@ export type PageKey =
   | "evaluation"
   | "contact"
   | "documentation"
-  | "blog";
+  | "blog"
+  | "privacy";
 
 export const siteName = "RecSys";
 export const siteUrl = "https://recsys.app";
@@ -19,6 +20,7 @@ export const pageRoutes: Record<PageKey, Record<Locale, string>> = {
   contact: { en: "/contact/", fi: "/fi/yhteys/" },
   documentation: { en: "/documentation/", fi: "/fi/dokumentaatio/" },
   blog: { en: "/blog/", fi: "/fi/blogi/" },
+  privacy: { en: "/privacy/", fi: "/fi/tietosuoja/" },
 };
 
 export const navLabels: Record<Locale, Record<PageKey, string>> = {
@@ -30,6 +32,7 @@ export const navLabels: Record<Locale, Record<PageKey, string>> = {
     contact: "Contact",
     documentation: "Documentation",
     blog: "Blog",
+    privacy: "Privacy",
   },
   fi: {
     home: "Tuote",
@@ -39,6 +42,7 @@ export const navLabels: Record<Locale, Record<PageKey, string>> = {
     contact: "Yhteys",
     documentation: "Dokumentaatio",
     blog: "Blogi",
+    privacy: "Tietosuoja",
   },
 };
 
