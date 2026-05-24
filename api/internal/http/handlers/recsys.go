@@ -95,44 +95,54 @@ func (h *RecsysHandler) RegisterRoutes(r ports.HTTPRouter) {
 
 // recommend handles POST /v1/recommend.
 func (h *RecsysHandler) recommend(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
 	var dto types.RecommendRequest
 	if err := decodeStrictJSON(r, &dto); err != nil {
+		recordRecommendationMetric("recommend", "invalid_request", 0, 0, start)
 		writeProblem(w, r, http.StatusBadRequest, "RECSYS_INVALID_REQUEST", err.Error())
 		return
 	}
 	if err := h.Validator.ValidateStruct(r.Context(), &dto); err != nil {
+		recordRecommendationMetric("recommend", "invalid_request", 0, 0, start)
 		writeProblem(w, r, http.StatusBadRequest, "RECSYS_INVALID_REQUEST", err.Error())
 		return
 	}
 
 	norm, warnings, err := validation.NormalizeRecommendRequest(&dto)
 	if err != nil {
+		recordRecommendationMetric("recommend", "validation_failed", 0, len(warnings), start)
 		writeValidationError(w, r, err)
 		return
 	}
 	if !h.enforceExplainControls(w, r, norm.Options, norm.K) {
+		recordRecommendationMetric("recommend", "forbidden", 0, len(warnings), start)
 		return
 	}
 	if h.ExperimentAssigner != nil {
-		norm.Experiment = h.ExperimentAssigner.Assign(norm.Experiment, norm.User)
+		norm.Experiment = h.ExperimentAssigner.Assign(norm.Experiment, norm.User, norm.Surface, time.Now().UTC())
 	}
 
 	items, svcWarnings, meta, err := h.Svc.Recommend(r.Context(), norm)
 	if err != nil {
 		if errors.Is(err, recsysvc.ErrOverloaded) {
 			appmetrics.RecordBackpressureRejection()
+			recordRecommendationMetric("recommend", "overload", 0, len(warnings), start)
 			h.writeOverloaded(w, r)
 			return
 		}
 		if errors.Is(err, recsysvc.ErrArtifactIncompatible) {
+			appmetrics.RecordArtifactLoadFailure("request")
+			recordRecommendationMetric("recommend", "artifact_incompatible", 0, len(warnings), start)
 			writeProblem(w, r, http.StatusUnprocessableEntity, "RECSYS_ARTIFACT_INCOMPATIBLE", "artifact incompatible")
 			return
 		}
+		recordRecommendationMetric("recommend", "internal_error", 0, len(warnings), start)
 		writeProblem(w, r, http.StatusInternalServerError, "RECSYS_INTERNAL", "internal error")
 		return
 	}
 
 	allWarnings := append(warnings, svcWarnings...)
+	recordRecommendationMetric("recommend", "success", len(items), len(allWarnings), start)
 	resp := types.RecommendResponse{
 		Items:    mapper.RecommendItemsDTO(items),
 		Meta:     buildMeta(norm, r, len(items), meta),
@@ -146,22 +156,27 @@ func (h *RecsysHandler) recommend(w http.ResponseWriter, r *http.Request) {
 
 // similar handles POST /v1/similar.
 func (h *RecsysHandler) similar(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
 	var dto types.SimilarRequest
 	if err := decodeStrictJSON(r, &dto); err != nil {
+		recordRecommendationMetric("similar", "invalid_request", 0, 0, start)
 		writeProblem(w, r, http.StatusBadRequest, "RECSYS_INVALID_REQUEST", err.Error())
 		return
 	}
 	if err := h.Validator.ValidateStruct(r.Context(), &dto); err != nil {
+		recordRecommendationMetric("similar", "invalid_request", 0, 0, start)
 		writeProblem(w, r, http.StatusBadRequest, "RECSYS_INVALID_REQUEST", err.Error())
 		return
 	}
 
 	norm, warnings, err := validation.NormalizeSimilarRequest(&dto)
 	if err != nil {
+		recordRecommendationMetric("similar", "validation_failed", 0, len(warnings), start)
 		writeValidationError(w, r, err)
 		return
 	}
 	if !h.enforceExplainControls(w, r, norm.Options, norm.K) {
+		recordRecommendationMetric("similar", "forbidden", 0, len(warnings), start)
 		return
 	}
 
@@ -169,18 +184,23 @@ func (h *RecsysHandler) similar(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if errors.Is(err, recsysvc.ErrOverloaded) {
 			appmetrics.RecordBackpressureRejection()
+			recordRecommendationMetric("similar", "overload", 0, len(warnings), start)
 			h.writeOverloaded(w, r)
 			return
 		}
 		if errors.Is(err, recsysvc.ErrArtifactIncompatible) {
+			appmetrics.RecordArtifactLoadFailure("request")
+			recordRecommendationMetric("similar", "artifact_incompatible", 0, len(warnings), start)
 			writeProblem(w, r, http.StatusUnprocessableEntity, "RECSYS_ARTIFACT_INCOMPATIBLE", "artifact incompatible")
 			return
 		}
+		recordRecommendationMetric("similar", "internal_error", 0, len(warnings), start)
 		writeProblem(w, r, http.StatusInternalServerError, "RECSYS_INTERNAL", "internal error")
 		return
 	}
 
 	allWarnings := append(warnings, svcWarnings...)
+	recordRecommendationMetric("similar", "success", len(items), len(allWarnings), start)
 	resp := types.RecommendResponse{
 		Items:    mapper.RecommendItemsDTO(items),
 		Meta:     buildMetaFromSimilar(norm, r, len(items), meta),
@@ -190,6 +210,10 @@ func (h *RecsysHandler) similar(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-store")
 	response_writer.WriteJSON(w, http.StatusOK, resp)
 	h.logExposureFromSimilar(r, norm, items, meta)
+}
+
+func recordRecommendationMetric(endpoint string, outcome string, returned int, warnings int, start time.Time) {
+	appmetrics.RecordRecommendation(endpoint, outcome, returned, warnings, time.Since(start).Seconds())
 }
 
 func (h *RecsysHandler) writeOverloaded(w http.ResponseWriter, r *http.Request) {

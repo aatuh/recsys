@@ -126,6 +126,52 @@ func TestValidateAllowsMissingSecretsOutsideProduction(t *testing.T) {
 	}
 }
 
+func TestValidateRejectsInvalidExperimentDefinitions(t *testing.T) {
+	traffic := 150.0
+	cfg := Config{
+		Config: configBase("development"),
+		Experiment: ExperimentConfig{
+			Definitions: []ExperimentDefinition{
+				{ID: "exp-1", Enabled: true, TrafficPercent: &traffic, Variants: []string{"A", "B"}},
+			},
+		},
+	}
+
+	err := Validate(cfg)
+	if err == nil {
+		t.Fatal("Validate() error = nil")
+	}
+	if !strings.Contains(err.Error(), "traffic_percent") {
+		t.Fatalf("Validate() error = %q, want traffic_percent", err.Error())
+	}
+}
+
+func TestParseExperimentDefinitionsAppliesValidation(t *testing.T) {
+	defs, err := parseExperimentDefinitions(`[{
+		"id": "exp-home",
+		"enabled": true,
+		"surface": "home",
+		"traffic_percent": 25,
+		"variants": ["A", "B"],
+		"starts_at": "2026-01-01T00:00:00Z",
+		"ends_at": "2026-02-01T00:00:00Z"
+	}]`)
+	if err != nil {
+		t.Fatalf("parseExperimentDefinitions() error = %v", err)
+	}
+	if len(defs) != 1 || defs[0].ID != "exp-home" || defs[0].TrafficPercent == nil || *defs[0].TrafficPercent != 25 {
+		t.Fatalf("definitions = %+v, want parsed experiment", defs)
+	}
+
+	_, err = parseExperimentDefinitions(`[{"id":"exp-home","variants":["A","A"]}]`)
+	if err == nil {
+		t.Fatal("parseExperimentDefinitions() duplicate variants error = nil")
+	}
+	if !strings.Contains(err.Error(), "duplicate experiment variant") {
+		t.Fatalf("parseExperimentDefinitions() error = %q, want duplicate variant", err.Error())
+	}
+}
+
 func TestFloatEnvPanicsOnInvalidValue(t *testing.T) {
 	t.Setenv("RECSYS_TEST_FLOAT", "not-a-float")
 

@@ -193,7 +193,11 @@ func buildAppDeps(log ports.Logger, pool ports.DatabasePool, cfg config.Config) 
 	}
 	var assigner experiments.Assigner
 	if cfg.Experiment.Enabled {
-		assigner = experiments.NewDeterministicAssigner(cfg.Experiment.DefaultVariants, cfg.Experiment.Salt)
+		assigner = experiments.NewConfiguredAssigner(
+			cfg.Experiment.DefaultVariants,
+			cfg.Experiment.Salt,
+			experimentDefinitions(cfg.Experiment.Definitions),
+		)
 	}
 	closeFn := func() {
 		for i := len(closers) - 1; i >= 0; i-- {
@@ -222,4 +226,36 @@ func buildAppDeps(log ports.Logger, pool ports.DatabasePool, cfg config.Config) 
 		LicenseManager:      licenseManager,
 		Close:               closeFn,
 	}, nil
+}
+
+func experimentDefinitions(defs []config.ExperimentDefinition) []experiments.Definition {
+	out := make([]experiments.Definition, 0, len(defs))
+	for _, def := range defs {
+		traffic := 100.0
+		if def.TrafficPercent != nil {
+			traffic = *def.TrafficPercent
+		}
+		out = append(out, experiments.Definition{
+			ID:             strings.TrimSpace(def.ID),
+			Enabled:        def.Enabled,
+			Variants:       def.Variants,
+			TrafficPercent: traffic,
+			Surface:        strings.TrimSpace(def.Surface),
+			StartsAt:       parseExperimentTime(def.StartsAt),
+			EndsAt:         parseExperimentTime(def.EndsAt),
+		})
+	}
+	return out
+}
+
+func parseExperimentTime(raw string) time.Time {
+	raw = strings.TrimSpace(raw)
+	if raw == "" {
+		return time.Time{}
+	}
+	t, err := time.Parse(time.RFC3339, raw)
+	if err != nil {
+		return time.Time{}
+	}
+	return t
 }

@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
 	"net"
 	"os"
@@ -113,6 +114,18 @@ type ExperimentConfig struct {
 	Enabled         bool
 	DefaultVariants []string
 	Salt            string
+	Definitions     []ExperimentDefinition
+}
+
+// ExperimentDefinition configures deterministic traffic allocation for an experiment.
+type ExperimentDefinition struct {
+	ID             string   `json:"id"`
+	Enabled        bool     `json:"enabled"`
+	Variants       []string `json:"variants,omitempty"`
+	TrafficPercent *float64 `json:"traffic_percent,omitempty"`
+	Surface        string   `json:"surface,omitempty"`
+	StartsAt       string   `json:"starts_at,omitempty"`
+	EndsAt         string   `json:"ends_at,omitempty"`
 }
 
 // ExplainConfig controls explain/trace safeguards.
@@ -356,10 +369,15 @@ func Load() Config {
 	if len(expVariants) == 0 {
 		expVariants = []string{"A", "B"}
 	}
+	expDefinitions, err := parseExperimentDefinitions(loader.String("EXPERIMENT_CONFIG_JSON", ""))
+	if err != nil {
+		panic(err)
+	}
 	expCfg := ExperimentConfig{
 		Enabled:         loader.Bool("EXPERIMENT_ASSIGNMENT_ENABLED", true),
 		DefaultVariants: expVariants,
 		Salt:            loader.String("EXPERIMENT_ASSIGNMENT_SALT", exposureCfg.HashSalt),
+		Definitions:     expDefinitions,
 	}
 	explainCfg := ExplainConfig{
 		MaxItems:     loader.Int("RECSYS_EXPLAIN_MAX_ITEMS", 50),
@@ -439,6 +457,9 @@ func Validate(cfg Config) error {
 	if cfg.Performance.PprofEnabled && !isLoopbackAddr(cfg.Addr) {
 		return fmt.Errorf("PPROF_ENABLED requires API_ADDR to bind to localhost or a loopback IP")
 	}
+	if err := validateExperimentDefinitions(cfg.Experiment.Definitions); err != nil {
+		return err
+	}
 	if !config.IsProduction(cfg.Env) {
 		return nil
 	}
@@ -453,6 +474,57 @@ func Validate(cfg Config) error {
 	}
 	if cfg.Artifacts.Enabled && strings.TrimSpace(cfg.Artifacts.S3.Endpoint) != "" && !cfg.Artifacts.S3.UseSSL {
 		return fmt.Errorf("RECSYS_ARTIFACT_S3_USE_SSL must be true in production when S3 artifact mode is configured")
+	}
+	return nil
+}
+
+func parseExperimentDefinitions(raw string) ([]ExperimentDefinition, error) {
+	raw = strings.TrimSpace(raw)
+	if raw == "" {
+		return nil, nil
+	}
+	var defs []ExperimentDefinition
+	if err := json.Unmarshal([]byte(raw), &defs); err != nil {
+		return nil, fmt.Errorf("parse EXPERIMENT_CONFIG_JSON: %w", err)
+	}
+	return defs, validateExperimentDefinitions(defs)
+}
+
+func validateExperimentDefinitions(defs []ExperimentDefinition) error {
+	seenIDs := map[string]struct{}{}
+	for _, def := range defs {
+		id := strings.TrimSpace(def.ID)
+		if id == "" {
+			return fmt.Errorf("experiment id is required")
+		}
+		if _, ok := seenIDs[id]; ok {
+			return fmt.Errorf("duplicate experiment id: %s", id)
+		}
+		seenIDs[id] = struct{}{}
+		if def.TrafficPercent != nil && (*def.TrafficPercent < 0 || *def.TrafficPercent > 100) {
+			return fmt.Errorf("experiment traffic_percent must be between 0 and 100")
+		}
+		seenVariants := map[string]struct{}{}
+		for _, variant := range def.Variants {
+			v := strings.TrimSpace(variant)
+			if v == "" {
+				return fmt.Errorf("experiment variant must not be empty")
+			}
+			if _, ok := seenVariants[v]; ok {
+				return fmt.Errorf("duplicate experiment variant: %s", v)
+			}
+			seenVariants[v] = struct{}{}
+		}
+		if strings.TrimSpace(def.StartsAt) != "" {
+			if _, err := time.Parse(time.RFC3339, strings.TrimSpace(def.StartsAt)); err != nil {
+				return fmt.Errorf("experiment starts_at must be RFC3339")
+			}
+		}
+		if strings.TrimSpace(def.EndsAt) != "" {
+			if _, err := time.Parse(time.RFC3339, strings.TrimSpace(def.EndsAt)); err != nil {
+				return fmt.Errorf("experiment ends_at must be RFC3339")
+			}
+		}
 	}
 	return nil
 }

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/aatuh/recsys-suite/api/internal/cache"
+	appmetrics "github.com/aatuh/recsys-suite/api/internal/metrics"
 	"github.com/aatuh/recsys-suite/api/internal/objectstore"
 	"github.com/aatuh/recsys-suite/api/internal/pathsafe"
 
@@ -134,17 +135,24 @@ func (l *Loader) LoadManifest(ctx context.Context, tenant, surface string) (Mani
 		if _, ok := err.(objectstore.ErrNotFound); ok {
 			return ManifestV1{}, false, nil
 		}
+		appmetrics.RecordArtifactLoadFailure("manifest")
 		return ManifestV1{}, false, err
 	}
 	var manifest ManifestV1
 	if err := json.Unmarshal(data, &manifest); err != nil {
+		appmetrics.RecordArtifactLoadFailure("manifest")
 		return ManifestV1{}, false, wrapManifestError(err)
 	}
 	if err := manifest.Validate(); err != nil {
+		appmetrics.RecordArtifactLoadFailure("manifest")
 		return ManifestV1{}, false, wrapManifestError(err)
 	}
 	if manifest.Tenant != tenant || manifest.Surface != surface {
+		appmetrics.RecordArtifactLoadFailure("manifest")
 		return ManifestV1{}, false, wrapManifestError(fmt.Errorf("manifest tenant/surface mismatch"))
+	}
+	if updatedAt, err := time.Parse(time.RFC3339, manifest.UpdatedAt); err == nil {
+		appmetrics.RecordArtifactManifest(time.Since(updatedAt).Seconds(), len(manifest.Current))
 	}
 	if l.logger != nil {
 		l.logger.Info(
@@ -186,13 +194,16 @@ func (l *Loader) LoadPopularity(ctx context.Context, uri string) (PopularityArti
 		if _, ok := err.(objectstore.ErrNotFound); ok {
 			return PopularityArtifactV1{}, false, nil
 		}
+		appmetrics.RecordArtifactLoadFailure(TypePopularity)
 		return PopularityArtifactV1{}, false, err
 	}
 	var art PopularityArtifactV1
 	if err := json.Unmarshal(data, &art); err != nil {
+		appmetrics.RecordArtifactLoadFailure(TypePopularity)
 		return PopularityArtifactV1{}, false, wrapArtifactError(err)
 	}
 	if err := art.Validate(); err != nil {
+		appmetrics.RecordArtifactLoadFailure(TypePopularity)
 		return PopularityArtifactV1{}, false, wrapArtifactError(err)
 	}
 	if l.artifactTTL > 0 {
@@ -217,13 +228,16 @@ func (l *Loader) LoadCooc(ctx context.Context, uri string) (CoocArtifactV1, bool
 		if _, ok := err.(objectstore.ErrNotFound); ok {
 			return CoocArtifactV1{}, false, nil
 		}
+		appmetrics.RecordArtifactLoadFailure(TypeCooc)
 		return CoocArtifactV1{}, false, err
 	}
 	var art CoocArtifactV1
 	if err := json.Unmarshal(data, &art); err != nil {
+		appmetrics.RecordArtifactLoadFailure(TypeCooc)
 		return CoocArtifactV1{}, false, wrapArtifactError(err)
 	}
 	if err := art.Validate(); err != nil {
+		appmetrics.RecordArtifactLoadFailure(TypeCooc)
 		return CoocArtifactV1{}, false, wrapArtifactError(err)
 	}
 	if l.artifactTTL > 0 {
@@ -248,13 +262,16 @@ func (l *Loader) LoadImplicit(ctx context.Context, uri string) (ImplicitArtifact
 		if _, ok := err.(objectstore.ErrNotFound); ok {
 			return ImplicitArtifactV1{}, false, nil
 		}
+		appmetrics.RecordArtifactLoadFailure(TypeImplicit)
 		return ImplicitArtifactV1{}, false, err
 	}
 	var art ImplicitArtifactV1
 	if err := json.Unmarshal(data, &art); err != nil {
+		appmetrics.RecordArtifactLoadFailure(TypeImplicit)
 		return ImplicitArtifactV1{}, false, wrapArtifactError(err)
 	}
 	if err := art.Validate(); err != nil {
+		appmetrics.RecordArtifactLoadFailure(TypeImplicit)
 		return ImplicitArtifactV1{}, false, wrapArtifactError(err)
 	}
 	if l.artifactTTL > 0 {
@@ -279,13 +296,16 @@ func (l *Loader) LoadContent(ctx context.Context, uri string) (ContentArtifactV1
 		if _, ok := err.(objectstore.ErrNotFound); ok {
 			return ContentArtifactV1{}, false, nil
 		}
+		appmetrics.RecordArtifactLoadFailure(TypeContentSim)
 		return ContentArtifactV1{}, false, err
 	}
 	var art ContentArtifactV1
 	if err := json.Unmarshal(data, &art); err != nil {
+		appmetrics.RecordArtifactLoadFailure(TypeContentSim)
 		return ContentArtifactV1{}, false, wrapArtifactError(err)
 	}
 	if err := art.Validate(); err != nil {
+		appmetrics.RecordArtifactLoadFailure(TypeContentSim)
 		return ContentArtifactV1{}, false, wrapArtifactError(err)
 	}
 	if l.artifactTTL > 0 {
@@ -310,13 +330,16 @@ func (l *Loader) LoadSessionSeq(ctx context.Context, uri string) (SessionSeqArti
 		if _, ok := err.(objectstore.ErrNotFound); ok {
 			return SessionSeqArtifactV1{}, false, nil
 		}
+		appmetrics.RecordArtifactLoadFailure(TypeSessionSeq)
 		return SessionSeqArtifactV1{}, false, err
 	}
 	var art SessionSeqArtifactV1
 	if err := json.Unmarshal(data, &art); err != nil {
+		appmetrics.RecordArtifactLoadFailure(TypeSessionSeq)
 		return SessionSeqArtifactV1{}, false, wrapArtifactError(err)
 	}
 	if err := art.Validate(); err != nil {
+		appmetrics.RecordArtifactLoadFailure(TypeSessionSeq)
 		return SessionSeqArtifactV1{}, false, wrapArtifactError(err)
 	}
 	if l.artifactTTL > 0 {
