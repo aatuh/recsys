@@ -74,7 +74,9 @@ nav:
   - Bring Your Own Retriever: bring-your-own-retriever.md
   - Integration and Evaluation: integration.md
   - Evaluation Decisions: evaluation-decisions.md
-  - Benchmarks: benchmarks.md
+  - Benchmarks:
+      - Overview: benchmarks.md
+      - Ecommerce Mini Local Reference: benchmark-reports/ecommerce-mini-local.md
   - Observability: observability.md
   - Operations:
       - Overview: operations.md

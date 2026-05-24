@@ -8,6 +8,7 @@ TENANT_ID=demo \
 SURFACE=home \
 REQUESTS=1000 \
 CONCURRENCY=25 \
+USER_CARDINALITY=1000 \
 CATALOG_SIZE=8 \
 ARTIFACT_SIZE_BYTES="$(find tmp/commercial-proof-kit/pipelines/objectstore -type f -print0 2>/dev/null | xargs -0 stat -c '%s' 2>/dev/null | awk '{s+=$1} END {print s+0}')" \
 REPORT_JSON=tmp/loadtest-report.json \
@@ -17,6 +18,9 @@ bash scripts/loadtest.sh
 
 Expected result: the command prints request totals, RPS, p50/p95/p99 latency, status codes, and writes JSON/Markdown
 reports when report paths are set.
+
+See [Ecommerce Mini Local Load-Test Reference](benchmark-reports/ecommerce-mini-local.md) for a checked-in smoke result
+from the local demo stack.
 
 ## Report Template
 
