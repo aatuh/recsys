@@ -98,6 +98,11 @@ func run(args []string) int {
 		fmt.Fprintln(os.Stderr, "config error:", err)
 		return 2
 	}
+	artifactSelection, err := config.ParseArtifactSelection(env.ArtifactKinds)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "config error:", err)
+		return 2
+	}
 
 	rt := runtime.Runtime{
 		Clock:   systemclock.SystemClock{},
@@ -151,6 +156,29 @@ func run(args []string) int {
 		env.Limits.MaxItemsPerSession,
 		env.Limits.MaxDistinctItemsPerRun,
 	)
+	implicit := usecase.NewComputeImplicit(
+		rt,
+		canonical,
+		env.Limits.MaxItemsPerUser,
+		env.Limits.MaxUsersPerRun,
+		env.Limits.MaxItemsPerUser,
+	)
+	session := usecase.NewComputeSessionSeq(
+		rt,
+		canonical,
+		env.Limits.MaxItemsPerUser,
+		env.Limits.MaxUsersPerRun,
+		env.Limits.MaxItemsPerUser,
+	)
+	var content *usecase.ComputeContentSim
+	if artifactSelection.ContentSim {
+		reader, err := factory.BuildCatalogReader(env)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "catalog error:", err)
+			return 2
+		}
+		content = usecase.NewComputeContentSim(rt, reader, env.Limits.MaxItemsPerArtifact)
+	}
 	publish := usecase.NewPublishArtifacts(rt, store, registry, validator)
 	var persistSignals *usecase.PersistSignals
 	if signalStore != nil {
@@ -164,8 +192,12 @@ func run(args []string) int {
 		Validate:     validateUC,
 		Pop:          pop,
 		Cooc:         cooc,
+		Implicit:     implicit,
+		Content:      content,
+		Session:      session,
 		Signals:      persistSignals,
 		Publish:      publish,
+		Artifacts:    artifactSelection,
 	}
 
 	bf := usecase.NewBackfill(env.Limits.MaxDaysBackfill)

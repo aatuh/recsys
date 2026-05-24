@@ -82,38 +82,56 @@ func main() {
 
 	ctx := context.Background()
 	err = bf.Execute(ctx, startDay, endDay, func(ctx context.Context, w windows.Window) error {
-		popKey := artifacts.Key{
-			Tenant:  tenant,
-			Surface: surface,
-			Segment: segment,
-			Type:    artifacts.TypePopularity,
-		}
-		coocKey := artifacts.Key{
-			Tenant:  tenant,
-			Surface: surface,
-			Segment: segment,
-			Type:    artifacts.TypeCooc,
+		load := func(kind artifacts.Type) (*usecase.ArtifactBlob, bool, error) {
+			key := artifacts.Key{
+				Tenant:  tenant,
+				Surface: surface,
+				Segment: segment,
+				Type:    kind,
+			}
+			ref, blob, ok, err := stage.LoadCurrent(ctx, key, w)
+			if err != nil {
+				return nil, false, err
+			}
+			if !ok {
+				return nil, false, nil
+			}
+			return &usecase.ArtifactBlob{Ref: ref, JSON: blob}, true, nil
 		}
 
-		popRef, popJSON, popOK, err := stage.LoadCurrent(ctx, popKey, w)
+		popBlob, popOK, err := load(artifacts.TypePopularity)
 		if err != nil {
 			return err
 		}
-		coocRef, coocJSON, coocOK, err := stage.LoadCurrent(ctx, coocKey, w)
+		coocBlob, coocOK, err := load(artifacts.TypeCooc)
 		if err != nil {
 			return err
 		}
-		if !popOK && !coocOK {
+		implicitBlob, implicitOK, err := load(artifacts.TypeImplicit)
+		if err != nil {
+			return err
+		}
+		contentBlob, contentOK, err := load(artifacts.TypeContentSim)
+		if err != nil {
+			return err
+		}
+		sessionBlob, sessionOK, err := load(artifacts.TypeSessionSeq)
+		if err != nil {
+			return err
+		}
+		if !popOK && !coocOK && !implicitOK && !contentOK && !sessionOK {
 			rt.Logger.Info(ctx, "publish: no staged artifacts for window")
 			return nil
 		}
 
-		in := usecase.PublishInput{Tenant: tenant, Surface: surface}
-		if popOK {
-			in.Popularity = &usecase.ArtifactBlob{Ref: popRef, JSON: popJSON}
-		}
-		if coocOK {
-			in.Cooc = &usecase.ArtifactBlob{Ref: coocRef, JSON: coocJSON}
+		in := usecase.PublishInput{
+			Tenant:     tenant,
+			Surface:    surface,
+			Popularity: popBlob,
+			Cooc:       coocBlob,
+			Implicit:   implicitBlob,
+			Content:    contentBlob,
+			SessionSeq: sessionBlob,
 		}
 		return publisher.Execute(ctx, in)
 	})

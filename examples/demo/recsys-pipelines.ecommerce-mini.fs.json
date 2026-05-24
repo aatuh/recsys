@@ -14,6 +14,11 @@
     "dir": "../tmp/commercial-proof-kit/pipelines/objectstore"
   },
   "registry_dir": "../tmp/commercial-proof-kit/pipelines/registry",
+  "artifact_kinds": ["popularity", "cooc", "implicit", "content_sim", "session_seq"],
+  "catalog": {
+    "path": "../examples/data/ecommerce-mini/catalog.csv",
+    "format": "csv"
+  },
   "limits": {
     "max_days_backfill": 30,
     "max_events_per_run": 10000,
@@ -25,4 +30,3 @@
     "min_cooc_support": 1
   }
 }
-

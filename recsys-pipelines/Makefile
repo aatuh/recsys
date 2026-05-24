@@ -71,6 +71,9 @@ build: ## Build all the binaries.
 	go build -o $(BIN_DIR)/job_ingest ./cmd/job_ingest
 	go build -o $(BIN_DIR)/job_popularity ./cmd/job_popularity
 	go build -o $(BIN_DIR)/job_cooc ./cmd/job_cooc
+	go build -o $(BIN_DIR)/job_implicit ./cmd/job_implicit
+	go build -o $(BIN_DIR)/job_content_sim ./cmd/job_content_sim
+	go build -o $(BIN_DIR)/job_session_seq ./cmd/job_session_seq
 	go build -o $(BIN_DIR)/job_db_signals ./cmd/job_db_signals
 	go build -o $(BIN_DIR)/job_catalog ./cmd/job_catalog
 	go build -o $(BIN_DIR)/job_publish ./cmd/job_publish

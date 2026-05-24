@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 )
 
 type EnvConfig struct {
@@ -16,8 +17,23 @@ type EnvConfig struct {
 	ObjectStoreDir string            `json:"object_store_dir"`
 	ObjectStore    ObjectStoreConfig `json:"object_store"`
 	RegistryDir    string            `json:"registry_dir"`
+	ArtifactKinds  []string          `json:"artifact_kinds"`
+	Catalog        CatalogConfig     `json:"catalog"`
 	DB             DatabaseConfig    `json:"db"`
 	Limits         Limits            `json:"limits"`
+}
+
+type CatalogConfig struct {
+	Path   string `json:"path,omitempty"`
+	Format string `json:"format,omitempty"`
+}
+
+type ArtifactSelection struct {
+	Popularity bool
+	Cooc       bool
+	Implicit   bool
+	ContentSim bool
+	SessionSeq bool
 }
 
 type Limits struct {
@@ -158,5 +174,48 @@ func LoadEnvConfig(path string) (EnvConfig, error) {
 	if c.Limits.MaxItemsPerUser == 0 {
 		c.Limits.MaxItemsPerUser = 500
 	}
+	if len(c.ArtifactKinds) == 0 {
+		c.ArtifactKinds = []string{"popularity", "cooc"}
+	}
+	selection, err := ParseArtifactSelection(c.ArtifactKinds)
+	if err != nil {
+		return EnvConfig{}, err
+	}
+	if selection.ContentSim && strings.TrimSpace(c.Catalog.Path) == "" {
+		return EnvConfig{}, fmt.Errorf("catalog.path is required when content_sim artifact is enabled")
+	}
 	return c, nil
+}
+
+func ParseArtifactSelection(kinds []string) (ArtifactSelection, error) {
+	var out ArtifactSelection
+	seen := map[string]struct{}{}
+	for _, kind := range kinds {
+		key := strings.ToLower(strings.TrimSpace(kind))
+		if key == "" {
+			continue
+		}
+		if _, ok := seen[key]; ok {
+			continue
+		}
+		seen[key] = struct{}{}
+		switch key {
+		case "popularity":
+			out.Popularity = true
+		case "cooc":
+			out.Cooc = true
+		case "implicit":
+			out.Implicit = true
+		case "content_sim", "content":
+			out.ContentSim = true
+		case "session_seq", "session":
+			out.SessionSeq = true
+		default:
+			return ArtifactSelection{}, fmt.Errorf("unsupported artifact kind: %s", kind)
+		}
+	}
+	if len(seen) == 0 {
+		return ArtifactSelection{}, fmt.Errorf("at least one artifact kind must be enabled")
+	}
+	return out, nil
 }

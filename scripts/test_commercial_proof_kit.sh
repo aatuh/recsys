@@ -35,6 +35,7 @@ check_required_path() {
 
 check_required_inputs() {
   check_required_path "${DATA_DIR}/pipelines/exposure.jsonl"
+  check_required_path "${DATA_DIR}/catalog.csv"
   check_required_path "${DATA_DIR}/eval/exposures.jsonl"
   check_required_path "${DATA_DIR}/eval/outcomes.jsonl"
   check_required_path "${DATA_DIR}/eval/assignments.jsonl"
@@ -146,7 +147,9 @@ MANIFEST_PATH="${PROOF_DIR}/pipelines/registry/current/demo/home/manifest.json"
 assert_file_nonempty "${PROOF_DIR}/eval/offline-report.json"
 assert_file_nonempty "${PROOF_DIR}/eval/offline-report.md"
 assert_file_nonempty "${MANIFEST_PATH}"
-grep -q 'popularity' "${MANIFEST_PATH}" || fail "manifest does not reference popularity artifact"
+for artifact_kind in popularity cooc implicit content_sim session_seq; do
+  grep -q "\"${artifact_kind}\"" "${MANIFEST_PATH}" || fail "manifest does not reference ${artifact_kind} artifact"
+done
 find "${PROOF_DIR}/pipelines/objectstore" -type f | grep -q . || fail "expected published object-store artifacts"
 
 echo "commercial proof kit smoke passed"

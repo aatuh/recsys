@@ -22,7 +22,7 @@ The fixture models one `demo` tenant and one `home` recommendation surface. It
 is intentionally small enough to inspect by eye while still producing:
 
 - non-empty popularity/co-vis artifacts,
+- implicit, content-similarity, and session-sequence artifacts,
 - a served recommendation response,
 - joinable exposure/outcome records,
 - a shareable offline evaluation report.
-
