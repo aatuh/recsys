@@ -7,7 +7,7 @@ stack and development header auth from `api/.env.example`.
 
 - Docker with Compose v2.
 - Go installed for module-level commands.
-- Python 3 and Node.js if you run documentation checks.
+- Python 3 and Node.js 22.12 or newer if you run documentation or site checks.
 
 ## Start the stack
 
