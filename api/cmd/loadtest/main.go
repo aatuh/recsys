@@ -22,6 +22,7 @@ type report struct {
 	Tenant              string        `json:"tenant"`
 	Requests            int           `json:"requests"`
 	Concurrency         int           `json:"concurrency"`
+	UserCardinality     int           `json:"user_cardinality"`
 	Success             int           `json:"success"`
 	Errors              int           `json:"errors"`
 	ElapsedMS           int64         `json:"elapsed_ms"`
@@ -172,6 +173,7 @@ func main() {
 		Tenant:              *tenantID,
 		Requests:            *requests,
 		Concurrency:         *concurrency,
+		UserCardinality:     *userCardinality,
 		ErrCount:            errCount,
 		Durations:           durations,
 		StatusCounts:        statusCounts,
@@ -223,6 +225,7 @@ type reportInput struct {
 	Tenant              string
 	Requests            int
 	Concurrency         int
+	UserCardinality     int
 	ErrCount            int
 	Durations           []time.Duration
 	StatusCounts        map[int]int
@@ -250,17 +253,18 @@ func buildReport(in reportInput) report {
 		rps = float64(in.Requests) / in.Elapsed.Seconds()
 	}
 	return report{
-		GeneratedAt: in.GeneratedAt.UTC().Format(time.RFC3339),
-		URL:         in.URL,
-		Endpoint:    in.Endpoint,
-		Surface:     in.Surface,
-		Tenant:      in.Tenant,
-		Requests:    in.Requests,
-		Concurrency: in.Concurrency,
-		Success:     success,
-		Errors:      in.ErrCount,
-		ElapsedMS:   in.Elapsed.Milliseconds(),
-		RPS:         rps,
+		GeneratedAt:     in.GeneratedAt.UTC().Format(time.RFC3339),
+		URL:             in.URL,
+		Endpoint:        in.Endpoint,
+		Surface:         in.Surface,
+		Tenant:          in.Tenant,
+		Requests:        in.Requests,
+		Concurrency:     in.Concurrency,
+		UserCardinality: in.UserCardinality,
+		Success:         success,
+		Errors:          in.ErrCount,
+		ElapsedMS:       in.Elapsed.Milliseconds(),
+		RPS:             rps,
 		LatencyMS: latencyReport{
 			P50: durationMillis(percentile(durations, 0.50)),
 			P95: durationMillis(percentile(durations, 0.95)),
@@ -315,6 +319,7 @@ func markdownReport(rep report) string {
 	fmt.Fprintf(&b, "- Target: `%s`\n", rep.URL)
 	fmt.Fprintf(&b, "- Tenant/surface: `%s` / `%s`\n", rep.Tenant, rep.Surface)
 	fmt.Fprintf(&b, "- Requests/concurrency: `%d` / `%d`\n", rep.Requests, rep.Concurrency)
+	fmt.Fprintf(&b, "- User cardinality: `%d`\n", rep.UserCardinality)
 	if rep.CatalogSize > 0 {
 		fmt.Fprintf(&b, "- Catalog size: `%d` items\n", rep.CatalogSize)
 	}

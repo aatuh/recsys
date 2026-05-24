@@ -10,14 +10,15 @@ import (
 
 func TestBuildReportComputesLatencyAndStatusCounts(t *testing.T) {
 	rep := buildReport(reportInput{
-		GeneratedAt: time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
-		URL:         "http://localhost:8000/v1/recommend",
-		Endpoint:    "/v1/recommend",
-		Surface:     "home",
-		Tenant:      "demo",
-		Requests:    4,
-		Concurrency: 2,
-		ErrCount:    1,
+		GeneratedAt:     time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+		URL:             "http://localhost:8000/v1/recommend",
+		Endpoint:        "/v1/recommend",
+		Surface:         "home",
+		Tenant:          "demo",
+		Requests:        4,
+		Concurrency:     2,
+		UserCardinality: 1000,
+		ErrCount:        1,
 		Durations: []time.Duration{
 			10 * time.Millisecond,
 			20 * time.Millisecond,
@@ -34,6 +35,9 @@ func TestBuildReportComputesLatencyAndStatusCounts(t *testing.T) {
 	}
 	if rep.RPS != 40 {
 		t.Fatalf("RPS = %v, want 40", rep.RPS)
+	}
+	if rep.UserCardinality != 1000 {
+		t.Fatalf("UserCardinality = %d, want 1000", rep.UserCardinality)
 	}
 	if rep.LatencyMS.P50 != 20 || rep.LatencyMS.P95 != 20 || rep.LatencyMS.P99 != 20 {
 		t.Fatalf("LatencyMS = %+v, want p50/p95/p99 20ms", rep.LatencyMS)
