@@ -1,0 +1,126 @@
+# Production-oriented example values. Replace placeholders through your secret
+# manager or CI/CD system; do not commit environment-specific secrets here.
+
+api:
+  replicaCount: 3
+  image:
+    repository: ghcr.io/aatuh/recsys-svc
+    tag: v0.1.0
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8000
+  existingSecret: recsys-api-secrets
+  env:
+    ENV: production
+    API_ADDR: ":8000"
+    LOG_LEVEL: info
+    MIGRATE_ON_START: "false"
+    AUTH_REQUIRED: "true"
+    DEV_AUTH_ENABLED: "false"
+    API_KEY_ENABLED: "true"
+    RECSYS_ARTIFACT_MODE_ENABLED: "true"
+    RECSYS_ARTIFACT_MANIFEST_TEMPLATE: "s3://recsys-artifacts/registry/current/{tenant}/{surface}/manifest.json"
+    RECSYS_ARTIFACT_MANIFEST_TTL: "1m"
+    RECSYS_ARTIFACT_CACHE_TTL: "1m"
+    RECSYS_ARTIFACT_S3_ENDPOINT: "s3.us-east-1.amazonaws.com"
+    RECSYS_ARTIFACT_S3_REGION: "us-east-1"
+    RECSYS_ARTIFACT_S3_USE_SSL: "true"
+    RECSYS_BACKPRESSURE_MAX_INFLIGHT: "200"
+    RECSYS_BACKPRESSURE_MAX_QUEUE: "1000"
+    RECSYS_BACKPRESSURE_WAIT_TIMEOUT: "200ms"
+  secrets: {}
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "2"
+      memory: 2Gi
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: /metrics
+    prometheus.io/port: "8000"
+  podSecurityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - ALL
+
+pipelines:
+  enabled: true
+  image:
+    repository: ghcr.io/aatuh/recsys-pipelines
+    tag: v0.1.0
+    pullPolicy: IfNotPresent
+  schedule: "15 2 * * *"
+  command:
+    - recsys-pipelines
+    - run
+  args:
+    - --config
+    - /config/pipelines.json
+    - --tenant
+    - demo
+    - --surface
+    - home
+    - --end
+    - "2026-01-01"
+    - --incremental
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: "4"
+      memory: 4Gi
+  configJson: |
+    {
+      "raw_source": {
+        "type": "s3",
+        "s3": {
+          "endpoint": "s3.us-east-1.amazonaws.com",
+          "bucket": "recsys-events",
+          "region": "us-east-1",
+          "prefix": "exposure-events",
+          "use_ssl": true
+        }
+      },
+      "object_store": {
+        "type": "s3",
+        "s3": {
+          "endpoint": "s3.us-east-1.amazonaws.com",
+          "bucket": "recsys-artifacts",
+          "region": "us-east-1",
+          "prefix": "",
+          "use_ssl": true
+        }
+      },
+      "registry_dir": "/tmp/recsys-registry",
+      "artifact_kinds": ["popularity", "cooc", "implicit", "session_seq"],
+      "limits": {
+        "max_days_backfill": 30,
+        "max_events_per_run": 1000000,
+        "max_sessions_per_run": 1000000,
+        "max_items_per_session": 200,
+        "max_distinct_items_per_run": 2000000,
+        "max_neighbors_per_item": 50,
+        "max_items_per_artifact": 1000,
+        "max_users_per_run": 100000,
+        "max_items_per_user": 500,
+        "min_cooc_support": 2
+      }
+    }
+
+postgres:
+  enabled: false
+
+minio:
+  enabled: false
+
+imagePullSecrets: []

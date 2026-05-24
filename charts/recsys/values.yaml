@@ -12,6 +12,7 @@ api:
     LOG_LEVEL: info
     MIGRATE_ON_START: "true"
     RECSYS_ARTIFACT_MODE_ENABLED: "true"
+  existingSecret: ""
   secrets: {}
   resources: {}
   podAnnotations: {}

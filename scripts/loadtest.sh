@@ -18,6 +18,13 @@ REQUESTS="${REQUESTS:-200}"
 CONCURRENCY="${CONCURRENCY:-10}"
 USER_PREFIX="${USER_PREFIX:-user}"
 USER_CARDINALITY="${USER_CARDINALITY:-1000}"
+REPORT_JSON="${REPORT_JSON:-}"
+REPORT_MARKDOWN="${REPORT_MARKDOWN:-}"
+CATALOG_SIZE="${CATALOG_SIZE:-0}"
+ARTIFACT_SIZE_BYTES="${ARTIFACT_SIZE_BYTES:-0}"
+CPU_NOTES="${CPU_NOTES:-}"
+MEMORY_NOTES="${MEMORY_NOTES:-}"
+DEGRADATION="${DEGRADATION:-}"
 
 DEV_HEADERS="${DEV_HEADERS:-true}"
 DEV_TENANT_HEADER="${DEV_TENANT_HEADER:-X-Dev-Org-Id}"
@@ -48,4 +55,11 @@ go run "${ROOT_DIR}/api/cmd/loadtest" \
   -user-prefix "${USER_PREFIX}" \
   -user-cardinality "${USER_CARDINALITY}" \
   -n "${REQUESTS}" \
-  -c "${CONCURRENCY}"
+  -c "${CONCURRENCY}" \
+  -report-json "${REPORT_JSON}" \
+  -report-markdown "${REPORT_MARKDOWN}" \
+  -catalog-size "${CATALOG_SIZE}" \
+  -artifact-size-bytes "${ARTIFACT_SIZE_BYTES}" \
+  -cpu-notes "${CPU_NOTES}" \
+  -memory-notes "${MEMORY_NOTES}" \
+  -degradation "${DEGRADATION}"

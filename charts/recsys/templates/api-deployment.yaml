@@ -35,7 +35,7 @@ spec:
             - configMapRef:
                 name: {{ include "recsys.fullname" . }}-api
             - secretRef:
-                name: {{ include "recsys.fullname" . }}-api
+                name: {{ .Values.api.existingSecret | default (printf "%s-api" (include "recsys.fullname" .)) }}
           livenessProbe:
             httpGet:
               path: /healthz
@@ -44,7 +44,7 @@ spec:
             periodSeconds: 10
           readinessProbe:
             httpGet:
-              path: /healthz
+              path: /readyz
               port: http
             initialDelaySeconds: 5
             periodSeconds: 5

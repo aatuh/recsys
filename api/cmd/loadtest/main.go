@@ -14,6 +14,33 @@ import (
 	"time"
 )
 
+type report struct {
+	GeneratedAt         string        `json:"generated_at"`
+	URL                 string        `json:"url"`
+	Endpoint            string        `json:"endpoint"`
+	Surface             string        `json:"surface"`
+	Tenant              string        `json:"tenant"`
+	Requests            int           `json:"requests"`
+	Concurrency         int           `json:"concurrency"`
+	Success             int           `json:"success"`
+	Errors              int           `json:"errors"`
+	ElapsedMS           int64         `json:"elapsed_ms"`
+	RPS                 float64       `json:"rps"`
+	LatencyMS           latencyReport `json:"latency_ms"`
+	StatusCodes         map[int]int   `json:"status_codes"`
+	CatalogSize         int           `json:"catalog_size,omitempty"`
+	ArtifactSizeBytes   int64         `json:"artifact_size_bytes,omitempty"`
+	CPUNotes            string        `json:"cpu_notes,omitempty"`
+	MemoryNotes         string        `json:"memory_notes,omitempty"`
+	DegradationBehavior string        `json:"degradation_behavior,omitempty"`
+}
+
+type latencyReport struct {
+	P50 float64 `json:"p50"`
+	P95 float64 `json:"p95"`
+	P99 float64 `json:"p99"`
+}
+
 type result struct {
 	status int
 	dur    time.Duration
@@ -41,11 +68,22 @@ func main() {
 		requests        = flag.Int("n", 200, "number of requests")
 		concurrency     = flag.Int("c", 10, "concurrency")
 		timeout         = flag.Duration("timeout", 10*time.Second, "request timeout")
+		reportJSON      = flag.String("report-json", "", "write a JSON benchmark report to this path")
+		reportMarkdown  = flag.String("report-markdown", "", "write a Markdown benchmark report to this path")
+		catalogSize     = flag.Int("catalog-size", 0, "catalog item count to include in reports")
+		artifactSize    = flag.Int64("artifact-size-bytes", 0, "artifact size in bytes to include in reports")
+		cpuNotes        = flag.String("cpu-notes", "", "CPU/environment notes to include in reports")
+		memoryNotes     = flag.String("memory-notes", "", "memory/environment notes to include in reports")
+		degradation     = flag.String("degradation", "", "observed degradation behavior to include in reports")
 	)
 	flag.Parse()
 
 	if *requests <= 0 || *concurrency <= 0 {
 		fmt.Fprintln(os.Stderr, "n and c must be positive")
+		os.Exit(1)
+	}
+	if err := validateReportInputs(*catalogSize, *artifactSize); err != nil {
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
@@ -126,7 +164,29 @@ func main() {
 	wg.Wait()
 
 	total := time.Since(start)
-	printReport(*requests, errCount, durations, statusCounts, total)
+	rep := buildReport(reportInput{
+		GeneratedAt:         time.Now().UTC(),
+		URL:                 url,
+		Endpoint:            *endpoint,
+		Surface:             *surface,
+		Tenant:              *tenantID,
+		Requests:            *requests,
+		Concurrency:         *concurrency,
+		ErrCount:            errCount,
+		Durations:           durations,
+		StatusCounts:        statusCounts,
+		Elapsed:             total,
+		CatalogSize:         *catalogSize,
+		ArtifactSizeBytes:   *artifactSize,
+		CPUNotes:            *cpuNotes,
+		MemoryNotes:         *memoryNotes,
+		DegradationBehavior: *degradation,
+	})
+	printReport(rep)
+	if err := writeReports(rep, *reportJSON, *reportMarkdown); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 }
 
 func buildPayload(endpoint, surface, segment, itemID string, k int, userPrefix string, userCardinality, idx int) ([]byte, error) {
@@ -155,36 +215,149 @@ func buildPayload(endpoint, surface, segment, itemID string, k int, userPrefix s
 	return json.Marshal(payload)
 }
 
-func printReport(total int, errCount int, durations []time.Duration, statusCounts map[int]int, elapsed time.Duration) {
-	sort.Slice(durations, func(i, j int) bool { return durations[i] < durations[j] })
-	p50 := percentile(durations, 0.50)
-	p95 := percentile(durations, 0.95)
-	p99 := percentile(durations, 0.99)
+type reportInput struct {
+	GeneratedAt         time.Time
+	URL                 string
+	Endpoint            string
+	Surface             string
+	Tenant              string
+	Requests            int
+	Concurrency         int
+	ErrCount            int
+	Durations           []time.Duration
+	StatusCounts        map[int]int
+	Elapsed             time.Duration
+	CatalogSize         int
+	ArtifactSizeBytes   int64
+	CPUNotes            string
+	MemoryNotes         string
+	DegradationBehavior string
+}
 
+func buildReport(in reportInput) report {
+	durations := append([]time.Duration(nil), in.Durations...)
+	sort.Slice(durations, func(i, j int) bool { return durations[i] < durations[j] })
 	success := 0
-	for code, count := range statusCounts {
+	statusCounts := map[int]int{}
+	for code, count := range in.StatusCounts {
+		statusCounts[code] = count
 		if code >= 200 && code < 300 {
 			success += count
 		}
 	}
-
 	rps := 0.0
-	if elapsed > 0 {
-		rps = float64(total) / elapsed.Seconds()
+	if in.Elapsed > 0 {
+		rps = float64(in.Requests) / in.Elapsed.Seconds()
 	}
+	return report{
+		GeneratedAt: in.GeneratedAt.UTC().Format(time.RFC3339),
+		URL:         in.URL,
+		Endpoint:    in.Endpoint,
+		Surface:     in.Surface,
+		Tenant:      in.Tenant,
+		Requests:    in.Requests,
+		Concurrency: in.Concurrency,
+		Success:     success,
+		Errors:      in.ErrCount,
+		ElapsedMS:   in.Elapsed.Milliseconds(),
+		RPS:         rps,
+		LatencyMS: latencyReport{
+			P50: durationMillis(percentile(durations, 0.50)),
+			P95: durationMillis(percentile(durations, 0.95)),
+			P99: durationMillis(percentile(durations, 0.99)),
+		},
+		StatusCodes:         statusCounts,
+		CatalogSize:         in.CatalogSize,
+		ArtifactSizeBytes:   in.ArtifactSizeBytes,
+		CPUNotes:            strings.TrimSpace(in.CPUNotes),
+		MemoryNotes:         strings.TrimSpace(in.MemoryNotes),
+		DegradationBehavior: strings.TrimSpace(in.DegradationBehavior),
+	}
+}
 
-	fmt.Printf("requests: %d  success: %d  errors: %d\n", total, success, errCount)
-	fmt.Printf("elapsed: %s  rps: %.2f\n", elapsed.Truncate(time.Millisecond), rps)
-	fmt.Printf("latency: p50=%s p95=%s p99=%s\n", p50, p95, p99)
+func printReport(rep report) {
+	fmt.Printf("requests: %d  success: %d  errors: %d\n", rep.Requests, rep.Success, rep.Errors)
+	fmt.Printf("elapsed: %dms  rps: %.2f\n", rep.ElapsedMS, rep.RPS)
+	fmt.Printf("latency: p50=%.2fms p95=%.2fms p99=%.2fms\n", rep.LatencyMS.P50, rep.LatencyMS.P95, rep.LatencyMS.P99)
 	fmt.Println("status codes:")
 	var codes []int
-	for code := range statusCounts {
+	for code := range rep.StatusCodes {
 		codes = append(codes, code)
 	}
 	sort.Ints(codes)
 	for _, code := range codes {
-		fmt.Printf("  %d: %d\n", code, statusCounts[code])
+		fmt.Printf("  %d: %d\n", code, rep.StatusCodes[code])
 	}
+}
+
+func writeReports(rep report, jsonPath, markdownPath string) error {
+	if strings.TrimSpace(jsonPath) != "" {
+		b, err := json.MarshalIndent(rep, "", "  ")
+		if err != nil {
+			return err
+		}
+		if err := os.WriteFile(jsonPath, append(b, '\n'), 0o600); err != nil {
+			return fmt.Errorf("write json report: %w", err)
+		}
+	}
+	if strings.TrimSpace(markdownPath) != "" {
+		if err := os.WriteFile(markdownPath, []byte(markdownReport(rep)), 0o600); err != nil {
+			return fmt.Errorf("write markdown report: %w", err)
+		}
+	}
+	return nil
+}
+
+func markdownReport(rep report) string {
+	var b strings.Builder
+	b.WriteString("# RecSys Load Test Report\n\n")
+	fmt.Fprintf(&b, "- Generated at: `%s`\n", rep.GeneratedAt)
+	fmt.Fprintf(&b, "- Target: `%s`\n", rep.URL)
+	fmt.Fprintf(&b, "- Tenant/surface: `%s` / `%s`\n", rep.Tenant, rep.Surface)
+	fmt.Fprintf(&b, "- Requests/concurrency: `%d` / `%d`\n", rep.Requests, rep.Concurrency)
+	if rep.CatalogSize > 0 {
+		fmt.Fprintf(&b, "- Catalog size: `%d` items\n", rep.CatalogSize)
+	}
+	if rep.ArtifactSizeBytes > 0 {
+		fmt.Fprintf(&b, "- Artifact size: `%d` bytes\n", rep.ArtifactSizeBytes)
+	}
+	if rep.CPUNotes != "" {
+		fmt.Fprintf(&b, "- CPU notes: %s\n", rep.CPUNotes)
+	}
+	if rep.MemoryNotes != "" {
+		fmt.Fprintf(&b, "- Memory notes: %s\n", rep.MemoryNotes)
+	}
+	if rep.DegradationBehavior != "" {
+		fmt.Fprintf(&b, "- Degradation behavior: %s\n", rep.DegradationBehavior)
+	}
+	b.WriteString("\n| Metric | Value |\n| --- | ---: |\n")
+	fmt.Fprintf(&b, "| Success | %d |\n", rep.Success)
+	fmt.Fprintf(&b, "| Errors | %d |\n", rep.Errors)
+	fmt.Fprintf(&b, "| Elapsed | %d ms |\n", rep.ElapsedMS)
+	fmt.Fprintf(&b, "| RPS | %.2f |\n", rep.RPS)
+	fmt.Fprintf(&b, "| p50 | %.2f ms |\n", rep.LatencyMS.P50)
+	fmt.Fprintf(&b, "| p95 | %.2f ms |\n", rep.LatencyMS.P95)
+	fmt.Fprintf(&b, "| p99 | %.2f ms |\n", rep.LatencyMS.P99)
+	b.WriteString("\n## Status Codes\n\n")
+	var codes []int
+	for code := range rep.StatusCodes {
+		codes = append(codes, code)
+	}
+	sort.Ints(codes)
+	for _, code := range codes {
+		fmt.Fprintf(&b, "- `%d`: %d\n", code, rep.StatusCodes[code])
+	}
+	return b.String()
+}
+
+func validateReportInputs(catalogSize int, artifactSizeBytes int64) error {
+	if catalogSize < 0 {
+		return fmt.Errorf("catalog-size must be non-negative")
+	}
+	if artifactSizeBytes < 0 {
+		return fmt.Errorf("artifact-size-bytes must be non-negative")
+	}
+	return nil
 }
 
 func percentile(durations []time.Duration, p float64) time.Duration {
@@ -199,6 +372,10 @@ func percentile(durations []time.Duration, p float64) time.Duration {
 	}
 	pos := int(float64(len(durations)-1) * p)
 	return durations[pos]
+}
+
+func durationMillis(d time.Duration) float64 {
+	return float64(d.Microseconds()) / 1000
 }
 
 func max(a, b int) int {
