@@ -42,6 +42,7 @@ Expected result: `api/.env` and `api/.env.test` are created only if they are mis
 | `API_KEY_HASH_SECRET` | Required in production when API key auth is enabled. |
 | `EXPOSURE_HASH_SALT` | Required in production when exposure logging is enabled. |
 | `EXPERIMENT_ASSIGNMENT_SALT` | Required in production when experiment assignment is enabled. |
+| `EXPERIMENT_CONFIG_JSON` | Optional JSON lifecycle config for experiment traffic allocation, variants, and active windows. |
 | `CORS_ALLOWED_ORIGINS` | Restrict browser origins for web clients and Swagger UI. |
 | `RECSYS_ARTIFACT_S3_USE_SSL` | Must be true in production when S3 artifact mode is configured. |
 | `PPROF_ENABLED` | Only allowed on loopback bindings. |
@@ -58,6 +59,46 @@ RECSYS_ARTIFACT_CACHE_TTL=1m
 ```
 
 Use a rollback-ready manifest process before enabling artifact mode for production traffic.
+
+## Pipeline artifacts
+
+`recsys-pipelines` accepts an `artifact_kinds` array in its JSON config:
+
+```json
+{
+  "artifact_kinds": ["popularity", "cooc", "implicit", "content_sim", "session_seq"],
+  "catalog": {
+    "path": "../examples/data/ecommerce-mini/catalog.csv",
+    "format": "csv"
+  }
+}
+```
+
+Supported artifact kinds are `popularity`, `cooc`, `implicit`, `content_sim`, and `session_seq`. If `artifact_kinds` is
+omitted, the default remains `popularity` plus `cooc`. `content_sim` requires `catalog.path`; `catalog.format` can be
+`csv` or `jsonl`, and is inferred from the file extension when omitted.
+
+## Experiment lifecycle
+
+`EXPERIMENT_CONFIG_JSON` can restrict deterministic assignment by experiment ID, surface, traffic percentage, and active
+window:
+
+```json
+[
+  {
+    "id": "home-ranker-v2",
+    "enabled": true,
+    "surface": "home",
+    "traffic_percent": 25,
+    "variants": ["A", "B"],
+    "starts_at": "2026-01-01T00:00:00Z",
+    "ends_at": "2026-02-01T00:00:00Z"
+  }
+]
+```
+
+If no matching definition exists, the assignment behavior remains backward compatible and uses
+`EXPERIMENT_DEFAULT_VARIANTS`.
 
 ## Configuration validation
 

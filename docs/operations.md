@@ -26,6 +26,7 @@ curl -f http://localhost:8000/readyz
 - Artifact mode has a rollback path and a manifest TTL that matches operational needs.
 - Exposure/outcome data retention is documented.
 - Logs preserve request IDs and avoid raw PII.
+- Dashboards and alerts are installed or adapted from [Observability](observability.md).
 - `make docs-check` and the module quality gates are green before release.
 
 ## Rollback levers
@@ -46,6 +47,7 @@ curl -f http://localhost:8000/readyz
 | [Stale artifact manifest](operations/runbooks/stale-artifact-manifest.md) | Artifact mode serves old data after pipelines publish. |
 | [Service not ready](operations/runbooks/service-not-ready.md) | `/readyz` fails or the orchestrator keeps the service out of rotation. |
 | [Rollback config and rules](operations/runbooks/rollback-config-rules.md) | A control-plane change must be reverted quickly with an audit trail. |
+| [Experiment operations](operations/runbooks/experiment-operations.md) | Launch, hold, or roll back experiment traffic allocation. |
 
 ## Empty recommendations
 

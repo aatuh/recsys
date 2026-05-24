@@ -9,7 +9,8 @@ Artifact mode separates offline computation from online serving:
 
 1. `recsys-pipelines` reads exposure events for a tenant, surface, segment, and day window.
 2. It validates and canonicalizes the input.
-3. It computes artifacts such as popularity, co-occurrence, implicit, content similarity, and session sequence signals.
+3. It computes enabled artifacts. The backward-compatible default is popularity and co-occurrence; richer controlled
+   deployments can also enable implicit, content similarity, and session sequence artifacts.
 4. It writes immutable artifact blobs to object storage.
 5. It updates the current manifest for the tenant and surface.
 6. `recsys-service` reads the manifest and referenced artifacts after cache expiry or cache invalidation.
@@ -36,7 +37,26 @@ make proof-kit-test
 
 Expected result: the pipeline writes a manifest under
 `tmp/commercial-proof-kit/pipelines/registry/current/demo/home/manifest.json` and publishes artifact blobs under
-`tmp/commercial-proof-kit/pipelines/objectstore/`.
+`tmp/commercial-proof-kit/pipelines/objectstore/`. The ecommerce proof kit enables and verifies `popularity`, `cooc`,
+`implicit`, `content_sim`, and `session_seq`.
+
+## Artifact selection
+
+Pipeline configs can choose which artifact kinds to compute:
+
+```json
+{
+  "artifact_kinds": ["popularity", "cooc", "implicit", "content_sim", "session_seq"],
+  "catalog": {
+    "path": "../examples/data/ecommerce-mini/catalog.csv",
+    "format": "csv"
+  }
+}
+```
+
+If `artifact_kinds` is omitted, the pipeline preserves the original lean behavior and publishes only `popularity` and
+`cooc`. `content_sim` requires a catalog file in CSV or JSONL format. The catalog must include `item_id`; tags can be
+provided through a `tags`/`tag_list` column in CSV or a `tags` array in JSONL.
 
 ## Freshness and rollback
 

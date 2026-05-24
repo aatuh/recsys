@@ -97,7 +97,8 @@ What it validates:
 - `recsys-eval` writes JSON and Markdown offline reports under `tmp/commercial-proof-kit/eval/`.
 - `recsys-pipelines` runs against `examples/data/ecommerce-mini/pipelines/exposure.jsonl`.
 - The pipeline writes a manifest at `tmp/commercial-proof-kit/pipelines/registry/current/demo/home/manifest.json`.
-- Published object-store artifacts exist under `tmp/commercial-proof-kit/pipelines/objectstore/`.
+- Published `popularity`, `cooc`, `implicit`, `content_sim`, and `session_seq` artifacts exist under
+  `tmp/commercial-proof-kit/pipelines/objectstore/`.
 
 Primary evidence files:
 
@@ -111,6 +112,8 @@ Primary evidence files:
 - Preserve request IDs in client logs and server logs for reconstruction.
 - Do not expose internal validation details or stack traces to end users.
 - For empty recommendation sets, use merchandising fallback content and review the [operations guide](operations.md).
+
+Minimal backend and browser examples live under `examples/clients/`.
 
 ## Read next
 

@@ -14,6 +14,7 @@ source files for details that are safer to maintain in code.
 | Developer proving first success | [Local end-to-end](local-end-to-end.md) | Run the smoke-tested tenant bootstrap, rules, recommendation, and exposure-log path. |
 | Product or data team validating quality | [Integration and evaluation](integration.md) and [Evaluation decisions](evaluation-decisions.md) | Understand request IDs, exposure/outcome logging, and ship/hold/rollback gates. |
 | Operator preparing a rollout | [Operations](operations.md) and [Artifacts and pipelines](artifacts-and-pipelines.md) | Know health checks, rollback levers, artifact freshness, and first triage steps. |
+| Platform team sizing deployment | [Deployment](deployment.md), [Benchmarks](benchmarks.md), and [Observability](observability.md) | Render production values, capture load evidence, and install starter alerts. |
 | Reviewer checking licensing or procurement | [Licensing](commercial/licensing.md), [Pricing](commercial/pricing.md), and [Procurement](commercial/procurement.md) | See the license model, commercial plan definitions, and review packet. |
 
 ## What is in this repository
@@ -49,10 +50,14 @@ external links, codespell, and strict MkDocs build, and `make docs-serve` serves
 ## Core pages
 
 - [Architecture](architecture.md)
+- [Deployment](deployment.md)
 - [Artifacts and pipelines](artifacts-and-pipelines.md)
+- [Bring your own retriever](bring-your-own-retriever.md)
 - [Local end-to-end](local-end-to-end.md)
 - [Integration and evaluation](integration.md)
 - [Evaluation decisions](evaluation-decisions.md)
+- [Benchmarks](benchmarks.md)
+- [Observability](observability.md)
 - [Operations](operations.md)
 - [API reference](reference/api.md)
 - [Configuration reference](reference/config.md)

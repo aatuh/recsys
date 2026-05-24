@@ -69,15 +69,20 @@ nav:
   - Developer Quickstart: developer-quickstart.md
   - Local End-to-End: local-end-to-end.md
   - Architecture: architecture.md
+  - Deployment: deployment.md
   - Artifacts and Pipelines: artifacts-and-pipelines.md
+  - Bring Your Own Retriever: bring-your-own-retriever.md
   - Integration and Evaluation: integration.md
   - Evaluation Decisions: evaluation-decisions.md
+  - Benchmarks: benchmarks.md
+  - Observability: observability.md
   - Operations:
       - Overview: operations.md
       - Empty Recommendations: operations/runbooks/empty-recommendations.md
       - Stale Artifact Manifest: operations/runbooks/stale-artifact-manifest.md
       - Service Not Ready: operations/runbooks/service-not-ready.md
       - Rollback Config and Rules: operations/runbooks/rollback-config-rules.md
+      - Experiment Operations: operations/runbooks/experiment-operations.md
   - Reference:
       - Overview: reference/index.md
       - API: reference/api.md
@@ -90,5 +95,6 @@ nav:
       - Pricing: commercial/pricing.md
       - Procurement and Trust Review: commercial/procurement.md
   - Security: security.md
+  - Release and Supply Chain: release-and-supply-chain.md
   - Support: support.md
   - Contributing: contributing.md
